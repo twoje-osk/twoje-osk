@@ -1,4 +1,16 @@
 {
   "private": true,
-  "workspaces": ["backend", "frontend", "shared"]
+  "workspaces": [
+    "backend",
+    "frontend",
+    "shared"
+  ],
+  "scripts": {
+    "lint": "lerna run lint --no-bail",
+    "type-check": "lerna run type-check --no-bail"
+  },
+  "name": "twoje-osk",
+  "devDependencies": {
+    "lerna": "^4.0.0"
+  }
 }

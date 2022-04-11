@@ -1,3 +1,3 @@
 export interface GetHelloResponseDTO {
-  text: string
+  text: string;
 }
