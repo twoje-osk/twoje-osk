@@ -1,0 +1,19 @@
+FROM node:16
+
+WORKDIR /usr/src/app
+
+COPY package.json yarn.lock ./
+COPY backend/package.json ./backend/
+COPY frontend/package.json ./frontend/
+COPY shared/package.json ./shared/
+
+RUN yarn install --frozen-lockfile
+
+COPY . .
+
+WORKDIR /usr/src/app/backend
+
+RUN yarn build
+
+CMD ["yarn", "start:prod"]
+

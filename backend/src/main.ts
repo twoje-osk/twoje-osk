@@ -1,4 +1,5 @@
 import { Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import {
   FastifyAdapter,
@@ -14,10 +15,11 @@ async function bootstrap() {
 
   app.setGlobalPrefix('api');
 
-  const { PORT = 8080 } = process.env;
+  const configService = app.get(ConfigService);
+  const port = configService.get('port');
 
-  await app.listen(PORT);
+  await app.listen(port, '0.0.0.0');
 
-  Logger.log(`NestJS app running on http://localhost:${PORT}/api`);
+  Logger.log(`NestJS app running on http://localhost:${port}/api`);
 }
 bootstrap();

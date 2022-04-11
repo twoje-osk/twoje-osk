@@ -1,0 +1,17 @@
+FROM node:16
+
+WORKDIR /usr/src/app
+
+COPY package.json yarn.lock ./
+COPY backend/package.json ./backend/
+COPY frontend/package.json ./frontend/
+COPY shared/package.json ./shared/
+
+RUN yarn install
+
+COPY . .
+
+WORKDIR /usr/src/app/backend
+
+CMD ["yarn", "dev"]
+
