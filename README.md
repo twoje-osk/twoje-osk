@@ -1,0 +1,3 @@
+# twoje-osk
+
+first readme
