@@ -1,0 +1,5 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+yarn lerna run type-check --since HEAD
+yarn lerna run lint --since HEAD
