@@ -1,19 +1,147 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
 trigger:
-- main
-
+  batch: true
+  branches:
+    include:
+      - main
+  paths:
+    include:
+      - 'backend/*'
+      - 'frontend/*'
+      - 'shared/*'
+      - '*.yml'
+    exclude:
+      - '.*' # skip every hidden file change in root dir
+      - '**/.*' # skip every hidden file change in any dir below root dir
+      - '!**/.eslintrc'
+      - '!**/.prettierrc'
+pr:
+  branches:
+    include:
+      - main
+  paths:
+    include:
+      - 'backend/*'
+      - 'frontend/*'
+      - 'shared/*'
+      - '*.yml'
+    exclude:
+      - '.*' # skip every hidden file change in root dir
+      - '**/.*' # skip every hidden file change in any dir below root dir
+      - '!**/.eslintrc'
+      - '!**/.prettierrc'
 pool:
   vmImage: ubuntu-latest
 
-steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
+variables:
+  CI: true
+  YARN_CACHE_FOLDER: $(Pipeline.Workspace)/.yarn
+  ${{ if in( variables['Build.SourceBranchName'], 'main' ) }}:
+    ENVIRONMENT_NAME: prod
+  ${{ if notIn( variables['Build.SourceBranchName'], 'main' ) }}:
+    ENVIRONMENT_NAME: dev
 
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+stages:
+  - stage: init_ci
+    # first stage can't be conditional therefore we create one if we want to have some approvals in the pipeline
+    displayName: Init CI
+    jobs:
+      - job: init
+        displayName: 'Init'
+        steps:
+          - checkout: none
+          - bash: |
+              echo "This is init stage, as first one can't be conditional. Important CI variables:"
+              echo "Build reason is: '${BUILD_REASON}'"
+              echo "Source branch is: '${BUILD_SOURCEBRANCH}'"
+              echo "Current UTC time is '$(date -u +%k%M)'"
+            displayName: 'Print variables'
+  - stage: build
+    displayName: Build Application
+    condition: succeeded('init_ci')
+    jobs:
+      - job: agent_preparation
+        displayName: Agent Preparation
+        steps:
+          - checkout: self
+            persistCredentials: true
+          - task: Cache@2
+            inputs:
+              key: '"yarn" | "$(Agent.OS)" | yarn.lock'
+              restoreKeys: |
+                yarn | "$(Agent.OS)"
+                yarn
+              path: $(YARN_CACHE_FOLDER)
+            displayName: Cache Yarn packages
+          - bash: |
+              yarn install --frozen-lockfile
+            displayName: "yarm install --frozen-lockfile"
+          - bash: |
+              yarn run type-check
+            displayName: "yarm run type-check"
+          - bash: |
+              yarn run lint
+            displayName: "yarn run lint"
+          - bash: |
+              if [[ "$(Build.Reason)" != "PullRequest" ]]; then
+                DIFFS=`git diff HEAD HEAD~1 --name-only -- 'frontend' 'backend' 'shared' | sed 's| |\\ |g' | sed 's|/.*||g' | sort | uniq`
+              else
+                DIFFS=`git diff HEAD origin/$(System.PullRequest.TargetBranch) --name-only -- 'frontend' 'backend' 'shared' | sed 's| |\\ |g' | sed 's|/.*||g' | sort | uniq`
+              fi
+
+              if [[ "${DIFFS[@]}" ]]; then
+                if [[ "${DIFFS[@]}" =~ "frontend" ]]; then
+                  echo "##vso[task.setvariable variable=FRONTEND_TRIGGER;isOutput=true;]true"
+                  REASON="FE"
+                fi
+
+                if [[ "${DIFFS[@]}" =~ "backend" && "$(Build.Reason)" != "PullRequest" ]]; then
+                  echo "##vso[task.setvariable variable=BACKEND_TRIGGER;isOutput=true;]true"
+                  REASON="BE"
+                fi
+
+                if [[ "${DIFFS[@]}" =~ "shared" || ("${DIFFS[@]}" =~ "frontend" && "${DIFFS[@]}" =~ "backend" && "$(Build.Reason)" != "PullRequest") ]]; then
+                  echo "##vso[task.setvariable variable=FRONTEND_TRIGGER;isOutput=true;]true"
+                  echo "##vso[task.setvariable variable=BACKEND_TRIGGER;isOutput=true;]true"
+                  REASON="FS"
+                fi
+                
+                if [[ $REASON ]]; then
+                  echo "##vso[build.updatebuildnumber]$(Build.BuildNumber) - [$REASON]"
+                fi
+              else
+                echo "No changes found in frontend, backend or shared directories."
+              fi
+            displayName: "GIT diff check"
+            name: git_check
+          
+          #The entire part can be on a single condition but would need to integrate templates
+      - job: backend_build
+        displayName: "Backend Build"
+        dependsOn: agent_preparation
+        condition: |
+          and
+          (
+            eq(dependencies.agent_preparation.outputs['git_check.BACKEND_TRIGGER'], 'true'),
+            eq(dependencies.agent_preparation.result, 'Succeeded'),
+            startsWith(variables['Build.SourceBranch'], 'refs/heads/'),
+            eq(variables['Build.SourceBranchName'], 'main')
+          )
+        steps:
+          - task: DockerInstaller@0
+            inputs:
+              dockerVersion: '17.09.0-ce'
+          - bash: |
+              docker build . -t twoje-osk -f docker/Dockerfile.backend
+            displayName: Building Docker image
+            condition: succeeded()
+      - job: frontend_build
+        displayName: "Frontend Build"
+        dependsOn: agent_preparation
+        condition: |
+          and
+          (
+            eq(dependencies.agent_preparation.outputs['git_check.FRONTEND_TRIGGER'], 'true'),
+            in(dependencies.agent_preparation.result, 'Succeeded', 'Skipped')
+          )
+        steps:
+          - bash: echo frontend build
