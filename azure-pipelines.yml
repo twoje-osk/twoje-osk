@@ -72,12 +72,6 @@ stages:
                 yarn
               path: $(YARN_CACHE_FOLDER)
             displayName: Cache Yarn packages
-            condition: |  # Only trigger on PR
-              and
-              (
-                succeeded(),
-                eq(variables['Build.Reason'], 'PullRequest')
-              )
           - bash: |
               yarn install --frozen-lockfile
             displayName: "yarm install --frozen-lockfile"
