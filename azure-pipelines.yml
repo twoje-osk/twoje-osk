@@ -1,19 +1,42 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
 trigger:
-- main
-
+  batch: true
+  branches:
+    include:
+      - master
+  paths:
+    exclude:
+      - '.*' # skip every hidden file change in root dir
+      - '**/.*' # skip every hidden file change in any dir below root dir
 pool:
   vmImage: ubuntu-latest
 
-steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
-
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+stages:
+  - stage: init_ci
+    # first stage can't be conditional therefore we create one if we want to have some approvals in the pipeline
+    displayName: Init CI
+    jobs:
+      - job: init
+        displayName: 'Init'
+        steps:
+          - checkout: none
+          - bash: |
+              echo "This is init stage, as first one can't be conditional. Important CI variables:"
+              echo "Build reason is: ${BUILD_REASON}."
+              echo "Source branch is: ${SOURCE_BRANCH}."
+              echo "Current UTC time is $(date -u +%k%M)."
+            displayName: 'Print variables'
+  - stage: build_backend
+    displayName: Build Backend Application
+    jobs:
+      - job: agent_preparation
+        displayName: Agent Preparation
+        steps:
+          - checkout: self
+          - bash: |
+              yarn install --frozen-lockfile
+              yarn run type-check
+              yarn run lint
+            displayName: "Dependencies preparation"
+          # DockerFile + DockerCompose
+          - bash: echo Hello, world!
+            displayName: 'Run a one-line script just because'
