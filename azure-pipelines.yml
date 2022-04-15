@@ -77,28 +77,28 @@ stages:
                 DIFFS=`git diff HEAD origin/$(System.PullRequest.TargetBranch) --name-only -- 'frontend' 'backend' 'shared' | sed 's| |\\ |g' | sed 's|/.*||g' | sort | uniq`
               fi
 
-              if [[ "${DIFFS[@]}" ]]; then
-                if [[ $MANUAL_FE_TRIGGER == "true" || "${DIFFS[@]}" =~ "frontend" ]]; then
-                  echo "##vso[task.setvariable variable=FRONTEND_TRIGGER;isOutput=true;]true"
-                  REASON="FE"
-                fi
-
-                if [[ $MANUAL_BE_TRIGGER == "true" || ("${DIFFS[@]}" =~ "backend" && "$(Build.Reason)" != "PullRequest") ]]; then
-                  echo "##vso[task.setvariable variable=BACKEND_TRIGGER;isOutput=true;]true"
-                  REASON="BE"
-                fi
-
-                if [[ $MANUAL_FE_TRIGGER == "true" && $MANUAL_BE_TRIGGER == "true" || ("${DIFFS[@]}" =~ "shared" || ("${DIFFS[@]}" =~ "frontend" && "${DIFFS[@]}" =~ "backend" && "$(Build.Reason)" != "PullRequest")) ]]; then
-                  echo "##vso[task.setvariable variable=FRONTEND_TRIGGER;isOutput=true;]true"
-                  echo "##vso[task.setvariable variable=BACKEND_TRIGGER;isOutput=true;]true"
-                  REASON="FS"
-                fi
-                
-                if [[ $REASON ]]; then
-                  echo "##vso[build.updatebuildnumber]$(Build.BuildNumber) - [$REASON]"
-                fi
-              else
+              if ! [[ "${DIFFS[@]}" ]]; then
                 echo "No changes found in frontend, backend or shared directories."
+              fi
+
+              if [[ $MANUAL_FE_TRIGGER == "true" || "${DIFFS[@]}" =~ "frontend" ]]; then
+                echo "##vso[task.setvariable variable=FRONTEND_TRIGGER;isOutput=true;]true"
+                REASON="FE"
+              fi
+
+              if [[ $MANUAL_BE_TRIGGER == "true" || ("${DIFFS[@]}" =~ "backend" && "$(Build.Reason)" != "PullRequest") ]]; then
+                echo "##vso[task.setvariable variable=BACKEND_TRIGGER;isOutput=true;]true"
+                REASON="BE"
+              fi
+
+              if [[ $MANUAL_FE_TRIGGER == "true" && $MANUAL_BE_TRIGGER == "true" || ("${DIFFS[@]}" =~ "shared" || ("${DIFFS[@]}" =~ "frontend" && "${DIFFS[@]}" =~ "backend" && "$(Build.Reason)" != "PullRequest")) ]]; then
+                echo "##vso[task.setvariable variable=FRONTEND_TRIGGER;isOutput=true;]true"
+                echo "##vso[task.setvariable variable=BACKEND_TRIGGER;isOutput=true;]true"
+                REASON="FS"
+              fi
+              
+              if [[ $REASON ]]; then
+                echo "##vso[build.updatebuildnumber]$(Build.BuildNumber) - [$REASON]"
               fi
             displayName: "GIT diff check"
             name: git_check
@@ -175,10 +175,12 @@ stages:
           - bash: |
               yarn run lint
             displayName: "yarn run lint"
+          - bash: |
+              yarn build
+            displayName: "yarn build"
           - task: AzureStaticWebApp@0
             inputs:
-              app_location: 'frontend'
-              app_build_command: 'yarn build'
-              output_location: 'site'
-              cwd: $(System.DefaultWorkingDirectory)
+              app_location: 'site'
+              output_location: ''
+              skip_app_build: true
               azure_static_web_apps_api_token: '$(DEPLOYMENT_TOKEN_STATIC_WEB_APP)'
