@@ -102,12 +102,17 @@ stages:
         displayName: "Backend Build"
         dependsOn: agent_preparation
         condition: |
-          and
+          or
           (
-            eq(dependencies.agent_preparation.outputs['git_check.BACKEND_TRIGGER'], 'true'),
-            eq(dependencies.agent_preparation.result, 'Succeeded'),
-            startsWith(variables['Build.SourceBranch'], 'refs/heads/'),
-            eq(variables['Build.SourceBranchName'], 'main')
+            and
+            (
+              eq(dependencies.agent_preparation.outputs['git_check.BACKEND_TRIGGER'], 'true'),
+              eq(dependencies.agent_preparation.result, 'Succeeded'),
+              startsWith(variables['Build.SourceBranch'], 'refs/heads/'),
+              eq(variables['Build.SourceBranchName'], 'main'),
+              not(eq(variables['MANUAL_BE_TRIGGER'], 'false'))
+            ),
+            eq(variables['MANUAL_BE_TRIGGER'], 'true')
           )
         steps:
           - task: Cache@2
@@ -138,10 +143,15 @@ stages:
         displayName: "Frontend Build"
         dependsOn: agent_preparation
         condition: |
-          and
+          or
           (
-            eq(dependencies.agent_preparation.outputs['git_check.FRONTEND_TRIGGER'], 'true'),
-            in(dependencies.agent_preparation.result, 'Succeeded', 'Skipped')
+            and
+            (
+              eq(dependencies.agent_preparation.outputs['git_check.FRONTEND_TRIGGER'], 'true'),
+              in(dependencies.agent_preparation.result, 'Succeeded', 'Skipped'),
+              not(eq(variables['MANUAL_FE_TRIGGER'], 'false'))
+            ),
+            eq(variables['MANUAL_FE_TRIGGER'], 'true')
           )
         steps:
           - task: Cache@2
