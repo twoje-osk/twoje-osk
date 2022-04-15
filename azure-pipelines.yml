@@ -78,17 +78,17 @@ stages:
               fi
 
               if [[ "${DIFFS[@]}" ]]; then
-                if [[ "${DIFFS[@]}" =~ "frontend" ]]; then
+                if [[ $MANUAL_FE_TRIGGER == "true" || "${DIFFS[@]}" =~ "frontend" ]]; then
                   echo "##vso[task.setvariable variable=FRONTEND_TRIGGER;isOutput=true;]true"
                   REASON="FE"
                 fi
 
-                if [[ "${DIFFS[@]}" =~ "backend" && "$(Build.Reason)" != "PullRequest" ]]; then
+                if [[ $MANUAL_BE_TRIGGER == "true" || ("${DIFFS[@]}" =~ "backend" && "$(Build.Reason)" != "PullRequest") ]]; then
                   echo "##vso[task.setvariable variable=BACKEND_TRIGGER;isOutput=true;]true"
                   REASON="BE"
                 fi
 
-                if [[ "${DIFFS[@]}" =~ "shared" || ("${DIFFS[@]}" =~ "frontend" && "${DIFFS[@]}" =~ "backend" && "$(Build.Reason)" != "PullRequest") ]]; then
+                if [[ $MANUAL_FE_TRIGGER == "true" && $MANUAL_BE_TRIGGER == "true" || ("${DIFFS[@]}" =~ "shared" || ("${DIFFS[@]}" =~ "frontend" && "${DIFFS[@]}" =~ "backend" && "$(Build.Reason)" != "PullRequest")) ]]; then
                   echo "##vso[task.setvariable variable=FRONTEND_TRIGGER;isOutput=true;]true"
                   echo "##vso[task.setvariable variable=BACKEND_TRIGGER;isOutput=true;]true"
                   REASON="FS"
@@ -177,8 +177,8 @@ stages:
             displayName: "yarn run lint"
           - task: AzureStaticWebApp@0
             inputs:
-              app_location: 'src'
+              app_location: 'frontend'
               app_build_command: 'yarn build'
               output_location: 'site'
-              cwd: $(System.DefaultWorkingDirectory)/frontend
+              cwd: $(System.DefaultWorkingDirectory)
               azure_static_web_apps_api_token: '$(DEPLOYMENT_TOKEN_STATIC_WEB_APP)'
