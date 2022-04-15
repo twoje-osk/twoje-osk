@@ -33,12 +33,18 @@ pool:
   vmImage: ubuntu-latest
 
 variables:
-  CI: true
-  YARN_CACHE_FOLDER: $(Pipeline.Workspace)/.yarn
+  - group: SECRETS_FRONTEND
+  - name: CI
+    value: true
+  - name: YARN_CACHE_FOLDER
+    value: $(Pipeline.Workspace)/.yarn
   ${{ if in( variables['Build.SourceBranchName'], 'main' ) }}:
-    ENVIRONMENT_NAME: prod
+    - name: ENVIRONMENT_NAME
+      value: prod
   ${{ if notIn( variables['Build.SourceBranchName'], 'main' ) }}:
-    ENVIRONMENT_NAME: dev
+    - name: ENVIRONMENT_NAME
+      value: dev
+
 
 stages:
   - stage: init_ci
@@ -174,4 +180,4 @@ stages:
               app_location: 'frontend'
               app_build_command: 'yarn build'
               output_location: 'frontend'
-              azure_static_web_apps_api_token: 'DEPLOYMENT_TOKEN_STATIC_WEB_APP'
+              azure_static_web_apps_api_token: '$(DEPLOYMENT_TOKEN_STATIC_WEB_APP)'
