@@ -177,7 +177,8 @@ stages:
             displayName: "yarn run lint"
           - task: AzureStaticWebApp@0
             inputs:
-              app_location: 'frontend'
+              app_location: 'src'
               app_build_command: 'yarn build'
-              output_location: 'frontend'
+              output_location: 'site'
+              cwd: $(System.DefaultWorkingDirectory)/frontend
               azure_static_web_apps_api_token: '$(DEPLOYMENT_TOKEN_STATIC_WEB_APP)'
