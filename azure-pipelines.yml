@@ -169,18 +169,17 @@ stages:
               path: $(YARN_CACHE_FOLDER)
             displayName: Cache Yarn packages
           - bash: |
-              cd frontend
-              yarn install --frozen-lockfile
+              cd frontend && yarn install --frozen-lockfile
             displayName: "yarm install --frozen-lockfile"
           - bash: |
-              yarn run lint
+              cd frontend && yarn run lint
             displayName: "yarn run lint"
           - bash: |
-              yarn build
+              cd frontend && yarn build
             displayName: "yarn build"
           - task: AzureStaticWebApp@0
             inputs:
-              app_location: 'site'
+              app_location: 'frontend/site'
               output_location: ''
               skip_app_build: true
               azure_static_web_apps_api_token: '$(DEPLOYMENT_TOKEN_STATIC_WEB_APP)'
