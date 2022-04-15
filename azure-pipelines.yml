@@ -64,23 +64,6 @@ stages:
         steps:
           - checkout: self
             persistCredentials: true
-          - task: Cache@2
-            inputs:
-              key: '"yarn" | "$(Agent.OS)" | yarn.lock'
-              restoreKeys: |
-                yarn | "$(Agent.OS)"
-                yarn
-              path: $(YARN_CACHE_FOLDER)
-            displayName: Cache Yarn packages
-          - bash: |
-              yarn install --frozen-lockfile
-            displayName: "yarm install --frozen-lockfile"
-          - bash: |
-              yarn run type-check
-            displayName: "yarm run type-check"
-          - bash: |
-              yarn run lint
-            displayName: "yarn run lint"
           - bash: |
               if [[ "$(Build.Reason)" != "PullRequest" ]]; then
                 DIFFS=`git diff HEAD HEAD~1 --name-only -- 'frontend' 'backend' 'shared' | sed 's| |\\ |g' | sed 's|/.*||g' | sort | uniq`
@@ -127,6 +110,23 @@ stages:
             eq(variables['Build.SourceBranchName'], 'main')
           )
         steps:
+          - task: Cache@2
+            inputs:
+              key: '"yarn" | "$(Agent.OS)" | yarn.lock'
+              restoreKeys: |
+                yarn | "$(Agent.OS)"
+                yarn
+              path: $(YARN_CACHE_FOLDER)
+            displayName: Cache Yarn packages
+          - bash: |
+              yarn install --frozen-lockfile
+            displayName: "yarm install --frozen-lockfile"
+          - bash: |
+              yarn run type-check
+            displayName: "yarm run type-check"
+          - bash: |
+              yarn run lint
+            displayName: "yarn run lint"
           - task: DockerInstaller@0
             inputs:
               dockerVersion: '17.09.0-ce'
@@ -144,4 +144,24 @@ stages:
             in(dependencies.agent_preparation.result, 'Succeeded', 'Skipped')
           )
         steps:
-          - bash: echo frontend build
+          - task: Cache@2
+            inputs:
+              key: '"yarn" | "$(Agent.OS)" | yarn.lock'
+              restoreKeys: |
+                yarn | "$(Agent.OS)"
+                yarn
+              path: $(YARN_CACHE_FOLDER)
+            displayName: Cache Yarn packages
+          - bash: |
+              cd frontend
+              yarn install --frozen-lockfile
+            displayName: "yarm install --frozen-lockfile"
+          - bash: |
+              yarn run lint
+            displayName: "yarn run lint"
+          - task: AzureStaticWebApp@0
+            inputs:
+              app_location: 'frontend'
+              app_build_command: 'yarn build'
+              output_location: 'frontend'
+              azure_static_web_apps_api_token: 'DEPLOYMENT_TOKEN_STATIC_WEB_APP'
