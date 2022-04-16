@@ -1,34 +1,34 @@
-trigger:
-  batch: true
-  branches:
-    include:
-      - main
-  paths:
-    include:
-      - 'backend/*'
-      - 'frontend/*'
-      - 'shared/*'
-      - '*.yml'
-    exclude:
-      - '.*' # skip every hidden file change in root dir
-      - '**/.*' # skip every hidden file change in any dir below root dir
-      - '!**/.eslintrc'
-      - '!**/.prettierrc'
-pr:
-  branches:
-    include:
-      - main
-  paths:
-    include:
-      - 'backend/*'
-      - 'frontend/*'
-      - 'shared/*'
-      - '*.yml'
-    exclude:
-      - '.*' # skip every hidden file change in root dir
-      - '**/.*' # skip every hidden file change in any dir below root dir
-      - '!**/.eslintrc'
-      - '!**/.prettierrc'
+trigger: none
+  # batch: true
+  # branches:
+  #   include:
+  #     - main
+  # paths:
+  #   include:
+  #     - 'backend/*'
+  #     - 'frontend/*'
+  #     - 'shared/*'
+  #     - '*.yml'
+  #   exclude:
+  #     - '.*' # skip every hidden file change in root dir
+  #     - '**/.*' # skip every hidden file change in any dir below root dir
+  #     - '!**/.eslintrc'
+  #     - '!**/.prettierrc'
+pr: none
+  # branches:
+  #   include:
+  #     - main
+  # paths:
+  #   include:
+  #     - 'backend/*'
+  #     - 'frontend/*'
+  #     - 'shared/*'
+  #     - '*.yml'
+  #   exclude:
+  #     - '.*' # skip every hidden file change in root dir
+  #     - '**/.*' # skip every hidden file change in any dir below root dir
+  #     - '!**/.eslintrc'
+  #     - '!**/.prettierrc'
 pool:
   vmImage: ubuntu-latest
 
