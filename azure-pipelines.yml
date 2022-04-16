@@ -1,34 +1,34 @@
-trigger:
-  batch: true
-  branches:
-    include:
-      - main
-  paths:
-    include:
-      - 'backend/*'
-      - 'frontend/*'
-      - 'shared/*'
-      - '*.yml'
-    exclude:
-      - '.*' # skip every hidden file change in root dir
-      - '**/.*' # skip every hidden file change in any dir below root dir
-      - '!**/.eslintrc'
-      - '!**/.prettierrc'
-pr:
-  branches:
-    include:
-      - main
-  paths:
-    include:
-      - 'backend/*'
-      - 'frontend/*'
-      - 'shared/*'
-      - '*.yml'
-    exclude:
-      - '.*' # skip every hidden file change in root dir
-      - '**/.*' # skip every hidden file change in any dir below root dir
-      - '!**/.eslintrc'
-      - '!**/.prettierrc'
+trigger: none
+  # batch: true
+  # branches:
+  #   include:
+  #     - main
+  # paths:
+  #   include:
+  #     - 'backend/*'
+  #     - 'frontend/*'
+  #     - 'shared/*'
+  #     - '*.yml'
+  #   exclude:
+  #     - '.*' # skip every hidden file change in root dir
+  #     - '**/.*' # skip every hidden file change in any dir below root dir
+  #     - '!**/.eslintrc'
+  #     - '!**/.prettierrc'
+pr: none
+  # branches:
+  #   include:
+  #     - main
+  # paths:
+  #   include:
+  #     - 'backend/*'
+  #     - 'frontend/*'
+  #     - 'shared/*'
+  #     - '*.yml'
+  #   exclude:
+  #     - '.*' # skip every hidden file change in root dir
+  #     - '**/.*' # skip every hidden file change in any dir below root dir
+  #     - '!**/.eslintrc'
+  #     - '!**/.prettierrc'
 pool:
   vmImage: ubuntu-latest
 
@@ -81,17 +81,17 @@ stages:
                 echo "No changes found in frontend, backend or shared directories."
               fi
 
-              if [[ $MANUAL_FE_TRIGGER == "true" || "${DIFFS[@]}" =~ "frontend" ]]; then
+              if [[ $MANUAL_FE_TRIGGER != "skip" && ($MANUAL_FE_TRIGGER == "true" || "${DIFFS[@]}" =~ "frontend") ]]; then
                 echo "##vso[task.setvariable variable=FRONTEND_TRIGGER;isOutput=true;]true"
                 REASON="FE"
               fi
 
-              if [[ $MANUAL_BE_TRIGGER == "true" || ("${DIFFS[@]}" =~ "backend" && "$(Build.Reason)" != "PullRequest") ]]; then
+              if [[ $MANUAL_BE_TRIGGER != "skip" && ($MANUAL_BE_TRIGGER == "true" || ("${DIFFS[@]}" =~ "backend" && "$(Build.Reason)" != "PullRequest")) ]]; then
                 echo "##vso[task.setvariable variable=BACKEND_TRIGGER;isOutput=true;]true"
                 REASON="BE"
               fi
 
-              if [[ $MANUAL_FE_TRIGGER == "true" && $MANUAL_BE_TRIGGER == "true" || ("${DIFFS[@]}" =~ "shared" || ("${DIFFS[@]}" =~ "frontend" && "${DIFFS[@]}" =~ "backend" && "$(Build.Reason)" != "PullRequest")) ]]; then
+              if [[ $MANUAL_FE_TRIGGER != "skip" && $MANUAL_BE_TRIGGER != "skip" && ($MANUAL_FE_TRIGGER == "true" && $MANUAL_BE_TRIGGER == "true" || ("${DIFFS[@]}" =~ "shared" || ("${DIFFS[@]}" =~ "frontend" && "${DIFFS[@]}" =~ "backend" && "$(Build.Reason)" != "PullRequest"))) ]]; then
                 echo "##vso[task.setvariable variable=FRONTEND_TRIGGER;isOutput=true;]true"
                 echo "##vso[task.setvariable variable=BACKEND_TRIGGER;isOutput=true;]true"
                 REASON="FS"
@@ -116,7 +116,7 @@ stages:
               eq(dependencies.agent_preparation.result, 'Succeeded'),
               startsWith(variables['Build.SourceBranch'], 'refs/heads/'),
               eq(variables['Build.SourceBranchName'], 'main'),
-              not(eq(variables['MANUAL_BE_TRIGGER'], 'false'))
+              not(eq(variables['MANUAL_BE_TRIGGER'], 'skip'))
             ),
             eq(variables['MANUAL_BE_TRIGGER'], 'true')
           )
@@ -138,13 +138,31 @@ stages:
           - bash: |
               yarn run lint
             displayName: "yarn run lint"
-          - task: DockerInstaller@0
+          # - task: DockerInstaller@0
+          #   inputs:
+          #     dockerVersion: '17.09.0-ce'
+          # - bash: |
+          #     docker build . -t twoje-osk -f docker/Dockerfile.backend
+          #   displayName: Building Docker image
+          #   condition: succeeded()
+          - task: Docker@2
             inputs:
-              dockerVersion: '17.09.0-ce'
-          - bash: |
-              docker build . -t twoje-osk -f docker/Dockerfile.backend
-            displayName: Building Docker image
-            condition: succeeded()
+              containerRegistry: 'oskshrdacr'
+              repository: 'twoje-osk'
+              command: 'buildAndPush'
+              Dockerfile: 'docker/Dockerfile.backend'
+          - task: AzureRmWebAppDeployment@4
+            inputs:
+              ConnectionType: 'AzureRM'
+              azureSubscription: 'Romeo_Student(cb5ddb44-ca54-415d-bfdd-d53601da6d8c)'
+              appType: 'webAppContainer'
+              WebAppName: 'twoje-osk'
+              deployToSlotOrASE: true
+              ResourceGroupName: 'osk-prod-back-rg'
+              SlotName: 'production'
+              DockerNamespace: 'oskshrdacr.azurecr.io'
+              DockerRepository: 'twoje-osk'
+          
       - job: frontend_build
         displayName: "Frontend Build"
         dependsOn: agent_preparation
@@ -155,7 +173,7 @@ stages:
             (
               eq(dependencies.agent_preparation.outputs['git_check.FRONTEND_TRIGGER'], 'true'),
               in(dependencies.agent_preparation.result, 'Succeeded', 'Skipped'),
-              not(eq(variables['MANUAL_FE_TRIGGER'], 'false'))
+              not(eq(variables['MANUAL_FE_TRIGGER'], 'skip'))
             ),
             eq(variables['MANUAL_FE_TRIGGER'], 'true')
           )
