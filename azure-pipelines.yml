@@ -81,17 +81,17 @@ stages:
                 echo "No changes found in frontend, backend or shared directories."
               fi
 
-              if [[ $MANUAL_FE_TRIGGER == "true" || "${DIFFS[@]}" =~ "frontend" ]]; then
+              if [[ $MANUAL_FE_TRIGGER != "skip" && ($MANUAL_FE_TRIGGER == "true" || "${DIFFS[@]}" =~ "frontend") ]]; then
                 echo "##vso[task.setvariable variable=FRONTEND_TRIGGER;isOutput=true;]true"
                 REASON="FE"
               fi
 
-              if [[ $MANUAL_BE_TRIGGER == "true" || ("${DIFFS[@]}" =~ "backend" && "$(Build.Reason)" != "PullRequest") ]]; then
+              if [[ $MANUAL_BE_TRIGGER != "skip" && ($MANUAL_BE_TRIGGER == "true" || ("${DIFFS[@]}" =~ "backend" && "$(Build.Reason)" != "PullRequest")) ]]; then
                 echo "##vso[task.setvariable variable=BACKEND_TRIGGER;isOutput=true;]true"
                 REASON="BE"
               fi
 
-              if [[ $MANUAL_FE_TRIGGER == "true" && $MANUAL_BE_TRIGGER == "true" || ("${DIFFS[@]}" =~ "shared" || ("${DIFFS[@]}" =~ "frontend" && "${DIFFS[@]}" =~ "backend" && "$(Build.Reason)" != "PullRequest")) ]]; then
+              if [[ $MANUAL_FE_TRIGGER != "skip" && $MANUAL_BE_TRIGGER != "skip" && ($MANUAL_FE_TRIGGER == "true" && $MANUAL_BE_TRIGGER == "true" || ("${DIFFS[@]}" =~ "shared" || ("${DIFFS[@]}" =~ "frontend" && "${DIFFS[@]}" =~ "backend" && "$(Build.Reason)" != "PullRequest"))) ]]; then
                 echo "##vso[task.setvariable variable=FRONTEND_TRIGGER;isOutput=true;]true"
                 echo "##vso[task.setvariable variable=BACKEND_TRIGGER;isOutput=true;]true"
                 REASON="FS"
@@ -116,7 +116,7 @@ stages:
               eq(dependencies.agent_preparation.result, 'Succeeded'),
               startsWith(variables['Build.SourceBranch'], 'refs/heads/'),
               eq(variables['Build.SourceBranchName'], 'main'),
-              not(eq(variables['MANUAL_BE_TRIGGER'], 'false'))
+              not(eq(variables['MANUAL_BE_TRIGGER'], 'skip'))
             ),
             eq(variables['MANUAL_BE_TRIGGER'], 'true')
           )
@@ -155,7 +155,7 @@ stages:
             (
               eq(dependencies.agent_preparation.outputs['git_check.FRONTEND_TRIGGER'], 'true'),
               in(dependencies.agent_preparation.result, 'Succeeded', 'Skipped'),
-              not(eq(variables['MANUAL_FE_TRIGGER'], 'false'))
+              not(eq(variables['MANUAL_FE_TRIGGER'], 'skip'))
             ),
             eq(variables['MANUAL_FE_TRIGGER'], 'true')
           )
