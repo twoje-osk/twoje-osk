@@ -138,13 +138,31 @@ stages:
           - bash: |
               yarn run lint
             displayName: "yarn run lint"
-          - task: DockerInstaller@0
+          # - task: DockerInstaller@0
+          #   inputs:
+          #     dockerVersion: '17.09.0-ce'
+          # - bash: |
+          #     docker build . -t twoje-osk -f docker/Dockerfile.backend
+          #   displayName: Building Docker image
+          #   condition: succeeded()
+          - task: Docker@2
             inputs:
-              dockerVersion: '17.09.0-ce'
-          - bash: |
-              docker build . -t twoje-osk -f docker/Dockerfile.backend
-            displayName: Building Docker image
-            condition: succeeded()
+              containerRegistry: 'oskshrdacr'
+              repository: 'twoje-osk'
+              command: 'buildAndPush'
+              Dockerfile: 'docker/Dockerfile.backend'
+          - task: AzureRmWebAppDeployment@4
+            inputs:
+              ConnectionType: 'AzureRM'
+              azureSubscription: 'Romeo_Student(cb5ddb44-ca54-415d-bfdd-d53601da6d8c)'
+              appType: 'webAppContainer'
+              WebAppName: 'twoje-osk'
+              deployToSlotOrASE: true
+              ResourceGroupName: 'osk-prod-back-rg'
+              SlotName: 'production'
+              DockerNamespace: 'oskshrdacr.azurecr.io'
+              DockerRepository: 'twoje-osk'
+          
       - job: frontend_build
         displayName: "Frontend Build"
         dependsOn: agent_preparation
