@@ -151,6 +151,8 @@ stages:
               repository: 'twoje-osk'
               command: 'buildAndPush'
               Dockerfile: 'docker/Dockerfile.backend'
+              buildContext: '$(System.DefaultWorkingDirectory)'
+            displayName: Docker Build & Push to ACR
           - task: AzureRmWebAppDeployment@4
             inputs:
               ConnectionType: 'AzureRM'
@@ -162,6 +164,7 @@ stages:
               SlotName: 'production'
               DockerNamespace: 'oskshrdacr.azurecr.io'
               DockerRepository: 'twoje-osk'
+            displayName: Deploy app
           
       - job: frontend_build
         displayName: "Frontend Build"
