@@ -154,7 +154,7 @@ stages:
           - task: AzureRmWebAppDeployment@4
             inputs:
               ConnectionType: 'AzureRM'
-              azureSubscription: 'Romeo_Student(cb5ddb44-ca54-415d-bfdd-d53601da6d8c)'
+              azureSubscription: 'Romeo_Student'
               appType: 'webAppContainer'
               WebAppName: 'twoje-osk'
               deployToSlotOrASE: true
