@@ -11,11 +11,13 @@
     "build": "nest build",
     "start:prod": "node dist/main",
     "prebuild": "rimraf dist",
-    "typeorm": "typeorm-ts-node-esm",
+    "typeorm": "typeorm-ts-node-esm -d src/data-source.ts",
     "create-migration": "typeorm-ts-node-esm migration:generate -d src/data-source.ts",
+    "create-empty-migration": "typeorm-ts-node-esm migration:create",
     "migrate": "typeorm-ts-node-esm migration:run -d src/data-source.ts"
   },
   "dependencies": {
+    "@faker-js/faker": "^6.1.2",
     "@nestjs/common": "^8.0.0",
     "@nestjs/config": "^2.0.0",
     "@nestjs/core": "^8.0.0",

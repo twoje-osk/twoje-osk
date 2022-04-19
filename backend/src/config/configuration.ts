@@ -1,4 +1,7 @@
+import { Flatten } from '../utils/Flatten';
+
 interface Configuration {
+  isProduction: boolean;
   port: number;
   database: {
     host: string;
@@ -10,8 +13,18 @@ interface Configuration {
   };
 }
 
-const getVariable = (env: typeof process.env, key: string) => {
+export type NestConfiguration = Flatten<Configuration>;
+
+const getVariable = (
+  env: typeof process.env,
+  key: string,
+  defaultValue?: string,
+) => {
   const variable = env[key];
+
+  if (variable === undefined && defaultValue !== undefined) {
+    return defaultValue;
+  }
 
   if (variable === undefined) {
     throw new Error(`Environment variable ${key} is not defined`);
@@ -22,6 +35,8 @@ const getVariable = (env: typeof process.env, key: string) => {
 
 export const getConfiguration = (): Configuration => {
   return {
+    isProduction:
+      getVariable(process.env, 'NODE_ENV', 'development') === 'production',
     port: Number.parseInt(process.env.PORT ?? '8080', 10),
     database: {
       host: getVariable(process.env, 'DATABASE_HOST'),

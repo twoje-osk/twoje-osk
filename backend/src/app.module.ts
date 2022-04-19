@@ -1,11 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { getConfiguration } from './config/configuration';
-import { User } from './user/entities/user.entity';
+import { getConfiguration, NestConfiguration } from './config/configuration';
 import { UserModule } from './user/user.module';
-
-export const TYPEORM_ENTITIES = [User];
 
 @Module({
   imports: [
@@ -15,7 +12,7 @@ export const TYPEORM_ENTITIES = [User];
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (configService: ConfigService) => {
+      useFactory: (configService: ConfigService<NestConfiguration>) => {
         return {
           type: 'postgres',
           host: configService.get('database.host'),
@@ -25,7 +22,9 @@ export const TYPEORM_ENTITIES = [User];
           database: configService.get('database.database'),
           schema: configService.get('database.schema'),
           entities: ['dist/**/*.entity.js'],
+          migrations: ['dist/migrations/*.js', 'dist/seeds/*.js'],
           synchronize: false,
+          migrationsRun: configService.get('isProduction'),
         };
       },
     }),
