@@ -1,14 +1,16 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { configuration } from './config/configuration';
+import { getConfiguration } from './config/configuration';
 import { User } from './user/entities/user.entity';
 import { UserModule } from './user/user.module';
+
+export const TYPEORM_ENTITIES = [User];
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      load: [configuration],
+      load: [getConfiguration],
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
@@ -21,8 +23,9 @@ import { UserModule } from './user/user.module';
           username: configService.get('database.user'),
           password: configService.get('database.password'),
           database: configService.get('database.database'),
-          entities: [User],
-          synchronize: true,
+          schema: configService.get('database.schema'),
+          entities: ['dist/**/*.entity.js'],
+          synchronize: false,
         };
       },
     }),

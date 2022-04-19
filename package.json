@@ -1,10 +1,16 @@
 {
   "private": true,
-  "workspaces": [
-    "backend",
-    "frontend",
-    "shared"
-  ],
+  "workspaces": {
+    "packages": [
+      "backend",
+      "frontend",
+      "shared"
+    ],
+    "nohoist": [
+      "**/@nestjs/",
+      "**/@nestjs/**"
+    ]
+  },
   "scripts": {
     "lint": "lerna run lint --no-bail",
     "type-check": "lerna run type-check --no-bail",

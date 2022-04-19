@@ -7,7 +7,7 @@ services:
       dockerfile: docker/Dockerfile.backend.local
     restart: always
     volumes:
-      - ./backend:/usr/src/app/backend
+      - ./backend/src:/usr/src/app/backend/src
       - ./shared:/usr/src/app/shared
     env_file:
       - backend/.env
