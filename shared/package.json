@@ -3,6 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "main": "./dist/index.js",
+  "module": "./src/index.ts",
   "scripts": {
     "type-check": "tsc --noEmit",
     "lint": "eslint . --ext ts",

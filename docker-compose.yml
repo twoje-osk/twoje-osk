@@ -34,6 +34,22 @@ services:
     ports:
       - 8080:8080
 
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.frontend.local
+    restart: always
+    depends_on:
+      - shared
+    volumes:
+      - ./frontend/src:/usr/src/app/frontend/src
+      - ./shared/src:/usr/src/app/shared/src
+      - shared:/usr/src/app/shared/dist
+    environment:
+      - PROXY_HOST=backend
+    ports:
+      - 3000:3000
+
   postgres:
     image: postgres
     restart: always
