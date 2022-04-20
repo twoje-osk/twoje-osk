@@ -21,8 +21,8 @@ import { UserModule } from './user/user.module';
           password: configService.get('database.password'),
           database: configService.get('database.database'),
           schema: configService.get('database.schema'),
-          entities: ['dist/**/*.entity.js'],
-          migrations: ['dist/migrations/*.js', 'dist/seeds/*.js'],
+          entities: ['**/*.entity.js'],
+          migrations: ['migrations/*.js', 'seeds/*.js'],
           synchronize: false,
           migrationsRun: configService.get('isProduction'),
         };

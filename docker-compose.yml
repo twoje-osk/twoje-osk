@@ -1,14 +1,27 @@
 version: '3.4'
 
 services:
+  shared:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.shared.local
+    restart: always
+    volumes:
+      - ./shared/src:/usr/src/app/shared/src
+      - shared:/usr/src/app/shared/dist
+
   backend:
     build:
       context: .
       dockerfile: docker/Dockerfile.backend.local
     restart: always
+    depends_on:
+      - shared
+      - postgres
     volumes:
       - ./backend/src:/usr/src/app/backend/src
-      - ./shared:/usr/src/app/shared
+      - ./shared/src:/usr/src/app/shared/src
+      - shared:/usr/src/app/shared/dist
     env_file:
       - backend/.env
     environment:
@@ -33,3 +46,4 @@ services:
 
 volumes:
   postgres:
+  shared:

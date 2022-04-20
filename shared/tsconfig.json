@@ -4,9 +4,9 @@
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
-    "rootDir": ".",
-    "baseUrl": ".",
-    "module": "ESNext",
-    "moduleResolution": "Node"
+    "module": "commonjs",
+    "target": "es2017",
+    "moduleResolution": "Node",
+    "outDir": "dist"
   }
 }

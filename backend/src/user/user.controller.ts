@@ -1,10 +1,13 @@
 import {
+  Body,
   Controller,
   Get,
   HttpException,
   HttpStatus,
   Param,
+  Post,
 } from '@nestjs/common';
+import { UserTestDto } from '@osk/shared';
 import { UserService } from './user.service';
 
 @Controller('user')
@@ -25,5 +28,10 @@ export class UserController {
     }
 
     return user;
+  }
+
+  @Post('test')
+  async test(@Body() body: UserTestDto) {
+    return body;
   }
 }

@@ -1,10 +1,11 @@
-import { Logger } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import {
   FastifyAdapter,
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { NestConfiguration } from './config/configuration';
 
@@ -13,11 +14,25 @@ async function bootstrap() {
     AppModule,
     new FastifyAdapter(),
   );
-
-  app.setGlobalPrefix('api');
-
   const configService: ConfigService<NestConfiguration> =
     app.get(ConfigService);
+
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+    }),
+  );
+  app.setGlobalPrefix('api');
+
+  if (!configService.get('isProduction')) {
+    const swaggerConfig = new DocumentBuilder()
+      .setTitle('Twoje OSK API')
+      .setVersion('1.0')
+      .build();
+    const document = SwaggerModule.createDocument(app, swaggerConfig);
+    SwaggerModule.setup('api/swagger', app, document);
+  }
+
   const port = configService.get('port');
 
   await app.listen(port, '0.0.0.0');
