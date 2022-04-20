@@ -5,13 +5,15 @@ import { getSeedFromString } from '../utils/getSeedFromString';
 
 faker.seed(getSeedFromString('User'));
 
-export class SeedUser1650406702165 implements MigrationInterface {
+export class SeedUser1650475928434 implements MigrationInterface {
   private createUser = (id: number) => {
     const user = new User();
     user.id = id;
     user.firstName = faker.name.firstName();
     user.lastName = faker.name.lastName();
     user.isActive = true;
+    user.email = faker.internet.email(user.firstName, user.lastName);
+    user.password = faker.internet.password();
 
     return user;
   };
