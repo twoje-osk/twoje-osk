@@ -14,7 +14,8 @@
     "typeorm": "typeorm-ts-node-esm -d src/data-source.ts",
     "create-migration": "typeorm-ts-node-esm migration:generate -d src/data-source.ts",
     "create-empty-migration": "typeorm-ts-node-esm migration:create",
-    "migrate": "typeorm-ts-node-esm migration:run -d src/data-source.ts"
+    "migrate": "typeorm-ts-node-esm migration:run -d src/data-source.ts",
+    "seed": "ts-node ./src/seeds/seed.ts"
   },
   "dependencies": {
     "@faker-js/faker": "^6.1.2",

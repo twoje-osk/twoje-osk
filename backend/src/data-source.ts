@@ -13,10 +13,10 @@ const baseConfig: DataSourceOptions = {
   database: config.database.database,
   schema: config.database.schema,
   synchronize: false,
-  logging: false,
-  entities: ['src/**/*.entity.ts'],
-  migrations: ['src/migrations/*.ts', 'src/seeds/*.ts'],
+  entities: ['./src/**/*.entity.ts'],
+  migrations: ['./src/migrations/*.ts'],
   subscribers: [],
+  logging: true,
 };
 
-export const AppDataSource = new DataSource(baseConfig);
+export const dataSource = new DataSource(baseConfig);
