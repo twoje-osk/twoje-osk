@@ -4,21 +4,26 @@ import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 
 @Injectable()
-export class UserService {
+export class UsersService {
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
   ) {}
 
-  findAll() {
-    return this.usersRepository.find();
+  async findOneByEmail(email: string) {
+    return this.usersRepository.findOne({
+      where: { email },
+      relations: {
+        organization: true,
+      },
+    });
   }
 
-  findOne(id: number) {
+  async findOneById(id: number): Promise<User | null> {
     return this.usersRepository.findOneBy({ id });
   }
 
-  findOneByEmail(email: string) {
-    return this.usersRepository.findOneBy({ email });
+  async getAll(): Promise<User[] | null> {
+    return this.usersRepository.find();
   }
 }

@@ -7,8 +7,7 @@
       "shared"
     ],
     "nohoist": [
-      "**/@nestjs/",
-      "**/@nestjs/**"
+      "**/@nestjs/typeorm"
     ]
   },
   "scripts": {

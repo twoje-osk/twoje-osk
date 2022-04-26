@@ -11,16 +11,13 @@ interface Configuration {
     password: string;
     port: number;
   };
+  jwtSecret: string;
 }
 
 export type NestConfiguration = Flatten<Configuration>;
 
-const getVariable = (
-  env: typeof process.env,
-  key: string,
-  defaultValue?: string,
-) => {
-  const variable = env[key];
+const getVariable = (key: string, defaultValue?: string) => {
+  const variable = process.env[key];
 
   if (variable === undefined && defaultValue !== undefined) {
     return defaultValue;
@@ -35,16 +32,16 @@ const getVariable = (
 
 export const getConfiguration = (): Configuration => {
   return {
-    isProduction:
-      getVariable(process.env, 'NODE_ENV', 'development') === 'production',
+    isProduction: getVariable('NODE_ENV', 'development') === 'production',
     port: Number.parseInt(process.env.PORT ?? '8080', 10),
     database: {
-      host: getVariable(process.env, 'DATABASE_HOST'),
-      database: getVariable(process.env, 'DATABASE_DATABASE'),
-      schema: getVariable(process.env, 'DATABASE_SCHEMA'),
-      user: getVariable(process.env, 'DATABASE_USER'),
-      password: getVariable(process.env, 'DATABASE_PASSWORD'),
-      port: Number.parseInt(getVariable(process.env, 'DATABASE_PORT'), 10),
+      host: getVariable('DATABASE_HOST'),
+      database: getVariable('DATABASE_DATABASE'),
+      schema: getVariable('DATABASE_SCHEMA'),
+      user: getVariable('DATABASE_USER'),
+      password: getVariable('DATABASE_PASSWORD'),
+      port: Number.parseInt(getVariable('DATABASE_PORT'), 10),
     },
+    jwtSecret: getVariable('JWT_SECRET'),
   };
 };
