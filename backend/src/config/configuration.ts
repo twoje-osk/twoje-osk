@@ -1,16 +1,27 @@
+import { Flatten } from '../utils/Flatten';
+
 interface Configuration {
+  isProduction: boolean;
   port: number;
   database: {
     host: string;
     database: string;
+    schema: string;
     user: string;
     password: string;
     port: number;
   };
+  jwtSecret: string;
 }
 
-const getVariable = (env: typeof process.env, key: string) => {
-  const variable = env[key];
+export type NestConfiguration = Flatten<Configuration>;
+
+const getVariable = (key: string, defaultValue?: string) => {
+  const variable = process.env[key];
+
+  if (variable === undefined && defaultValue !== undefined) {
+    return defaultValue;
+  }
 
   if (variable === undefined) {
     throw new Error(`Environment variable ${key} is not defined`);
@@ -19,15 +30,18 @@ const getVariable = (env: typeof process.env, key: string) => {
   return variable;
 };
 
-export const configuration = (): Configuration => {
+export const getConfiguration = (): Configuration => {
   return {
+    isProduction: getVariable('NODE_ENV', 'development') === 'production',
     port: Number.parseInt(process.env.PORT ?? '8080', 10),
     database: {
-      host: getVariable(process.env, 'DATABASE_HOST'),
-      database: getVariable(process.env, 'DATABASE_DATABASE'),
-      user: getVariable(process.env, 'DATABASE_USER'),
-      password: getVariable(process.env, 'DATABASE_PASSWORD'),
-      port: Number.parseInt(getVariable(process.env, 'DATABASE_PORT'), 10),
+      host: getVariable('DATABASE_HOST'),
+      database: getVariable('DATABASE_DATABASE'),
+      schema: getVariable('DATABASE_SCHEMA'),
+      user: getVariable('DATABASE_USER'),
+      password: getVariable('DATABASE_PASSWORD'),
+      port: Number.parseInt(getVariable('DATABASE_PORT'), 10),
     },
+    jwtSecret: getVariable('JWT_SECRET'),
   };
 };

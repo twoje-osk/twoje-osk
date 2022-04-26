@@ -1,14 +1,12 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
-    "module": "commonjs",
+    "baseUrl": "./src",
     "declaration": true,
-    "removeComments": true,
-    "target": "es2017",
-    "sourceMap": true,
-    "outDir": "./dist",
-    "baseUrl": "./",
     "incremental": true,
-    "strictPropertyInitialization": false
+    "module": "commonjs",
+    "outDir": "./dist",
+    "removeComments": true,
+    "target": "ES2022",
   }
 }

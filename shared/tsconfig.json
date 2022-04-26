@@ -1,12 +1,13 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
+    "baseUrl": "./src",
     "declaration": true,
     "declarationMap": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "outDir": "./dist",
     "sourceMap": true,
-    "rootDir": ".",
-    "baseUrl": ".",
-    "module": "ESNext",
-    "moduleResolution": "Node"
+    "target": "ES2022"
   }
 }
