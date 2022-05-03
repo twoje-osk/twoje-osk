@@ -10,9 +10,14 @@
     "lint": "eslint src --ext ts,tsx"
   },
   "dependencies": {
+    "@emotion/css": "^11.9.0",
+    "@emotion/react": "^11.9.0",
+    "@emotion/styled": "^11.8.1",
     "@osk/shared": "1.0.0",
+    "antd": "^4.19.5",
     "react": "^17.0.2",
-    "react-dom": "^17.0.2"
+    "react-dom": "^17.0.2",
+    "reflexbox": "^4.0.6"
   },
   "devDependencies": {
     "@types/react": "^17.0.33",
