@@ -1,6 +1,8 @@
 import { LoginAuthRequestDto, LoginAuthResponseDto } from '@osk/shared';
-import { Form, Input, Button, Checkbox } from 'antd';
-import { Container } from './Login.styled';
+import { Form, Input, Button, Card, Typography } from 'antd';
+import { Container, ButtonContainer } from './Login.styled';
+
+const { Title } = Typography;
 
 export function Login() {
   const isLoginAuthResponse = (data: any): data is LoginAuthResponseDto => {
@@ -41,43 +43,42 @@ export function Login() {
 
   return (
     <Container>
-      <Form
-        name="login"
-        labelCol={{ offset: 0, span: 8 }}
-        initialValues={{ remember: true }}
-        autoComplete="off"
-        style={{ width: '35%' }}
-        onFinish={onSubmit}
-      >
-        <Form.Item
-          label="Email"
-          name="email"
-          rules={[{ required: true, message: 'Please input your username!' }]}
-          wrapperCol={{ span: 22 }}
+      <Card style={{ width: '25%' }}>
+        <Title>&lt;Nazwa Twojego OSK&gt;</Title>
+        <Form
+          name="login"
+          initialValues={{ remember: true }}
+          autoComplete="off"
+          onFinish={onSubmit}
         >
-          <Input />
-        </Form.Item>
-        <Form.Item
-          label="Password"
-          name="password"
-          rules={[{ required: true, message: 'Please input your username!' }]}
-          wrapperCol={{ span: 22 }}
-        >
-          <Input.Password />
-        </Form.Item>
-        <Form.Item
-          name="remember"
-          valuePropName="checked"
-          wrapperCol={{ offset: 8, span: 16 }}
-        >
-          <Checkbox>Remember me</Checkbox>
-        </Form.Item>
-        <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-          <Button type="primary" htmlType="submit">
-            Submit
-          </Button>
-        </Form.Item>
-      </Form>
+          <Form.Item
+            label="Email"
+            name="email"
+            rules={[{ required: true, message: 'Wpisz swój adres email!' }]}
+            wrapperCol={{ span: 22 }}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            label="Hasło"
+            name="password"
+            rules={[{ required: true, message: 'Wpisz swoje hasło!' }]}
+            wrapperCol={{ span: 22 }}
+          >
+            <Input.Password />
+          </Form.Item>
+          <ButtonContainer>
+            <Form.Item>
+              <Button type="primary" htmlType="submit">
+                Zaloguj się
+              </Button>
+            </Form.Item>
+            <Form.Item>
+              <Button htmlType="button">Zapisz się na kurs</Button>
+            </Form.Item>
+          </ButtonContainer>
+        </Form>
+      </Card>
     </Container>
   );
 }
