@@ -54,7 +54,7 @@ stages:
             displayName: Build @osk/shared
       - job: type_check_and_lint
         dependsOn: install_depencies
-        displayName: Install Dependencies
+        displayName: Type Check & Lint
         steps:
           - bash: |
                 yarn run type-check
