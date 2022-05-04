@@ -47,7 +47,7 @@ stages:
                 yarn
               path: $(YARN_CACHE_FOLDER)
             displayName: Cache Yarn packages
-          - script: yarn --frozen-lockfile
+          - script: yarn --immutable --immutable-cache
             displayName: Install Dependencies
           - bash: |
               cd shared && yarn run build
@@ -85,12 +85,12 @@ stages:
       - job: install_and_build
         displayName: Install and Build Frontend
         dependsOn: fe_agent_preparation
-        # condition: |
-        #   and (
-        #     eq(variables['Build.SourceBranch'], 'refs/heads/main'),
-        #     eq(dependencies.fe_agent_preparation.outputs['git_check.RUN_FRONTEND'], 'true'),
-        #     eq(dependencies.fe_agent_preparation.result, 'Succeeded')
-        #   )
+        condition: |
+          and (
+            eq(variables['Build.SourceBranch'], 'refs/heads/main'),
+            eq(dependencies.fe_agent_preparation.outputs['git_check.RUN_FRONTEND'], 'true'),
+            eq(dependencies.fe_agent_preparation.result, 'Succeeded')
+          )
         steps:
           - task: Cache@2
             inputs:
@@ -144,14 +144,17 @@ stages:
             eq(dependencies.be_agent_preparation.result, 'Succeeded')
           )
         steps:
-          - task: Docker@2
-            inputs:
-              containerRegistry: 'oskshrdacr'
-              repository: 'twoje-osk'
-              command: 'buildAndPush'
-              Dockerfile: 'docker/Dockerfile.backend'
-              buildContext: '$(System.DefaultWorkingDirectory)'
-            displayName: Build Docker & Push to ACR
+          # To be removed after implementing real deployment
+          - bash: echo "Deploying Backend..."
+
+          # - task: Docker@2
+          #   inputs:
+          #     containerRegistry: 'oskshrdacr'
+          #     repository: 'twoje-osk'
+          #     command: 'buildAndPush'
+          #     Dockerfile: 'docker/Dockerfile.backend'
+          #     buildContext: '$(System.DefaultWorkingDirectory)'
+          #   displayName: Build Docker & Push to ACR
           # - task: AzureRmWebAppDeployment@4
           #   inputs:
           #     ConnectionType: 'AzureRM'
