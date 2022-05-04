@@ -47,7 +47,7 @@ stages:
                 yarn
               path: $(YARN_CACHE_FOLDER)
             displayName: Cache Yarn packages
-          - script: yarn --immutable --immutable-cache
+          - script: yarn --immutable
             displayName: Install Dependencies
           - bash: |
               cd shared && yarn run build
@@ -100,7 +100,7 @@ stages:
                 yarn
               path: $(YARN_CACHE_FOLDER)
             displayName: Cache Yarn packages
-          - script: yarn --frozen-lockfile
+          - script: yarn --immutable
             displayName: Install Dependencies
           - bash: cd frontend && yarn run build
             displayName: Build Frontend
