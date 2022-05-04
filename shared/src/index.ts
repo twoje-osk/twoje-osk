@@ -3,4 +3,4 @@ export * from './dto/auth/auth.dto';
 export * from './dto/trainee/trainee.dto';
 export * from './authContext/jwtPayload';
 
-console.log(2);
+console.log(3);
