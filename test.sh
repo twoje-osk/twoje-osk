@@ -1,16 +1,13 @@
 #!/bin/bash
-if [[ "$(Build.Reason)" != "PullRequest" ]]; then
-  DIFFS=`git diff HEAD HEAD~1 --name-only -- 'frontend' 'backend' 'shared' | sed 's| |\\ |g' | sed 's|/.*||g' | sort | uniq`
-else
-  DIFFS=`git diff HEAD origin/$(System.PullRequest.TargetBranch) --name-only -- 'frontend' 'backend' 'shared' | sed 's| |\\ |g' | sed 's|/.*||g' | sort | uniq`
-fi
+DIFFS=`git diff HEAD HEAD~1 --name-only -- 'frontend' 'shared' | sed 's| |\\ |g' | sed 's|/.*||g' | sort | uniq`
+
+echo $DIFFS
 
 if ! [[ "${DIFFS[@]}" ]]; then
-  echo "No changes found in frontend, backend or shared directories."
+  echo "No changes found in frontend or shared directories."
   exit 0
 fi
 
-if [[ "${DIFFS[@]}" =~ "backend" ]]; then
-  echo "##vso[task.setvariable variable=RUN_BACKEND;]true"
-  echo "##vso[build.updatebuildnumber]$(Build.BuildNumber) - [BE]"
+if [[ "${DIFFS[@]}" =~ "frontend" || "${DIFFS[@]}" =~ "shared" ]]; then
+  echo "##vso[task.setvariable variable=RUN_FRONTEND;isOutput=true]true"
 fi

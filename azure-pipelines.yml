@@ -118,10 +118,13 @@ stages:
             name: git_check
 
       - job: install_and_build
-        displayName: Install and Build
+        displayName: Install and Build Frontend
         dependsOn: fe_agent_preparation
         condition: |
-          eq(dependencies.fe_agent_preparation.outputs['git_check.RUN_FRONTEND'], 'true')
+          and (
+            eq(dependencies.fe_agent_preparation.outputs['git_check.RUN_FRONTEND'], 'true'),
+            eq(dependencies.fe_agent_preparation.result, 'Succeeded')
+          )
         steps:
           - task: Cache@2
             inputs:
@@ -169,7 +172,10 @@ stages:
         displayName: Install and Build Backend
         dependsOn: be_agent_preparation
         condition: |
-          eq(dependencies.be_agent_preparation.outputs['git_check.RUN_BACKEND'], 'true')
+          and (
+            eq(dependencies.be_agent_preparation.outputs['git_check.RUN_BACKEND'], 'true'),
+            eq(dependencies.be_agent_preparation.result, 'Succeeded')
+          )
         steps:
           - task: Docker@2
             inputs:
