@@ -113,7 +113,6 @@ stages:
 
               if [[ "${DIFFS[@]}" =~ "frontend" || "${DIFFS[@]}" =~ "shared" ]]; then
                 echo "##vso[task.setvariable variable=RUN_FRONTEND;isOutput=true]true"
-                echo "##vso[build.updatebuildnumber]$(Build.BuildNumber) - [BE]"
               fi
             displayName: "Set Git Diff Variables"
             name: git_check
@@ -162,7 +161,6 @@ stages:
 
               if [[ "${DIFFS[@]}" =~ "backend" || "${DIFFS[@]}" =~ "shared" ]]; then
                 echo "##vso[task.setvariable variable=RUN_BACKEND;isOutput=true]true"
-                echo "##vso[build.updatebuildnumber]$(Build.BuildNumber) - [BE]"
               fi
             displayName: "Set Git Diff Variables"
             name: git_check
