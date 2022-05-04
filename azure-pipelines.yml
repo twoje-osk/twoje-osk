@@ -133,7 +133,7 @@ stages:
               if [[ $REASON ]]; then
                 echo "##vso[build.updatebuildnumber]$(Build.BuildNumber) - [$REASON]"
               fi
-            displayName: "GIT diff check"
+            displayName: "Set Git Diff Variables"
             name: git_check
 
       - job: install_and_build
@@ -210,7 +210,7 @@ stages:
               if [[ $REASON ]]; then
                 echo "##vso[build.updatebuildnumber]$(Build.BuildNumber) - [$REASON]"
               fi
-            displayName: "GIT diff check"
+            displayName: "Set Git Diff Variables"
             name: git_check
 
       - job: install_and_build
