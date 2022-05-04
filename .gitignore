@@ -35,7 +35,8 @@ backend/.nyc_output
 !.vscode/extensions.json
 
 # Env
-.env
+.env*
+!.env.example
 
 *.tsbuildinfo
 package-lock.json

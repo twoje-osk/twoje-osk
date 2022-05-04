@@ -2,14 +2,18 @@ FROM node:16
 
 WORKDIR /usr/src/app
 
-COPY package.json yarn.lock ./
+COPY package.json yarn.lock .yarnrc.yml ./
+COPY .yarn/ ./.yarn/
 COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
 COPY shared/package.json ./shared/
 
-RUN yarn install
+RUN yarn install --immutable
 
 COPY . .
+
+WORKDIR /usr/src/app/shared
+RUN yarn build
 
 WORKDIR /usr/src/app/backend
 
