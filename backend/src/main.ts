@@ -45,7 +45,5 @@ async function bootstrap() {
   await app.listen(port, '0.0.0.0');
 
   Logger.log(`NestJS app running on http://localhost:${port}/api`);
-
-  Logger.log(`Test 1234567`);
 }
 bootstrap();
