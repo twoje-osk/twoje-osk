@@ -83,12 +83,67 @@ stages:
               path: $(YARN_CACHE_FOLDER)
             displayName: Cache Yarn packages
           - script: yarn --frozen-lockfile
+            displayName: Install Dependencies
+          - bash: |
+              cd shared && yarn run build
+            displayName: Build @osk/shared
           - bash: |
                 yarn run type-check
-            displayName: "Type Check"
+            displayName: Type Check
           - bash: |
               yarn run lint
-            displayName: "Lint"
+            displayName: Lint
+
+  - stage: build_frontend
+    displayName: Build Frontend
+    condition: succeeded('type_check_lint')
+    jobs:
+      - job: agent_preparation
+        displayName: Agent Preparation
+        steps:
+          - checkout: self
+            persistCredentials: true
+
+      - job: install_depencies
+        displayName: Install Dependencies
+        steps:
+          - task: Cache@2
+            inputs:
+              key: '"yarn" | "$(Agent.OS)" | yarn.lock'
+              restoreKeys: |
+                yarn | "$(Agent.OS)"
+                yarn
+              path: $(YARN_CACHE_FOLDER)
+            displayName: Cache Yarn packages
+          - script: yarn --frozen-lockfile
+            displayName: Install Dependencies
+          - bash: cd frontend && yarn run build
+            displayName: Build Frontend
+
+  - stage: build_backend
+    displayName: Build Frontend
+    condition: succeeded('type_check_lint')
+    jobs:
+      - job: agent_preparation
+        displayName: Agent Preparation
+        steps:
+          - checkout: self
+            persistCredentials: true
+
+      - job: install_depencies
+        displayName: Install Dependencies
+        steps:
+          - task: Cache@2
+            inputs:
+              key: '"yarn" | "$(Agent.OS)" | yarn.lock'
+              restoreKeys: |
+                yarn | "$(Agent.OS)"
+                yarn
+              path: $(YARN_CACHE_FOLDER)
+            displayName: Cache Yarn packages
+          - script: yarn --frozen-lockfile
+            displayName: Install Dependencies
+          - bash: ls -lat
 
   # - stage: build
   #   displayName: Build Application
