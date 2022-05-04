@@ -48,7 +48,6 @@ variables:
 
 stages:
   - stage: init_ci
-    # first stage can't be conditional therefore we create one if we want to have some approvals in the pipeline
     displayName: Init CI
     jobs:
       - job: init
@@ -61,6 +60,7 @@ stages:
               echo "Source branch is: '${BUILD_SOURCEBRANCH}'"
               echo "Current UTC time is '$(date -u +%k%M)'"
             displayName: 'Print variables'
+
   - stage: type_check_lint
     displayName: Type Check & Lint
     condition: succeeded('init_ci')
@@ -70,8 +70,8 @@ stages:
         steps:
           - checkout: self
             persistCredentials: true
-
       - job: install_depencies
+        dependsOn: agent_preparation
         displayName: Install Dependencies
         steps:
           - task: Cache@2
@@ -95,7 +95,7 @@ stages:
             displayName: Lint
 
   - stage: build_frontend
-    displayName: Build Frontend
+    displayName: Build and Deploy Frontend
     condition: succeeded('type_check_lint')
     jobs:
       - job: agent_preparation
@@ -103,9 +103,54 @@ stages:
         steps:
           - checkout: self
             persistCredentials: true
+          - bash: |
+              if [[ "$(Build.Reason)" != "PullRequest" ]]; then
+                DIFFS=`git diff HEAD HEAD~1 --name-only -- 'frontend' 'backend' 'shared' | sed 's| |\\ |g' | sed 's|/.*||g' | sort | uniq`
+              else
+                DIFFS=`git diff HEAD origin/$(System.PullRequest.TargetBranch) --name-only -- 'frontend' 'backend' 'shared' | sed 's| |\\ |g' | sed 's|/.*||g' | sort | uniq`
+              fi
 
-      - job: install_depencies
-        displayName: Install Dependencies
+              if ! [[ "${DIFFS[@]}" ]]; then
+                echo "No changes found in frontend, backend or shared directories."
+              fi
+
+              if [[ $MANUAL_FE_TRIGGER != "skip" && ($MANUAL_FE_TRIGGER == "true" || "${DIFFS[@]}" =~ "frontend") ]]; then
+                echo "##vso[task.setvariable variable=FRONTEND_TRIGGER;isOutput=true;]true"
+                REASON="FE"
+              fi
+
+              if [[ $MANUAL_BE_TRIGGER != "skip" && ($MANUAL_BE_TRIGGER == "true" || ("${DIFFS[@]}" =~ "backend" && "$(Build.Reason)" != "PullRequest")) ]]; then
+                echo "##vso[task.setvariable variable=BACKEND_TRIGGER;isOutput=true;]true"
+                REASON="BE"
+              fi
+
+              if [[ $MANUAL_FE_TRIGGER != "skip" && $MANUAL_BE_TRIGGER != "skip" && ($MANUAL_FE_TRIGGER == "true" && $MANUAL_BE_TRIGGER == "true" || ("${DIFFS[@]}" =~ "shared" || ("${DIFFS[@]}" =~ "frontend" && "${DIFFS[@]}" =~ "backend" && "$(Build.Reason)" != "PullRequest"))) ]]; then
+                echo "##vso[task.setvariable variable=FRONTEND_TRIGGER;isOutput=true;]true"
+                echo "##vso[task.setvariable variable=BACKEND_TRIGGER;isOutput=true;]true"
+                REASON="FS"
+              fi
+
+              if [[ $REASON ]]; then
+                echo "##vso[build.updatebuildnumber]$(Build.BuildNumber) - [$REASON]"
+              fi
+            displayName: "GIT diff check"
+            name: git_check
+
+      - job: install_and_build
+        displayName: Install and Build
+        condition: |
+          or
+          (
+            and
+            (
+              eq(dependencies.agent_preparation.outputs['git_check.FRONTEND_TRIGGER'], 'true'),
+              eq(dependencies.agent_preparation.result, 'Succeeded'),
+              startsWith(variables['Build.SourceBranch'], 'refs/heads/'),
+              eq(variables['Build.SourceBranchName'], 'main'),
+              not(eq(variables['MANUAL_FE_TRIGGER'], 'skip'))
+            ),
+            eq(variables['MANUAL_FE_TRIGGER'], 'true')
+          )
         steps:
           - task: Cache@2
             inputs:
@@ -119,9 +164,15 @@ stages:
             displayName: Install Dependencies
           - bash: cd frontend && yarn run build
             displayName: Build Frontend
+          - task: AzureStaticWebApp@0
+            inputs:
+              app_location: 'frontend/dist'
+              output_location: ''
+              skip_app_build: true
+              azure_static_web_apps_api_token: '$(DEPLOYMENT_TOKEN_STATIC_WEB_APP)'
 
   - stage: build_backend
-    displayName: Build Frontend
+    displayName: Build and Deploy Backend
     condition: succeeded('type_check_lint')
     jobs:
       - job: agent_preparation
@@ -129,163 +180,72 @@ stages:
         steps:
           - checkout: self
             persistCredentials: true
+          - bash: |
+              if [[ "$(Build.Reason)" != "PullRequest" ]]; then
+                DIFFS=`git diff HEAD HEAD~1 --name-only -- 'frontend' 'backend' 'shared' | sed 's| |\\ |g' | sed 's|/.*||g' | sort | uniq`
+              else
+                DIFFS=`git diff HEAD origin/$(System.PullRequest.TargetBranch) --name-only -- 'frontend' 'backend' 'shared' | sed 's| |\\ |g' | sed 's|/.*||g' | sort | uniq`
+              fi
 
-      - job: install_depencies
-        displayName: Install Dependencies
+              if ! [[ "${DIFFS[@]}" ]]; then
+                echo "No changes found in frontend, backend or shared directories."
+              fi
+
+              if [[ $MANUAL_FE_TRIGGER != "skip" && ($MANUAL_FE_TRIGGER == "true" || "${DIFFS[@]}" =~ "frontend") ]]; then
+                echo "##vso[task.setvariable variable=FRONTEND_TRIGGER;isOutput=true;]true"
+                REASON="FE"
+              fi
+
+              if [[ $MANUAL_BE_TRIGGER != "skip" && ($MANUAL_BE_TRIGGER == "true" || ("${DIFFS[@]}" =~ "backend" && "$(Build.Reason)" != "PullRequest")) ]]; then
+                echo "##vso[task.setvariable variable=BACKEND_TRIGGER;isOutput=true;]true"
+                REASON="BE"
+              fi
+
+              if [[ $MANUAL_FE_TRIGGER != "skip" && $MANUAL_BE_TRIGGER != "skip" && ($MANUAL_FE_TRIGGER == "true" && $MANUAL_BE_TRIGGER == "true" || ("${DIFFS[@]}" =~ "shared" || ("${DIFFS[@]}" =~ "frontend" && "${DIFFS[@]}" =~ "backend" && "$(Build.Reason)" != "PullRequest"))) ]]; then
+                echo "##vso[task.setvariable variable=FRONTEND_TRIGGER;isOutput=true;]true"
+                echo "##vso[task.setvariable variable=BACKEND_TRIGGER;isOutput=true;]true"
+                REASON="FS"
+              fi
+
+              if [[ $REASON ]]; then
+                echo "##vso[build.updatebuildnumber]$(Build.BuildNumber) - [$REASON]"
+              fi
+            displayName: "GIT diff check"
+            name: git_check
+
+      - job: install_and_build
+        displayName: Install and Build
+        condition: |
+          or
+          (
+            and
+            (
+              eq(dependencies.agent_preparation.outputs['git_check.BACKEND_TRIGGER'], 'true'),
+              eq(dependencies.agent_preparation.result, 'Succeeded'),
+              startsWith(variables['Build.SourceBranch'], 'refs/heads/'),
+              eq(variables['Build.SourceBranchName'], 'main'),
+              not(eq(variables['MANUAL_BE_TRIGGER'], 'skip'))
+            ),
+            eq(variables['MANUAL_BE_TRIGGER'], 'true')
+          )
         steps:
-          - task: Cache@2
+          - task: Docker@2
             inputs:
-              key: '"yarn" | "$(Agent.OS)" | yarn.lock'
-              restoreKeys: |
-                yarn | "$(Agent.OS)"
-                yarn
-              path: $(YARN_CACHE_FOLDER)
-            displayName: Cache Yarn packages
-          - script: yarn --frozen-lockfile
-            displayName: Install Dependencies
-          - bash: ls -lat
-
-  # - stage: build
-  #   displayName: Build Application
-  #   condition: succeeded('init_ci')
-  #   jobs:
-  #     - job: agent_preparation
-  #       displayName: Agent Preparation
-  #       steps:
-  #         - checkout: self
-  #           persistCredentials: true
-  #         - bash: |
-  #             if [[ "$(Build.Reason)" != "PullRequest" ]]; then
-  #               DIFFS=`git diff HEAD HEAD~1 --name-only -- 'frontend' 'backend' 'shared' | sed 's| |\\ |g' | sed 's|/.*||g' | sort | uniq`
-  #             else
-  #               DIFFS=`git diff HEAD origin/$(System.PullRequest.TargetBranch) --name-only -- 'frontend' 'backend' 'shared' | sed 's| |\\ |g' | sed 's|/.*||g' | sort | uniq`
-  #             fi
-
-  #             if ! [[ "${DIFFS[@]}" ]]; then
-  #               echo "No changes found in frontend, backend or shared directories."
-  #             fi
-
-  #             if [[ $MANUAL_FE_TRIGGER != "skip" && ($MANUAL_FE_TRIGGER == "true" || "${DIFFS[@]}" =~ "frontend") ]]; then
-  #               echo "##vso[task.setvariable variable=FRONTEND_TRIGGER;isOutput=true;]true"
-  #               REASON="FE"
-  #             fi
-
-  #             if [[ $MANUAL_BE_TRIGGER != "skip" && ($MANUAL_BE_TRIGGER == "true" || ("${DIFFS[@]}" =~ "backend" && "$(Build.Reason)" != "PullRequest")) ]]; then
-  #               echo "##vso[task.setvariable variable=BACKEND_TRIGGER;isOutput=true;]true"
-  #               REASON="BE"
-  #             fi
-
-  #             if [[ $MANUAL_FE_TRIGGER != "skip" && $MANUAL_BE_TRIGGER != "skip" && ($MANUAL_FE_TRIGGER == "true" && $MANUAL_BE_TRIGGER == "true" || ("${DIFFS[@]}" =~ "shared" || ("${DIFFS[@]}" =~ "frontend" && "${DIFFS[@]}" =~ "backend" && "$(Build.Reason)" != "PullRequest"))) ]]; then
-  #               echo "##vso[task.setvariable variable=FRONTEND_TRIGGER;isOutput=true;]true"
-  #               echo "##vso[task.setvariable variable=BACKEND_TRIGGER;isOutput=true;]true"
-  #               REASON="FS"
-  #             fi
-
-  #             if [[ $REASON ]]; then
-  #               echo "##vso[build.updatebuildnumber]$(Build.BuildNumber) - [$REASON]"
-  #             fi
-  #           displayName: "GIT diff check"
-  #           name: git_check
-
-  #         #The entire part can be on a single condition but would need to integrate templates
-  #     - job: backend_build
-  #       displayName: "Backend Build"
-  #       dependsOn: agent_preparation
-  #       condition: |
-  #         or
-  #         (
-  #           and
-  #           (
-  #             eq(dependencies.agent_preparation.outputs['git_check.BACKEND_TRIGGER'], 'true'),
-  #             eq(dependencies.agent_preparation.result, 'Succeeded'),
-  #             startsWith(variables['Build.SourceBranch'], 'refs/heads/'),
-  #             eq(variables['Build.SourceBranchName'], 'main'),
-  #             not(eq(variables['MANUAL_BE_TRIGGER'], 'skip'))
-  #           ),
-  #           eq(variables['MANUAL_BE_TRIGGER'], 'true')
-  #         )
-  #       steps:
-  #         - task: Cache@2
-  #           inputs:
-  #             key: '"yarn" | "$(Agent.OS)" | yarn.lock'
-  #             restoreKeys: |
-  #               yarn | "$(Agent.OS)"
-  #               yarn
-  #             path: $(YARN_CACHE_FOLDER)
-  #           displayName: Cache Yarn packages
-  #         - bash: ls
-  #           displayName: "ls"
-  #         - bash: ls backend
-  #           displayName: "ls backend"
-  #         # - bash: |
-  #         #     yarn install --frozen-lockfile
-  #         #   displayName: "yarm install --frozen-lockfile"
-  #         # - bash: |
-  #         #     yarn run type-check
-  #         #   displayName: "yarm run type-check"
-  #         # - bash: |
-  #         #     yarn run lint
-  #         #   displayName: "yarn run lint"
-  #         # - task: Docker@2
-  #         #   inputs:
-  #         #     containerRegistry: 'oskshrdacr'
-  #         #     repository: 'twoje-osk'
-  #         #     command: 'buildAndPush'
-  #         #     Dockerfile: 'docker/Dockerfile.backend'
-  #         #     buildContext: '$(System.DefaultWorkingDirectory)'
-  #         #   displayName: Docker Build & Push to ACR
-  #         # - task: AzureRmWebAppDeployment@4
-  #         #   inputs:
-  #         #     ConnectionType: 'AzureRM'
-  #         #     azureSubscription: 'Romeo_Student'
-  #         #     appType: 'webAppContainer'
-  #         #     WebAppName: 'twoje-osk'
-  #         #     deployToSlotOrASE: true
-  #         #     ResourceGroupName: 'osk-prod-back-rg'
-  #         #     SlotName: 'production'
-  #         #     DockerNamespace: 'oskshrdacr.azurecr.io'
-  #         #     DockerRepository: 'twoje-osk'
-  #         #   displayName: Deploy app
-
-  #     - job: frontend_build
-  #       displayName: "Frontend Build"
-  #       dependsOn: agent_preparation
-  #       condition: |
-  #         or
-  #         (
-  #           and
-  #           (
-  #             eq(dependencies.agent_preparation.outputs['git_check.FRONTEND_TRIGGER'], 'true'),
-  #             in(dependencies.agent_preparation.result, 'Succeeded', 'Skipped'),
-  #             not(eq(variables['MANUAL_FE_TRIGGER'], 'skip'))
-  #           ),
-  #           eq(variables['MANUAL_FE_TRIGGER'], 'true')
-  #         )
-  #       steps:
-  #         - task: Cache@2
-  #           inputs:
-  #             key: '"yarn" | "$(Agent.OS)" | yarn.lock'
-  #             restoreKeys: |
-  #               yarn | "$(Agent.OS)"
-  #               yarn
-  #             path: $(YARN_CACHE_FOLDER)
-  #           displayName: Cache Yarn packages
-  #         - bash: ls
-  #           displayName: "ls"
-  #         - bash: ls frontend
-  #           displayName: "ls frontend"
-  #         # - bash: |
-  #         #     cd frontend && yarn install --frozen-lockfile
-  #         #   displayName: "yarm install --frozen-lockfile"
-  #         # - bash: |
-  #         #     cd frontend && yarn run lint
-  #         #   displayName: "yarn run lint"
-  #         # - bash: |
-  #         #     cd frontend && yarn build
-  #         #   displayName: "yarn build"
-  #         # - task: AzureStaticWebApp@0
-  #         #   inputs:
-  #         #     app_location: 'frontend/dist'
-  #         #     output_location: ''
-  #         #     skip_app_build: true
-  #         #     azure_static_web_apps_api_token: '$(DEPLOYMENT_TOKEN_STATIC_WEB_APP)'
+              containerRegistry: 'oskshrdacr'
+              repository: 'twoje-osk'
+              command: 'buildAndPush'
+              Dockerfile: 'docker/Dockerfile.backend'
+              buildContext: '$(System.DefaultWorkingDirectory)'
+            displayName: Build Docker & Push to ACR
+          - task: AzureRmWebAppDeployment@4
+            inputs:
+              ConnectionType: 'AzureRM'
+              azureSubscription: 'Romeo_Student'
+              appType: 'webAppContainer'
+              WebAppName: 'twoje-osk'
+              deployToSlotOrASE: true
+              ResourceGroupName: 'osk-prod-back-rg'
+              SlotName: 'production'
+              DockerNamespace: 'oskshrdacr.azurecr.io'
+              DockerRepository: 'twoje-osk'
+            displayName: Deploy app
