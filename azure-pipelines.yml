@@ -91,7 +91,7 @@ stages:
         dependsOn: fe_agent_preparation
         condition: |
           and (
-            eq(variables['Build.SourceBranch'], 'refs/heads/main')
+            eq(variables['Build.SourceBranch'], 'refs/heads/main'),
             eq(dependencies.fe_agent_preparation.outputs['git_check.RUN_FRONTEND'], 'true'),
             eq(dependencies.fe_agent_preparation.result, 'Succeeded')
           )
@@ -143,7 +143,7 @@ stages:
         dependsOn: be_agent_preparation
         condition: |
           and (
-            eq(variables['Build.SourceBranch'], 'refs/heads/main')
+            eq(variables['Build.SourceBranch'], 'refs/heads/main'),
             eq(dependencies.be_agent_preparation.outputs['git_check.RUN_BACKEND'], 'true'),
             eq(dependencies.be_agent_preparation.result, 'Succeeded')
           )
