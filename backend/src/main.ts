@@ -46,6 +46,6 @@ async function bootstrap() {
 
   Logger.log(`NestJS app running on http://localhost:${port}/api`);
 
-  Logger.log(`Test 123456`);
+  Logger.log(`Test 1234567`);
 }
 bootstrap();

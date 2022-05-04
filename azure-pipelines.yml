@@ -189,7 +189,7 @@ stages:
               fi
 
               if [[ "${DIFFS[@]}" =~ "backend" ]]; then
-                echo "##vso[task.setvariable variable=RUN_BACKEND;]true"
+                echo "##vso[task.setvariable variable=RUN_BACKEND;isOutput=true]true"
                 echo "##vso[build.updatebuildnumber]$(Build.BuildNumber) - [BE]"
               fi
             displayName: "GIT diff check"
