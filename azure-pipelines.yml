@@ -70,130 +70,135 @@ stages:
         steps:
           - checkout: self
             persistCredentials: true
-      - job: install_depencies
+      - job: echo
         dependsOn: agent_preparation
-        displayName: Install Dependencies
         steps:
-          - task: Cache@2
-            inputs:
-              key: '"yarn" | "$(Agent.OS)" | yarn.lock'
-              restoreKeys: |
-                yarn | "$(Agent.OS)"
-                yarn
-              path: $(YARN_CACHE_FOLDER)
-            displayName: Cache Yarn packages
-          - script: yarn --frozen-lockfile
-            displayName: Install Dependencies
-          - bash: |
-              cd shared && yarn run build
-            displayName: Build @osk/shared
-          - bash: |
-                yarn run type-check
-            displayName: Type Check
-          - bash: |
-              yarn run lint
-            displayName: Lint
+          - bash: echo $(Build.SourceVersion)
 
-  - stage: build_frontend
-    displayName: Build and Deploy Frontend
-    condition: succeeded('type_check_lint')
-    jobs:
-      - job: fe_agent_preparation
-        displayName: Agent Preparation
-        steps:
-          - checkout: self
-            persistCredentials: true
-          - bash: |
-              DIFFS=`git diff HEAD HEAD~1 --name-only -- 'frontend' 'shared' | sed 's| |\\ |g' | sed 's|/.*||g' | sort | uniq`
+  #     - job: install_depencies
+  #       dependsOn: agent_preparation
+  #       displayName: Install Dependencies
+  #       steps:
+  #         - task: Cache@2
+  #           inputs:
+  #             key: '"yarn" | "$(Agent.OS)" | yarn.lock'
+  #             restoreKeys: |
+  #               yarn | "$(Agent.OS)"
+  #               yarn
+  #             path: $(YARN_CACHE_FOLDER)
+  #           displayName: Cache Yarn packages
+  #         - script: yarn --frozen-lockfile
+  #           displayName: Install Dependencies
+  #         - bash: |
+  #             cd shared && yarn run build
+  #           displayName: Build @osk/shared
+  #         - bash: |
+  #               yarn run type-check
+  #           displayName: Type Check
+  #         - bash: |
+  #             yarn run lint
+  #           displayName: Lint
 
-              if ! [[ "${DIFFS[@]}" ]]; then
-                echo "No changes found in frontend or shared directories."
-                exit 0
-              fi
+  # - stage: build_frontend
+  #   displayName: Build and Deploy Frontend
+  #   condition: succeeded('type_check_lint')
+  #   jobs:
+  #     - job: fe_agent_preparation
+  #       displayName: Agent Preparation
+  #       steps:
+  #         - checkout: self
+  #           persistCredentials: true
+  #         - bash: |
+  #             DIFFS=`git diff HEAD HEAD~1 --name-only -- 'frontend' 'shared' | sed 's| |\\ |g' | sed 's|/.*||g' | sort | uniq`
 
-              if [[ "${DIFFS[@]}" =~ "frontend" || "${DIFFS[@]}" =~ "shared" ]]; then
-                echo "##vso[task.setvariable variable=RUN_FRONTEND;isOutput=true]true"
-              fi
-            displayName: "Set Git Diff Variables"
-            name: git_check
+  #             if ! [[ "${DIFFS[@]}" ]]; then
+  #               echo "No changes found in frontend or shared directories."
+  #               exit 0
+  #             fi
 
-      - job: install_and_build
-        displayName: Install and Build Frontend
-        dependsOn: fe_agent_preparation
-        condition: |
-          and (
-            eq(dependencies.fe_agent_preparation.outputs['git_check.RUN_FRONTEND'], 'true'),
-            eq(dependencies.fe_agent_preparation.result, 'Succeeded')
-          )
-        steps:
-          - task: Cache@2
-            inputs:
-              key: '"yarn" | "$(Agent.OS)" | yarn.lock'
-              restoreKeys: |
-                yarn | "$(Agent.OS)"
-                yarn
-              path: $(YARN_CACHE_FOLDER)
-            displayName: Cache Yarn packages
-          - script: yarn --frozen-lockfile
-            displayName: Install Dependencies
-          - bash: cd frontend && yarn run build
-            displayName: Build Frontend
-          # - task: AzureStaticWebApp@0
-          #   inputs:
-          #     app_location: 'frontend/dist'
-          #     output_location: ''
-          #     skip_app_build: true
-          #     azure_static_web_apps_api_token: '$(DEPLOYMENT_TOKEN_STATIC_WEB_APP)'
+  #             if [[ "${DIFFS[@]}" =~ "frontend" || "${DIFFS[@]}" =~ "shared" ]]; then
+  #               echo "##vso[task.setvariable variable=RUN_FRONTEND;isOutput=true]true"
+  #             fi
+  #           displayName: "Set Git Diff Variables"
+  #           name: git_check
 
-  - stage: build_backend
-    displayName: Build and Deploy Backend
-    condition: succeeded('type_check_lint')
-    jobs:
-      - job: be_agent_preparation
-        displayName: Agent Preparation
-        steps:
-          - checkout: self
-            persistCredentials: true
-          - bash: |
-              DIFFS=`git diff HEAD HEAD~1 --name-only -- 'backend' 'shared' | sed 's| |\\ |g' | sed 's|/.*||g' | sort | uniq`
+  #     - job: install_and_build
+  #       displayName: Install and Build Frontend
+  #       dependsOn: fe_agent_preparation
+  #       condition: |
+  #         and (
+  #           eq(dependencies.fe_agent_preparation.outputs['git_check.RUN_FRONTEND'], 'true'),
+  #           eq(dependencies.fe_agent_preparation.result, 'Succeeded')
+  #         )
+  #       steps:
+  #         - task: Cache@2
+  #           inputs:
+  #             key: '"yarn" | "$(Agent.OS)" | yarn.lock'
+  #             restoreKeys: |
+  #               yarn | "$(Agent.OS)"
+  #               yarn
+  #             path: $(YARN_CACHE_FOLDER)
+  #           displayName: Cache Yarn packages
+  #         - script: yarn --frozen-lockfile
+  #           displayName: Install Dependencies
+  #         - bash: cd frontend && yarn run build
+  #           displayName: Build Frontend
+  #         # - task: AzureStaticWebApp@0
+  #         #   inputs:
+  #         #     app_location: 'frontend/dist'
+  #         #     output_location: ''
+  #         #     skip_app_build: true
+  #         #     azure_static_web_apps_api_token: '$(DEPLOYMENT_TOKEN_STATIC_WEB_APP)'
 
-              if ! [[ "${DIFFS[@]}" ]]; then
-                echo "No changes found in backend or shared directories."
-                exit 0
-              fi
+  # - stage: build_backend
+  #   displayName: Build and Deploy Backend
+  #   condition: succeeded('type_check_lint')
+  #   jobs:
+  #     - job: be_agent_preparation
+  #       displayName: Agent Preparation
+  #       steps:
+  #         - checkout: self
+  #           persistCredentials: true
+  #         - bash: |
+  #             DIFFS=`git diff HEAD HEAD~1 --name-only -- 'backend' 'shared' | sed 's| |\\ |g' | sed 's|/.*||g' | sort | uniq`
 
-              if [[ "${DIFFS[@]}" =~ "backend" || "${DIFFS[@]}" =~ "shared" ]]; then
-                echo "##vso[task.setvariable variable=RUN_BACKEND;isOutput=true]true"
-              fi
-            displayName: "Set Git Diff Variables"
-            name: git_check
+  #             if ! [[ "${DIFFS[@]}" ]]; then
+  #               echo "No changes found in backend or shared directories."
+  #               exit 0
+  #             fi
 
-      - job: install_and_build
-        displayName: Install and Build Backend
-        dependsOn: be_agent_preparation
-        condition: |
-          and (
-            eq(dependencies.be_agent_preparation.outputs['git_check.RUN_BACKEND'], 'true'),
-            eq(dependencies.be_agent_preparation.result, 'Succeeded')
-          )
-        steps:
-          - task: Docker@2
-            inputs:
-              containerRegistry: 'oskshrdacr'
-              repository: 'twoje-osk'
-              command: 'buildAndPush'
-              Dockerfile: 'docker/Dockerfile.backend'
-              buildContext: '$(System.DefaultWorkingDirectory)'
-            displayName: Build Docker & Push to ACR
-          # - task: AzureRmWebAppDeployment@4
-          #   inputs:
-          #     ConnectionType: 'AzureRM'
-          #     azureSubscription: 'Romeo_Student'
-          #     appType: 'webAppContainer'
-          #     WebAppName: 'twoje-osk'
-          #     deployToSlotOrASE: true
-          #     ResourceGroupName: 'osk-prod-back-rg'
-          #     SlotName: 'production'
-          #     DockerNamespace: 'oskshrdacr.azurecr.io'
-          #     DockerRepository: 'twoje-osk'
-          #   displayName: Deploy app
+  #             if [[ "${DIFFS[@]}" =~ "backend" || "${DIFFS[@]}" =~ "shared" ]]; then
+  #               echo "##vso[task.setvariable variable=RUN_BACKEND;isOutput=true]true"
+  #             fi
+  #           displayName: "Set Git Diff Variables"
+  #           name: git_check
+
+  #     - job: install_and_build
+  #       displayName: Install and Build Backend
+  #       dependsOn: be_agent_preparation
+  #       condition: |
+  #         and (
+  #           eq(dependencies.be_agent_preparation.outputs['git_check.RUN_BACKEND'], 'true'),
+  #           eq(dependencies.be_agent_preparation.result, 'Succeeded')
+  #         )
+  #       steps:
+  #         - task: Docker@2
+  #           inputs:
+  #             containerRegistry: 'oskshrdacr'
+  #             repository: 'twoje-osk'
+  #             command: 'buildAndPush'
+  #             Dockerfile: 'docker/Dockerfile.backend'
+  #             buildContext: '$(System.DefaultWorkingDirectory)'
+  #           displayName: Build Docker & Push to ACR
+  #         # - task: AzureRmWebAppDeployment@4
+  #         #   inputs:
+  #         #     ConnectionType: 'AzureRM'
+  #         #     azureSubscription: 'Romeo_Student'
+  #         #     appType: 'webAppContainer'
+  #         #     WebAppName: 'twoje-osk'
+  #         #     deployToSlotOrASE: true
+  #         #     ResourceGroupName: 'osk-prod-back-rg'
+  #         #     SlotName: 'production'
+  #         #     DockerNamespace: 'oskshrdacr.azurecr.io'
+  #         #     DockerRepository: 'twoje-osk'
+  #         #   displayName: Deploy app
