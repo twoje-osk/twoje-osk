@@ -175,7 +175,7 @@ stages:
     displayName: Build and Deploy Backend
     condition: succeeded('type_check_lint')
     jobs:
-      - job: agent_preparation
+      - job: be_agent_preparation
         displayName: Agent Preparation
         steps:
           - checkout: self
@@ -197,9 +197,9 @@ stages:
 
       - job: install_and_build
         displayName: Install and Build Backend
-        dependsOn: agent_preparation
+        dependsOn: be_agent_preparation
         condition: |
-          eq(dependencies.agent_preparation.outputs['git_check.RUN_BACKEND'], 'true')
+          eq(dependencies.be_agent_preparation.outputs['git_check.RUN_BACKEND'], 'true')
         steps:
           - task: Docker@2
             inputs:
