@@ -73,6 +73,7 @@ stages:
       - job: echo
         dependsOn: agent_preparation
         steps:
+          - bash: env
           - bash: echo $(Build.SourceVersion)
 
   #     - job: install_depencies
