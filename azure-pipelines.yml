@@ -37,7 +37,7 @@ stages:
             persistCredentials: true
       - job: install_depencies
         dependsOn: agent_preparation
-        displayName: Install Dependencies
+        displayName: Install Dependencies, Type Check & Lint
         steps:
           - task: Cache@2
             inputs:
@@ -52,10 +52,6 @@ stages:
           - bash: |
               cd shared && yarn run build
             displayName: Build @osk/shared
-      - job: type_check_and_lint
-        dependsOn: install_depencies
-        displayName: Type Check & Lint
-        steps:
           - bash: |
                 yarn run type-check
             displayName: Type Check
