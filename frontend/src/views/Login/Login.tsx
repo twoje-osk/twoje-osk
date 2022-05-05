@@ -1,14 +1,35 @@
-import { Button, Container, Icon, Paper, Typography } from '@mui/material';
+import { LoadingButton } from '@mui/lab';
+import {
+  Alert,
+  Button,
+  Container,
+  Icon,
+  Paper,
+  Typography,
+} from '@mui/material';
 import { Form, Formik } from 'formik';
+import { useState } from 'react';
 import { Box, Flex } from 'reflexbox';
 import { FTextField } from '../../components/FTextField/FTextField';
 import { LoginForm } from './Login.types';
-import { LoginFormSchema } from './Login.utils';
+import { authenticate, LoginFormSchema } from './Login.utils';
 
 export const Login = () => {
   const oskName = 'OSK Adam Nowak';
+  const [formError, setFormError] = useState<string | undefined>(undefined);
 
-  const onSubmit = () => undefined;
+  const onSubmit = async (values: LoginForm) => {
+    setFormError(undefined);
+    const result = await authenticate(values.email, values.password);
+
+    if (!result.ok) {
+      return setFormError(result.error);
+    }
+
+    console.log(result.data);
+
+    return undefined;
+  };
 
   return (
     <Container component="main" maxWidth="sm">
@@ -31,31 +52,42 @@ export const Login = () => {
               validationSchema={LoginFormSchema}
               onSubmit={onSubmit}
             >
-              <Form noValidate>
-                <Flex flexDirection="column" mt="0.25rem">
-                  <FTextField
-                    name="email"
-                    label="Email"
-                    margin="normal"
-                    required
-                  />
-                  <FTextField
-                    name="password"
-                    label="Hasło"
-                    type="password"
-                    margin="normal"
-                    required
-                  />
-                  <Flex justifyContent="space-between" mt="1rem">
-                    <Button variant="contained" type="submit">
-                      Zaloguj Się
-                    </Button>
-                    <Button variant="outlined" type="button">
-                      Zapisz Się na Kurs
-                    </Button>
+              {({ isSubmitting }) => (
+                <Form noValidate>
+                  <Flex flexDirection="column" mt="0.25rem">
+                    <FTextField
+                      name="email"
+                      label="Email"
+                      margin="normal"
+                      required
+                    />
+                    <FTextField
+                      name="password"
+                      label="Hasło"
+                      type="password"
+                      margin="normal"
+                      required
+                    />
+                    {formError && (
+                      <Box my="0.5rem">
+                        <Alert severity="error">{formError}</Alert>
+                      </Box>
+                    )}
+                    <Flex justifyContent="space-between" mt="0.5rem">
+                      <LoadingButton
+                        variant="contained"
+                        type="submit"
+                        loading={isSubmitting}
+                      >
+                        Zaloguj Się
+                      </LoadingButton>
+                      <Button variant="outlined" type="button">
+                        Zapisz Się na Kurs
+                      </Button>
+                    </Flex>
                   </Flex>
-                </Flex>
-              </Form>
+                </Form>
+              )}
             </Formik>
           </Box>
         </Paper>
