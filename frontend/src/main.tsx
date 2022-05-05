@@ -4,6 +4,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
 import { App } from './App';
+import { AuthContextProviderWrapper } from './components/AuthContext/AuthContext';
 
 const theme = createTheme({
   palette: {
@@ -16,10 +17,12 @@ const theme = createTheme({
 ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <App />
-      </ThemeProvider>
+      <AuthContextProviderWrapper>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <App />
+        </ThemeProvider>
+      </AuthContextProviderWrapper>
     </BrowserRouter>
   </React.StrictMode>,
   document.getElementById('root'),

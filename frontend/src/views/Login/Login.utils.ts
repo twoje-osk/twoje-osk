@@ -30,6 +30,9 @@ export const authenticate = async (
   const response = await fetch('/api/auth/login', {
     method: 'POST',
     body: JSON.stringify(requestBody),
+    headers: {
+      'Content-Type': 'application/json',
+    },
   });
 
   if (response.status === 401) {
