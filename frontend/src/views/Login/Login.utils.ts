@@ -1,58 +1,48 @@
 import { LoginAuthRequestDto, LoginAuthResponseDto } from '@osk/shared';
 import * as Yup from 'yup';
+import { Try } from '../../types/Try';
+import { logError } from '../../utils/log';
+import { makeRequest } from '../../utils/makeRequest';
 
 export const LoginFormSchema = Yup.object().shape({
   email: Yup.string().required(),
   password: Yup.string().required(),
 });
 
-interface Success<T> {
-  ok: true;
-  data: T;
-}
-
-interface Failure {
-  ok: false;
-  error: string;
-}
-
-type Authenticate<T> = Success<T> | Failure;
-
 export const authenticate = async (
   email: string,
   password: string,
-): Promise<Authenticate<{ accessToken: string }>> => {
+): Promise<Try<LoginAuthResponseDto, string>> => {
   const requestBody: LoginAuthRequestDto = {
     email,
     password,
   };
 
-  const response = await fetch('/api/auth/login', {
-    method: 'POST',
-    body: JSON.stringify(requestBody),
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
+  const response = await makeRequest<LoginAuthResponseDto, LoginAuthRequestDto>(
+    '/api/auth/login',
+    null,
+    'POST',
+    requestBody,
+  );
 
-  if (response.status === 401) {
+  if (response.ok) {
+    return {
+      ok: true,
+      data: response.data,
+    };
+  }
+
+  if (response.error.status === 401) {
     return {
       ok: false,
       error: 'Błędny email lub hasło',
     };
   }
 
-  if (!response.ok) {
-    return {
-      ok: false,
-      error: 'Wystąpił błąd, spróbuj ponownie później',
-    };
-  }
-
-  const responseBody = (await response.json()) as LoginAuthResponseDto;
+  logError(response.error);
 
   return {
-    ok: true,
-    data: responseBody,
+    ok: false,
+    error: 'Wystąpił błąd, spróbuj ponownie później',
   };
 };
