@@ -15,7 +15,11 @@ COPY . .
 WORKDIR /usr/src/app/shared
 RUN yarn build
 
+WORKDIR /usr/src/app/frontend
+RUN yarn build
+
 WORKDIR /usr/src/app/backend
+RUN yarn copy-client
 RUN yarn build
 
 CMD ["yarn", "start:prod"]
