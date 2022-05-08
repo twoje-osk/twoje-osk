@@ -102,6 +102,9 @@ stages:
             displayName: Cache Yarn packages
           - script: yarn --immutable
             displayName: Install Dependencies
+          - bash: |
+              cd shared && yarn run build
+            displayName: Build @osk/shared
           - bash: cd frontend && yarn run build
             displayName: Build Frontend
           # - task: AzureStaticWebApp@0
