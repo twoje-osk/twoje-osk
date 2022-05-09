@@ -6,6 +6,7 @@ import {
   ListItemText,
   Typography,
   Icon,
+  ListItemIcon,
 } from '@mui/material';
 import { ReactNode } from 'react';
 import { Box, Flex } from 'reflexbox';
@@ -16,7 +17,13 @@ interface MyComponentProps {
 
 export const Layout = ({ children }: MyComponentProps) => {
   const oskName = 'OSK Adam Nowak';
-  const menuItems = ['Instruktorzy', 'Kursanci', 'Pojazdy', 'Ogłoszenia'];
+  const menuItems = [
+    { text: 'Instruktorzy', icon: 'class' },
+    { text: 'Kursanci', icon: 'school' },
+    { text: 'Pojazdy', icon: 'directions_car' },
+    { text: 'Ogłoszenia', icon: 'event_note' },
+  ];
+  const userName = 'Adam Abacki';
 
   return (
     <Flex width="100%" height="100vh" alignItems="center">
@@ -43,9 +50,14 @@ export const Layout = ({ children }: MyComponentProps) => {
         <Divider />
         <Box pt="1.5rem" pl="1rem">
           <List>
-            {menuItems.map((text) => (
-              <ListItem button key={text}>
-                <ListItemText primary={text} />
+            {menuItems.map((element) => (
+              <ListItem button key={element.text}>
+                <ListItemIcon>
+                  <Icon sx={{ fontSize: 32, color: 'black' }}>
+                    {element.icon}
+                  </Icon>
+                </ListItemIcon>
+                <ListItemText primary={element.text} />
               </ListItem>
             ))}
           </List>
@@ -53,9 +65,17 @@ export const Layout = ({ children }: MyComponentProps) => {
         <Flex height="100vh" pl="1rem" alignItems="flex-end">
           <List>
             <ListItem button>
-              <ListItemText primary="Profil" />
+              <ListItemIcon>
+                <Icon sx={{ fontSize: 32, color: 'black' }}>logout</Icon>
+              </ListItemIcon>
+              <ListItemText primary={userName} />
             </ListItem>
             <ListItem button>
+              <ListItemIcon>
+                <Icon sx={{ fontSize: 32, color: 'black' }}>
+                  account_circle
+                </Icon>
+              </ListItemIcon>
               <ListItemText primary="Wyloguj się" />
             </ListItem>
           </List>
