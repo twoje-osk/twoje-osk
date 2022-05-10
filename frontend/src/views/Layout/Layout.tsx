@@ -66,15 +66,15 @@ export const Layout = ({ children }: MyComponentProps) => {
           <List>
             <ListItem button>
               <ListItemIcon>
-                <Icon sx={{ fontSize: 32, color: 'black' }}>logout</Icon>
+                <Icon sx={{ fontSize: 32, color: 'black' }}>
+                  account_circle
+                </Icon>
               </ListItemIcon>
               <ListItemText primary={userName} />
             </ListItem>
             <ListItem button>
               <ListItemIcon>
-                <Icon sx={{ fontSize: 32, color: 'black' }}>
-                  account_circle
-                </Icon>
+                <Icon sx={{ fontSize: 32, color: 'black' }}>logout</Icon>
               </ListItemIcon>
               <ListItemText primary="Wyloguj się" />
             </ListItem>
