@@ -14,7 +14,6 @@ import { Box, Flex } from 'reflexbox';
 import { FTextField } from '../../components/FTextField/FTextField';
 import { RequireAuthLocationState } from '../../components/RequireAuth/RequireAuth';
 import { useAuth } from '../../hooks/useAuth/useAuth';
-import { Layout } from '../Layout/Layout';
 import { LoginForm } from './Login.types';
 import { authenticate, LoginFormSchema } from './Login.utils';
 
@@ -44,68 +43,66 @@ export const Login = () => {
   }
 
   return (
-    <Layout>
-      <Container component="main" maxWidth="sm">
-        <Flex width="100%" height="100vh" alignItems="center">
-          <Paper sx={{ width: '100%' }} elevation={2}>
-            <Box p="2rem">
-              <Flex justifyContent="center" alignItems="center">
-                <Flex mr="1rem">
-                  <Icon sx={{ fontSize: 48 }}>car_rental</Icon>
-                </Flex>
-                <Typography variant="h3" component="h1">
-                  {oskName}
-                </Typography>
+    <Container component="main" maxWidth="sm">
+      <Flex width="100%" height="100vh" alignItems="center">
+        <Paper sx={{ width: '100%' }} elevation={2}>
+          <Box p="2rem">
+            <Flex justifyContent="center" alignItems="center">
+              <Flex mr="1rem">
+                <Icon sx={{ fontSize: 48 }}>car_rental</Icon>
               </Flex>
-              <Formik<LoginForm>
-                initialValues={{
-                  email: '',
-                  password: '',
-                }}
-                validationSchema={LoginFormSchema}
-                onSubmit={onSubmit}
-              >
-                {({ isSubmitting }) => (
-                  <Form noValidate>
-                    <Flex flexDirection="column" mt="0.25rem">
-                      <FTextField
-                        name="email"
-                        label="Email"
-                        margin="normal"
-                        required
-                      />
-                      <FTextField
-                        name="password"
-                        label="Hasło"
-                        type="password"
-                        margin="normal"
-                        required
-                      />
-                      {formError && (
-                        <Box my="0.5rem">
-                          <Alert severity="error">{formError}</Alert>
-                        </Box>
-                      )}
-                      <Flex justifyContent="space-between" mt="0.5rem">
-                        <LoadingButton
-                          variant="contained"
-                          type="submit"
-                          loading={isSubmitting}
-                        >
-                          Zaloguj Się
-                        </LoadingButton>
-                        <Button variant="outlined" type="button">
-                          Zapisz Się na Kurs
-                        </Button>
-                      </Flex>
+              <Typography variant="h3" component="h1">
+                {oskName}
+              </Typography>
+            </Flex>
+            <Formik<LoginForm>
+              initialValues={{
+                email: '',
+                password: '',
+              }}
+              validationSchema={LoginFormSchema}
+              onSubmit={onSubmit}
+            >
+              {({ isSubmitting }) => (
+                <Form noValidate>
+                  <Flex flexDirection="column" mt="0.25rem">
+                    <FTextField
+                      name="email"
+                      label="Email"
+                      margin="normal"
+                      required
+                    />
+                    <FTextField
+                      name="password"
+                      label="Hasło"
+                      type="password"
+                      margin="normal"
+                      required
+                    />
+                    {formError && (
+                      <Box my="0.5rem">
+                        <Alert severity="error">{formError}</Alert>
+                      </Box>
+                    )}
+                    <Flex justifyContent="space-between" mt="0.5rem">
+                      <LoadingButton
+                        variant="contained"
+                        type="submit"
+                        loading={isSubmitting}
+                      >
+                        Zaloguj Się
+                      </LoadingButton>
+                      <Button variant="outlined" type="button">
+                        Zapisz Się na Kurs
+                      </Button>
                     </Flex>
-                  </Form>
-                )}
-              </Formik>
-            </Box>
-          </Paper>
-        </Flex>
-      </Container>
-    </Layout>
+                  </Flex>
+                </Form>
+              )}
+            </Formik>
+          </Box>
+        </Paper>
+      </Flex>
+    </Container>
   );
 };
