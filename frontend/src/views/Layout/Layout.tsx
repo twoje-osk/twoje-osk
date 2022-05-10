@@ -10,6 +10,7 @@ import {
 } from '@mui/material';
 import { ReactNode } from 'react';
 import { Box, Flex } from 'reflexbox';
+import { useAuth } from '../../hooks/useAuth/useAuth';
 
 interface MyComponentProps {
   children: ReactNode;
@@ -24,6 +25,7 @@ export const Layout = ({ children }: MyComponentProps) => {
     { text: 'Ogłoszenia', icon: 'event_note' },
   ];
   const userName = 'Adam Abacki';
+  const { logOut } = useAuth();
 
   return (
     <Flex width="100%" height="100vh" alignItems="center">
@@ -72,7 +74,7 @@ export const Layout = ({ children }: MyComponentProps) => {
               </ListItemIcon>
               <ListItemText primary={userName} />
             </ListItem>
-            <ListItem button>
+            <ListItem button onClick={logOut}>
               <ListItemIcon>
                 <Icon sx={{ fontSize: 32, color: 'black' }}>logout</Icon>
               </ListItemIcon>
