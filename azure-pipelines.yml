@@ -1,29 +1,51 @@
-trigger:
-  batch: true
-  branches:
-    include:
-      - main
-
-pr:
-  branches:
-    include:
-      - main
-  drafts: false
+trigger: none
+  # batch: true
+  # branches:
+  #   include:
+  #     - main
+  # paths:
+  #   include:
+  #     - 'backend/*'
+  #     - 'frontend/*'
+  #     - 'shared/*'
+  #     - '*.yml'
+  #   exclude:
+  #     - '.*' # skip every hidden file change in root dir
+  #     - '**/.*' # skip every hidden file change in any dir below root dir
+  #     - '!**/.eslintrc'
+  #     - '!**/.prettierrc'
+pr: none
+  # branches:
+  #   include:
+  #     - main
+  # paths:
+  #   include:
+  #     - 'backend/*'
+  #     - 'frontend/*'
+  #     - 'shared/*'
+  #     - '*.yml'
+  #   exclude:
+  #     - '.*' # skip every hidden file change in root dir
+  #     - '**/.*' # skip every hidden file change in any dir below root dir
+  #     - '!**/.eslintrc'
+  #     - '!**/.prettierrc'
+  # drafts: false
 
 pool:
   vmImage: ubuntu-latest
 
 variables:
-  - group: SECRETS_FRONTEND
+  # - group: SECRETS_KEYVAULT
+  # - group: SECRETS_BACKEND
   - name: CI
     value: true
   - name: YARN_CACHE_FOLDER
     value: $(Pipeline.Workspace)/.yarn
   - ${{ if in( variables['Build.SourceBranchName'], 'main' ) }}:
-    - name: ENVIRONMENT_NAME
+    - name: ENVIRONMENT_TYPE
       value: prod
   - ${{ if notIn( variables['Build.SourceBranchName'], 'main' ) }}:
-    - name: ENVIRONMENT_NAME
+    - name: ENVIRONMENT_TYPE
       value: dev
 
 stages:
@@ -36,20 +58,23 @@ stages:
           - checkout: self
             persistCredentials: true
           - bash: |
-              DIFFS=$(git diff HEAD HEAD~1 --name-only -- 'frontend' 'backend' 'shared' 'yarn.lock' 'docker/Dockerfile.backend')
-
+              if [[ "$(Build.Reason)" != "PullRequest" ]]; then
+                DIFFS=`git diff HEAD HEAD~1 --name-only -- 'frontend' 'backend' 'shared' 'yarn.lock' 'docker/Dockerfile.backend'`
+              else
+                DIFFS=`git diff HEAD origin/$(System.PullRequest.TargetBranch) --name-only -- 'frontend' 'backend' 'shared' 'yarn.lock' 'docker/Dockerfile.backend'`
+              fi
               if [[ -z "$DIFFS" ]]; then
                 echo "No build triggering changes found."
                 exit 0
               fi
 
-              echo "##vso[task.setvariable variable=RUN_BACKEND;isOutput=true]true"
+              echo "##vso[task.setvariable variable=BUILD_IMAGE;isOutput=true]true"
             displayName: "Set Git Diff Variables"
             name: git_check
 
       - job: install_depencies
         dependsOn: agent_preparation
-        displayName: Install Dependencies, Type Check & Lint
+        displayName: "Install Dependencies, Type Check & Lint"
         steps:
           - task: Cache@2
             inputs:
@@ -75,32 +100,52 @@ stages:
         displayName: Install and Build Backend
         dependsOn: agent_preparation
         condition: |
-          and (
-            eq(variables['Build.SourceBranch'], 'refs/heads/main'),
-            eq(dependencies.agent_preparation.outputs['git_check.RUN_BACKEND'], 'true'),
-            eq(dependencies.agent_preparation.result, 'Succeeded')
+          or
+          (
+            and
+            (
+              eq(dependencies.agent_preparation.result, 'Succeeded'),
+              eq(dependencies.agent_preparation.outputs['git_check.BUILD_IMAGE'], 'true')
+            ),
+            eq(variables['MANUAL_TRIGGER'], 'true')
           )
         steps:
-          # To be removed after implementing real deployment
-          - bash: echo "Deploying Backend..."
-
-          # - task: Docker@2
-          #   inputs:
-          #     containerRegistry: 'oskshrdacr'
-          #     repository: 'twoje-osk'
-          #     command: 'buildAndPush'
-          #     Dockerfile: 'docker/Dockerfile.backend'
-          #     buildContext: '$(System.DefaultWorkingDirectory)'
-          #   displayName: Build Docker & Push to ACR
-          # - task: AzureRmWebAppDeployment@4
-          #   inputs:
-          #     ConnectionType: 'AzureRM'
-          #     azureSubscription: 'Romeo_Student'
-          #     appType: 'webAppContainer'
-          #     WebAppName: 'twoje-osk'
-          #     deployToSlotOrASE: true
-          #     ResourceGroupName: 'osk-prod-back-rg'
-          #     SlotName: 'production'
-          #     DockerNamespace: 'oskshrdacr.azurecr.io'
-          #     DockerRepository: 'twoje-osk'
-          #   displayName: Deploy app
+          - task: Docker@2
+            name: docker_build
+            inputs:
+              containerRegistry: 'oskshrdacr'
+              repository: 'twoje-osk'
+              command: 'build'
+              Dockerfile: 'docker/Dockerfile.backend'
+              buildContext: '$(System.DefaultWorkingDirectory)'
+              tags: |
+                latest
+            displayName: Build Docker image
+          - task: Docker@2
+            name: docker_push 
+            inputs:
+              containerRegistry: 'oskshrdacr'
+              repository: 'twoje-osk'
+              command: 'push'
+              tags: |
+                latest
+            displayName: Push Docker image to ACR
+            condition: eq(variables['ENVIRONMENT_TYPE'], 'prod')
+          - task: AzureRmWebAppDeployment@4
+            inputs:
+              ConnectionType: 'AzureRM'
+              azureSubscription: 'Romeo_Student'
+              appType: 'webAppContainer'
+              WebAppName: 'twoje-osk'
+              deployToSlotOrASE: true
+              ResourceGroupName: 'osk-prod-back-rg'
+              SlotName: 'production'
+              DockerNamespace: 'oskshrdacr.azurecr.io'
+              DockerRepository: 'twoje-osk'
+            displayName: Deploy app
+            condition: |
+              and
+              (
+                succeeded(),
+                eq(variables['ENVIRONMENT_TYPE'], 'prod')
+              )
