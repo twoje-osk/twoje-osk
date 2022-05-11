@@ -100,14 +100,10 @@ stages:
         displayName: Install and Build Backend
         dependsOn: agent_preparation
         condition: |
-          or
+          and
           (
-            and
-            (
-              eq(dependencies.agent_preparation.result, 'Succeeded'),
-              eq(dependencies.agent_preparation.outputs['git_check.BUILD_IMAGE'], 'true')
-            ),
-            eq(variables['MANUAL_TRIGGER'], 'true')
+            eq(dependencies.agent_preparation.result, 'Succeeded'),
+            eq(dependencies.agent_preparation.outputs['git_check.BUILD_IMAGE'], 'true')
           )
         steps:
           - task: Docker@2
@@ -130,7 +126,12 @@ stages:
               tags: |
                 latest
             displayName: Push Docker image to ACR
-            condition: eq(variables['ENVIRONMENT_TYPE'], 'prod')
+            condition: |
+              or
+              (
+                eq(variables['ENVIRONMENT_TYPE'], 'prod'),
+                eq(variables['MANUAL_TRIGGER'], 'true')
+              )
           - task: AzureRmWebAppDeployment@4
             inputs:
               ConnectionType: 'AzureRM'
@@ -147,5 +148,9 @@ stages:
               and
               (
                 succeeded(),
-                eq(variables['ENVIRONMENT_TYPE'], 'prod')
+                or
+                (
+                  eq(variables['MANUAL_TRIGGER'], 'true'),
+                  eq(variables['ENVIRONMENT_TYPE'], 'prod')
+                )
               )
