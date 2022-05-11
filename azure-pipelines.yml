@@ -97,13 +97,17 @@ stages:
             displayName: Lint
 
       - job: install_and_build
-        displayName: Install and Build Backend
+        displayName: Install and Build Image
         dependsOn: agent_preparation
         condition: |
-          and
+          or
           (
-            eq(dependencies.agent_preparation.result, 'Succeeded'),
-            eq(dependencies.agent_preparation.outputs['git_check.BUILD_IMAGE'], 'true')
+            and
+            (
+              eq(dependencies.agent_preparation.result, 'Succeeded'),
+              eq(dependencies.agent_preparation.outputs['git_check.BUILD_IMAGE'], 'true')
+            ),
+            eq(variables['MANUAL_TRIGGER'], 'true')
           )
         steps:
           - task: Docker@2
