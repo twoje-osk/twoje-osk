@@ -113,7 +113,7 @@ stages:
           - task: Cache@2
             displayName: Cache task
             inputs:
-              key: 'docker | "$(Agent.OS)" | twoje-osk_backend'
+              key: 'docker | "$(Agent.OS)" | twoje-osk'
               path: $(Pipeline.Workspace)/docker
               cacheHitVar: CACHE_RESTORED
             
@@ -139,7 +139,7 @@ stages:
             displayName: Build Docker image
           - script: |
               mkdir -p $(Pipeline.Workspace)/docker
-              docker save -o $(Pipeline.Workspace)/docker/cache.tar twoje-osk_backend
+              docker save -o $(Pipeline.Workspace)/docker/cache.tar twoje-osk
             displayName: Docker save
             condition: |
               and
