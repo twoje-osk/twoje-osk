@@ -113,7 +113,7 @@ stages:
           - task: Cache@2
             displayName: Cache task
             inputs:
-              key: 'docker | "$(Agent.OS)" | cache'
+              key: 'docker | "$(Agent.OS)" | twoje-osk_backend'
               path: $(Pipeline.Workspace)/docker
               cacheHitVar: CACHE_RESTORED
             
@@ -126,20 +126,6 @@ stages:
                 not(canceled()),
                 eq(variables.CACHE_RESTORED, 'true')
               )
-          - script: |
-              mkdir -p $(Pipeline.Workspace)/docker
-              docker save -o $(Pipeline.Workspace)/docker/cache.tar cache
-            displayName: Docker save
-            condition: |
-              and
-              (
-                not(canceled()),
-                or
-                (
-                  failed(),
-                  ne(variables.CACHE_RESTORED, 'true')
-                )
-              )
           - task: Docker@2
             name: docker_build
             inputs:
@@ -151,6 +137,20 @@ stages:
               tags: |
                 latest
             displayName: Build Docker image
+          - script: |
+              mkdir -p $(Pipeline.Workspace)/docker
+              docker save -o $(Pipeline.Workspace)/docker/cache.tar twoje-osk_backend
+            displayName: Docker save
+            condition: |
+              and
+              (
+                not(canceled()),
+                or
+                (
+                  failed(),
+                  ne(variables.CACHE_RESTORED, 'true')
+                )
+              )
           - task: Docker@2
             name: docker_push 
             inputs:
