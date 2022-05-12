@@ -1,12 +1,15 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 import { getConfiguration, NestConfiguration } from './config/configuration';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { OrganizationsModule } from './organizations/organizations.module';
 import { TraineesModule } from './trainees/trainees.module';
 import { CurrentUserModule } from './current-user/current-user.module';
+import { DebugModule } from './debug/debug.module';
 
 @Module({
   imports: [
@@ -32,11 +35,15 @@ import { CurrentUserModule } from './current-user/current-user.module';
         };
       },
     }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'client'),
+    }),
     AuthModule,
     UsersModule,
     OrganizationsModule,
     TraineesModule,
     CurrentUserModule,
+    DebugModule,
   ],
 })
 export class AppModule {}

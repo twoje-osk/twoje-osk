@@ -15,7 +15,8 @@
     "create-migration": "typeorm-ts-node-esm migration:generate -d src/data-source.ts",
     "create-empty-migration": "typeorm-ts-node-esm migration:create",
     "migrate": "typeorm-ts-node-esm migration:run -d src/data-source.ts",
-    "seed": "ts-node ./src/seeds/seed.ts"
+    "seed": "ts-node ./src/seeds/seed.ts",
+    "copy-client": "cp -R ../frontend/dist ./client"
   },
   "dependencies": {
     "@faker-js/faker": "^6.1.2",
@@ -26,6 +27,7 @@
     "@nestjs/mapped-types": "^1.0.1",
     "@nestjs/passport": "^8.2.1",
     "@nestjs/platform-fastify": "^8.4.4",
+    "@nestjs/serve-static": "^2.2.2",
     "@nestjs/swagger": "^5.2.1",
     "@nestjs/typeorm": "^8.0.3",
     "@osk/shared": "1.0.0",

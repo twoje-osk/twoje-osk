@@ -1,5 +1,7 @@
 FROM node:16
 
+ENV NODE_ENV=production
+
 WORKDIR /usr/src/app
 
 COPY package.json yarn.lock .yarnrc.yml ./
@@ -15,7 +17,11 @@ COPY . .
 WORKDIR /usr/src/app/shared
 RUN yarn build
 
+WORKDIR /usr/src/app/frontend
+RUN yarn build
+
 WORKDIR /usr/src/app/backend
+RUN yarn copy-client
 RUN yarn build
 
 CMD ["yarn", "start:prod"]
