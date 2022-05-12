@@ -15,7 +15,7 @@ export class TraineesController {
   })
   @ApiBearerAuth()
   @Get()
-  async findAll() {
+  async findAll(): Promise<TraineeFindAllResponseDto> {
     const trainees = await this.traineesService.findAll();
 
     return { trainees };
