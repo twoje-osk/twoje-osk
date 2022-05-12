@@ -90,7 +90,7 @@ stages:
               cd shared && yarn run build
             displayName: Build @osk/shared
           - bash: |
-                yarn run type-check
+              yarn run type-check
             displayName: Type Check
           - bash: |
               yarn run lint
