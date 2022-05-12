@@ -8,7 +8,7 @@ export class DebugController {
 
   @SkipAuth()
   @Get('hostname')
-  getHostName(@Headers('host') hostname: string) {
+  getHostName(@Headers('host') hostname: string): string {
     return hostname;
   }
 }
