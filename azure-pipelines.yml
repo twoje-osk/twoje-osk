@@ -41,6 +41,12 @@ variables:
     value: true
   - name: YARN_CACHE_FOLDER
     value: $(Pipeline.Workspace)/.yarn
+  - name: ACR_NAME
+    value: oskshrdacr
+  - name: ACR_ADDRESS
+    value: oskshrdacr.azurecr.io
+  - name: DOCKER_REPO
+    value: twoje-osk
   - ${{ if in( variables['Build.SourceBranchName'], 'main' ) }}:
     - name: ENVIRONMENT_TYPE
       value: prod
@@ -110,54 +116,35 @@ stages:
             eq(variables['MANUAL_TRIGGER'], 'true')
           )
         steps:
-          - task: Cache@2
-            displayName: Cache task
+          - task: Docker@2
             inputs:
-              key: 'docker | "$(Agent.OS)" | twoje-osk'
-              path: $(Pipeline.Workspace)/docker
-              cacheHitVar: CACHE_RESTORED
-            
+              containerRegistry: '$(ACR_NAME)'
+              command: 'login'
           - script: |
-              docker load -i $(Pipeline.Workspace)/docker/cache.tar
-            displayName: Docker restore
-            condition: |
-              and
-              (
-                not(canceled()),
-                eq(variables.CACHE_RESTORED, 'true')
-              )
+              docker pull $(ACR_ADDRESS)/$(DOCKER_REPO):latest
+            displayName: Pull latest for layer caching
+            continueOnError: true # for first build, no cache
           - task: Docker@2
             name: docker_build
             inputs:
-              containerRegistry: 'oskshrdacr'
-              repository: 'twoje-osk'
+              containerRegistry: '$(ACR_NAME)'
+              repository: '$(DOCKER_REPO)'
               command: 'build'
               Dockerfile: 'docker/Dockerfile.backend'
               buildContext: '$(System.DefaultWorkingDirectory)'
               tags: |
+                $(Build.BuildNumber)
                 latest
             displayName: Build Docker image
-          - script: |
-              mkdir -p $(Pipeline.Workspace)/docker
-              docker save -o $(Pipeline.Workspace)/docker/cache.tar twoje-osk
-            displayName: Docker save
-            condition: |
-              and
-              (
-                not(canceled()),
-                or
-                (
-                  failed(),
-                  ne(variables.CACHE_RESTORED, 'true')
-                )
-              )
           - task: Docker@2
             name: docker_push 
             inputs:
-              containerRegistry: 'oskshrdacr'
-              repository: 'twoje-osk'
+              containerRegistry: '$(ACR_NAME)'
+              repository: '$(DOCKER_REPO)'
               command: 'push'
+              arguments: '--cache-from=$(ACR_ADDRESS)/$(REPOSITORY):latest' 
               tags: |
+                $(Build.BuildNumber)
                 latest
             displayName: Push Docker image to ACR
             condition: |
@@ -175,8 +162,8 @@ stages:
               deployToSlotOrASE: true
               ResourceGroupName: 'osk-prod-back-rg'
               SlotName: 'production'
-              DockerNamespace: 'oskshrdacr.azurecr.io'
-              DockerRepository: 'twoje-osk'
+              DockerNamespace: '$(ACR_ADDRESS)'
+              DockerRepository: '$(DOCKER_REPO)'
             displayName: Deploy app
             condition: |
               and
