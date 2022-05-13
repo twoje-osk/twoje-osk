@@ -120,6 +120,7 @@ stages:
             inputs:
               containerRegistry: '$(ACR_NAME)'
               command: 'login'
+            displayName: "Docker login to acr"
           - script: |
               docker pull $(ACR_ADDRESS)/$(DOCKER_REPO):latest
             displayName: Pull latest for layer caching
@@ -132,6 +133,7 @@ stages:
               command: 'build'
               Dockerfile: 'docker/Dockerfile.backend'
               buildContext: '$(System.DefaultWorkingDirectory)'
+              arguments: '--cache-from=$(ACR_ADDRESS)/$(REPOSITORY):latest' 
               tags: |
                 $(Build.BuildNumber)
                 latest
@@ -142,7 +144,6 @@ stages:
               containerRegistry: '$(ACR_NAME)'
               repository: '$(DOCKER_REPO)'
               command: 'push'
-              arguments: '--cache-from=$(ACR_ADDRESS)/$(REPOSITORY):latest' 
               tags: |
                 $(Build.BuildNumber)
                 latest
