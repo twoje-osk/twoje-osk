@@ -1,14 +1,21 @@
+// eslint-disable-next-line max-classes-per-file
 import { Controller, Get, Headers } from '@nestjs/common';
+import { ApiProperty, ApiResponse } from '@nestjs/swagger';
 import { SkipAuth } from 'auth/passport/skip-auth.guard';
-import { DebugService } from './debug.service';
+
+class GetHostNameResponseDto {
+  @ApiProperty()
+  public hostname: string;
+}
 
 @Controller('debug')
 export class DebugController {
-  constructor(private readonly debugService: DebugService) {}
-
   @SkipAuth()
   @Get('hostname')
-  getHostName(@Headers('host') hostname: string): string {
-    return hostname;
+  @ApiResponse({
+    type: GetHostNameResponseDto,
+  })
+  getHostName(@Headers('host') hostname: string): GetHostNameResponseDto {
+    return { hostname };
   }
 }
