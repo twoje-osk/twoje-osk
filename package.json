@@ -5,7 +5,8 @@
     "packages": [
       "backend",
       "frontend",
-      "shared"
+      "shared",
+      "eslint-plugin"
     ]
   },
   "scripts": {
