@@ -52,7 +52,7 @@ export const Layout = ({ children }: MyComponentProps) => {
           </Typography>
         </Flex>
         <Divider />
-        <Box pt="1.5rem" pl="1rem">
+        <Box pt="1.5rem" px="1rem">
           <List>
             {menuItems.map((element) => (
               <ListItemButton
@@ -70,7 +70,7 @@ export const Layout = ({ children }: MyComponentProps) => {
             ))}
           </List>
         </Box>
-        <Flex height="100vh" pl="1rem" alignItems="flex-end">
+        <Flex height="100vh" px="1rem" alignItems="flex-end">
           <List>
             <ListItem button>
               <ListItemIcon>
