@@ -14,20 +14,18 @@ import { Link } from 'react-router-dom';
 import { Box, Flex } from 'reflexbox';
 import { useAuth } from '../../hooks/useAuth/useAuth';
 
-interface MyComponentProps {
+interface LayoutProps {
   children: ReactNode;
 }
 
-export const Layout = ({ children }: MyComponentProps) => {
-  const oskName = 'OSK Adam Nowak';
+export const Layout = ({ children }: LayoutProps) => {
   const menuItems = [
     { text: 'Instruktorzy', icon: 'class', link: '/instruktorzy' },
     { text: 'Kursanci', icon: 'school', link: '' },
     { text: 'Pojazdy', icon: 'directions_car', link: '' },
     { text: 'Ogłoszenia', icon: 'event_note', link: '' },
   ];
-  const userName = 'Adam Abacki';
-  const { logOut } = useAuth();
+  const { logOut, user } = useAuth();
 
   return (
     <Flex width="100%" height="100vh" alignItems="center">
@@ -48,7 +46,7 @@ export const Layout = ({ children }: MyComponentProps) => {
             <Icon sx={{ fontSize: 48 }}>car_rental</Icon>
           </Flex>
           <Typography variant="h5" component="h1">
-            {oskName}
+            {user.organizationName}
           </Typography>
         </Flex>
         <Divider />
@@ -78,7 +76,7 @@ export const Layout = ({ children }: MyComponentProps) => {
                   account_circle
                 </Icon>
               </ListItemIcon>
-              <ListItemText primary={userName} />
+              <ListItemText primary={user.username} />
             </ListItem>
             <ListItem button onClick={logOut}>
               <ListItemIcon>
