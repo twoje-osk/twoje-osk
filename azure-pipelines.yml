@@ -1,4 +1,4 @@
-trigger: 
+trigger:
   batch: true
   branches:
     include:
@@ -110,51 +110,52 @@ stages:
             eq(variables['MANUAL_TRIGGER'], 'true')
           )
         steps:
-          - task: Docker@2
-            name: docker_build
-            inputs:
-              containerRegistry: 'oskshrdacr'
-              repository: 'twoje-osk'
-              command: 'build'
-              Dockerfile: 'docker/Dockerfile.backend'
-              buildContext: '$(System.DefaultWorkingDirectory)'
-              tags: |
-                latest
-            displayName: Build Docker image
-          - task: Docker@2
-            name: docker_push 
-            inputs:
-              containerRegistry: 'oskshrdacr'
-              repository: 'twoje-osk'
-              command: 'push'
-              tags: |
-                latest
-            displayName: Push Docker image to ACR
-            condition: |
-              or
-              (
-                eq(variables['ENVIRONMENT_TYPE'], 'prod'),
-                eq(variables['MANUAL_TRIGGER'], 'true')
-              )
-          - task: AzureRmWebAppDeployment@4
-            inputs:
-              ConnectionType: 'AzureRM'
-              azureSubscription: 'Romeo_Student'
-              appType: 'webAppContainer'
-              WebAppName: 'twoje-osk'
-              deployToSlotOrASE: true
-              ResourceGroupName: 'osk-prod-back-rg'
-              SlotName: 'production'
-              DockerNamespace: 'oskshrdacr.azurecr.io'
-              DockerRepository: 'twoje-osk'
-            displayName: Deploy app
-            condition: |
-              and
-              (
-                succeeded(),
-                or
-                (
-                  eq(variables['ENVIRONMENT_TYPE'], 'prod'),
-                  eq(variables['MANUAL_TRIGGER'], 'true')
-                )
-              )
+          - script: echo "Build Docker"
+          # - task: Docker@2
+          #   name: docker_build
+          #   inputs:
+          #     containerRegistry: 'oskshrdacr'
+          #     repository: 'twoje-osk'
+          #     command: 'build'
+          #     Dockerfile: 'docker/Dockerfile.backend'
+          #     buildContext: '$(System.DefaultWorkingDirectory)'
+          #     tags: |
+          #       latest
+          #   displayName: Build Docker image
+          # - task: Docker@2
+          #   name: docker_push
+          #   inputs:
+          #     containerRegistry: 'oskshrdacr'
+          #     repository: 'twoje-osk'
+          #     command: 'push'
+          #     tags: |
+          #       latest
+          #   displayName: Push Docker image to ACR
+          #   condition: |
+          #     or
+          #     (
+          #       eq(variables['ENVIRONMENT_TYPE'], 'prod'),
+          #       eq(variables['MANUAL_TRIGGER'], 'true')
+          #     )
+          # - task: AzureRmWebAppDeployment@4
+          #   inputs:
+          #     ConnectionType: 'AzureRM'
+          #     azureSubscription: 'Romeo_Student'
+          #     appType: 'webAppContainer'
+          #     WebAppName: 'twoje-osk'
+          #     deployToSlotOrASE: true
+          #     ResourceGroupName: 'osk-prod-back-rg'
+          #     SlotName: 'production'
+          #     DockerNamespace: 'oskshrdacr.azurecr.io'
+          #     DockerRepository: 'twoje-osk'
+          #   displayName: Deploy app
+          #   condition: |
+          #     and
+          #     (
+          #       succeeded(),
+          #       or
+          #       (
+          #         eq(variables['ENVIRONMENT_TYPE'], 'prod'),
+          #         eq(variables['MANUAL_TRIGGER'], 'true')
+          #       )
+          #     )
