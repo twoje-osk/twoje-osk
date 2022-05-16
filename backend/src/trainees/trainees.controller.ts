@@ -1,5 +1,5 @@
 import { Controller, Get, NotFoundException, Param } from '@nestjs/common';
-import { ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
+import { ApiResponse } from '@nestjs/swagger';
 import {
   TraineeFindAllResponseDto,
   TraineeFindOneResponseDto,
@@ -13,7 +13,6 @@ export class TraineesController {
   @ApiResponse({
     type: TraineeFindAllResponseDto,
   })
-  @ApiBearerAuth()
   @Get()
   async findAll(): Promise<TraineeFindAllResponseDto> {
     const trainees = await this.traineesService.findAll();
@@ -24,7 +23,6 @@ export class TraineesController {
   @ApiResponse({
     type: TraineeFindOneResponseDto,
   })
-  @ApiBearerAuth()
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<TraineeFindOneResponseDto> {
     const trainee = await this.traineesService.findOne(+id);

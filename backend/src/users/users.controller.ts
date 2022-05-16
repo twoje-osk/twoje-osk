@@ -1,5 +1,5 @@
 import { Controller, Get, NotFoundException, Request } from '@nestjs/common';
-import { ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
+import { ApiResponse } from '@nestjs/swagger';
 import { UserTestDto } from '@osk/shared';
 import { AuthRequest } from 'auth/auth.types';
 import { UsersService } from './users.service';
@@ -8,7 +8,6 @@ import { UsersService } from './users.service';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @ApiBearerAuth()
   @Get('me')
   @ApiResponse({
     type: UserTestDto,
