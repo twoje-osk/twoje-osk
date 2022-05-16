@@ -10,6 +10,9 @@ const getSeedTrainee = (users: User[]) => {
   trainee.user = users[seedIndex]!;
   seedIndex += 1;
 
+  trainee.pesel = faker.random.numeric(11);
+  trainee.pkk = faker.random.numeric(11);
+
   return trainee;
 };
 

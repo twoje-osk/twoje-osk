@@ -14,19 +14,21 @@ import {
 import { TraineeFindAllResponseDto } from '@osk/shared';
 import { format, parseISO } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
-import useSwr from 'swr';
+import useSWR from 'swr';
+import { FullPageLoading } from '../../../components/FullPageLoading/FullPageLoading';
+import { GeneralAPIError } from '../../../components/GeneralAPIError/GeneralAPIError';
 import { LONG_DATE } from '../../../constants/dateFormats';
 
 export const TraineesList = () => {
-  const { data, error } = useSwr<TraineeFindAllResponseDto>('/api/trainees');
+  const { data, error } = useSWR<TraineeFindAllResponseDto>('/api/trainees');
   const navigate = useNavigate();
 
   if (error) {
-    return <div>Error</div>;
+    return <GeneralAPIError />;
   }
 
   if (data === undefined) {
-    return <div>Loading</div>;
+    return <FullPageLoading />;
   }
 
   const rows = data.trainees;
@@ -80,7 +82,8 @@ export const TraineesList = () => {
                 {/* TODO: Typings for date */}
                 <TableCell>
                   {format(
-                    parseISO(row.user.createdAt as unknown as string),
+                    // @ts-expect-error
+                    parseISO(row.user.createdAt),
                     LONG_DATE,
                   )}
                 </TableCell>

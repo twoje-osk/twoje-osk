@@ -11,7 +11,7 @@ const getSeedUser = (organizations: Organization[]) => {
   user.isActive = true;
   user.email = faker.internet.email(user.firstName, user.lastName);
   user.password = bcrypt.hashSync('password', 10);
-  user.organization = faker.random.arrayElement(organizations);
+  user.organization = faker.helpers.arrayElement(organizations);
   user.phoneNumber = faker.phone.phoneNumber('### ### ###');
   user.createdAt = new Date();
 

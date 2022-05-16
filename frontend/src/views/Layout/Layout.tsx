@@ -28,6 +28,7 @@ export const Layout = ({ children }: LayoutProps) => {
     { text: 'Ogłoszenia', icon: 'event_note', link: '' },
   ];
   const { logOut, user } = useAuth();
+  const userFullName = `${user?.firstName} ${user?.lastName}`;
 
   return (
     <Flex width="100%" height="100vh" alignItems="center">
@@ -43,12 +44,17 @@ export const Layout = ({ children }: LayoutProps) => {
         variant="permanent"
         anchor="left"
       >
-        <Flex py="1.5rem" justifyContent="center" alignItems="center">
+        <Flex
+          py="1.5rem"
+          px="32px"
+          justifyContent="flex-start"
+          alignItems="center"
+        >
           <Flex mr="1rem">
             <Icon sx={{ fontSize: 48 }}>car_rental</Icon>
           </Flex>
           <Typography variant="h5" component="h1">
-            {user.organizationName}
+            {user?.organization.name}
           </Typography>
         </Flex>
         <Divider />
@@ -78,7 +84,7 @@ export const Layout = ({ children }: LayoutProps) => {
                   account_circle
                 </Icon>
               </ListItemIcon>
-              <ListItemText primary={user.username} />
+              <ListItemText primary={userFullName} />
             </ListItem>
             <ListItem button onClick={logOut}>
               <ListItemIcon>
@@ -89,7 +95,7 @@ export const Layout = ({ children }: LayoutProps) => {
           </List>
         </Flex>
       </Drawer>
-      <Container component="main" maxWidth="xl">
+      <Container maxWidth="xl">
         <Flex width="100%" height="100vh" alignItems="center" p="32px">
           <Paper sx={{ width: '100%', height: '100%' }} elevation={2}>
             {children}

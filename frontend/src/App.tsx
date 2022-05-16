@@ -4,6 +4,7 @@ import { HomePage } from './views/HomePage/HomePage';
 import { InstructorsList } from './views/InstructorsList/InstructorsList';
 import { Layout } from './views/Layout/Layout';
 import { Login } from './views/Login/Login';
+import { TraineeDetails } from './views/Trainees/TraineeDetails/TraineeDetails';
 import { TraineesList } from './views/Trainees/TraineesList/TraineesList';
 
 export const App = () => {
@@ -19,7 +20,10 @@ export const App = () => {
         }
       >
         <Route index element={<HomePage />} />
-        <Route path="/kursanci" element={<TraineesList />} />
+        <Route path="/kursanci">
+          <Route index element={<TraineesList />} />
+          <Route path=":traineeId" element={<TraineeDetails />} />
+        </Route>
         <Route path="/instruktorzy" element={<InstructorsList />} />
       </Route>
     </Routes>
