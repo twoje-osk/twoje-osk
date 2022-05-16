@@ -12,6 +12,17 @@
     "prettier/prettier": "error",
     "class-methods-use-this": "off",
     "import/prefer-default-export": "off",
-    "max-classes-per-file": "off"
+    "max-classes-per-file": "off",
+    "@typescript-eslint/ban-types": [
+      "error",
+      {
+        "types": {
+          "Date": {
+            "message": "Use ApiDate as `Date` fields are formatted differently on backend and frontend",
+            "fixWith": "ApiDate"
+          }
+        }
+      }
+    ]
   }
 }
