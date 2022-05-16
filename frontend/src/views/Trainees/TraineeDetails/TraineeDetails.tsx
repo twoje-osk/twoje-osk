@@ -14,6 +14,7 @@ import useSWR from 'swr';
 import { FullPageLoading } from '../../../components/FullPageLoading/FullPageLoading';
 import { GeneralAPIError } from '../../../components/GeneralAPIError/GeneralAPIError';
 import { LONG_DATE } from '../../../constants/dateFormats';
+import { theme } from '../../../theme';
 
 export const TraineeDetails = () => {
   const { traineeId } = useParams();
@@ -52,7 +53,7 @@ export const TraineeDetails = () => {
           >
             Kursanci
           </MUILink>
-          <Typography variant="h6">
+          <Typography variant="h6" color={theme.palette.text.primary}>
             {trainee.user.firstName} {trainee.user.lastName}
           </Typography>
         </Breadcrumbs>

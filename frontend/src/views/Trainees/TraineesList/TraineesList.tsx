@@ -42,15 +42,10 @@ export const TraineesList = () => {
           pr: { xs: 1, sm: 1 },
         }}
       >
-        <Typography
-          sx={{ flex: '1 1 100%' }}
-          variant="h6"
-          id="tableTitle"
-          component="h1"
-        >
+        <Typography sx={{ flex: '1 1 100%' }} variant="h6" component="h1">
           Kursanci
         </Typography>
-        <Tooltip title="Filter list">
+        <Tooltip title="Filtruj listę">
           <IconButton>
             <Icon>filter_list</Icon>
           </IconButton>
