@@ -6,6 +6,7 @@ import {
   Index,
   ManyToOne,
   JoinColumn,
+  OneToOne,
 } from 'typeorm';
 import type { Trainee } from '../../trainees/entities/trainee.entity';
 import { Organization } from '../../organizations/entities/organization.entity';
@@ -41,6 +42,7 @@ export class User {
   @Column()
   phoneNumber: string;
 
+  @OneToOne<Trainee>('Trainee', (trainee) => trainee.user)
   @JoinColumn()
   trainee: Trainee;
 }

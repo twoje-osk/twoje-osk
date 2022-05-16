@@ -1,25 +1,22 @@
-import faker from '@faker-js/faker';
-import { User } from 'users/entities/user.entity';
 import { Trainee } from '../trainees/entities/trainee.entity';
-import { getSeedFromString } from './seed.utils';
+import { Factory } from './seed.utils';
 
-let seedIndex = 0;
-const getSeedTrainee = (users: User[]) => {
-  const trainee = new Trainee();
+class TraineesFactory extends Factory<Trainee> {
+  constructor() {
+    super('Trainees');
+  }
 
-  trainee.user = users[seedIndex]!;
-  seedIndex += 1;
+  public generate() {
+    const trainee = new Trainee();
 
-  trainee.pesel = faker.random.numeric(11);
-  trainee.pkk = faker.random.numeric(11);
+    trainee.pesel = this.faker.random.numeric(11);
+    trainee.pkk = this.faker.random.numeric(11);
 
-  return trainee;
-};
+    this.entities.push(trainee);
+    return trainee;
+  }
+}
 
-export const getSeedTrainees = (users: User[]) => {
-  faker.seed(getSeedFromString('Trainees'));
+export const traineesFactory = new TraineesFactory();
 
-  const trainees = Array.from({ length: 5 }, () => getSeedTrainee(users));
-
-  return trainees;
-};
+export const seedTrainees = () => undefined;

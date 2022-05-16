@@ -1,11 +1,5 @@
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  OneToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
-import { User } from '../../users/entities/user.entity';
+import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import type { User } from '../../users/entities/user.entity';
 
 @Entity()
 export class Trainee {
@@ -21,7 +15,6 @@ export class Trainee {
   @Column()
   pkk: string;
 
-  @OneToOne(() => User, (user) => user.trainee)
-  @JoinColumn()
+  @OneToOne<User>('User', (user) => user.trainee)
   user: User;
 }

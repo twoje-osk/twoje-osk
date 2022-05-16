@@ -1,37 +1,80 @@
-import faker from '@faker-js/faker';
 import * as bcrypt from 'bcrypt';
-import { Organization } from '../organizations/entities/organization.entity';
 import { User } from '../users/entities/user.entity';
-import { getSeedFromString } from './seed.utils';
+import { organizationsFactory } from './seed.organization';
+import { traineesFactory } from './seed.trainees';
+import { Factory } from './seed.utils';
 
-const getSeedUser = (organizations: Organization[]) => {
-  const user = new User();
-  user.firstName = faker.name.firstName();
-  user.lastName = faker.name.lastName();
-  user.isActive = true;
-  user.email = faker.internet.email(user.firstName, user.lastName);
-  user.password = bcrypt.hashSync('password', 10);
-  user.organization = faker.helpers.arrayElement(organizations);
-  user.phoneNumber = faker.phone.phoneNumber('### ### ###');
-  user.createdAt = new Date();
+const getUserType = (n: number) => {
+  if (n < 0.05) {
+    return 'admin';
+  }
 
-  return user;
+  if (n < 0.2) {
+    return 'instructor';
+  }
+
+  return 'trainee';
 };
 
-export const getSeedUsers = (organizations: Organization[]) => {
-  faker.seed(getSeedFromString('Users'));
+class UserFactory extends Factory<User> {
+  constructor() {
+    super('User');
+  }
 
-  const adminUser = new User();
-  adminUser.firstName = 'Admin';
-  adminUser.lastName = 'Admin';
-  adminUser.isActive = true;
-  adminUser.email = 'admin@example.com';
-  adminUser.password = bcrypt.hashSync('password', 10);
-  adminUser.organization = organizations[0]!;
-  adminUser.phoneNumber = faker.phone.phoneNumber('### ### ###');
-  adminUser.createdAt = new Date();
+  public generate() {
+    const user = new User();
+    user.firstName = this.faker.name.firstName();
+    user.lastName = this.faker.name.lastName();
+    user.isActive = true;
+    user.email = this.faker.internet.email(user.firstName, user.lastName);
+    user.password = bcrypt.hashSync('password', 10);
+    user.organization = this.faker.helpers.arrayElement(
+      organizationsFactory.getAll(),
+    );
+    user.phoneNumber = this.faker.phone.phoneNumber('### ### ###');
+    user.createdAt = new Date();
 
-  const users = Array.from({ length: 9 }, () => getSeedUser(organizations));
+    const userType = getUserType(
+      this.faker.datatype.number({
+        max: 1,
+        min: 0,
+        precision: 0.0000001,
+      }),
+    );
 
-  return [adminUser, ...users];
+    if (userType === 'trainee') {
+      user.trainee = traineesFactory.generate();
+    }
+
+    this.entities.push(user);
+
+    return user;
+  }
+
+  public generateFromData({ trainee, ...data }: Partial<User>) {
+    const user = super.generateFromData(data);
+
+    if (trainee === null) {
+      traineesFactory.remove(user.trainee);
+    } else if (trainee !== undefined) {
+      user.trainee = trainee;
+    }
+
+    return user;
+  }
+}
+
+export const usersFactory = new UserFactory();
+
+export const seedUsers = () => {
+  usersFactory.generateFromData({
+    firstName: 'Admin',
+    lastName: 'Admin',
+    isActive: true,
+    email: 'admin@example.com',
+    password: bcrypt.hashSync('password', 10),
+    organization: organizationsFactory.getAll()[0],
+  });
+
+  Array.from({ length: 300 }).forEach(() => usersFactory.generate());
 };
