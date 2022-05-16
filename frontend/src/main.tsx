@@ -5,6 +5,7 @@ import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
 import { App } from './App';
 import { AuthContextProviderWrapper } from './components/AuthContext/AuthContext';
+import { SWRConfigWithAuth } from './components/SWRConfigWithAuth/SWRConfigWithAuth';
 
 const theme = createTheme({
   palette: {
@@ -18,10 +19,12 @@ ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter>
       <AuthContextProviderWrapper>
-        <ThemeProvider theme={theme}>
-          <CssBaseline />
-          <App />
-        </ThemeProvider>
+        <SWRConfigWithAuth>
+          <ThemeProvider theme={theme}>
+            <CssBaseline />
+            <App />
+          </ThemeProvider>
+        </SWRConfigWithAuth>
       </AuthContextProviderWrapper>
     </BrowserRouter>
   </React.StrictMode>,

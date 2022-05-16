@@ -5,6 +5,7 @@ import { User } from '../users/entities/user.entity';
 import { dataSource } from '../data-source';
 import { getSeedUsers } from './seed.user';
 import { getSeedOrganizations } from './seed.organization';
+import { getSeedTrainees } from './seed.trainees';
 
 const clear = async (trx: EntityManager) => {
   const usersRepository = trx.getRepository(User);
@@ -38,8 +39,9 @@ const run = async () => {
 
     const organizations = getSeedOrganizations();
     const users = getSeedUsers(organizations);
+    const trainees = getSeedTrainees(users);
 
-    await trx.save([...organizations, ...users]);
+    await trx.save([...organizations, ...trainees, ...users]);
   });
 
   await dataSource.destroy();

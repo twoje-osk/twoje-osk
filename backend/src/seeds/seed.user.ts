@@ -12,6 +12,8 @@ const getSeedUser = (organizations: Organization[]) => {
   user.email = faker.internet.email(user.firstName, user.lastName);
   user.password = bcrypt.hashSync('password', 10);
   user.organization = faker.random.arrayElement(organizations);
+  user.phoneNumber = faker.phone.phoneNumber('### ### ###');
+  user.createdAt = new Date();
 
   return user;
 };
@@ -26,6 +28,8 @@ export const getSeedUsers = (organizations: Organization[]) => {
   adminUser.email = 'admin@example.com';
   adminUser.password = bcrypt.hashSync('password', 10);
   adminUser.organization = organizations[0]!;
+  adminUser.phoneNumber = faker.phone.phoneNumber('### ### ###');
+  adminUser.createdAt = new Date();
 
   const users = Array.from({ length: 9 }, () => getSeedUser(organizations));
 

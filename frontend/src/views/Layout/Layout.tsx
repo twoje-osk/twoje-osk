@@ -23,7 +23,7 @@ interface LayoutProps {
 export const Layout = ({ children }: LayoutProps) => {
   const menuItems = [
     { text: 'Instruktorzy', icon: 'class', link: '/instruktorzy' },
-    { text: 'Kursanci', icon: 'school', link: '' },
+    { text: 'Kursanci', icon: 'school', link: '/kursanci' },
     { text: 'Pojazdy', icon: 'directions_car', link: '' },
     { text: 'Ogłoszenia', icon: 'event_note', link: '' },
   ];

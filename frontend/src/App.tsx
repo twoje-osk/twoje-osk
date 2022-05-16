@@ -4,6 +4,7 @@ import { HomePage } from './views/HomePage/HomePage';
 import { InstructorsList } from './views/InstructorsList/InstructorsList';
 import { Layout } from './views/Layout/Layout';
 import { Login } from './views/Login/Login';
+import { TraineesList } from './views/Trainees/TraineesList/TraineesList';
 
 export const App = () => {
   return (
@@ -18,7 +19,7 @@ export const App = () => {
         }
       >
         <Route index element={<HomePage />} />
-        <Route path="/kursanci" element={<HomePage />} />
+        <Route path="/kursanci" element={<TraineesList />} />
         <Route path="/instruktorzy" element={<InstructorsList />} />
       </Route>
     </Routes>

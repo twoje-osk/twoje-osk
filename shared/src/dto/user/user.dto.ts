@@ -15,6 +15,12 @@ export class DtoUser {
 
   @ApiProperty()
   isActive: boolean;
+
+  @ApiProperty()
+  phoneNumber: string;
+
+  @ApiProperty()
+  createdAt: Date;
 }
 
 export class UserTestDto {
