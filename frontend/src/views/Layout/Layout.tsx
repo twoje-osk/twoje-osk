@@ -8,6 +8,8 @@ import {
   Icon,
   ListItemIcon,
   ListItemButton,
+  Container,
+  Paper,
 } from '@mui/material';
 import { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
@@ -87,7 +89,13 @@ export const Layout = ({ children }: LayoutProps) => {
           </List>
         </Flex>
       </Drawer>
-      {children}
+      <Container component="main" maxWidth="xl">
+        <Flex width="100%" height="100vh" alignItems="center" p="32px">
+          <Paper sx={{ width: '100%', height: '100%' }} elevation={2}>
+            {children}
+          </Paper>
+        </Flex>
+      </Container>
     </Flex>
   );
 };
