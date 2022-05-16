@@ -14,6 +14,7 @@ import {
 import { TraineeFindAllResponseDto } from '@osk/shared';
 import { format, parseISO } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
+import { Flex } from 'reflexbox';
 import useSWR from 'swr';
 import { FullPageLoading } from '../../../components/FullPageLoading/FullPageLoading';
 import { GeneralAPIError } from '../../../components/GeneralAPIError/GeneralAPIError';
@@ -34,7 +35,7 @@ export const TraineesList = () => {
   const rows = data.trainees;
 
   return (
-    <div>
+    <Flex flexDirection="column" height="100%">
       <Toolbar
         sx={{
           pl: { sm: 2 },
@@ -45,7 +46,7 @@ export const TraineesList = () => {
           sx={{ flex: '1 1 100%' }}
           variant="h6"
           id="tableTitle"
-          component="div"
+          component="h1"
         >
           Kursanci
         </Typography>
@@ -55,9 +56,8 @@ export const TraineesList = () => {
           </IconButton>
         </Tooltip>
       </Toolbar>
-
-      <TableContainer>
-        <Table sx={{ minWidth: 650 }} aria-label="simple table">
+      <TableContainer sx={{ flex: '1 1', overflow: 'auto' }}>
+        <Table aria-label="Lista Kursantów" stickyHeader>
           <TableHead>
             <TableRow>
               <TableCell>Imię</TableCell>
@@ -92,6 +92,6 @@ export const TraineesList = () => {
           </TableBody>
         </Table>
       </TableContainer>
-    </div>
+    </Flex>
   );
 };
