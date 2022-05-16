@@ -15,6 +15,7 @@ export abstract class Factory<T> {
     });
 
     this.faker.seed(getSeedFromString(seedKey));
+    this.faker.setLocale('pl');
   }
 
   abstract generate(): T;
