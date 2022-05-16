@@ -4,3 +4,6 @@ node_modules
 **/dist
 .yarn/cache
 backend/client
+azure-pipelines.yml
+README.md
+docker-compose*.yml

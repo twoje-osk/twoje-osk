@@ -15,9 +15,6 @@ trigger:
       - '!**/.eslintrc'
       - '!**/.prettierrc'
 pr:
-  branches:
-    include:
-      - main
   paths:
     include:
       - 'backend/*'
@@ -135,7 +132,6 @@ stages:
               buildContext: '$(System.DefaultWorkingDirectory)'
               arguments: '--cache-from=$(ACR_ADDRESS)/$(REPOSITORY):latest' 
               tags: |
-                $(Build.BuildNumber)
                 latest
             displayName: Build Docker image
           - task: Docker@2
@@ -145,7 +141,6 @@ stages:
               repository: '$(DOCKER_REPO)'
               command: 'push'
               tags: |
-                $(Build.BuildNumber)
                 latest
             displayName: Push Docker image to ACR
             condition: |
