@@ -118,7 +118,6 @@ const NavLinkForMUI = forwardRef<
   return (
     <NavLink
       ref={ref}
-      // eslint-disable-next-line react/jsx-props-no-spreading
       {...props}
       className={({ isActive }) =>
         [props.className, ...(isActive ? ['Mui-selected'] : [])].join(' ')

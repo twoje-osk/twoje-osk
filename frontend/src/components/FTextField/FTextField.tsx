@@ -20,7 +20,6 @@ export const FTextField = (props: FTextFieldProps) => {
   const helperText = hasError ? meta.error : externalHelperText;
 
   return (
-    // eslint-disable-next-line react/jsx-props-no-spreading
     <TextField {...props} {...field} error={hasError} helperText={helperText} />
   );
 };
