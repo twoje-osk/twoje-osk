@@ -77,13 +77,7 @@ export const TraineeDetails = () => {
         <Typography variant="h6" component="h2">
           Data Dołączenia
         </Typography>
-        <div>
-          {format(
-            // @ts-expect-error
-            parseISO(trainee.user.createdAt),
-            LONG_DATE,
-          )}
-        </div>
+        <div>{format(parseISO(trainee.user.createdAt), LONG_DATE)}</div>
         <Typography variant="h6" component="h2">
           PESEL
         </Typography>

@@ -78,6 +78,9 @@ export const Layout = ({ children }: LayoutProps) => {
                 </ListItemButton>
               ))}
             </Box>
+            <Box mb="8px">
+              <Divider />
+            </Box>
             <Box mb="16px">
               <ListItemButton>
                 <ListItemIcon>

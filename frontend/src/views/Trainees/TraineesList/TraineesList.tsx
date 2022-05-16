@@ -74,13 +74,8 @@ export const TraineesList = () => {
                 </TableCell>
                 <TableCell>{row.user.lastName}</TableCell>
                 <TableCell>{row.user.phoneNumber}</TableCell>
-                {/* TODO: Typings for date */}
                 <TableCell>
-                  {format(
-                    // @ts-expect-error
-                    parseISO(row.user.createdAt),
-                    LONG_DATE,
-                  )}
+                  {format(parseISO(row.user.createdAt), LONG_DATE)}
                 </TableCell>
               </TableRow>
             ))}

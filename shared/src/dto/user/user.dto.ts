@@ -21,7 +21,7 @@ export class DtoUser {
   phoneNumber: string;
 
   @ApiProperty()
-  createdAt: Date;
+  createdAt: ApiDate;
 
   @ApiProperty()
   organization: DtoOrganization;
