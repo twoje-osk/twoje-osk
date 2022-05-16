@@ -130,7 +130,7 @@ stages:
               command: 'build'
               Dockerfile: 'docker/Dockerfile.backend'
               buildContext: '$(System.DefaultWorkingDirectory)'
-              arguments: '--cache-from=$(ACR_ADDRESS)/$(REPOSITORY):latest' 
+              arguments: '--cache-from=$(ACR_ADDRESS)/$(DOCKER_REPO):latest' 
               tags: |
                 latest
             displayName: Build Docker image
