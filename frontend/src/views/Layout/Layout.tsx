@@ -7,8 +7,10 @@ import {
   Typography,
   Icon,
   ListItemIcon,
+  ListItemButton,
 } from '@mui/material';
 import { ReactNode } from 'react';
+import { Link } from 'react-router-dom';
 import { Box, Flex } from 'reflexbox';
 import { useAuth } from '../../hooks/useAuth/useAuth';
 
@@ -19,10 +21,10 @@ interface MyComponentProps {
 export const Layout = ({ children }: MyComponentProps) => {
   const oskName = 'OSK Adam Nowak';
   const menuItems = [
-    { text: 'Instruktorzy', icon: 'class' },
-    { text: 'Kursanci', icon: 'school' },
-    { text: 'Pojazdy', icon: 'directions_car' },
-    { text: 'Ogłoszenia', icon: 'event_note' },
+    { text: 'Instruktorzy', icon: 'class', link: '/instruktorzy' },
+    { text: 'Kursanci', icon: 'school', link: '' },
+    { text: 'Pojazdy', icon: 'directions_car', link: '' },
+    { text: 'Ogłoszenia', icon: 'event_note', link: '' },
   ];
   const userName = 'Adam Abacki';
   const { logOut } = useAuth();
@@ -50,21 +52,25 @@ export const Layout = ({ children }: MyComponentProps) => {
           </Typography>
         </Flex>
         <Divider />
-        <Box pt="1.5rem" pl="1rem">
+        <Box pt="1.5rem" px="1rem">
           <List>
             {menuItems.map((element) => (
-              <ListItem button key={element.text}>
+              <ListItemButton
+                key={element.text}
+                component={Link}
+                to={element.link}
+              >
                 <ListItemIcon>
                   <Icon sx={{ fontSize: 32, color: 'black' }}>
                     {element.icon}
                   </Icon>
                 </ListItemIcon>
                 <ListItemText primary={element.text} />
-              </ListItem>
+              </ListItemButton>
             ))}
           </List>
         </Box>
-        <Flex height="100vh" pl="1rem" alignItems="flex-end">
+        <Flex height="100vh" px="1rem" alignItems="flex-end">
           <List>
             <ListItem button>
               <ListItemIcon>
