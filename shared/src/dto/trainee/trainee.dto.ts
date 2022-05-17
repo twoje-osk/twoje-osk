@@ -7,6 +7,15 @@ export class DtoTrainee {
 
   @ApiProperty()
   user: DtoUser;
+
+  @ApiProperty()
+  pesel: string;
+
+  @ApiProperty()
+  pkk: string;
+
+  @ApiProperty()
+  driversLicenseNumber?: string;
 }
 
 export class TraineeFindAllResponseDto {
