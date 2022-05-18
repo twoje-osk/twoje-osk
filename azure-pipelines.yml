@@ -15,9 +15,6 @@ trigger:
       - '!**/.eslintrc'
       - '!**/.prettierrc'
 pr:
-  branches:
-    include:
-      - main
   paths:
     include:
       - 'backend/*'
@@ -41,6 +38,12 @@ variables:
     value: true
   - name: YARN_CACHE_FOLDER
     value: $(Pipeline.Workspace)/.yarn
+  - name: ACR_NAME
+    value: oskshrdacr
+  - name: ACR_ADDRESS
+    value: oskshrdacr.azurecr.io
+  - name: DOCKER_REPO
+    value: twoje-osk
   - ${{ if in( variables['Build.SourceBranchName'], 'main' ) }}:
     - name: ENVIRONMENT_TYPE
       value: prod
@@ -104,58 +107,52 @@ stages:
           (
             and
             (
+              eq(variables['ENVIRONMENT_TYPE'], 'prod'),
               eq(dependencies.agent_preparation.result, 'Succeeded'),
               eq(dependencies.agent_preparation.outputs['git_check.BUILD_IMAGE'], 'true')
             ),
             eq(variables['MANUAL_TRIGGER'], 'true')
           )
         steps:
-          - script: echo "Build Docker"
-          # - task: Docker@2
-          #   name: docker_build
-          #   inputs:
-          #     containerRegistry: 'oskshrdacr'
-          #     repository: 'twoje-osk'
-          #     command: 'build'
-          #     Dockerfile: 'docker/Dockerfile.backend'
-          #     buildContext: '$(System.DefaultWorkingDirectory)'
-          #     tags: |
-          #       latest
-          #   displayName: Build Docker image
-          # - task: Docker@2
-          #   name: docker_push
-          #   inputs:
-          #     containerRegistry: 'oskshrdacr'
-          #     repository: 'twoje-osk'
-          #     command: 'push'
-          #     tags: |
-          #       latest
-          #   displayName: Push Docker image to ACR
-          #   condition: |
-          #     or
-          #     (
-          #       eq(variables['ENVIRONMENT_TYPE'], 'prod'),
-          #       eq(variables['MANUAL_TRIGGER'], 'true')
-          #     )
-          # - task: AzureRmWebAppDeployment@4
-          #   inputs:
-          #     ConnectionType: 'AzureRM'
-          #     azureSubscription: 'Romeo_Student'
-          #     appType: 'webAppContainer'
-          #     WebAppName: 'twoje-osk'
-          #     deployToSlotOrASE: true
-          #     ResourceGroupName: 'osk-prod-back-rg'
-          #     SlotName: 'production'
-          #     DockerNamespace: 'oskshrdacr.azurecr.io'
-          #     DockerRepository: 'twoje-osk'
-          #   displayName: Deploy app
-          #   condition: |
-          #     and
-          #     (
-          #       succeeded(),
-          #       or
-          #       (
-          #         eq(variables['ENVIRONMENT_TYPE'], 'prod'),
-          #         eq(variables['MANUAL_TRIGGER'], 'true')
-          #       )
-          #     )
+          - task: Docker@2
+            inputs:
+              containerRegistry: '$(ACR_NAME)'
+              command: 'login'
+            displayName: "Docker login to acr"
+          - script: |
+              docker pull $(ACR_ADDRESS)/$(DOCKER_REPO):latest
+            displayName: Pull latest for layer caching
+            continueOnError: true # for first build, no available cache
+          - task: Docker@2
+            name: docker_build
+            inputs:
+              containerRegistry: '$(ACR_NAME)'
+              repository: '$(DOCKER_REPO)'
+              command: 'build'
+              Dockerfile: 'docker/Dockerfile.backend'
+              buildContext: '$(System.DefaultWorkingDirectory)'
+              arguments: '--cache-from=$(ACR_ADDRESS)/$(DOCKER_REPO):latest' 
+              tags: |
+                latest
+            displayName: Build Docker image
+          - task: Docker@2
+            name: docker_push 
+            inputs:
+              containerRegistry: '$(ACR_NAME)'
+              repository: '$(DOCKER_REPO)'
+              command: 'push'
+              tags: |
+                latest
+            displayName: Push Docker image to ACR
+          - task: AzureRmWebAppDeployment@4
+            inputs:
+              ConnectionType: 'AzureRM'
+              azureSubscription: 'Romeo_Student'
+              appType: 'webAppContainer'
+              WebAppName: 'twoje-osk'
+              deployToSlotOrASE: true
+              ResourceGroupName: 'osk-prod-back-rg'
+              SlotName: 'production'
+              DockerNamespace: '$(ACR_ADDRESS)'
+              DockerRepository: '$(DOCKER_REPO)'
+            displayName: Deploy app
