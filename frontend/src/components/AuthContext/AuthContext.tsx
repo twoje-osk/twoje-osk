@@ -1,16 +1,21 @@
+import { DtoUser, UserMyProfileResponseDto } from '@osk/shared';
 import { createContext, ReactNode, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import useSWR from 'swr';
+import { getMakeRequestWithAuth } from '../SWRConfigWithAuth/SWRConfigWithAuth.utils';
 
 interface AuthContextType {
   accessToken: string | null;
   logIn: (accessToken: string) => void;
   logOut: () => void;
+  user: DtoUser | undefined;
 }
 
 export const AuthContext = createContext<AuthContextType>({
   accessToken: null,
   logIn: () => undefined,
   logOut: () => undefined,
+  user: undefined,
 });
 
 const ACCESS_TOKEN_STORAGE_KEY = 'access-token';
@@ -23,6 +28,12 @@ const useAuthContextProvider = (): AuthContextType => {
     AuthContextType['accessToken']
   >(getAccessTokenFromStorage());
   const navigate = useNavigate();
+  const { data } = useSWR<UserMyProfileResponseDto>(
+    accessToken ? '/api/users/me' : null,
+    getMakeRequestWithAuth(accessToken),
+  );
+
+  const user = data?.user;
 
   const logIn = (newAccessToken: string) => {
     setAccessToken(newAccessToken);
@@ -39,6 +50,7 @@ const useAuthContextProvider = (): AuthContextType => {
     accessToken,
     logIn,
     logOut,
+    user,
   };
 };
 

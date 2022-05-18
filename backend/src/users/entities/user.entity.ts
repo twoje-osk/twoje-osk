@@ -5,8 +5,8 @@ import {
   PrimaryGeneratedColumn,
   Index,
   ManyToOne,
-  OneToOne,
   JoinColumn,
+  OneToOne,
 } from 'typeorm';
 import type { Trainee } from '../../trainees/entities/trainee.entity';
 import { Organization } from '../../organizations/entities/organization.entity';
@@ -36,7 +36,13 @@ export class User {
   @ManyToOne(() => Organization)
   organization: Organization;
 
-  @OneToOne(() => Organization)
+  @Column()
+  createdAt: Date;
+
+  @Column()
+  phoneNumber: string;
+
+  @OneToOne<Trainee>('Trainee', (trainee) => trainee.user)
   @JoinColumn()
   trainee: Trainee;
 }

@@ -1,17 +1,27 @@
-import faker from '@faker-js/faker';
 import { Organization } from '../organizations/entities/organization.entity';
-import { getSeedFromString } from './seed.utils';
+import { Factory } from './seed.utils';
 
-export const getSeedOrganizations = () => {
-  faker.seed(getSeedFromString('Organizations'));
+class OrganizationsFactory extends Factory<Organization> {
+  constructor() {
+    super('Organizations');
+  }
 
-  const organization1 = new Organization();
-  organization1.name = 'Test OSK';
+  public generate() {
+    const organization = new Organization();
+    organization.name = this.faker.company.companyName();
 
-  const organization2 = new Organization();
-  organization2.name = 'Other Test OSK';
+    this.entities.push(organization);
+    return organization;
+  }
+}
 
-  const organizations = [organization1, organization2];
+export const organizationsFactory = new OrganizationsFactory();
 
-  return organizations;
+export const seedOrganizations = () => {
+  organizationsFactory.generateFromData({
+    name: 'Test OSK',
+  });
+  organizationsFactory.generateFromData({
+    name: 'Other Test OSK',
+  });
 };

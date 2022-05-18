@@ -1,5 +1,5 @@
-import { Body, Controller, Post, Request, UseGuards } from '@nestjs/common';
-import { ApiResponse } from '@nestjs/swagger';
+import { Controller, Post, Request, UseGuards } from '@nestjs/common';
+import { ApiBody, ApiResponse } from '@nestjs/swagger';
 import { LoginAuthRequestDto, LoginAuthResponseDto } from '@osk/shared';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './passport/local-auth.guard';
@@ -12,14 +12,13 @@ export class AuthController {
   @SkipAuth()
   @UseGuards(LocalAuthGuard)
   @Post('login')
+  @ApiBody({
+    type: LoginAuthRequestDto,
+  })
   @ApiResponse({
     type: LoginAuthResponseDto,
   })
-  async login(
-    @Request() req: any,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    @Body() _body: LoginAuthRequestDto,
-  ): Promise<LoginAuthResponseDto> {
+  async login(@Request() req: any): Promise<LoginAuthResponseDto> {
     return this.authService.login(req.user);
   }
 }

@@ -33,7 +33,9 @@ async function bootstrap() {
       .setTitle('Twoje OSK API')
       .setVersion('1.0')
       .addBearerAuth()
+      .addSecurityRequirements('bearer', [])
       .build();
+
     const document = SwaggerModule.createDocument(app, swaggerConfig);
     SwaggerModule.setup('api/swagger', app, document);
   }

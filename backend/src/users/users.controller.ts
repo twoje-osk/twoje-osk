@@ -1,6 +1,6 @@
 import { Controller, Get, NotFoundException, Request } from '@nestjs/common';
-import { ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
-import { UserTestDto } from '@osk/shared';
+import { ApiResponse } from '@nestjs/swagger';
+import { UserMyProfileResponseDto } from '@osk/shared';
 import { AuthRequest } from 'auth/auth.types';
 import { UsersService } from './users.service';
 
@@ -8,12 +8,13 @@ import { UsersService } from './users.service';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @ApiBearerAuth()
   @Get('me')
   @ApiResponse({
-    type: UserTestDto,
+    type: UserMyProfileResponseDto,
   })
-  async findMyProfile(@Request() req: AuthRequest): Promise<UserTestDto> {
+  async findMyProfile(
+    @Request() req: AuthRequest,
+  ): Promise<UserMyProfileResponseDto> {
     const user = await this.usersService.findOneById(req.user.userId);
 
     if (user === null) {

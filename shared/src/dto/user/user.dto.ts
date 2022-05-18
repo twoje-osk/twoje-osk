@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { DtoOrganization } from '../organization/organization.dto';
 
 export class DtoUser {
   @ApiProperty()
@@ -15,9 +16,18 @@ export class DtoUser {
 
   @ApiProperty()
   isActive: boolean;
+
+  @ApiProperty()
+  phoneNumber: string;
+
+  @ApiProperty()
+  createdAt: ApiDate;
+
+  @ApiProperty()
+  organization: DtoOrganization;
 }
 
-export class UserTestDto {
+export class UserMyProfileResponseDto {
   @ApiProperty()
   user: DtoUser;
 }
