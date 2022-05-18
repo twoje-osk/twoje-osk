@@ -107,6 +107,7 @@ stages:
           (
             and
             (
+              eq(variables['ENVIRONMENT_TYPE'], 'prod'),
               eq(dependencies.agent_preparation.result, 'Succeeded'),
               eq(dependencies.agent_preparation.outputs['git_check.BUILD_IMAGE'], 'true')
             ),
@@ -121,7 +122,7 @@ stages:
           - script: |
               docker pull $(ACR_ADDRESS)/$(DOCKER_REPO):latest
             displayName: Pull latest for layer caching
-            continueOnError: true # for first build, no cache
+            continueOnError: true # for first build, no available cache
           - task: Docker@2
             name: docker_build
             inputs:
@@ -143,12 +144,6 @@ stages:
               tags: |
                 latest
             displayName: Push Docker image to ACR
-            condition: |
-              or
-              (
-                eq(variables['ENVIRONMENT_TYPE'], 'prod'),
-                eq(variables['MANUAL_TRIGGER'], 'true')
-              )
           - task: AzureRmWebAppDeployment@4
             inputs:
               ConnectionType: 'AzureRM'
@@ -161,13 +156,3 @@ stages:
               DockerNamespace: '$(ACR_ADDRESS)'
               DockerRepository: '$(DOCKER_REPO)'
             displayName: Deploy app
-            condition: |
-              and
-              (
-                succeeded(),
-                or
-                (
-                  eq(variables['ENVIRONMENT_TYPE'], 'prod'),
-                  eq(variables['MANUAL_TRIGGER'], 'true')
-                )
-              )
