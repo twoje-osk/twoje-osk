@@ -2,9 +2,11 @@ import { EntityManager, Repository } from 'typeorm';
 import { Organization } from '../organizations/entities/organization.entity';
 import { Trainee } from '../trainees/entities/trainee.entity';
 import { User } from '../users/entities/user.entity';
+import { Vehicle } from '../vehicles/entities/vehicle.entity';
 import { organizationsFactory } from './seed.organization';
 import { traineesFactory } from './seed.trainees';
 import { usersFactory } from './seed.user';
+import { vehiclesFactory } from './seed.vehicles';
 import { Factory } from './seed.utils';
 
 export interface EntityDbData {
@@ -28,5 +30,10 @@ export const getEntitiesDbData = (trx: EntityManager): EntityDbData[] => [
     factory: usersFactory,
     repository: trx.getRepository(User),
     sequences: ['user_id_seq'],
+  },
+  {
+    factory: vehiclesFactory,
+    repository: trx.getRepository(Vehicle),
+    sequences: ['vehicle_id_seq'],
   },
 ];

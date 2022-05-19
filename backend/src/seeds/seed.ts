@@ -3,6 +3,7 @@ import { dataSource } from '../data-source';
 import { seedUsers } from './seed.user';
 import { seedOrganizations } from './seed.organization';
 import { seedTrainees } from './seed.trainees';
+import { seedVehicles } from './seed.vehicles';
 import { EntityDbData, getEntitiesDbData } from './seed.entities';
 
 const clear = async (trx: EntityManager, entitiesDbData: EntityDbData[]) => {
@@ -31,6 +32,7 @@ const run = async () => {
     seedOrganizations();
     seedTrainees();
     seedUsers();
+    seedVehicles();
 
     await Promise.all(entitiesDbData.map(({ factory }) => factory.save(trx)));
   });
