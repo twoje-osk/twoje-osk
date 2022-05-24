@@ -31,10 +31,13 @@ const run = async () => {
 
     seedOrganizations();
     seedTrainees();
-    seedUsers();
     seedInstructors();
+    seedUsers();
 
-    await Promise.all(entitiesDbData.map(({ factory }) => factory.save(trx)));
+    for (const { factory } of entitiesDbData) {
+      // eslint-disable-next-line no-await-in-loop
+      await factory.save(trx);
+    }
   });
 
   await dataSource.destroy();

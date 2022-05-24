@@ -27,13 +27,13 @@ export const getEntitiesDbData = (trx: EntityManager): EntityDbData[] => [
     sequences: ['trainee_id_seq'],
   },
   {
-    factory: usersFactory,
-    repository: trx.getRepository(User),
-    sequences: ['user_id_seq'],
-  },
-  {
     factory: instructorsFactory,
     repository: trx.getRepository(Instructor),
     sequences: ['instructor_id_seq'],
+  },
+  {
+    factory: usersFactory,
+    repository: trx.getRepository(User),
+    sequences: ['user_id_seq'],
   },
 ];
