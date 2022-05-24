@@ -1,5 +1,6 @@
 import * as bcrypt from 'bcrypt';
 import { User } from '../users/entities/user.entity';
+import { instructorsFactory } from './seed.instructors';
 import { organizationsFactory } from './seed.organization';
 import { traineesFactory } from './seed.trainees';
 import { Factory } from './seed.utils';
@@ -44,6 +45,10 @@ class UserFactory extends Factory<User> {
 
     if (userType === 'trainee') {
       user.trainee = traineesFactory.generate();
+    }
+
+    if (userType === 'instructor') {
+      user.instructor = instructorsFactory.generate();
     }
 
     this.entities.push(user);
