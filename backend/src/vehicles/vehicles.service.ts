@@ -11,6 +11,21 @@ export class VehicleService {
   ) {}
 
   async getAll(): Promise<Vehicle[]> {
-    return this.vehiclesRepository.find();
+    return this.vehiclesRepository.find({
+      relations: {
+        organization: true,
+      },
+    });
+  }
+
+  async findOne(id: number) {
+    return this.vehiclesRepository.findOne({
+      where: {
+        id,
+      },
+      relations: {
+        organization: true,
+      },
+    });
   }
 }

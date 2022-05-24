@@ -1,5 +1,6 @@
 import { Vehicle } from '../vehicles/entities/vehicle.entity';
 import { Factory } from './seed.utils';
+import { organizationsFactory } from './seed.organization';
 
 class VehicleFactory extends Factory<Vehicle> {
   constructor() {
@@ -10,8 +11,11 @@ class VehicleFactory extends Factory<Vehicle> {
     const vehicle = new Vehicle();
     vehicle.licensePlate = this.faker.vehicle.vrm();
     vehicle.notes = this.faker.random.words(10);
-    this.entities.push(vehicle);
+    vehicle.organization = this.faker.helpers.arrayElement(
+      organizationsFactory.getAll(),
+    );
 
+    this.entities.push(vehicle);
     return vehicle;
   }
 }

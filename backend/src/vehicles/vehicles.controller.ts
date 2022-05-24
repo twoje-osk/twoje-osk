@@ -1,6 +1,9 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, NotFoundException, Param } from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
-import { VehicleGetAllResponseDto } from '@osk/shared';
+import {
+  VehicleFindOneResponseDto,
+  VehicleGetAllResponseDto,
+} from '@osk/shared';
 import { VehicleService } from './vehicles.service';
 
 @Controller('vehicles')
@@ -15,5 +18,19 @@ export class VehiclesController {
     const vehicles = await this.vehicleService.getAll();
 
     return { vehicles };
+  }
+
+  @ApiResponse({
+    type: VehicleFindOneResponseDto,
+  })
+  @Get(':id')
+  async findOne(@Param('id') id: string): Promise<VehicleFindOneResponseDto> {
+    const vehicle = await this.vehicleService.findOne(+id);
+
+    if (vehicle === null) {
+      throw new NotFoundException();
+    }
+
+    return { vehicle };
   }
 }
