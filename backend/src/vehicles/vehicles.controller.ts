@@ -40,7 +40,7 @@ export class VehiclesController {
   })
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<VehicleFindOneResponseDto> {
-    const vehicle = await this.vehicleService.findOne(+id);
+    const vehicle = await this.vehicleService.findOneById(+id);
 
     if (vehicle === null) {
       throw new NotFoundException();
@@ -68,7 +68,7 @@ export class VehiclesController {
     }
 
     return {
-      vehicle: await this.vehicleService.addNew(
+      vehicle: await this.vehicleService.create(
         vehicle.licensePlate,
         vehicle.notes,
       ),
@@ -84,13 +84,14 @@ export class VehiclesController {
     @Body() { vehicle }: VehicleUpdateRequestDto,
     @Param('id', ParseIntPipe) id: number,
   ): Promise<VehicleUpdateResponseDto> {
-    const doesVehicleExist = (await this.vehicleService.findOne(id)) !== null;
+    const doesVehicleExist =
+      (await this.vehicleService.findOneById(id)) !== null;
 
     if (!doesVehicleExist) {
       throw new NotFoundException('Vehicle with this id does not exist.');
     }
 
-    await this.vehicleService.editVehicle(vehicle, id);
+    await this.vehicleService.update(vehicle, id);
 
     return {};
   }

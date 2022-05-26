@@ -29,7 +29,7 @@ export class VehicleService {
     });
   }
 
-  async findOne(id: number) {
+  async findOneById(id: number) {
     const { organizationId } = this.currentUserService.getRequestCurrentUser();
     return this.vehiclesRepository.findOne({
       where: {
@@ -53,7 +53,7 @@ export class VehicleService {
   }
 
   // create
-  async addNew(licensePlate: string, notes: string | undefined) {
+  async create(licensePlate: string, notes: string | undefined) {
     const { organizationId } = this.currentUserService.getRequestCurrentUser();
     const newVehicle = this.vehiclesRepository.create({
       licensePlate,
@@ -67,7 +67,7 @@ export class VehicleService {
   }
 
   // update
-  async editVehicle(vehicle: VehicleArguments, vehicleId: number) {
+  async update(vehicle: VehicleArguments, vehicleId: number) {
     const { organizationId } = this.currentUserService.getRequestCurrentUser();
     const updatedVehicle = this.vehiclesRepository.update(
       {
