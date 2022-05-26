@@ -1,9 +1,20 @@
-import { Controller, Get, NotFoundException, Param } from '@nestjs/common';
-import { ApiResponse } from '@nestjs/swagger';
+import {
+  Controller,
+  Get,
+  NotFoundException,
+  Param,
+  Post,
+  Body,
+  ConflictException,
+} from '@nestjs/common';
+import { ApiResponse, ApiBody, ApiCreatedResponse } from '@nestjs/swagger';
 import {
   VehicleFindOneResponseDto,
   VehicleGetAllResponseDto,
+  VehicleAddNewResponseDto,
+  VehicleAddNewRequestDto,
 } from '@osk/shared';
+import { Vehicle } from './entities/vehicle.entity';
 import { VehicleService } from './vehicles.service';
 
 @Controller('vehicles')
@@ -32,5 +43,31 @@ export class VehiclesController {
     }
 
     return { vehicle };
+  }
+
+  // eslint-disable-next-line require-decorator/require-decorator
+  @ApiCreatedResponse({ type: Vehicle, description: 'Record created' })
+  @ApiBody({ type: VehicleAddNewRequestDto })
+  @Post()
+  async addNew(
+    @Body() { vehicle }: VehicleAddNewRequestDto,
+  ): Promise<VehicleAddNewResponseDto> {
+    const doesVehicleExist =
+      await this.vehicleService.checkIfExistsByLicensePlate(
+        vehicle.licensePlate,
+      );
+
+    if (doesVehicleExist) {
+      throw new ConflictException(
+        'Vehicle with this license plate already exists.',
+      );
+    }
+
+    return {
+      vehicle: await this.vehicleService.addNew(
+        vehicle.licensePlate,
+        vehicle.notes,
+      ),
+    };
   }
 }

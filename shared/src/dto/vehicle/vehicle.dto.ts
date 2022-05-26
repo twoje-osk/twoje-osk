@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty } from 'class-validator';
-import { DtoOrganization } from '../organization/organization.dto';
+import { IsNotEmpty, IsOptional } from 'class-validator';
 
 export class DtoVehicle {
   @ApiProperty()
@@ -12,12 +11,18 @@ export class DtoVehicle {
   licensePlate: string;
 
   @ApiProperty({ nullable: true })
+  @IsOptional()
   notes?: string;
-
-  @ApiProperty()
-  organization: DtoOrganization;
 }
 
+export class DtoCreateVehicle {
+  @ApiProperty()
+  @IsNotEmpty()
+  licensePlate: string;
+
+  @ApiProperty({ nullable: true })
+  notes?: string;
+}
 export class VehicleGetAllResponseDto {
   @ApiProperty({
     isArray: true,
@@ -29,4 +34,15 @@ export class VehicleGetAllResponseDto {
 export class VehicleFindOneResponseDto {
   @ApiProperty()
   vehicle: DtoVehicle;
+}
+
+export class VehicleAddNewResponseDto {
+  @ApiProperty()
+  vehicle: DtoVehicle;
+}
+
+export class VehicleAddNewRequestDto {
+  @ApiProperty()
+  @IsNotEmpty()
+  vehicle: DtoCreateVehicle;
 }

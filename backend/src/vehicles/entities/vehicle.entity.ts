@@ -1,7 +1,14 @@
-import { Column, Entity, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import {
+  Column,
+  Entity,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  Unique,
+} from 'typeorm';
 import { Organization } from '../../organizations/entities/organization.entity';
 
 @Entity()
+@Unique(['licensePlate'])
 export class Vehicle {
   @PrimaryGeneratedColumn()
   id: number;
@@ -14,7 +21,4 @@ export class Vehicle {
 
   @ManyToOne(() => Organization)
   organization: Organization;
-
-  // TODO @OneToMany<Lesson>('Lesson', (lesson) => lesson.vehicle) ... to check on list not on single vehicle
-  // TODO lesson: Lesson;
 }
