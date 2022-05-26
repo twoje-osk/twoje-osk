@@ -57,3 +57,7 @@ export class VehicleUpdateRequestDto {
   @IsNotEmpty()
   vehicle: DtoUpdateVehicle;
 }
+
+export class VehicleDeleteResponseDto {}
+
+export class VehicleDeleteRequestDto {}

@@ -8,6 +8,7 @@ import {
   ConflictException,
   Patch,
   ParseIntPipe,
+  Delete,
 } from '@nestjs/common';
 import { ApiResponse, ApiBody, ApiCreatedResponse } from '@nestjs/swagger';
 import {
@@ -17,6 +18,8 @@ import {
   VehicleAddNewRequestDto,
   VehicleUpdateRequestDto,
   VehicleUpdateResponseDto,
+  VehicleDeleteResponseDto,
+  VehicleDeleteRequestDto,
 } from '@osk/shared';
 import { Vehicle } from './entities/vehicle.entity';
 import { VehicleService } from './vehicles.service';
@@ -92,6 +95,26 @@ export class VehiclesController {
     }
 
     await this.vehicleService.update(vehicle, id);
+
+    return {};
+  }
+
+  @ApiResponse({
+    type: VehicleDeleteResponseDto,
+  })
+  @ApiBody({ type: VehicleDeleteRequestDto })
+  @Delete(':id')
+  async delete(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<VehicleDeleteResponseDto> {
+    const doesVehicleExist =
+      (await this.vehicleService.findOneById(id)) !== null;
+
+    if (!doesVehicleExist) {
+      throw new NotFoundException('Vehicle with this id does not exist.');
+    }
+
+    await this.vehicleService.delete(id);
 
     return {};
   }

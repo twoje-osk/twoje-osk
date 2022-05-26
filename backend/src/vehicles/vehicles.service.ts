@@ -78,4 +78,14 @@ export class VehicleService {
     );
     return updatedVehicle;
   }
+
+  async delete(vehicleId: number) {
+    const { organizationId } = this.currentUserService.getRequestCurrentUser();
+    const deletedVehicle = this.vehiclesRepository.delete({
+      id: vehicleId,
+      organization: { id: organizationId },
+    });
+
+    return deletedVehicle;
+  }
 }
