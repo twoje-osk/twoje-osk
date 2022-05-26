@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { IsNotEmpty, IsOptional } from 'class-validator';
 
 export class DtoVehicle {
@@ -23,6 +23,9 @@ export class DtoCreateVehicle {
   @ApiProperty({ nullable: true })
   notes?: string;
 }
+
+export class DtoUpdateVehicle extends PartialType(DtoCreateVehicle) {}
+
 export class VehicleGetAllResponseDto {
   @ApiProperty({
     isArray: true,
@@ -45,4 +48,12 @@ export class VehicleAddNewRequestDto {
   @ApiProperty()
   @IsNotEmpty()
   vehicle: DtoCreateVehicle;
+}
+
+export class VehicleUpdateResponseDto {}
+
+export class VehicleUpdateRequestDto {
+  @ApiProperty()
+  @IsNotEmpty()
+  vehicle: DtoUpdateVehicle;
 }

@@ -4,6 +4,11 @@ import { CurrentUserService } from 'current-user/current-user.service';
 import { Repository } from 'typeorm';
 import { Vehicle } from './entities/vehicle.entity';
 
+interface VehicleArguments {
+  licensePlate?: string;
+  notes?: string;
+}
+
 @Injectable()
 export class VehicleService {
   constructor(
@@ -13,7 +18,11 @@ export class VehicleService {
   ) {}
 
   async getAll(): Promise<Vehicle[]> {
+    const { organizationId } = this.currentUserService.getRequestCurrentUser();
     return this.vehiclesRepository.find({
+      where: {
+        organization: { id: organizationId },
+      },
       relations: {
         organization: true,
       },
@@ -21,9 +30,11 @@ export class VehicleService {
   }
 
   async findOne(id: number) {
+    const { organizationId } = this.currentUserService.getRequestCurrentUser();
     return this.vehiclesRepository.findOne({
       where: {
         id,
+        organization: { id: organizationId },
       },
       relations: {
         organization: true,
@@ -32,13 +43,16 @@ export class VehicleService {
   }
 
   async checkIfExistsByLicensePlate(licensePlate: string) {
+    const { organizationId } = this.currentUserService.getRequestCurrentUser();
     return (
       (await this.vehiclesRepository.countBy({
         licensePlate,
+        organization: { id: organizationId },
       })) > 0
     );
   }
 
+  // create
   async addNew(licensePlate: string, notes: string | undefined) {
     const { organizationId } = this.currentUserService.getRequestCurrentUser();
     const newVehicle = this.vehiclesRepository.create({
@@ -50,5 +64,18 @@ export class VehicleService {
     await this.vehiclesRepository.save(newVehicle);
 
     return newVehicle;
+  }
+
+  // update
+  async editVehicle(vehicle: VehicleArguments, vehicleId: number) {
+    const { organizationId } = this.currentUserService.getRequestCurrentUser();
+    const updatedVehicle = this.vehiclesRepository.update(
+      {
+        id: vehicleId,
+        organization: { id: organizationId },
+      },
+      vehicle,
+    );
+    return updatedVehicle;
   }
 }

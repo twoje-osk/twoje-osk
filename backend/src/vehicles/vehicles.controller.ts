@@ -6,6 +6,8 @@ import {
   Post,
   Body,
   ConflictException,
+  Patch,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { ApiResponse, ApiBody, ApiCreatedResponse } from '@nestjs/swagger';
 import {
@@ -13,6 +15,8 @@ import {
   VehicleGetAllResponseDto,
   VehicleAddNewResponseDto,
   VehicleAddNewRequestDto,
+  VehicleUpdateRequestDto,
+  VehicleUpdateResponseDto,
 } from '@osk/shared';
 import { Vehicle } from './entities/vehicle.entity';
 import { VehicleService } from './vehicles.service';
@@ -69,5 +73,25 @@ export class VehiclesController {
         vehicle.notes,
       ),
     };
+  }
+
+  @ApiResponse({
+    type: VehicleUpdateResponseDto,
+  })
+  @ApiBody({ type: VehicleUpdateRequestDto })
+  @Patch(':id')
+  async update(
+    @Body() { vehicle }: VehicleUpdateRequestDto,
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<VehicleUpdateResponseDto> {
+    const doesVehicleExist = (await this.vehicleService.findOne(id)) !== null;
+
+    if (!doesVehicleExist) {
+      throw new NotFoundException('Vehicle with this id does not exist.');
+    }
+
+    await this.vehicleService.editVehicle(vehicle, id);
+
+    return {};
   }
 }
