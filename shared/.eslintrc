@@ -23,6 +23,7 @@
           }
         }
       }
-    ]
+    ],
+    "no-warning-comments": "warn"
   }
 }
