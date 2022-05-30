@@ -11,17 +11,15 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import { TraineeFindAllResponseDto } from '@osk/shared';
-import { format, parseISO } from 'date-fns';
+import { VehicleGetAllResponseDto } from '@osk/shared';
 import { useNavigate } from 'react-router-dom';
 import { Flex } from 'reflexbox';
 import useSWR from 'swr';
 import { FullPageLoading } from '../../../components/FullPageLoading/FullPageLoading';
 import { GeneralAPIError } from '../../../components/GeneralAPIError/GeneralAPIError';
-import { LONG_DATE } from '../../../constants/dateFormats';
 
-export const TraineesList = () => {
-  const { data, error } = useSWR<TraineeFindAllResponseDto>('/api/trainees');
+export const VehiclesList = () => {
+  const { data, error } = useSWR<VehicleGetAllResponseDto>('/api/vehicles');
   const navigate = useNavigate();
 
   if (error) {
@@ -32,7 +30,7 @@ export const TraineesList = () => {
     return <FullPageLoading />;
   }
 
-  const rows = data.trainees;
+  const rows = data.vehicles;
 
   return (
     <Flex flexDirection="column" height="100%">
@@ -43,7 +41,7 @@ export const TraineesList = () => {
         }}
       >
         <Typography sx={{ flex: '1 1 100%' }} variant="h6" component="h1">
-          Kursanci
+          Pojazdy
         </Typography>
         <Tooltip title="Filtruj listę">
           <IconButton>
@@ -55,10 +53,9 @@ export const TraineesList = () => {
         <Table aria-label="Lista Kursantów" stickyHeader>
           <TableHead>
             <TableRow>
-              <TableCell>Imię</TableCell>
-              <TableCell>Nazwisko</TableCell>
-              <TableCell>Telefon</TableCell>
-              <TableCell>Data Dołączenia</TableCell>
+              <TableCell>Nazwa</TableCell>
+              <TableCell>Numer Rejestracyjny</TableCell>
+              <TableCell>Data Następnego Przeglądu</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -69,12 +66,9 @@ export const TraineesList = () => {
                 onClick={() => navigate(`./${row.id}`)}
                 sx={{ cursor: 'pointer' }}
               >
-                <TableCell>{row.user.firstName}</TableCell>
-                <TableCell>{row.user.lastName}</TableCell>
-                <TableCell>{row.user.phoneNumber}</TableCell>
-                <TableCell>
-                  {format(parseISO(row.user.createdAt), LONG_DATE)}
-                </TableCell>
+                <TableCell scope="row">Nazwa</TableCell>
+                <TableCell scope="row">{row.licensePlate}</TableCell>
+                <TableCell scope="row">Data</TableCell>
               </TableRow>
             ))}
           </TableBody>

@@ -6,6 +6,8 @@ import { Layout } from './views/Layout/Layout';
 import { Login } from './views/Login/Login';
 import { TraineeDetails } from './views/Trainees/TraineeDetails/TraineeDetails';
 import { TraineesList } from './views/Trainees/TraineesList/TraineesList';
+import { VehicleDetails } from './views/Vehicles/VehicleDetails/VehicleDetails';
+import { VehiclesList } from './views/Vehicles/VehiclesList/VehiclesList';
 
 export const App = () => {
   return (
@@ -25,6 +27,10 @@ export const App = () => {
           <Route path=":traineeId" element={<TraineeDetails />} />
         </Route>
         <Route path="/instruktorzy" element={<InstructorsList />} />
+        <Route path="/pojazdy">
+          <Route index element={<VehiclesList />} />
+          <Route path=":vehicleId" element={<VehicleDetails />} />
+        </Route>
       </Route>
     </Routes>
   );

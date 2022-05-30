@@ -25,8 +25,8 @@ export const Layout = ({ children }: LayoutProps) => {
   const menuItems = [
     { text: 'Instruktorzy', icon: 'class', link: '/instruktorzy' },
     { text: 'Kursanci', icon: 'school', link: '/kursanci' },
-    { text: 'Pojazdy', icon: 'directions_car', link: '' },
-    { text: 'Ogłoszenia', icon: 'campaign', link: '' },
+    { text: 'Pojazdy', icon: 'directions_car', link: '/pojazdy' },
+    { text: 'Ogłoszenia', icon: 'campaign', link: '/ogloszenia' },
   ];
   const { logOut, user } = useAuth();
   const userFullName = `${user?.firstName} ${user?.lastName}`;
