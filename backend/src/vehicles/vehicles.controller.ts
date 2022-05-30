@@ -75,7 +75,12 @@ export class VehiclesController {
 
     return {
       vehicle: await this.vehicleService.create(
+        vehicle.name,
         vehicle.licensePlate,
+        vehicle.vin,
+        vehicle.dateOfNextCheck,
+        vehicle.photo,
+        vehicle.additionalDetails,
         vehicle.notes,
       ),
     };

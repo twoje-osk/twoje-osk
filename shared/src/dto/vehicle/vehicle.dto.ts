@@ -1,6 +1,5 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { IsNotEmpty, IsOptional, ValidateNested } from 'class-validator';
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { Type } from 'class-transformer';
 
 export class DtoVehicle {
@@ -10,7 +9,28 @@ export class DtoVehicle {
 
   @ApiProperty()
   @IsNotEmpty()
+  name: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
   licensePlate: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  vin: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  dateOfNextCheck: Date;
+
+  @ApiProperty({ nullable: true })
+  @IsOptional()
+  photo: string | null;
+
+  @ApiProperty({ nullable: true })
+  @IsOptional()
+  additionalDetails: string | null;
 
   @ApiProperty({ nullable: true })
   @IsOptional()
@@ -20,7 +40,26 @@ export class DtoVehicle {
 export class DtoCreateVehicle {
   @ApiProperty()
   @IsNotEmpty()
+  name: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
   licensePlate: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  vin: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  dateOfNextCheck: Date;
+
+  @ApiProperty({ nullable: true })
+  photo: string | null;
+
+  @ApiProperty({ nullable: true })
+  additionalDetails: string | null;
 
   @ApiProperty({ nullable: true })
   notes: string | null;

@@ -7,7 +7,22 @@ export class Vehicle {
   id: number;
 
   @Column()
+  name: string;
+
+  @Column()
   licensePlate: string;
+
+  @Column()
+  vin: string;
+
+  @Column()
+  dateOfNextCheck: Date;
+
+  @Column({ nullable: true, type: 'text' })
+  photo: string | null;
+
+  @Column({ nullable: true, type: 'text' })
+  additionalDetails: string | null;
 
   @Column({ nullable: true, type: 'text' })
   notes: string | null;

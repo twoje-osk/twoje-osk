@@ -5,7 +5,12 @@ import { Repository } from 'typeorm';
 import { Vehicle } from './entities/vehicle.entity';
 
 interface VehicleArguments {
+  name?: string;
   licensePlate?: string;
+  vin?: string;
+  dateOfNextCheck?: Date;
+  photo: string | null;
+  additionalDetails: string | null;
   notes: string | null;
 }
 
@@ -51,10 +56,23 @@ export class VehicleService {
     return numberOfFoundVehicles > 0;
   }
 
-  async create(licensePlate: string, notes: string | null) {
+  async create(
+    name: string,
+    licensePlate: string,
+    vin: string,
+    dateOfNextCheck: Date,
+    photo: string | null,
+    additionalDetails: string | null,
+    notes: string | null,
+  ) {
     const { organizationId } = this.currentUserService.getRequestCurrentUser();
     const newVehicle = this.vehiclesRepository.create({
+      name,
       licensePlate,
+      vin,
+      dateOfNextCheck,
+      photo,
+      additionalDetails,
       notes,
       organization: { id: organizationId },
     });
