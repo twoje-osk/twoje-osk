@@ -57,7 +57,7 @@ export class VehiclesController {
   })
   @ApiBody({ type: VehicleAddNewRequestDto })
   @Post()
-  async addNew(
+  async create(
     @Body() { vehicle }: VehicleAddNewRequestDto,
   ): Promise<VehicleAddNewResponseDto> {
     const doesVehicleExist =
