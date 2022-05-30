@@ -1,4 +1,10 @@
-import { Controller, Get, NotFoundException, Param } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  NotFoundException,
+  Param,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
 import {
   InstructorFindAllResponseDto,
@@ -25,7 +31,7 @@ export class InstructorsController {
   })
   @Get(':id')
   async findOne(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
   ): Promise<InstructorFindOneResponseDto> {
     const instructor = await this.instructorsService.findOne(+id);
 

@@ -45,9 +45,9 @@ export class User {
 
   @OneToOne<Trainee>('Trainee', (trainee) => trainee.user)
   @JoinColumn()
-  trainee: Trainee;
+  trainee: Trainee | null;
 
   @OneToOne<Instructor>('Instructor', (instructor) => instructor.user)
   @JoinColumn()
-  instructor: Instructor;
+  instructor: Instructor | null;
 }

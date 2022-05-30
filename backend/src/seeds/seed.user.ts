@@ -60,7 +60,7 @@ class UserFactory extends Factory<User> {
     const user = super.generateFromData(data);
 
     if (trainee === null) {
-      traineesFactory.remove(user.trainee);
+      traineesFactory.remove(user.trainee!);
     } else if (trainee !== undefined) {
       user.trainee = trainee;
     }
