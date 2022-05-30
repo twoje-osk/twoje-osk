@@ -17,7 +17,7 @@ export class VehicleService {
     private currentUserService: CurrentUserService,
   ) {}
 
-  async getAll(): Promise<Vehicle[]> {
+  async findAll(): Promise<Vehicle[]> {
     const { organizationId } = this.currentUserService.getRequestCurrentUser();
     return this.vehiclesRepository.find({
       where: {

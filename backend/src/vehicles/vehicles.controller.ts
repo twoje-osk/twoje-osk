@@ -31,8 +31,8 @@ export class VehiclesController {
     type: VehicleGetAllResponseDto,
   })
   @Get()
-  async getAll(): Promise<VehicleGetAllResponseDto> {
-    const vehicles = await this.vehicleService.getAll();
+  async findAll(): Promise<VehicleGetAllResponseDto> {
+    const vehicles = await this.vehicleService.findAll();
 
     return { vehicles };
   }
