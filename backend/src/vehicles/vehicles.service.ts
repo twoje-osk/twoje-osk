@@ -44,15 +44,13 @@ export class VehicleService {
 
   async checkIfExistsByLicensePlate(licensePlate: string) {
     const { organizationId } = this.currentUserService.getRequestCurrentUser();
-    return (
-      (await this.vehiclesRepository.countBy({
-        licensePlate,
-        organization: { id: organizationId },
-      })) > 0
-    );
+    const numberOfFoundVehicles = await this.vehiclesRepository.countBy({
+      licensePlate,
+      organization: { id: organizationId },
+    });
+    return numberOfFoundVehicles > 0;
   }
 
-  // create
   async create(licensePlate: string, notes: string | undefined) {
     const { organizationId } = this.currentUserService.getRequestCurrentUser();
     const newVehicle = this.vehiclesRepository.create({
@@ -66,7 +64,6 @@ export class VehicleService {
     return newVehicle;
   }
 
-  // update
   async update(vehicle: VehicleArguments, vehicleId: number) {
     const { organizationId } = this.currentUserService.getRequestCurrentUser();
     const updatedVehicle = this.vehiclesRepository.update(
