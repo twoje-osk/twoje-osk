@@ -21,7 +21,6 @@ import {
   VehicleDeleteResponseDto,
   VehicleDeleteRequestDto,
 } from '@osk/shared';
-import { Vehicle } from './entities/vehicle.entity';
 import { VehicleService } from './vehicles.service';
 
 @Controller('vehicles')
@@ -52,8 +51,10 @@ export class VehiclesController {
     return { vehicle };
   }
 
-  // eslint-disable-next-line require-decorator/require-decorator
-  @ApiCreatedResponse({ type: Vehicle, description: 'Record created' })
+  @ApiCreatedResponse({
+    type: VehicleAddNewResponseDto,
+    description: 'Record created',
+  })
   @ApiBody({ type: VehicleAddNewRequestDto })
   @Post()
   async addNew(
