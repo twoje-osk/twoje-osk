@@ -10,7 +10,10 @@ class VehicleFactory extends Factory<Vehicle> {
   public generate() {
     const vehicle = new Vehicle();
     vehicle.licensePlate = this.faker.vehicle.vrm();
-    vehicle.notes = this.faker.random.words(10);
+    vehicle.notes =
+      this.faker.datatype.number({ max: 1, min: 0, precision: 0.0000001 }) < 0.2
+        ? this.faker.random.words(10)
+        : undefined;
     vehicle.organization = this.faker.helpers.arrayElement(
       organizationsFactory.getAll(),
     );
