@@ -96,7 +96,7 @@ stages:
               yarn run type-check
             displayName: Type Check
           - bash: |
-              yarn run lint
+              yarn run lint --max-warnings 0
             displayName: Lint
 
       - job: install_and_build
@@ -131,12 +131,12 @@ stages:
               command: 'build'
               Dockerfile: 'docker/Dockerfile.backend'
               buildContext: '$(System.DefaultWorkingDirectory)'
-              arguments: '--cache-from=$(ACR_ADDRESS)/$(DOCKER_REPO):latest' 
+              arguments: '--cache-from=$(ACR_ADDRESS)/$(DOCKER_REPO):latest'
               tags: |
                 latest
             displayName: Build Docker image
           - task: Docker@2
-            name: docker_push 
+            name: docker_push
             inputs:
               containerRegistry: '$(ACR_NAME)'
               repository: '$(DOCKER_REPO)'
