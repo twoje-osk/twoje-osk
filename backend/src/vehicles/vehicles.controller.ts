@@ -95,6 +95,19 @@ export class VehiclesController {
       throw new NotFoundException('Vehicle with this id does not exist.');
     }
 
+    if (vehicle.licensePlate !== undefined) {
+      const doesVehicleWithThisLicensePlateExist =
+        await this.vehicleService.checkIfExistsByLicensePlate(
+          vehicle.licensePlate,
+        );
+
+      if (doesVehicleWithThisLicensePlateExist) {
+        throw new ConflictException(
+          'Vehicle with this license plate already exists.',
+        );
+      }
+    }
+
     await this.vehicleService.update(vehicle, id);
 
     return {};
