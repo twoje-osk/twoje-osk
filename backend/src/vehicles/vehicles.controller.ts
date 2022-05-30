@@ -41,8 +41,10 @@ export class VehiclesController {
     type: VehicleFindOneResponseDto,
   })
   @Get(':id')
-  async findOne(@Param('id') id: string): Promise<VehicleFindOneResponseDto> {
-    const vehicle = await this.vehicleService.findOneById(+id);
+  async findOne(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<VehicleFindOneResponseDto> {
+    const vehicle = await this.vehicleService.findOneById(id);
 
     if (vehicle === null) {
       throw new NotFoundException();

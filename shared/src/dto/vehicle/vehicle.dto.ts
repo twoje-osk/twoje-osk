@@ -1,5 +1,7 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
-import { IsNotEmpty, IsOptional } from 'class-validator';
+import { IsNotEmpty, IsOptional, ValidateNested } from 'class-validator';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { Type } from 'class-transformer';
 
 export class DtoVehicle {
   @ApiProperty()
@@ -12,7 +14,7 @@ export class DtoVehicle {
 
   @ApiProperty({ nullable: true })
   @IsOptional()
-  notes?: string;
+  notes: string | null;
 }
 
 export class DtoCreateVehicle {
@@ -21,7 +23,7 @@ export class DtoCreateVehicle {
   licensePlate: string;
 
   @ApiProperty({ nullable: true })
-  notes?: string;
+  notes: string | null;
 }
 
 export class DtoUpdateVehicle extends PartialType(DtoCreateVehicle) {}
@@ -41,6 +43,8 @@ export class VehicleFindOneResponseDto {
 
 export class VehicleAddNewResponseDto {
   @ApiProperty()
+  @ValidateNested()
+  @Type(() => DtoCreateVehicle)
   vehicle: DtoVehicle;
 }
 

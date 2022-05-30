@@ -9,8 +9,8 @@ export class Vehicle {
   @Column()
   licensePlate: string;
 
-  @Column()
-  notes?: string;
+  @Column({ nullable: true, type: 'text' })
+  notes: string | null;
 
   @ManyToOne(() => Organization)
   organization: Organization;

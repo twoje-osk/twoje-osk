@@ -6,7 +6,7 @@ import { Vehicle } from './entities/vehicle.entity';
 
 interface VehicleArguments {
   licensePlate?: string;
-  notes?: string;
+  notes: string | null;
 }
 
 @Injectable()
@@ -51,7 +51,7 @@ export class VehicleService {
     return numberOfFoundVehicles > 0;
   }
 
-  async create(licensePlate: string, notes: string | undefined) {
+  async create(licensePlate: string, notes: string | null) {
     const { organizationId } = this.currentUserService.getRequestCurrentUser();
     const newVehicle = this.vehiclesRepository.create({
       licensePlate,
@@ -64,7 +64,7 @@ export class VehicleService {
     return newVehicle;
   }
 
-  async update(vehicle: VehicleArguments, vehicleId: number) {
+  async update(vehicle: Partial<VehicleArguments>, vehicleId: number) {
     const { organizationId } = this.currentUserService.getRequestCurrentUser();
     const updatedVehicle = this.vehiclesRepository.update(
       {

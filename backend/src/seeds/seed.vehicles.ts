@@ -13,7 +13,7 @@ class VehicleFactory extends Factory<Vehicle> {
     vehicle.notes =
       this.faker.datatype.number({ max: 1, min: 0, precision: 0.0000001 }) < 0.2
         ? this.faker.random.words(10)
-        : undefined;
+        : null;
     vehicle.organization = this.faker.helpers.arrayElement(
       organizationsFactory.getAll(),
     );
