@@ -21,8 +21,7 @@ export class DtoVehicle {
 
   @ApiProperty()
   @IsNotEmpty()
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  dateOfNextCheck: Date;
+  dateOfNextCheck: ApiDate;
 
   @ApiProperty({ nullable: true })
   @IsOptional()
