@@ -59,9 +59,11 @@ class UserFactory extends Factory<User> {
   public generateFromData({ trainee, ...data }: Partial<User>) {
     const user = super.generateFromData(data);
 
-    if (trainee === null) {
-      traineesFactory.remove(user.trainee!);
-    } else if (trainee !== undefined) {
+    if (user.trainee !== null) {
+      traineesFactory.remove(user.trainee);
+    }
+
+    if (trainee !== undefined && trainee !== null) {
       user.trainee = trainee;
     }
 
