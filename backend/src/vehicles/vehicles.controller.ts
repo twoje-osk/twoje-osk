@@ -125,7 +125,7 @@ export class VehiclesController {
   })
   @ApiBody({ type: VehicleDeleteRequestDto })
   @Delete(':id')
-  async delete(
+  async remove(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<VehicleDeleteResponseDto> {
     const doesVehicleExist =
@@ -135,7 +135,7 @@ export class VehiclesController {
       throw new NotFoundException('Vehicle with this id does not exist.');
     }
 
-    await this.vehicleService.delete(id);
+    await this.vehicleService.remove(id);
 
     return {};
   }
