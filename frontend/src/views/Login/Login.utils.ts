@@ -1,13 +1,7 @@
 import { LoginAuthRequestDto, LoginAuthResponseDto } from '@osk/shared';
-import * as Yup from 'yup';
 import { Try } from '../../types/Try';
 import { logError } from '../../utils/log';
 import { makeRequest } from '../../utils/makeRequest';
-
-export const LoginFormSchema = Yup.object().shape({
-  email: Yup.string().required(),
-  password: Yup.string().required(),
-});
 
 export const authenticate = async (
   email: string,

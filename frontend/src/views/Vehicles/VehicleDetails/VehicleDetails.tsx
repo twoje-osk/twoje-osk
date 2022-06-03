@@ -142,10 +142,9 @@ export const VehicleDetails = () => {
         isOpen={isDeleteModalOpen}
         isLoading={isDeleteModalLoading}
         onClose={closeDeleteModal}
-        id="delete-vehicle-modal"
         onDelete={onDelete}
+        id="delete-vehicle-modal"
         title="Czy na pewno chcesz usunąć ten pojazd?"
-        subtitle="Ta akcja jest nieodwracalna."
       />
     </div>
   );

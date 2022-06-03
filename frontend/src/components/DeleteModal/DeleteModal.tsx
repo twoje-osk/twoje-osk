@@ -10,7 +10,7 @@ interface DeleteModalProps {
   onDelete: () => void;
   id: string;
   title: ReactNode;
-  subtitle: ReactNode;
+  subtitle?: ReactNode;
 }
 
 const style = {
@@ -29,8 +29,8 @@ export const DeleteModal = ({
   onClose,
   onCancel = onClose,
   onDelete,
-  subtitle,
   title,
+  subtitle = 'Ta akcja jest nieodwracalna.',
 }: DeleteModalProps) => {
   return (
     <Modal
