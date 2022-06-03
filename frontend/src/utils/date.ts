@@ -12,5 +12,8 @@ export const formatLong = (date: Date | null) =>
 export const formatInput = (date: Date | null) =>
   nullableFormat(date, INPUT_DATE);
 
-export const formatApi = (date: Date | null) =>
-  date === null ? null : formatISO(date);
+export function formatApi(date: Date): string;
+export function formatApi(date: null): null;
+export function formatApi(date: Date | null) {
+  return date === null ? null : formatISO(date);
+}

@@ -8,53 +8,39 @@ import {
   Toolbar,
   Typography,
 } from '@mui/material';
-import {
-  VehicleFindOneResponseDto,
-  VehicleUpdateRequestDto,
-  VehicleUpdateResponseDto,
-} from '@osk/shared';
-import { parseISO } from 'date-fns';
+import { VehicleAddNewRequestDto, VehicleAddNewResponseDto } from '@osk/shared';
 import { useState } from 'react';
-import { Navigate, useParams, Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Box } from 'reflexbox';
-import useSWR from 'swr';
-import { FullPageLoading } from '../../../components/FullPageLoading/FullPageLoading';
-import { GeneralAPIError } from '../../../components/GeneralAPIError/GeneralAPIError';
 import { useCommonSnackbars } from '../../../hooks/useCommonSnackbars/useCommonSnackbars';
 import { useMakeRequestWithAuth } from '../../../hooks/useMakeRequestWithAuth/useMakeRequestWithAuth';
 import { theme } from '../../../theme';
 import { formatApi } from '../../../utils/date';
 import { VehiclesForm } from '../VehiclesForm/VehiclesForm';
-import {
-  VehiclesFormData,
-  VehiclesSubmitData,
-} from '../VehiclesForm/VehiclesForm.schema';
+import { VehiclesSubmitData } from '../VehiclesForm/VehiclesForm.schema';
 
-export const VehicleEdit = () => {
-  const { vehicleId } = useParams();
+export const VehicleNew = () => {
   const makeRequest = useMakeRequestWithAuth();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const { showErrorSnackbar, showSuccessSnackbar } = useCommonSnackbars();
 
-  const { data, error } = useSWR<VehicleFindOneResponseDto>(
-    vehicleId ? `/api/vehicles/${vehicleId}` : null,
-  );
-
-  const onEdit = async (editedVehicle: VehiclesSubmitData) => {
-    const body: VehicleUpdateRequestDto = {
+  const onEdit = async (createdVehicle: VehiclesSubmitData) => {
+    const body: VehicleAddNewRequestDto = {
       vehicle: {
-        ...editedVehicle,
-        dateOfNextCheck: formatApi(editedVehicle.dateOfNextCheck) ?? undefined,
+        ...createdVehicle,
+        dateOfNextCheck: formatApi(createdVehicle.dateOfNextCheck),
+        additionalDetails: createdVehicle.additionalDetails ?? null,
+        notes: createdVehicle.notes ?? null,
+        photo: createdVehicle.photo ?? null,
       },
     };
 
     setIsLoading(true);
-    const vehicleApiUrl = `/api/vehicles/${vehicleId}`;
     const response = await makeRequest<
-      VehicleUpdateResponseDto,
-      VehicleUpdateRequestDto
-    >(vehicleApiUrl, 'PATCH', body);
+      VehicleAddNewResponseDto,
+      VehicleAddNewRequestDto
+    >(`/api/vehicles`, 'POST', body);
 
     if (!response.ok) {
       setIsLoading(false);
@@ -62,32 +48,8 @@ export const VehicleEdit = () => {
       return;
     }
 
-    navigate(`/pojazdy/${vehicleId}`);
-    showSuccessSnackbar(`Pojazd ${data?.vehicle.name} został zmodyfikowany`);
-  };
-
-  if (vehicleId === undefined) {
-    return <Navigate to="/" replace />;
-  }
-
-  if (error) {
-    return <GeneralAPIError />;
-  }
-
-  if (data === undefined) {
-    return <FullPageLoading />;
-  }
-
-  const { vehicle } = data;
-
-  const initialValues: VehiclesFormData = {
-    name: vehicle.name,
-    licensePlate: vehicle.licensePlate,
-    vin: vehicle.vin,
-    dateOfNextCheck: parseISO(vehicle.dateOfNextCheck),
-    additionalDetails: vehicle.additionalDetails ?? undefined,
-    notes: vehicle.notes ?? undefined,
-    photo: vehicle.photo,
+    navigate(`/pojazdy/${response.data.vehicle.id}`);
+    showSuccessSnackbar(`Pojazd ${createdVehicle.name} został stworzony`);
   };
 
   return (
@@ -107,21 +69,13 @@ export const VehicleEdit = () => {
           >
             Pojazdy
           </MUILink>
-          <MUILink
-            underline="hover"
-            to={`/pojazdy/${vehicleId}`}
-            component={Link}
-            variant="h6"
-          >
-            {vehicle.name} ({vehicle.licensePlate})
-          </MUILink>
           <Typography variant="h6" color={theme.palette.text.primary}>
-            Edytuj
+            Nowy
           </Typography>
         </Breadcrumbs>
       </Toolbar>
       <Box as="main" p="16px" pt="0">
-        <VehiclesForm initialValues={initialValues} onSubmit={onEdit}>
+        <VehiclesForm onSubmit={onEdit}>
           <Stack direction="row" spacing={1}>
             <LoadingButton
               variant="contained"
@@ -135,7 +89,7 @@ export const VehicleEdit = () => {
             <Button
               variant="outlined"
               component={Link}
-              to={`/pojazdy/${vehicleId}`}
+              to="/pojazdy"
               disabled={isLoading}
             >
               Anuluj

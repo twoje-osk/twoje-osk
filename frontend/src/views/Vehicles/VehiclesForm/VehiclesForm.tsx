@@ -5,14 +5,18 @@ import { ReactNode } from 'react';
 import { Flex } from 'reflexbox';
 import { FTextField } from '../../../components/FTextField/FTextField';
 import { theme } from '../../../theme';
-import { vehicleFormSchema, VehiclesFormData } from './VehiclesForm.schema';
+import {
+  vehicleFormSchema,
+  VehiclesFormData,
+  VehiclesSubmitData,
+} from './VehiclesForm.schema';
 
 interface VehiclesFormProps {
   initialValues?: VehiclesFormData;
   disabled?: boolean;
   onSubmit?: (
-    values: VehiclesFormData,
-    formikHelpers: FormikHelpers<VehiclesFormData>,
+    values: VehiclesSubmitData,
+    formikHelpers: FormikHelpers<VehiclesSubmitData>,
   ) => void | Promise<any>;
   children?: ReactNode;
 }
@@ -21,7 +25,7 @@ const defaultValues: VehiclesFormData = {
   name: '',
   licensePlate: '',
   vin: '',
-  dateOfNextCheck: new Date(),
+  dateOfNextCheck: null,
   additionalDetails: '',
   notes: '',
   photo: '',
@@ -37,59 +41,62 @@ export const VehiclesForm = ({
     <Formik<VehiclesFormData>
       initialValues={initialValues ?? defaultValues}
       validationSchema={vehicleFormSchema}
-      onSubmit={onSubmit}
+      onSubmit={onSubmit as any}
+      enableReinitialize
     >
-      <Flex style={{ gap: '32px' }} alignItems="flex-start" as={Form}>
-        <Photo />
-        <Stack spacing={2} style={{ flex: 1 }} justifyContent="flex-start">
-          <FTextField
-            required
-            id="name"
-            name="name"
-            label="Nazwa"
-            disabled={disabled}
-          />
-          <FTextField
-            required
-            id="licensePlate"
-            name="licensePlate"
-            label="Numer Rejestracyjny"
-            disabled={disabled}
-          />
-          <FTextField
-            required
-            id="vin"
-            name="vin"
-            label="Numer VIN"
-            disabled={disabled}
-          />
-          <FTextField
-            required
-            id="dateOfNextCheck"
-            name="dateOfNextCheck"
-            label="Data Następnego Przeglądu"
-            type="date"
-            disabled={disabled}
-          />
-          <FTextField
-            id="additionalDetails"
-            name="additionalDetails"
-            label="Dodatkowe Informacje"
-            multiline
-            rows={4}
-            disabled={disabled}
-          />
-          <FTextField
-            id="notes"
-            name="notes"
-            label="Notatki"
-            multiline
-            rows={4}
-            disabled={disabled}
-          />
-          {actions && <div>{actions}</div>}
-        </Stack>
-      </Flex>
+      <Form noValidate>
+        <Flex style={{ gap: '32px' }} alignItems="flex-start">
+          <Photo />
+          <Stack spacing={2} style={{ flex: 1 }} justifyContent="flex-start">
+            <FTextField
+              required
+              id="name"
+              name="name"
+              label="Nazwa"
+              disabled={disabled}
+            />
+            <FTextField
+              required
+              id="licensePlate"
+              name="licensePlate"
+              label="Numer Rejestracyjny"
+              disabled={disabled}
+            />
+            <FTextField
+              required
+              id="vin"
+              name="vin"
+              label="Numer VIN"
+              disabled={disabled}
+            />
+            <FTextField
+              required
+              id="dateOfNextCheck"
+              name="dateOfNextCheck"
+              label="Data Następnego Przeglądu"
+              type="date"
+              disabled={disabled}
+            />
+            <FTextField
+              id="additionalDetails"
+              name="additionalDetails"
+              label="Dodatkowe Informacje"
+              multiline
+              rows={4}
+              disabled={disabled}
+            />
+            <FTextField
+              id="notes"
+              name="notes"
+              label="Notatki"
+              multiline
+              rows={4}
+              disabled={disabled}
+            />
+            {actions && <div>{actions}</div>}
+          </Stack>
+        </Flex>
+      </Form>
     </Formik>
   );
 };

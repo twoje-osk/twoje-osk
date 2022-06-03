@@ -33,6 +33,7 @@ export const VehicleDetails = () => {
   const { data, error } = useSWR<VehicleFindOneResponseDto>(
     vehicleId ? `/api/vehicles/${vehicleId}` : null,
   );
+
   const makeRequest = useMakeRequestWithAuth();
   const {
     isLoading: isDeleteModalLoading,
