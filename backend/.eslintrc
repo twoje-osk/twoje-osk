@@ -7,7 +7,7 @@
   "parserOptions": {
     "project": "./tsconfig.json"
   },
-  "plugins": ["prettier", "require-decorator", "@osk"],
+  "plugins": ["prettier", "@osk"],
   "rules": {
     "prettier/prettier": "error",
     "class-methods-use-this": "off",
@@ -26,20 +26,16 @@
         "selector": "WithStatement",
         "message": "`with` is disallowed in strict mode because it makes code impossible to predict and optimize."
       }
-    ]
+    ],
+    "no-warning-comments": "warn"
   },
   "overrides": [
     {
       "files": "*.controller.ts",
       "rules": {
         "@osk/return-dto-match-api": "error",
-        "@typescript-eslint/explicit-function-return-type": "error",
-        "require-decorator/require-decorator": [
-          "error",
-          {
-            "methodDecorators": ["ApiResponse"]
-          }
-        ]
+        "@osk/require-docs": "error",
+        "@typescript-eslint/explicit-function-return-type": "error"
       }
     }
   ]

@@ -3,6 +3,7 @@ import { dataSource } from '../data-source';
 import { seedUsers } from './seed.user';
 import { seedOrganizations } from './seed.organization';
 import { seedTrainees } from './seed.trainees';
+import { seedVehicles } from './seed.vehicles';
 import { EntityDbData, getEntitiesDbData } from './seed.entities';
 import { seedInstructors } from './seed.instructors';
 
@@ -33,6 +34,7 @@ const run = async () => {
     seedTrainees();
     seedInstructors();
     seedUsers();
+    seedVehicles();
 
     for (const { factory } of entitiesDbData) {
       // eslint-disable-next-line no-await-in-loop
