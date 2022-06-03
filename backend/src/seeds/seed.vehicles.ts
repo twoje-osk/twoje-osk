@@ -15,7 +15,12 @@ class VehicleFactory extends Factory<Vehicle> {
     vehicle.dateOfNextCheck = this.faker.date.soon(300);
     vehicle.photo =
       this.faker.datatype.number({ max: 1, min: 0, precision: 0.0000001 }) < 0.5
-        ? this.faker.image.avatar()
+        ? `${this.faker.image.imageUrl(
+            640,
+            480,
+            'tesla,car',
+            false,
+          )}?lock=${this.faker.datatype.number()}`
         : null;
     vehicle.additionalDetails =
       this.faker.datatype.number({ max: 1, min: 0, precision: 0.0000001 }) < 0.2
