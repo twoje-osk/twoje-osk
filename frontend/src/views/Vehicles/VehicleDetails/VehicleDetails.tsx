@@ -1,17 +1,22 @@
 import {
   Breadcrumbs,
+  Button,
   Icon,
   Link as MUILink,
+  Stack,
   Toolbar,
   Typography,
 } from '@mui/material';
 import { VehicleFindOneResponseDto } from '@osk/shared';
+import { isValid, parseISO } from 'date-fns';
 import { Navigate, useParams, Link } from 'react-router-dom';
 import { Box } from 'reflexbox';
 import useSWR from 'swr';
 import { FullPageLoading } from '../../../components/FullPageLoading/FullPageLoading';
 import { GeneralAPIError } from '../../../components/GeneralAPIError/GeneralAPIError';
 import { theme } from '../../../theme';
+import { VehiclesForm } from '../VehiclesForm/VehiclesForm';
+import { VehiclesFormData } from '../VehiclesForm/VehiclesForm.schema';
 
 export const VehicleDetails = () => {
   const { vehicleId } = useParams();
@@ -33,6 +38,19 @@ export const VehicleDetails = () => {
 
   const { vehicle } = data;
 
+  const parsedDateOfNextCheck = parseISO(vehicle.dateOfNextCheck);
+  const initialValues: VehiclesFormData = {
+    name: vehicle.name,
+    licensePlate: vehicle.licensePlate,
+    vin: vehicle.vin,
+    dateOfNextCheck: isValid(parsedDateOfNextCheck)
+      ? parsedDateOfNextCheck
+      : null,
+    additionalDetails: vehicle.additionalDetails ?? undefined,
+    notes: vehicle.notes ?? undefined,
+    photo: vehicle.photo,
+  };
+
   return (
     <div>
       <Toolbar
@@ -51,35 +69,25 @@ export const VehicleDetails = () => {
             Pojazdy
           </MUILink>
           <Typography variant="h6" color={theme.palette.text.primary}>
-            Nazwa ({vehicle.licensePlate})
+            {vehicle.name} ({vehicle.licensePlate})
           </Typography>
         </Breadcrumbs>
       </Toolbar>
       <Box as="main" p="16px" pt="0">
-        <Typography variant="h6" component="h2">
-          Nazwa
-        </Typography>
-        <div>Nazwa</div>
-        <Typography variant="h6" component="h2">
-          Numer Rejestracyjny
-        </Typography>
-        <div>{vehicle.licensePlate}</div>
-        <Typography variant="h6" component="h2">
-          Numer VIN
-        </Typography>
-        <div>Numer VIN</div>
-        <Typography variant="h6" component="h2">
-          Data Następnego Przeglądu
-        </Typography>
-        <div>Data Następnego Przeglądu</div>
-        <Typography variant="h6" component="h2">
-          Dodatkowe Informacje
-        </Typography>
-        <div>Dodatkowe Informacje</div>
-        <Typography variant="h6" component="h2">
-          Notatki
-        </Typography>
-        <div>Notatki</div>
+        <VehiclesForm initialValues={initialValues} disabled>
+          <Stack direction="row" spacing={1}>
+            <Button variant="contained" startIcon={<Icon>edit</Icon>}>
+              Edytuj
+            </Button>
+            <Button
+              color="error"
+              variant="outlined"
+              startIcon={<Icon>delete</Icon>}
+            >
+              Usuń
+            </Button>
+          </Stack>
+        </VehiclesForm>
       </Box>
     </div>
   );

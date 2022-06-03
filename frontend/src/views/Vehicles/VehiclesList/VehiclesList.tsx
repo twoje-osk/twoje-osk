@@ -12,11 +12,13 @@ import {
   Typography,
 } from '@mui/material';
 import { VehicleGetAllResponseDto } from '@osk/shared';
+import { format, parseISO } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
 import { Flex } from 'reflexbox';
 import useSWR from 'swr';
 import { FullPageLoading } from '../../../components/FullPageLoading/FullPageLoading';
 import { GeneralAPIError } from '../../../components/GeneralAPIError/GeneralAPIError';
+import { LONG_DATE } from '../../../constants/dateFormats';
 
 export const VehiclesList = () => {
   const { data, error } = useSWR<VehicleGetAllResponseDto>('/api/vehicles');
@@ -66,9 +68,11 @@ export const VehiclesList = () => {
                 onClick={() => navigate(`./${row.id}`)}
                 sx={{ cursor: 'pointer' }}
               >
-                <TableCell scope="row">Nazwa</TableCell>
+                <TableCell scope="row">{row.name}</TableCell>
                 <TableCell scope="row">{row.licensePlate}</TableCell>
-                <TableCell scope="row">Data</TableCell>
+                <TableCell scope="row">
+                  {format(parseISO(row.dateOfNextCheck), LONG_DATE)}
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
