@@ -54,10 +54,16 @@ export const DeleteModal = ({
             onClick={onDelete}
             fullWidth
             loading={isLoading}
+            disabled={isLoading}
           >
             Usuń
           </LoadingButton>
-          <Button variant="outlined" onClick={onCancel} fullWidth>
+          <Button
+            variant="outlined"
+            onClick={onCancel}
+            fullWidth
+            disabled={isLoading}
+          >
             Anuluj
           </Button>
         </Stack>

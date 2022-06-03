@@ -12,13 +12,13 @@ import {
   Typography,
 } from '@mui/material';
 import { TraineeFindAllResponseDto } from '@osk/shared';
-import { format, parseISO } from 'date-fns';
+import { parseISO } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
 import { Flex } from 'reflexbox';
 import useSWR from 'swr';
 import { FullPageLoading } from '../../../components/FullPageLoading/FullPageLoading';
 import { GeneralAPIError } from '../../../components/GeneralAPIError/GeneralAPIError';
-import { LONG_DATE } from '../../../constants/dateFormats';
+import { formatLong } from '../../../utils/date';
 
 export const TraineesList = () => {
   const { data, error } = useSWR<TraineeFindAllResponseDto>('/api/trainees');
@@ -73,7 +73,7 @@ export const TraineesList = () => {
                 <TableCell>{row.user.lastName}</TableCell>
                 <TableCell>{row.user.phoneNumber}</TableCell>
                 <TableCell>
-                  {format(parseISO(row.user.createdAt), LONG_DATE)}
+                  {formatLong(parseISO(row.user.createdAt))}
                 </TableCell>
               </TableRow>
             ))}

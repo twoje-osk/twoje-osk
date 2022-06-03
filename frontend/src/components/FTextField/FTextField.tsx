@@ -1,7 +1,7 @@
 import { TextField, TextFieldProps } from '@mui/material';
-import { format, isValid } from 'date-fns';
+import { isValid } from 'date-fns';
 import { useField } from 'formik';
-import { INPUT_DATE } from '../../constants/dateFormats';
+import { formatInput } from '../../utils/date';
 
 type FTextFieldProps = Omit<
   Omit<Omit<TextFieldProps, 'onChange'>, 'onBlur'>,
@@ -21,7 +21,7 @@ const getValue = (
     return value;
   }
 
-  return format(value, INPUT_DATE);
+  return formatInput(value);
 };
 
 export const FTextField = (props: FTextFieldProps) => {

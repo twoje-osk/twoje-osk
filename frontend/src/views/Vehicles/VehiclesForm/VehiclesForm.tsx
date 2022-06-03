@@ -21,7 +21,7 @@ const defaultValues: VehiclesFormData = {
   name: '',
   licensePlate: '',
   vin: '',
-  dateOfNextCheck: null,
+  dateOfNextCheck: new Date(),
   additionalDetails: '',
   notes: '',
   photo: '',

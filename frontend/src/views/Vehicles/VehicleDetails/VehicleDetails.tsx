@@ -12,7 +12,7 @@ import {
   VehicleDeleteResponseDto,
   VehicleFindOneResponseDto,
 } from '@osk/shared';
-import { isValid, parseISO } from 'date-fns';
+import { parseISO } from 'date-fns';
 import { useCallback } from 'react';
 import { Navigate, useParams, Link, useNavigate } from 'react-router-dom';
 import { Box } from 'reflexbox';
@@ -83,14 +83,11 @@ export const VehicleDetails = () => {
 
   const { vehicle } = data;
 
-  const parsedDateOfNextCheck = parseISO(vehicle.dateOfNextCheck);
   const initialValues: VehiclesFormData = {
     name: vehicle.name,
     licensePlate: vehicle.licensePlate,
     vin: vehicle.vin,
-    dateOfNextCheck: isValid(parsedDateOfNextCheck)
-      ? parsedDateOfNextCheck
-      : null,
+    dateOfNextCheck: parseISO(vehicle.dateOfNextCheck),
     additionalDetails: vehicle.additionalDetails ?? undefined,
     notes: vehicle.notes ?? undefined,
     photo: vehicle.photo,

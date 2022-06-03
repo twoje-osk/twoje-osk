@@ -4,7 +4,7 @@ export interface VehiclesFormData {
   name: string;
   licensePlate: string;
   vin: string;
-  dateOfNextCheck: Date | null;
+  dateOfNextCheck: Date;
   additionalDetails?: string;
   notes?: string;
   photo: string | null;
