@@ -7,22 +7,67 @@ import {
   Toolbar,
   Typography,
 } from '@mui/material';
-import { VehicleFindOneResponseDto } from '@osk/shared';
+import {
+  VehicleDeleteRequestDto,
+  VehicleDeleteResponseDto,
+  VehicleFindOneResponseDto,
+} from '@osk/shared';
 import { isValid, parseISO } from 'date-fns';
-import { Navigate, useParams, Link } from 'react-router-dom';
+import { useCallback } from 'react';
+import { Navigate, useParams, Link, useNavigate } from 'react-router-dom';
 import { Box } from 'reflexbox';
 import useSWR from 'swr';
+import { DeleteModal } from '../../../components/DeleteModal/DeleteModal';
 import { FullPageLoading } from '../../../components/FullPageLoading/FullPageLoading';
 import { GeneralAPIError } from '../../../components/GeneralAPIError/GeneralAPIError';
+import { useDeleteModal } from '../../../hooks/useDeleteModal/useDeleteModal';
+import { useCommonSnackbars } from '../../../hooks/useCommonSnackbars/useCommonSnackbars';
+import { useMakeRequestWithAuth } from '../../../hooks/useMakeRequestWithAuth/useMakeRequestWithAuth';
 import { theme } from '../../../theme';
 import { VehiclesForm } from '../VehiclesForm/VehiclesForm';
 import { VehiclesFormData } from '../VehiclesForm/VehiclesForm.schema';
 
 export const VehicleDetails = () => {
   const { vehicleId } = useParams();
+  const navigate = useNavigate();
   const { data, error } = useSWR<VehicleFindOneResponseDto>(
     vehicleId ? `/api/vehicles/${vehicleId}` : null,
   );
+  const makeRequest = useMakeRequestWithAuth();
+  const {
+    isLoading: isDeleteModalLoading,
+    isOpen: isDeleteModalOpen,
+    openModal: openDeleteModal,
+    closeModal: closeDeleteModal,
+    setLoading: setDeleteModalLoading,
+  } = useDeleteModal();
+  const { showErrorSnackbar, showSuccessSnackbar } = useCommonSnackbars();
+
+  const onDelete = useCallback(async () => {
+    setDeleteModalLoading(true);
+
+    const response = await makeRequest<
+      VehicleDeleteRequestDto,
+      VehicleDeleteResponseDto
+    >(`/api/vehicles/${vehicleId}`, 'DELETE');
+
+    if (!response.ok) {
+      setDeleteModalLoading(false);
+      showErrorSnackbar();
+      return;
+    }
+
+    navigate('/pojazdy');
+    showSuccessSnackbar(`Pojazd ${data?.vehicle.name} został usunięty`);
+  }, [
+    data?.vehicle.name,
+    makeRequest,
+    navigate,
+    setDeleteModalLoading,
+    showErrorSnackbar,
+    showSuccessSnackbar,
+    vehicleId,
+  ]);
 
   if (vehicleId === undefined) {
     return <Navigate to="/" replace />;
@@ -76,19 +121,34 @@ export const VehicleDetails = () => {
       <Box as="main" p="16px" pt="0">
         <VehiclesForm initialValues={initialValues} disabled>
           <Stack direction="row" spacing={1}>
-            <Button variant="contained" startIcon={<Icon>edit</Icon>}>
+            <Button
+              variant="contained"
+              startIcon={<Icon>edit</Icon>}
+              component={Link}
+              to="edit"
+            >
               Edytuj
             </Button>
             <Button
               color="error"
               variant="outlined"
               startIcon={<Icon>delete</Icon>}
+              onClick={openDeleteModal}
             >
               Usuń
             </Button>
           </Stack>
         </VehiclesForm>
       </Box>
+      <DeleteModal
+        isOpen={isDeleteModalOpen}
+        isLoading={isDeleteModalLoading}
+        onClose={closeDeleteModal}
+        id="delete-vehicle-modal"
+        onDelete={onDelete}
+        title="Czy na pewno chcesz usunąć ten pojazd?"
+        subtitle="Ta akcja jest nieodwracalna."
+      />
     </div>
   );
 };
