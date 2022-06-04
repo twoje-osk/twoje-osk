@@ -1,7 +1,7 @@
 import { Routes, Route } from 'react-router-dom';
 import { RequireAuth } from './components/RequireAuth/RequireAuth';
 import { HomePage } from './views/HomePage/HomePage';
-import { InstructorsList } from './views/InstructorsList/InstructorsList';
+import { InstructorsList } from './views/Instructors/InstructorsList/InstructorsList';
 import { Layout } from './views/Layout/Layout';
 import { Login } from './views/Login/Login';
 import { TraineeDetails } from './views/Trainees/TraineeDetails/TraineeDetails';
