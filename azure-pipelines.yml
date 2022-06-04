@@ -155,4 +155,5 @@ stages:
               SlotName: 'production'
               DockerNamespace: '$(ACR_ADDRESS)'
               DockerRepository: '$(DOCKER_REPO)'
+              DockerImageTag: 'latest'
             displayName: Deploy app
