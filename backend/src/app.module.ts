@@ -31,7 +31,7 @@ import { VehiclesModule } from './vehicles/vehicles.module';
           database: configService.get('database.database'),
           schema: configService.get('database.schema'),
           entities: ['**/*.entity.js'],
-          migrations: ['migrations/*.js', 'seeds/*.js'],
+          migrations: ['dist/migrations/*.js'],
           synchronize: false,
           migrationsRun: configService.get('isProduction'),
         };
