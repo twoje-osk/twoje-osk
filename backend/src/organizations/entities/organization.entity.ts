@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class Organization {
@@ -7,4 +7,8 @@ export class Organization {
 
   @Column()
   name: string;
+
+  @Index({ unique: true })
+  @Column({ unique: true })
+  slug: string;
 }
