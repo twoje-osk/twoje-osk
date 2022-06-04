@@ -5,6 +5,7 @@ import { seedOrganizations } from './seed.organization';
 import { seedTrainees } from './seed.trainees';
 import { seedVehicles } from './seed.vehicles';
 import { EntityDbData, getEntitiesDbData } from './seed.entities';
+import { seedInstructors } from './seed.instructors';
 
 const clear = async (trx: EntityManager, entitiesDbData: EntityDbData[]) => {
   await Promise.all(
@@ -31,10 +32,14 @@ const run = async () => {
 
     seedOrganizations();
     seedTrainees();
+    seedInstructors();
     seedUsers();
     seedVehicles();
 
-    await Promise.all(entitiesDbData.map(({ factory }) => factory.save(trx)));
+    for (const { factory } of entitiesDbData) {
+      // eslint-disable-next-line no-await-in-loop
+      await factory.save(trx);
+    }
   });
 
   await dataSource.destroy();

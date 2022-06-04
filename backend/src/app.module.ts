@@ -3,6 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { InstructorsModule } from 'instructors/instructors.module';
 import { getConfiguration, NestConfiguration } from './config/configuration';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
@@ -43,6 +44,7 @@ import { VehiclesModule } from './vehicles/vehicles.module';
     UsersModule,
     OrganizationsModule,
     TraineesModule,
+    InstructorsModule,
     CurrentUserModule,
     DebugModule,
     VehiclesModule,

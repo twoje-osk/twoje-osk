@@ -8,6 +8,7 @@ import {
   JoinColumn,
   OneToOne,
 } from 'typeorm';
+import type { Instructor } from '../../instructors/entities/instructor.entity';
 import type { Trainee } from '../../trainees/entities/trainee.entity';
 import { Organization } from '../../organizations/entities/organization.entity';
 
@@ -44,5 +45,9 @@ export class User {
 
   @OneToOne<Trainee>('Trainee', (trainee) => trainee.user)
   @JoinColumn()
-  trainee: Trainee;
+  trainee: Trainee | null;
+
+  @OneToOne<Instructor>('Instructor', (instructor) => instructor.user)
+  @JoinColumn()
+  instructor: Instructor | null;
 }
