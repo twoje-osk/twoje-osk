@@ -123,7 +123,7 @@ export const VehicleDetails = () => {
               variant="contained"
               startIcon={<Icon>edit</Icon>}
               component={Link}
-              to="edit"
+              to="edytuj"
             >
               Edytuj
             </Button>

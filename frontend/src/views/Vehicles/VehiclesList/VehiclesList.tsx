@@ -53,7 +53,7 @@ export const VehiclesList = () => {
             startIcon={<Icon>add</Icon>}
             variant="contained"
             component={Link}
-            to="new"
+            to="nowy"
           >
             Dodaj Nowy Pojazd
           </Button>

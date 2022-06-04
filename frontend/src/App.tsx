@@ -31,8 +31,8 @@ export const App = () => {
         <Route path="/instruktorzy" element={<InstructorsList />} />
         <Route path="/pojazdy">
           <Route index element={<VehiclesList />} />
-          <Route path="new" element={<VehicleNew />} />
-          <Route path=":vehicleId/edit" element={<VehicleEdit />} />
+          <Route path="nowy" element={<VehicleNew />} />
+          <Route path=":vehicleId/edytuj" element={<VehicleEdit />} />
           <Route path=":vehicleId" element={<VehicleDetails />} />
         </Route>
       </Route>
