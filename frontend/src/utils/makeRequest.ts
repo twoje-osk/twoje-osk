@@ -1,15 +1,17 @@
 import { Try } from '../types/Try';
 
-const getHeaders = (token: string | null) => {
-  const headers: HeadersInit = {
-    'Content-Type': 'application/json',
-  };
+const getHeaders = (token: string | null, isResponseBodyPresent: boolean) => {
+  const baseHeaders: HeadersInit = isResponseBodyPresent
+    ? {
+        'Content-Type': 'application/json',
+      }
+    : {};
 
   if (token !== null) {
-    headers.Authorization = `Bearer ${token}`;
+    baseHeaders.Authorization = `Bearer ${token}`;
   }
 
-  return headers;
+  return baseHeaders;
 };
 
 export class RequestError extends Error {
@@ -27,8 +29,8 @@ export const makeRequest = async <ResponseDto, RequestDto = never>(
   try {
     const response = await fetch(url, {
       method,
-      body: JSON.stringify(requestBody),
-      headers: getHeaders(token),
+      body: requestBody !== undefined ? JSON.stringify(requestBody) : undefined,
+      headers: getHeaders(token, requestBody !== undefined),
     });
 
     if (!response.ok) {

@@ -1,45 +1,42 @@
 import { ReactNode, useCallback } from 'react';
 import { SWRConfig } from 'swr';
-import { useSnackbar } from 'notistack';
 import { useAuth } from '../../hooks/useAuth/useAuth';
 import { RequestError } from '../../utils/makeRequest';
-import { getMakeRequestWithAuth } from './SWRConfigWithAuth.utils';
+import { useMakeRequestWithAuth } from '../../hooks/useMakeRequestWithAuth/useMakeRequestWithAuth';
+import { useCommonSnackbars } from '../../hooks/useCommonSnackbars/useCommonSnackbars';
 
 interface SWRConfigWithAuthProps {
   children: ReactNode;
 }
 
 export const SWRConfigWithAuth = ({ children }: SWRConfigWithAuthProps) => {
-  const { accessToken, logOut } = useAuth();
-  const { enqueueSnackbar } = useSnackbar();
+  const { logOut } = useAuth();
+  const { showInfoSnackbar } = useCommonSnackbars();
 
-  const makeRequestWithAuth = useCallback(
-    async function <ResponseDto>(resource: string) {
-      try {
-        return await getMakeRequestWithAuth<ResponseDto>(accessToken)(resource);
-      } catch (error) {
-        if (error instanceof RequestError && error.status === 401) {
-          logOut();
-          enqueueSnackbar('Zostałeś wylogowany', {
-            autoHideDuration: 2000,
-            variant: 'info',
-            anchorOrigin: {
-              vertical: 'top',
-              horizontal: 'center',
-            },
-          });
-        }
+  const makeRequestWithAuth = useMakeRequestWithAuth();
+  const curriedMakeRequestWithAuth = useCallback(
+    async (resource: string) => {
+      const response = await makeRequestWithAuth(resource);
 
-        throw error;
+      if (response.ok) {
+        return response.data;
       }
+
+      const { error } = response;
+      if (error instanceof RequestError && error.status === 401) {
+        logOut();
+        showInfoSnackbar('Zostałeś wylogowany');
+      }
+
+      throw error;
     },
-    [accessToken, enqueueSnackbar, logOut],
+    [logOut, makeRequestWithAuth, showInfoSnackbar],
   );
 
   return (
     <SWRConfig
       value={{
-        fetcher: makeRequestWithAuth,
+        fetcher: curriedMakeRequestWithAuth,
       }}
     >
       {children}

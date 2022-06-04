@@ -2,7 +2,7 @@ import { DtoUser, UserMyProfileResponseDto } from '@osk/shared';
 import { createContext, ReactNode, useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useSWR from 'swr';
-import { getMakeRequestWithAuth } from '../SWRConfigWithAuth/SWRConfigWithAuth.utils';
+import { getMakeRequestWithAuth } from './AuthContext.utils';
 
 interface AuthContextType {
   accessToken: string | null;

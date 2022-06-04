@@ -14,8 +14,8 @@ import { Box, Flex } from 'reflexbox';
 import { FTextField } from '../../components/FTextField/FTextField';
 import { RequireAuthLocationState } from '../../components/RequireAuth/RequireAuth';
 import { useAuth } from '../../hooks/useAuth/useAuth';
-import { LoginForm } from './Login.types';
-import { authenticate, LoginFormSchema } from './Login.utils';
+import { LoginForm, LoginFormSchema } from './Login.schema';
+import { authenticate } from './Login.utils';
 
 export const Login = () => {
   const oskName = 'OSK Adam Nowak';

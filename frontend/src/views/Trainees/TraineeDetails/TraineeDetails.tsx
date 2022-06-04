@@ -7,14 +7,14 @@ import {
   Typography,
 } from '@mui/material';
 import { TraineeFindOneResponseDto } from '@osk/shared';
-import { format, parseISO } from 'date-fns';
+import { parseISO } from 'date-fns';
 import { Navigate, useParams, Link } from 'react-router-dom';
 import { Box } from 'reflexbox';
 import useSWR from 'swr';
 import { FullPageLoading } from '../../../components/FullPageLoading/FullPageLoading';
 import { GeneralAPIError } from '../../../components/GeneralAPIError/GeneralAPIError';
-import { LONG_DATE } from '../../../constants/dateFormats';
 import { theme } from '../../../theme';
+import { formatLong } from '../../../utils/date';
 
 export const TraineeDetails = () => {
   const { traineeId } = useParams();
@@ -77,7 +77,7 @@ export const TraineeDetails = () => {
         <Typography variant="h6" component="h2">
           Data Dołączenia
         </Typography>
-        <div>{format(parseISO(trainee.user.createdAt), LONG_DATE)}</div>
+        <div>{formatLong(parseISO(trainee.user.createdAt))}</div>
         <Typography variant="h6" component="h2">
           PESEL
         </Typography>
