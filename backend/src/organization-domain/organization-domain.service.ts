@@ -1,9 +1,10 @@
-import { Inject, Injectable, Scope } from '@nestjs/common';
+import { Global, Inject, Injectable, Scope } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import { FastifyRequest } from 'fastify';
 import { Organization } from 'organizations/entities/organization.entity';
 import { OrganizationsService } from 'organizations/organizations.service';
 
+@Global()
 @Injectable({ scope: Scope.REQUEST })
 export class OrganizationDomainService {
   constructor(
