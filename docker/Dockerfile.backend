@@ -1,4 +1,4 @@
-FROM node:16-alpine
+FROM node:16-alpine AS builder-base
 
 RUN apk --no-cache add --virtual .builds-deps build-base python3
 
@@ -15,17 +15,36 @@ COPY shared/package.json ./shared/
 
 RUN yarn install --immutable
 
-COPY . .
+COPY .eslintignore .prettierrc tsconfig.json ./
+COPY eslint-plugin/ eslint-plugin/
+
+FROM builder-base AS shared
+WORKDIR /usr/src/app
+COPY shared/ ./shared/
 
 WORKDIR /usr/src/app/shared
 RUN yarn build
 
+FROM shared AS frontend
+WORKDIR /usr/src/app
+COPY frontend/ ./frontend/
+
 WORKDIR /usr/src/app/frontend
 RUN yarn build
 
+FROM shared AS backend
+WORKDIR /usr/src/app
+COPY backend/ ./backend/
+
 WORKDIR /usr/src/app/backend
-RUN yarn copy-client
 RUN yarn build
 
-CMD ["yarn", "start:prod"]
+FROM builder-base
+WORKDIR /usr/src/app
+COPY --from=shared /usr/src/app/shared ./shared/
+COPY --from=backend /usr/src/app/backend ./backend/
+COPY --from=frontend /usr/src/app/frontend ./frontend/
 
+WORKDIR /usr/src/app/backend
+RUN yarn copy-client
+CMD ["yarn", "start:prod"]
