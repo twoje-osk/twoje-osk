@@ -31,4 +31,9 @@ export class UsersService {
   async getAll(): Promise<User[] | null> {
     return this.usersRepository.find();
   }
+
+  async checkIfExistsByEmail(email: string): Promise<boolean> {
+    const user = await this.findOneByEmail(email);
+    return user !== undefined;
+  }
 }
