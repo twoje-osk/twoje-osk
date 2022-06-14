@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CurrentUserService } from 'current-user/current-user.service';
+import { OrganizationDomainService } from 'organization-domain/organization-domain.service';
 import { Repository } from 'typeorm';
 import { Instructor } from './entities/instructor.entity';
 
@@ -9,11 +9,12 @@ export class InstructorsService {
   constructor(
     @InjectRepository(Instructor)
     private instructorsRepository: Repository<Instructor>,
-    private currentUserService: CurrentUserService,
+    private organizationDomainService: OrganizationDomainService,
   ) {}
 
   async findAll() {
-    const { organizationId } = this.currentUserService.getRequestCurrentUser();
+    const { id: organizationId } =
+      this.organizationDomainService.getRequestOrganization();
 
     const users = await this.instructorsRepository.find({
       where: {
@@ -32,7 +33,8 @@ export class InstructorsService {
   }
 
   async findOne(id: number) {
-    const { organizationId } = this.currentUserService.getRequestCurrentUser();
+    const { id: organizationId } =
+      this.organizationDomainService.getRequestOrganization();
 
     const user = await this.instructorsRepository.findOne({
       where: {
