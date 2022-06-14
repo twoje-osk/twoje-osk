@@ -13,13 +13,13 @@ export class UsersService {
 
   async findOneByEmail(email: string, organization: Organization) {
     return this.usersRepository.findOne({
-      where: { email, organization },
+      where: { email, organization, isActive: true },
     });
   }
 
   async findOneById(id: number): Promise<User | null> {
     return this.usersRepository.findOne({
-      where: { id },
+      where: { id, isActive: true },
       relations: {
         organization: true,
       },
