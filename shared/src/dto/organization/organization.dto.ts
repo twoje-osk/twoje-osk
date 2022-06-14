@@ -6,4 +6,14 @@ export class DtoOrganization {
 
   @ApiProperty()
   name: string;
+
+  @ApiProperty()
+  slug: string;
+}
+
+export class OrganizationGetPublicInfoResponseDto {
+  @ApiProperty({
+    type: DtoOrganization,
+  })
+  organization: DtoOrganization;
 }

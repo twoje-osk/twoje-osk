@@ -3,7 +3,6 @@ import { AuthRequest } from 'auth/auth.types';
 import { Response, NextFunction } from 'express';
 import { OrganizationsService } from 'organizations/organizations.service';
 
-// TODO: Custom branding
 @Injectable()
 export class OrganizationDomainMiddleware implements NestMiddleware {
   constructor(private organizationsService: OrganizationsService) {}
