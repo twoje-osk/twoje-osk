@@ -13,6 +13,7 @@ interface TraineeFormProps {
     formikHelpers: FormikHelpers<TraineeFormData>,
   ) => void | Promise<any>;
   children?: ReactNode;
+  hideCreatedAt?: boolean;
 }
 
 const defaultValues: TraineeFormData = {
@@ -31,6 +32,7 @@ export const TraineeForm = ({
   disabled,
   onSubmit = () => undefined,
   children: actions,
+  hideCreatedAt = false,
 }: TraineeFormProps) => {
   return (
     <Formik<TraineeFormData>
@@ -90,13 +92,15 @@ export const TraineeForm = ({
               label="Numer PKK"
               disabled={disabled}
             />
-            <FTextField
-              id="createdAt"
-              name="createdAt"
-              label="Data Dołączenia"
-              type="date"
-              disabled
-            />
+            {!hideCreatedAt && (
+              <FTextField
+                id="createdAt"
+                name="createdAt"
+                label="Data Dołączenia"
+                type="date"
+                disabled
+              />
+            )}
             {actions && <div>{actions}</div>}
           </Stack>
         </Flex>

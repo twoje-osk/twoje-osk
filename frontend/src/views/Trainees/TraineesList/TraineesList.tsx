@@ -1,6 +1,8 @@
 import {
+  Button,
   Icon,
   IconButton,
+  Stack,
   Table,
   TableBody,
   TableCell,
@@ -13,7 +15,7 @@ import {
 } from '@mui/material';
 import { TraineeFindAllResponseDto } from '@osk/shared';
 import { parseISO } from 'date-fns';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Flex } from 'reflexbox';
 import useSWR from 'swr';
 import { FullPageLoading } from '../../../components/FullPageLoading/FullPageLoading';
@@ -40,16 +42,27 @@ export const TraineesList = () => {
         sx={{
           pl: { sm: 2 },
           pr: { xs: 1, sm: 1 },
+          justifyContent: 'space-between',
         }}
       >
-        <Typography sx={{ flex: '1 1 100%' }} variant="h6" component="h1">
+        <Typography variant="h6" component="h1">
           Kursanci
         </Typography>
-        <Tooltip title="Filtruj listę">
-          <IconButton>
-            <Icon>filter_list</Icon>
-          </IconButton>
-        </Tooltip>
+        <Stack direction="row" alignItems="center" spacing={1}>
+          <Button
+            startIcon={<Icon>add</Icon>}
+            variant="contained"
+            component={Link}
+            to="nowy"
+          >
+            Dodaj Nowego Kursanta
+          </Button>
+          <Tooltip title="Filtruj listę">
+            <IconButton>
+              <Icon>filter_list</Icon>
+            </IconButton>
+          </Tooltip>
+        </Stack>
       </Toolbar>
       <TableContainer sx={{ flex: '1 1', overflow: 'auto' }}>
         <Table aria-label="Lista Kursantów" stickyHeader>
