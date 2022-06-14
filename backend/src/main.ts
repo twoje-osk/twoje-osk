@@ -30,7 +30,12 @@ async function bootstrap() {
       .build();
 
     const document = SwaggerModule.createDocument(app, swaggerConfig);
-    SwaggerModule.setup('api/swagger', app, document);
+    SwaggerModule.setup('api/swagger', app, document, {
+      swaggerOptions: {
+        persistAuthorization: true,
+        tryItOutEnabled: true,
+      },
+    });
   }
 
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
