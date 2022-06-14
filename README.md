@@ -1,51 +1,17 @@
 <div id="top"></div>
-<!--
-*** Thanks for checking out the Best-README-Template. If you have a suggestion
-*** that would make this better, please fork the repo and create a pull request
-*** or simply open an issue with the tag "enhancement".
-*** Don't forget to give the project a star!
-*** Thanks again! Now go create something AMAZING! :D
--->
 
-
-
-<!-- PROJECT SHIELDS -->
-<!--
-*** I'm using markdown "reference style" links for readability.
-*** Reference links are enclosed in brackets [ ] instead of parentheses ( ).
-*** See the bottom of this document for the declaration of the reference variables
-*** for contributors-url, forks-url, etc. This is an optional, concise syntax you may use.
-*** https://www.markdownguide.org/basic-syntax/#reference-style-links
--->
-[![Contributors][contributors-shield]][contributors-url]
-[![Forks][forks-shield]][forks-url]
-[![Stargazers][stars-shield]][stars-url]
-[![Issues][issues-shield]][issues-url]
-[![MIT License][license-shield]][license-url]
-[![LinkedIn][linkedin-shield]][linkedin-url]
-
-
-
-<!-- PROJECT LOGO -->
-<br />
 <div align="center">
-  <a href="https://github.com/github_username/repo_name">
-    <img src="images/logo.png" alt="Logo" width="80" height="80">
+  <a href="https://github.com/twoje-osk/twoje-osk">
+    <img src="logo.png" alt="" width="80" height="80">
   </a>
 
-<h3 align="center">project_title</h3>
+<h3 align="center">Twoje OSK</h3>
 
   <p align="center">
-    project_description
-    <br />
-    <a href="https://github.com/github_username/repo_name"><strong>Explore the docs »</strong></a>
+    Driving School Management System
     <br />
     <br />
-    <a href="https://github.com/github_username/repo_name">View Demo</a>
-    ·
-    <a href="https://github.com/github_username/repo_name/issues">Report Bug</a>
-    ·
-    <a href="https://github.com/github_username/repo_name/issues">Request Feature</a>
+    <a href="https://test.twoje-osk.pl">View Demo</a>
   </p>
 </div>
 
@@ -62,18 +28,16 @@
       </ul>
     </li>
     <li>
-      <a href="#getting-started">Getting Started</a>
+      <a href="#running-the-app">Running the App</a>
       <ul>
-        <li><a href="#prerequisites">Prerequisites</a></li>
         <li><a href="#installation">Installation</a></li>
+        <li><a href="#docker">Docker</a></li>
+        <li><a href="#vanilla-method">Vanilla method</a></li>
       </ul>
     </li>
-    <li><a href="#usage">Usage</a></li>
-    <li><a href="#roadmap">Roadmap</a></li>
-    <li><a href="#contributing">Contributing</a></li>
+    <li><a href="#development">Development</a></li>
     <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
-    <li><a href="#acknowledgments">Acknowledgments</a></li>
   </ol>
 </details>
 
@@ -82,83 +46,135 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
+The following repository contains the source code for [our](#contact) Engineering Thesis concluding studies on [PJAIT](https://www.pja.edu.pl/en/).
 
-Here's a blank template to get started: To avoid retyping too much info. Do a search and replace with your text editor for the following: `github_username`, `repo_name`, `twitter_handle`, `linkedin_username`, `email_client`, `email`, `project_title`, `project_description`
+The project is an implementation of a management system for driving schools (OSK in polish).
 
 <p align="right">(<a href="#top">back to top</a>)</p>
-
 
 
 ### Built With
+#### Frontend
+* [Yarn Modern](https://yarnpkg.com/)
+* [TypeScript](https://www.typescriptlang.org/)
+* [React](https://reactjs.org/)
+* [Material UI](https://mui.com/)
+* [Emotion](https://emotion.sh/)
+* [SWR](https://swr.vercel.app/)
 
-* [Next.js](https://nextjs.org/)
-* [React.js](https://reactjs.org/)
-* [Vue.js](https://vuejs.org/)
-* [Angular](https://angular.io/)
-* [Svelte](https://svelte.dev/)
-* [Laravel](https://laravel.com)
-* [Bootstrap](https://getbootstrap.com)
-* [JQuery](https://jquery.com)
+#### Backend
+* [Yarn Modern](https://yarnpkg.com/)
+* [TypeScript](https://www.typescriptlang.org/)
+* [NestJS](https://nestjs.com/)
+* [Express](https://expressjs.com/)
+* [TypeORM](https://typeorm.io/)
+* [Passport](https://www.passportjs.org/)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 
-
-<!-- GETTING STARTED -->
-## Getting Started
-
-This is an example of how you may give instructions on setting up your project locally.
-To get a local copy up and running follow these simple example steps.
-
-### Prerequisites
-
-This is an example of how to list things you need to use the software and how to install them.
-* npm
-  ```sh
-  npm install npm@latest -g
-  ```
+## Running the App
 
 ### Installation
+1. Clone the repo
+  ```sh
+  git clone git@github.com:twoje-osk/twoje-osk.git
+  ```
+2. In the project root install the dependencies (unless you run the app in [Vanilla method](#vanilla-method), this is only needed for the IDE)
+  ```sh
+  yarn install
+  ```
+3. Append the following to [`/etc/hosts`](https://sslhow.com/understanding-etc-hosts-file-in-linux). This will allow you to use `test`, `other-test`, and `invalid` organizations.
+  ```
+  127.0.0.1       twoje-osk.loc
+  127.0.0.1       test.twoje-osk.loc
+  127.0.0.1       other-test.twoje-osk.loc
+  127.0.0.1       invalid.twoje-osk.loc
+  ```
 
-1. Get a free API Key at [https://example.com](https://example.com)
-2. Clone the repo
-   ```sh
-   git clone https://github.com/github_username/repo_name.git
-   ```
-3. Install NPM packages
-   ```sh
-   npm install
-   ```
-4. Enter your API in `config.js`
-   ```js
-   const API_KEY = 'ENTER YOUR API';
-   ```
+### Docker
+1. Spin up the app using `docker-compose`. In the project root folder run
+```
+docker-compose up --build
+```
+2. The backend will be available on port `8080` and frontend will be available on port `3000` (it also proxies all traffic to `/api` to port `8080`).\
+  Additionally due to the fact that the organization permissions are bound to the subdomain that the users requests, you have to open the app using `organization-name.twoje-osk.loc:3000/`
+
+### Vanilla method
+1. Run `postgres`. You can do it in 2 ways.
+    1. [Download it](https://www.postgresql.org/download/) and install it on your machine. Keep it running the background
+    2. Run `docker-compose up postgres` in a separate terminal window (requires docker)
+2. In a separate terminal window run `shared` subproject using
+  ```sh
+  cd shared && yarn dev
+  ```
+3. In a 2nd separate terminal window run `backend` subproject using
+  ```sh
+  cd backend && yarn dev
+  ```
+4. In a 3rd separate terminal window run `frontend` subproject using
+  ```sh
+  cd frontend && yarn dev
+  ```
+5. The backend will be available on port `8080` and frontend will be available on port `3000` (it also proxies all traffic to `/api` to port `8080`).\
+  Additionally due to the fact that the organization permissions are bound to the subdomain that the users requests, you have to open the app using `organization-name.twoje-osk.loc:3000/`
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
+
+
+<!-- DEVELOPMENT -->
+## Development
+### Backend
+All of the following command should be run inside the `backend` folder
+
+#### Creating migrations
+```bash
+yarn create-migration src/migrations/EntityMigrationName
+```
+Reference: [Creating a new migration](https://typeorm.io/migrations#creating-a-new-migration)
+
+#### Run migrations
+```bash
+yarn migrate
+```
+Reference: [Running and reverting migrations](https://typeorm.io/migrations#running-and-reverting-migrations)
+
+#### Drop database
+```bash
+yarn typeorm schema:drop
+```
+Reference: [Drop database schema](https://typeorm.io/using-cli#drop-database-schema)
+
+#### Full Reference
+https://typeorm.io/using-cli
+
+<p align="right">(<a href="#top">back to top</a>)</p>
 
 
 <!-- LICENSE -->
 ## License
 
-Distributed under the MIT License. See `LICENSE.txt` for more information.
+Distributed under the GPLv3 License. See [`LICENSE.md`](./LICENSE.md) for more information.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
+<!-- CONTACT -->
+## Contact
+**Bartosz Legięć**
+  * GitHub: [@bibixx](https://github.com/bibixx)
+  * Twitter: [@bibix1999](https://twitter.com/bibix1999)
+  * LinkedIn: [bartoszlegiec](https://www.linkedin.com/in/bartoszlegiec/)
 
-<!-- MARKDOWN LINKS & IMAGES -->
-<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-shield]: https://img.shields.io/github/contributors/github_username/repo_name.svg?style=flat-square
-[contributors-url]: https://github.com/github_username/repo_name/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/github_username/repo_name.svg?style=flat-square
-[forks-url]: https://github.com/github_username/repo_name/network/members
-[stars-shield]: https://img.shields.io/github/stars/github_username/repo_name.svg?style=flat-square
-[stars-url]: https://github.com/github_username/repo_name/stargazers
-[issues-shield]: https://img.shields.io/github/issues/github_username/repo_name.svg?style=flat-square
-[issues-url]: https://github.com/github_username/repo_name/issues
-[license-shield]: https://img.shields.io/github/license/github_username/repo_name.svg?style=flat-square
-[license-url]: https://github.com/github_username/repo_name/blob/master/LICENSE.md
-[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=flat-square&logo=linkedin&colorB=555
-[linkedin-url]: https://linkedin.com/in/linkedin_username
-[product-screenshot]: images/screenshot.png
+**Maciej Wójcik**
+  * GitHub: [@vvooycik](https://github.com/vvooycik)
+  * Twitter: [@Wooycik](https://twitter.com/Wooycik)
+  * LinkedIn: [wooycik](https://www.linkedin.com/in/wooycik/)
+
+**Romeo Morcia**
+  * GitHub: [@maonat](https://github.com/maonat)
+  * LinkedIn: [romeo-morcia-5256b491](https://www.linkedin.com/in/romeo-morcia-5256b491/)
+
+Project Link: https://github.com/twoje-osk/twoje-osk
+
+<p align="right">(<a href="#top">back to top</a>)</p>
