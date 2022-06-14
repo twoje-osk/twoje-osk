@@ -13,6 +13,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Box } from 'reflexbox';
 import { useCommonSnackbars } from '../../../hooks/useCommonSnackbars/useCommonSnackbars';
 import { theme } from '../../../theme';
+import { sleep } from '../../../utils/sleep';
 import { TraineeForm } from '../TraineeForm/TraineeForm';
 import { TraineeFormData } from '../TraineeForm/TraineeForm.schema';
 
@@ -26,10 +27,20 @@ export const TraineeNew = () => {
 
     // eslint-disable-next-line no-console
     console.log(newTrainee);
-    // eslint-disable-next-line no-promise-executor-return
-    await new Promise((r) => setTimeout(r, 1000));
+    await sleep(1000);
 
-    const response = { ok: true, data: undefined as any };
+    const response = {
+      ok: true,
+      data: {
+        trainee: {
+          id: 1,
+          user: {
+            firstName: newTrainee.firstName,
+            lastName: newTrainee.lastName,
+          },
+        },
+      },
+    };
 
     if (!response.ok) {
       setIsLoading(false);
@@ -37,11 +48,8 @@ export const TraineeNew = () => {
       return;
     }
 
-    const traineeId = 1;
-
-    navigate(`/kursanci/${traineeId}`);
-    // TODO: Remove '?'
-    const fullName = `${response.data?.trainee.user.firstName} ${response.data?.trainee.user.lastName}`;
+    navigate(`/kursanci/${response.data.trainee.id}`);
+    const fullName = `${response.data.trainee.user.firstName} ${response.data.trainee.user.lastName}`;
     showSuccessSnackbar(`Kursant ${fullName} został zmodyfikowany`);
   };
 
@@ -82,7 +90,7 @@ export const TraineeNew = () => {
             <Button
               variant="outlined"
               component={Link}
-              to="/pojazdy"
+              to="/kursanci"
               disabled={isLoading}
             >
               Anuluj

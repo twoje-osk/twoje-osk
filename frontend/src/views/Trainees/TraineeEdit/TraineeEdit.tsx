@@ -18,6 +18,7 @@ import { FullPageLoading } from '../../../components/FullPageLoading/FullPageLoa
 import { GeneralAPIError } from '../../../components/GeneralAPIError/GeneralAPIError';
 import { useCommonSnackbars } from '../../../hooks/useCommonSnackbars/useCommonSnackbars';
 import { theme } from '../../../theme';
+import { sleep } from '../../../utils/sleep';
 import { TraineeForm } from '../TraineeForm/TraineeForm';
 import { TraineeFormData } from '../TraineeForm/TraineeForm.schema';
 
@@ -35,8 +36,7 @@ export const TraineeEdit = () => {
 
     // eslint-disable-next-line no-console
     console.log(editedTrainee);
-    // eslint-disable-next-line no-promise-executor-return
-    await new Promise((r) => setTimeout(r, 1000));
+    await sleep(1000);
 
     const response = { ok: true };
 

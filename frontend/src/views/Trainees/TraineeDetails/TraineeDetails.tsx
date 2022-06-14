@@ -13,14 +13,15 @@ import { useCallback } from 'react';
 import { Navigate, useParams, Link } from 'react-router-dom';
 import { Box } from 'reflexbox';
 import useSWR from 'swr';
-import { DeleteModal } from '../../../components/DeleteModal/DeleteModal';
+import { ActionModal } from '../../../components/ActionModal/ActionModal';
 import { FullPageLoading } from '../../../components/FullPageLoading/FullPageLoading';
 import { GeneralAPIError } from '../../../components/GeneralAPIError/GeneralAPIError';
 import { useCommonSnackbars } from '../../../hooks/useCommonSnackbars/useCommonSnackbars';
-import { useDeleteModal } from '../../../hooks/useDeleteModal/useDeleteModal';
+import { useActionModal } from '../../../hooks/useActionModal/useActionModal';
 import { theme } from '../../../theme';
 import { TraineeForm } from '../TraineeForm/TraineeForm';
 import { TraineeFormData } from '../TraineeForm/TraineeForm.schema';
+import { sleep } from '../../../utils/sleep';
 
 export const TraineeDetails = () => {
   const { traineeId } = useParams();
@@ -29,24 +30,30 @@ export const TraineeDetails = () => {
   );
 
   const {
-    isLoading: isDeleteModalLoading,
-    isOpen: isDeleteModalOpen,
-    openModal: openDeleteModal,
-    closeModal: closeDeleteModal,
-    setLoading: setDeleteModalLoading,
-  } = useDeleteModal();
+    isLoading: isDeactivateModalLoading,
+    isOpen: isDeactivateModalOpen,
+    openModal: openDeactivateModal,
+    closeModal: closeDeactivateModal,
+    setLoading: setDeactivateModalLoading,
+  } = useActionModal();
+  const {
+    isLoading: isActivateModalLoading,
+    isOpen: isActivateModalOpen,
+    openModal: openActivateModal,
+    closeModal: closeActivateModal,
+    setLoading: setActivateModalLoading,
+  } = useActionModal();
   const { showErrorSnackbar, showSuccessSnackbar } = useCommonSnackbars();
 
-  const onDelete = useCallback(async () => {
-    setDeleteModalLoading(true);
+  const onDeactivate = useCallback(async () => {
+    setDeactivateModalLoading(true);
 
-    // eslint-disable-next-line no-promise-executor-return
-    await new Promise((r) => setTimeout(r, 1000));
+    await sleep(1000);
 
     const response = { ok: true };
 
     if (!response.ok) {
-      setDeleteModalLoading(false);
+      setDeactivateModalLoading(false);
       showErrorSnackbar();
       return;
     }
@@ -54,14 +61,42 @@ export const TraineeDetails = () => {
     const fullName = `${data?.trainee.user.firstName} ${data?.trainee.user.lastName}`;
     showSuccessSnackbar(`Kursant ${fullName} został pomyślnie deaktywowany`);
     await mutate();
-    setDeleteModalLoading(false);
-    closeDeleteModal();
+    setDeactivateModalLoading(false);
+    closeDeactivateModal();
   }, [
-    closeDeleteModal,
+    closeDeactivateModal,
     data?.trainee.user.firstName,
     data?.trainee.user.lastName,
     mutate,
-    setDeleteModalLoading,
+    setDeactivateModalLoading,
+    showErrorSnackbar,
+    showSuccessSnackbar,
+  ]);
+
+  const onActivate = useCallback(async () => {
+    setActivateModalLoading(true);
+
+    await sleep(1000);
+
+    const response = { ok: true };
+
+    if (!response.ok) {
+      setActivateModalLoading(false);
+      showErrorSnackbar();
+      return;
+    }
+
+    const fullName = `${data?.trainee.user.firstName} ${data?.trainee.user.lastName}`;
+    showSuccessSnackbar(`Kursant ${fullName} został pomyślnie aktywowany`);
+    await mutate();
+    setActivateModalLoading(false);
+    closeActivateModal();
+  }, [
+    closeActivateModal,
+    data?.trainee.user.firstName,
+    data?.trainee.user.lastName,
+    mutate,
+    setActivateModalLoading,
     showErrorSnackbar,
     showSuccessSnackbar,
   ]);
@@ -130,7 +165,7 @@ export const TraineeDetails = () => {
                 color="success"
                 variant="outlined"
                 startIcon={<Icon>check</Icon>}
-                onClick={openDeleteModal}
+                onClick={openActivateModal}
               >
                 Aktywuj
               </Button>
@@ -139,7 +174,7 @@ export const TraineeDetails = () => {
                 color="error"
                 variant="outlined"
                 startIcon={<Icon>delete</Icon>}
-                onClick={openDeleteModal}
+                onClick={openDeactivateModal}
               >
                 Deaktywuj
               </Button>
@@ -147,15 +182,35 @@ export const TraineeDetails = () => {
           </Stack>
         </TraineeForm>
       </Box>
-      <DeleteModal
-        isOpen={isDeleteModalOpen}
-        isLoading={isDeleteModalLoading}
-        onClose={closeDeleteModal}
-        onDelete={onDelete}
+      <ActionModal
+        isOpen={isDeactivateModalOpen}
+        isLoading={isDeactivateModalLoading}
+        onClose={closeDeactivateModal}
+        onAction={onDeactivate}
         id="deactivate-trainee-modal"
         title="Czy na pewno chcesz deaktywować tego kursanta?"
-        subtitle="Po deaktywowaniu kursant nie będzie w stanie zalogować się do systemu."
-        deleteButtonText="Deaktywuj"
+        subtitle={
+          <span>
+            Po deaktywowaniu kursant <strong>straci</strong> dostęp do systemu.
+          </span>
+        }
+        actionButtonText="Deaktywuj"
+      />
+      <ActionModal
+        isOpen={isActivateModalOpen}
+        isLoading={isActivateModalLoading}
+        onClose={closeActivateModal}
+        onAction={onActivate}
+        id="activate-trainee-modal"
+        title="Czy na pewno chcesz aktywować tego kursanta?"
+        subtitle={
+          <span>
+            Po aktywowaniu kursant <strong>uzyska</strong> dostęp do systemu.
+          </span>
+        }
+        actionButtonText="Aktywuj"
+        actionButtonColor="success"
+        actionButtonIcon="check"
       />
     </div>
   );
