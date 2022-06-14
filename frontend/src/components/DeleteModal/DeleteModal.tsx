@@ -11,6 +11,8 @@ interface DeleteModalProps {
   id: string;
   title: ReactNode;
   subtitle?: ReactNode;
+  deleteButtonText?: ReactNode;
+  cancelButtonText?: ReactNode;
 }
 
 const style = {
@@ -31,6 +33,8 @@ export const DeleteModal = ({
   onDelete,
   title,
   subtitle = 'Ta akcja jest nieodwracalna.',
+  deleteButtonText = 'Usuń',
+  cancelButtonText = 'Anuluj',
 }: DeleteModalProps) => {
   return (
     <Modal
@@ -56,7 +60,7 @@ export const DeleteModal = ({
             loading={isLoading}
             disabled={isLoading}
           >
-            Usuń
+            {deleteButtonText}
           </LoadingButton>
           <Button
             variant="outlined"
@@ -64,7 +68,7 @@ export const DeleteModal = ({
             fullWidth
             disabled={isLoading}
           >
-            Anuluj
+            {cancelButtonText}
           </Button>
         </Stack>
       </Paper>

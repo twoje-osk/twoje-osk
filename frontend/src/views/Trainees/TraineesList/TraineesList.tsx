@@ -72,6 +72,7 @@ export const TraineesList = () => {
               <TableCell>Nazwisko</TableCell>
               <TableCell>Telefon</TableCell>
               <TableCell>Data Dołączenia</TableCell>
+              <TableCell align="center">Aktywny</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -87,6 +88,13 @@ export const TraineesList = () => {
                 <TableCell>{row.user.phoneNumber}</TableCell>
                 <TableCell>
                   {formatLong(parseISO(row.user.createdAt))}
+                </TableCell>
+                <TableCell align="center">
+                  {row.user.isActive ? (
+                    <Icon color="success">check</Icon>
+                  ) : (
+                    <Icon color="error">close</Icon>
+                  )}
                 </TableCell>
               </TableRow>
             ))}
