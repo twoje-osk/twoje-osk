@@ -3,6 +3,7 @@ import {
   Button,
   Icon,
   Link as MUILink,
+  Stack,
   Toolbar,
   Typography,
 } from '@mui/material';
@@ -14,7 +15,8 @@ import useSWR from 'swr';
 import { FullPageLoading } from '../../../components/FullPageLoading/FullPageLoading';
 import { GeneralAPIError } from '../../../components/GeneralAPIError/GeneralAPIError';
 import { theme } from '../../../theme';
-import { formatLong } from '../../../utils/date';
+import { TraineeForm } from '../TraineeForm/TraineeForm';
+import { TraineeFormData } from '../TraineeForm/TraineeForm.schema';
 
 export const TraineeDetails = () => {
   const { traineeId } = useParams();
@@ -35,6 +37,17 @@ export const TraineeDetails = () => {
   }
 
   const { trainee } = data;
+
+  const initialValues: TraineeFormData = {
+    firstName: trainee.user.firstName,
+    lastName: trainee.user.lastName,
+    email: trainee.user.email,
+    phoneNumber: trainee.user.phoneNumber,
+    pesel: trainee.pesel,
+    pkk: trainee.pkk,
+    driversLicenseNumber: trainee.driversLicenseNumber ?? 'Brak',
+    createdAt: parseISO(trainee.user.createdAt),
+  };
 
   return (
     <div>
@@ -59,37 +72,26 @@ export const TraineeDetails = () => {
         </Breadcrumbs>
       </Toolbar>
       <Box as="main" p="16px" pt="0">
-        <Typography variant="h3" component="h1">
-          {trainee.user.firstName} {trainee.user.lastName}
-        </Typography>
-        <Typography variant="h6" component="h2">
-          Telefon
-        </Typography>
-        <div>{trainee.user.phoneNumber}</div>
-        <Typography variant="h6" component="h2">
-          Email
-        </Typography>
-        <div>{trainee.user.email}</div>
-        <Typography variant="h6" component="h2">
-          Numer Dowodu Osobistego
-        </Typography>
-        <div>{trainee.driversLicenseNumber ?? 'Brak'}</div>
-        <Typography variant="h6" component="h2">
-          Data Dołączenia
-        </Typography>
-        <div>{formatLong(parseISO(trainee.user.createdAt))}</div>
-        <Typography variant="h6" component="h2">
-          PESEL
-        </Typography>
-        <div>{trainee.pesel}</div>
-        <Typography variant="h5" component="h2">
-          PKK
-        </Typography>
-        <Typography variant="h6" component="h3">
-          Numer
-        </Typography>
-        <div>{trainee.pkk}</div>
-        <Button variant="contained">Zobacz Raport Postępów</Button>
+        <TraineeForm initialValues={initialValues} disabled>
+          <Stack direction="row" spacing={1}>
+            <Button variant="contained">Zobacz Raport Postępów</Button>
+            <Button
+              variant="outlined"
+              startIcon={<Icon>edit</Icon>}
+              component={Link}
+              to="edytuj"
+            >
+              Edytuj
+            </Button>
+            <Button
+              color="error"
+              variant="outlined"
+              startIcon={<Icon>delete</Icon>}
+            >
+              Deaktywuj
+            </Button>
+          </Stack>
+        </TraineeForm>
       </Box>
     </div>
   );
