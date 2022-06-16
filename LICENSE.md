@@ -1,4 +1,4 @@
-<h3 align="center"><strong>Copyright © 2022 Bartosz Legięć</strong></h3>
+<h3 align="center"><strong>Copyright © 2022 Bartosz Legięć, Maciej Wójcik, Romeo Morcia</strong></h3>
 
 <p align="justify">
 This program is free software: you can redistribute it and/or modify
