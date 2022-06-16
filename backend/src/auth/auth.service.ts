@@ -1,19 +1,29 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { InjectRepository } from '@nestjs/typeorm';
 import { JwtPayload } from '@osk/shared';
-import { User } from 'users/entities/user.entity';
 import * as bcrypt from 'bcrypt';
-import { UsersService } from '../users/users.service';
+import { Organization } from 'organizations/entities/organization.entity';
+import { Repository } from 'typeorm';
+import { User } from 'users/entities/user.entity';
+import { RequestUser } from './auth.types';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private usersService: UsersService,
     private jwtService: JwtService,
+    @InjectRepository(User)
+    private usersRepository: Repository<User>,
   ) {}
 
-  async validateUser(email: string, password: string) {
-    const user = await this.usersService.findOneByEmail(email);
+  async validateUser(
+    email: string,
+    password: string,
+    organization: Organization,
+  ) {
+    const user = await this.usersRepository.findOne({
+      where: { email, organization, isActive: true },
+    });
 
     if (!user) {
       return null;
@@ -28,11 +38,10 @@ export class AuthService {
     return user;
   }
 
-  async login(user: User) {
+  async login(user: RequestUser) {
     const payload: JwtPayload = {
       email: user.email,
-      sub: user.id,
-      organizationId: user.organization.id,
+      sub: user.userId,
     };
 
     return {
