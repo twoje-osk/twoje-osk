@@ -26,7 +26,6 @@ pr:
       - '**/.*' # skip every hidden file change in any dir below root dir
       - '!**/.eslintrc'
       - '!**/.prettierrc'
-  drafts: false
 
 pool:
   vmImage: ubuntu-latest
