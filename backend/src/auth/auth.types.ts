@@ -1,12 +1,18 @@
 import { JwtPayload } from '@osk/shared';
-import { FastifyRequest } from 'fastify';
+import { Request } from 'express';
 
 export interface RequestUser {
   userId: JwtPayload['sub'];
-  organizationId: JwtPayload['organizationId'];
   email: JwtPayload['email'];
 }
 
-export interface AuthRequest extends FastifyRequest {
+export interface RequestOrganization {
+  id: number;
+  name: string;
+  slug: string;
+}
+
+export interface AuthRequest extends Request {
   user: RequestUser;
+  organization: RequestOrganization;
 }

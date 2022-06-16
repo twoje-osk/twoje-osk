@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CurrentUserService } from 'current-user/current-user.service';
+import { OrganizationDomainService } from 'organization-domain/organization-domain.service';
 import { Repository } from 'typeorm';
 import { Vehicle } from './entities/vehicle.entity';
 
@@ -20,35 +21,36 @@ export class VehicleService {
     @InjectRepository(Vehicle)
     private vehiclesRepository: Repository<Vehicle>,
     private currentUserService: CurrentUserService,
+    private organizationDomainService: OrganizationDomainService,
   ) {}
 
   async findAll(): Promise<Vehicle[]> {
-    const { organizationId } = this.currentUserService.getRequestCurrentUser();
+    const { id: organizationId } =
+      this.organizationDomainService.getRequestOrganization();
+
     return this.vehiclesRepository.find({
       where: {
         organization: { id: organizationId },
-      },
-      relations: {
-        organization: true,
       },
     });
   }
 
   async findOneById(id: number) {
-    const { organizationId } = this.currentUserService.getRequestCurrentUser();
+    const { id: organizationId } =
+      this.organizationDomainService.getRequestOrganization();
+
     return this.vehiclesRepository.findOne({
       where: {
         id,
         organization: { id: organizationId },
       },
-      relations: {
-        organization: true,
-      },
     });
   }
 
   async checkIfExistsByLicensePlate(licensePlate: string) {
-    const { organizationId } = this.currentUserService.getRequestCurrentUser();
+    const { id: organizationId } =
+      this.organizationDomainService.getRequestOrganization();
+
     const numberOfFoundVehicles = await this.vehiclesRepository.countBy({
       licensePlate,
       organization: { id: organizationId },
@@ -65,7 +67,9 @@ export class VehicleService {
     additionalDetails: string | null,
     notes: string | null,
   ) {
-    const { organizationId } = this.currentUserService.getRequestCurrentUser();
+    const { id: organizationId } =
+      this.organizationDomainService.getRequestOrganization();
+
     const newVehicle = this.vehiclesRepository.create({
       name,
       licensePlate,
@@ -83,7 +87,9 @@ export class VehicleService {
   }
 
   async update(vehicle: Partial<VehicleArguments>, vehicleId: number) {
-    const { organizationId } = this.currentUserService.getRequestCurrentUser();
+    const { id: organizationId } =
+      this.organizationDomainService.getRequestOrganization();
+
     const updatedVehicle = this.vehiclesRepository.update(
       {
         id: vehicleId,
@@ -95,7 +101,9 @@ export class VehicleService {
   }
 
   async remove(vehicleId: number) {
-    const { organizationId } = this.currentUserService.getRequestCurrentUser();
+    const { id: organizationId } =
+      this.organizationDomainService.getRequestOrganization();
+
     const removedVehicle = this.vehiclesRepository.delete({
       id: vehicleId,
       organization: { id: organizationId },

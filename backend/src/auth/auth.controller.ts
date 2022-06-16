@@ -2,6 +2,7 @@ import { Controller, Post, Request, UseGuards } from '@nestjs/common';
 import { ApiBody, ApiResponse } from '@nestjs/swagger';
 import { LoginAuthRequestDto, LoginAuthResponseDto } from '@osk/shared';
 import { AuthService } from './auth.service';
+import { AuthRequest } from './auth.types';
 import { LocalAuthGuard } from './passport/local-auth.guard';
 import { SkipAuth } from './passport/skip-auth.guard';
 
@@ -18,7 +19,7 @@ export class AuthController {
   @ApiResponse({
     type: LoginAuthResponseDto,
   })
-  async login(@Request() req: any): Promise<LoginAuthResponseDto> {
+  async login(@Request() req: AuthRequest): Promise<LoginAuthResponseDto> {
     return this.authService.login(req.user);
   }
 }
