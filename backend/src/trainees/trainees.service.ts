@@ -1,8 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { DtoUser } from '@osk/shared';
 import { OrganizationDomainService } from 'organization-domain/organization-domain.service';
 import { Repository } from 'typeorm';
 import { Trainee } from './entities/trainee.entity';
+
+interface TraineeArgument {
+  user?: DtoUser;
+  pesel?: string;
+  pkk?: string;
+  driversLicenseNumber: string | null;
+}
 
 @Injectable()
 export class TraineesService {
@@ -32,7 +40,7 @@ export class TraineesService {
     return users;
   }
 
-  async findOne(id: number) {
+  async findOneById(id: number) {
     const { id: organizationId } =
       this.organizationDomainService.getRequestOrganization();
 
@@ -51,5 +59,19 @@ export class TraineesService {
     });
 
     return user;
+  }
+
+  async update(trainee: Partial<TraineeArgument>, traineeId: number) {
+    const { id: organizationId } =
+      this.organizationDomainService.getRequestOrganization();
+
+    const updatedTrainee = this.traineesRepository.update(
+      {
+        id: traineeId,
+        user: { organization: { id: organizationId } },
+      },
+      trainee,
+    );
+    return updatedTrainee;
   }
 }

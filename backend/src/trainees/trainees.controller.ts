@@ -1,8 +1,18 @@
-import { Controller, Get, NotFoundException, Param } from '@nestjs/common';
-import { ApiResponse } from '@nestjs/swagger';
+import {
+  Body,
+  Controller,
+  Get,
+  NotFoundException,
+  Param,
+  ParseIntPipe,
+  Patch,
+} from '@nestjs/common';
+import { ApiBody, ApiResponse } from '@nestjs/swagger';
 import {
   TraineeFindAllResponseDto,
   TraineeFindOneResponseDto,
+  TraineeUpdateResponseDto,
+  TraineeUpdateRequestDto,
 } from '@osk/shared';
 import { TraineesService } from './trainees.service';
 
@@ -25,12 +35,32 @@ export class TraineesController {
   })
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<TraineeFindOneResponseDto> {
-    const trainee = await this.traineesService.findOne(+id);
+    const trainee = await this.traineesService.findOneById(+id);
 
     if (trainee === null) {
       throw new NotFoundException();
     }
 
     return { trainee };
+  }
+
+  @ApiResponse({
+    type: TraineeUpdateResponseDto,
+  })
+  @ApiBody({ type: TraineeUpdateRequestDto })
+  @Patch(':id')
+  async update(
+    @Body() { trainee }: TraineeUpdateRequestDto,
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<TraineeUpdateResponseDto> {
+    const doesTraineeExist =
+      (await this.traineesService.findOneById(id)) !== null;
+    if (!doesTraineeExist) {
+      throw new NotFoundException('Trainee with this id does not exist.');
+    }
+
+    await this.traineesService.update(trainee, id);
+
+    return {};
   }
 }
