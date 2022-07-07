@@ -1,4 +1,4 @@
-import { Exclude } from 'class-transformer';
+import { Exclude, Expose } from 'class-transformer';
 import {
   Entity,
   Column,
@@ -8,6 +8,7 @@ import {
   JoinColumn,
   OneToOne,
 } from 'typeorm';
+import { UserRole } from '@osk/shared';
 import type { Instructor } from '../../instructors/entities/instructor.entity';
 import type { Trainee } from '../../trainees/entities/trainee.entity';
 import { Organization } from '../../organizations/entities/organization.entity';
@@ -44,10 +45,31 @@ export class User {
   phoneNumber: string;
 
   @OneToOne<Trainee>('Trainee', (trainee) => trainee.user)
-  @JoinColumn()
+  @JoinColumn({ name: 'traineeId' })
   trainee: Trainee | null;
 
+  @Exclude()
+  @Column({ nullable: true })
+  traineeId: number | null;
+
   @OneToOne<Instructor>('Instructor', (instructor) => instructor.user)
-  @JoinColumn()
+  @JoinColumn({ name: 'instructorId' })
   instructor: Instructor | null;
+
+  @Exclude()
+  @Column({ nullable: true })
+  instructorId: number | null;
+
+  @Expose()
+  get role(): UserRole {
+    if (this.traineeId !== null) {
+      return UserRole.Trainee;
+    }
+
+    if (this.instructorId !== null) {
+      return UserRole.Instructor;
+    }
+
+    return UserRole.Admin;
+  }
 }

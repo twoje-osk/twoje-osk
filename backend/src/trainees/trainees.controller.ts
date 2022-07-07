@@ -3,9 +3,12 @@ import { ApiResponse } from '@nestjs/swagger';
 import {
   TraineeFindAllResponseDto,
   TraineeFindOneResponseDto,
+  UserRole,
 } from '@osk/shared';
+import { Roles } from 'common/guards/roles.decorator';
 import { TraineesService } from './trainees.service';
 
+@Roles(UserRole.Admin, UserRole.Instructor)
 @Controller('trainees')
 export class TraineesController {
   constructor(private readonly traineesService: TraineesService) {}
