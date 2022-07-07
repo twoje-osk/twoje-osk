@@ -36,6 +36,7 @@ import { VehiclesModule } from './vehicles/vehicles.module';
           migrations: ['dist/migrations/*.js'],
           synchronize: false,
           migrationsRun: configService.get('isProduction'),
+          logging: true,
         };
       },
     }),
