@@ -6,6 +6,8 @@ import { seedTrainees } from './seed.trainees';
 import { seedVehicles } from './seed.vehicles';
 import { EntityDbData, getEntitiesDbData } from './seed.entities';
 import { seedInstructors } from './seed.instructors';
+import { seedAvailabilities } from './seed.availabilities';
+import { seedLessons } from './seed.lessons';
 
 const clear = async (trx: EntityManager, entitiesDbData: EntityDbData[]) => {
   await Promise.all(
@@ -35,6 +37,8 @@ const run = async () => {
     seedInstructors();
     seedUsers();
     seedVehicles();
+    seedAvailabilities();
+    seedLessons();
 
     for (const { factory } of entitiesDbData) {
       // eslint-disable-next-line no-await-in-loop

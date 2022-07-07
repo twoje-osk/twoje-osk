@@ -17,6 +17,8 @@ import { TraineesModule } from './trainees/trainees.module';
 import { CurrentUserModule } from './current-user/current-user.module';
 import { DebugModule } from './debug/debug.module';
 import { VehiclesModule } from './vehicles/vehicles.module';
+import { AvailabilityModule } from './availability/availability.module';
+import { LessonsModule } from './lessons/lessons.module';
 
 @Module({
   imports: [
@@ -55,6 +57,8 @@ import { VehiclesModule } from './vehicles/vehicles.module';
     VehiclesModule,
     OrganizationsModule,
     OrganizationDomainModule,
+    LessonsModule,
+    AvailabilityModule,
   ],
   providers: [
     {

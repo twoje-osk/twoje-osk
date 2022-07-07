@@ -1,4 +1,6 @@
 import { EntityManager, Repository } from 'typeorm';
+import { Lesson } from '../lessons/entities/lesson.entity';
+import { Availability } from '../availability/entities/availability.entity';
 import { Instructor } from '../instructors/entities/instructor.entity';
 import { Organization } from '../organizations/entities/organization.entity';
 import { Trainee } from '../trainees/entities/trainee.entity';
@@ -10,6 +12,8 @@ import { traineesFactory } from './seed.trainees';
 import { usersFactory } from './seed.user';
 import { vehiclesFactory } from './seed.vehicles';
 import { Factory } from './seed.utils';
+import { availabilitiesFactory } from './seed.availabilities';
+import { lessonsFactory } from './seed.lessons';
 
 export interface EntityDbData {
   factory: Factory<any>;
@@ -42,5 +46,15 @@ export const getEntitiesDbData = (trx: EntityManager): EntityDbData[] => [
     factory: vehiclesFactory,
     repository: trx.getRepository(Vehicle),
     sequences: ['vehicle_id_seq'],
+  },
+  {
+    factory: availabilitiesFactory,
+    repository: trx.getRepository(Availability),
+    sequences: ['availability_id_seq'],
+  },
+  {
+    factory: lessonsFactory,
+    repository: trx.getRepository(Lesson),
+    sequences: ['lesson_id_seq'],
   },
 ];
