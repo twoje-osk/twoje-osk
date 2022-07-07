@@ -17,6 +17,9 @@ export class UsersService {
       this.organizationDomainService.getRequestOrganization();
     return this.usersRepository.findOne({
       where: { id, organization: { id: organizationId }, isActive: true },
+      relations: {
+        organization: true,
+      },
     });
   }
 
