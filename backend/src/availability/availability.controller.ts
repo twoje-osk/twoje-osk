@@ -23,17 +23,20 @@ export class AvailabilityController {
   })
   @Get('instructors/:id/public')
   @UsePipes(new ValidationPipe({ transform: true }))
-  getInstructorAvailability(
+  async getInstructorAvailability(
     @Query() query: InstructorPublicAvailabilityQueryDTO,
     @Param('id') instructorId: number,
-  ): any {
+  ): Promise<InstructorPublicAvailabilityResponseDTO> {
     const from = query.from ?? startOfWeek(new Date());
     const to = query.to ?? endOfWeek(new Date());
 
-    return this.availabilityService.getPublicInstructorAvailability(
-      instructorId,
-      from,
-      to,
-    );
+    const batches =
+      await this.availabilityService.getPublicInstructorAvailability(
+        instructorId,
+        from,
+        to,
+      );
+
+    return { batches };
   }
 }

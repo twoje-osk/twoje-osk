@@ -1,4 +1,5 @@
 import { Availability } from '../availability/entities/availability.entity';
+import { instructorsFactory } from './seed.instructors';
 import { Factory } from './seed.utils';
 
 class AvailabilitiesFactory extends Factory<Availability> {
@@ -17,21 +18,31 @@ export const seedAvailabilities = () => [
   availabilitiesFactory.generateFromData({
     from: new Date('2022-07-04T10:00:00.00Z'),
     to: new Date('2022-07-04T18:00:00.00Z'),
+    instructor: instructorsFactory.getAll()[0],
+    userDefined: true,
   }),
   availabilitiesFactory.generateFromData({
     from: new Date('2022-07-05 10:00:00.00Z'),
     to: new Date('2022-07-05 18:00:00.00Z'),
+    instructor: instructorsFactory.getAll()[0],
+    userDefined: true,
   }),
   availabilitiesFactory.generateFromData({
     from: new Date('2022-07-06 10:00:00.00Z'),
     to: new Date('2022-07-06 18:00:00.00Z'),
+    instructor: instructorsFactory.getAll()[0],
+    userDefined: true,
   }),
   availabilitiesFactory.generateFromData({
     from: new Date('2022-07-07 10:00:00.00Z'),
     to: new Date('2022-07-07 18:00:00.00Z'),
+    instructor: instructorsFactory.getAll()[0],
+    userDefined: true,
   }),
   availabilitiesFactory.generateFromData({
     from: new Date('2022-07-08 10:00:00.00Z'),
     to: new Date('2022-07-08 18:00:00.00Z'),
+    instructor: instructorsFactory.getAll()[0],
+    userDefined: true,
   }),
 ];

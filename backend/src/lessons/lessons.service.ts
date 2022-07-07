@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
+import { LessonStatus } from '@osk/shared';
+import { LessThanOrEqual, MoreThanOrEqual, Not, Repository } from 'typeorm';
 import { Lesson } from './entities/lesson.entity';
 
 @Injectable()
@@ -10,8 +11,19 @@ export class LessonsService {
     private lessonRepository: Repository<Lesson>,
   ) {}
 
+  async findAllByTrainee(traineeId: number, from?: Date, to?: Date) {
+    return this.lessonRepository.find({
+      where: {
+        trainee: {
+          user: { id: traineeId },
+        },
+        from: from ? MoreThanOrEqual(from) : undefined,
+        to: to ? LessThanOrEqual(to) : undefined,
+      },
+    });
+  }
+
   async getLessonsByInstructor(instructorId: number, from: Date, to: Date) {
-    // TODO: Status check
     const availabilities = this.lessonRepository.find({
       where: {
         instructor: {
@@ -19,6 +31,7 @@ export class LessonsService {
         },
         from: MoreThanOrEqual(from),
         to: LessThanOrEqual(to),
+        status: Not(LessonStatus.Canceled),
       },
     });
 

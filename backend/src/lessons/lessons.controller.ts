@@ -1,41 +1,43 @@
+import { Controller, Get, Query } from '@nestjs/common';
+import { ApiResponse } from '@nestjs/swagger';
 import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
-import { CreateLessonDto, UpdateLessonDto } from '@osk/shared';
+  GetMyLessonsQueryDTO,
+  GetMyLessonsResponseDTO,
+  UserRole,
+} from '@osk/shared';
+import { Roles } from 'common/guards/roles.decorator';
+import { CurrentUserService } from 'current-user/current-user.service';
+import { endOfWeek, startOfWeek } from 'date-fns';
 import { LessonsService } from './lessons.service';
 
 @Controller('lessons')
 export class LessonsController {
-  constructor(private readonly lessonsService: LessonsService) {}
+  constructor(
+    private readonly lessonsService: LessonsService,
+    private readonly currentUserService: CurrentUserService,
+  ) {}
 
-  // @Post()
-  // create(@Body() createLessonDto: CreateLessonDto) {
-  //   return this.lessonsService.create(createLessonDto);
-  // }
+  @Get()
+  @ApiResponse({
+    type: GetMyLessonsResponseDTO,
+  })
+  @Roles(UserRole.Trainee)
+  async getMyLessons(
+    @Query() query: GetMyLessonsQueryDTO,
+  ): Promise<GetMyLessonsResponseDTO> {
+    const from = query.from ?? startOfWeek(new Date());
+    const to = query.to ?? endOfWeek(new Date());
 
-  // @Get()
-  // findAll() {
-  //   return this.lessonsService.findAll();
-  // }
+    const currentUser = this.currentUserService.getRequestCurrentUser();
 
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.lessonsService.findOne(+id);
-  // }
+    const lessons = await this.lessonsService.findAllByTrainee(
+      currentUser.userId,
+      from,
+      to,
+    );
 
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateLessonDto: UpdateLessonDto) {
-  //   return this.lessonsService.update(+id, updateLessonDto);
-  // }
-
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.lessonsService.remove(+id);
-  // }
+    return {
+      lessons,
+    };
+  }
 }

@@ -1,21 +1,29 @@
-import { ApiProperty, PartialType } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsDate, IsOptional } from 'class-validator';
+import { IsDate, IsNotEmpty, IsOptional } from 'class-validator';
 
 export class CreateAvailabilityDto {}
 
 export class UpdateAvailabilityDto extends PartialType(CreateAvailabilityDto) {}
 
 export class AvailabilityBatch {
-  @ApiProperty()
+  @ApiProperty({
+    type: 'string',
+    format: 'YYYY-mm-DDTHH:mm:ss.SZ',
+  })
+  @IsNotEmpty()
   from: ApiDate;
 
-  @ApiProperty()
+  @ApiProperty({
+    type: 'string',
+    format: 'YYYY-mm-DDTHH:mm:ss.SZ',
+  })
+  @IsNotEmpty()
   to: ApiDate;
 }
 
 export class InstructorPublicAvailabilityQueryDTO {
-  @ApiProperty({
+  @ApiPropertyOptional({
     format: 'yyyy-MM-ddTHH:mm:ssZ',
     type: Date,
   })
@@ -24,7 +32,7 @@ export class InstructorPublicAvailabilityQueryDTO {
   @IsDate()
   readonly from?: ApiDate;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     format: 'yyyy-MM-ddTHH:mm:ssZ',
     type: Date,
   })
@@ -35,5 +43,9 @@ export class InstructorPublicAvailabilityQueryDTO {
 }
 
 export class InstructorPublicAvailabilityResponseDTO {
+  @ApiProperty({
+    isArray: true,
+    type: AvailabilityBatch,
+  })
   batches: AvailabilityBatch[];
 }
