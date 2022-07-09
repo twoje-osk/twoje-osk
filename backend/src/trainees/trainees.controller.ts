@@ -53,14 +53,14 @@ export class TraineesController {
     @Body() { trainee }: TraineeUpdateRequestDto,
     @Param('id', ParseIntPipe) id: number,
   ): Promise<TraineeUpdateResponseDto> {
-    const doesTraineeExist =
-      (await this.traineesService.findOneById(id)) !== null;
-    if (!doesTraineeExist) {
-      throw new NotFoundException('Trainee with this id does not exist.');
+    try {
+      await this.traineesService.update(trainee, id);
+    } catch (error) {
+      if (error instanceof Error && error.message === 'TRAINEE_NOT_FOUND') {
+        throw new NotFoundException('Trainee with this id does not exist.');
+      }
+      throw error;
     }
-
-    await this.traineesService.update(trainee, id);
-
     return {};
   }
 }
