@@ -36,20 +36,33 @@ export class TraineesService {
     const { id: organizationId } =
       this.organizationDomainService.getRequestOrganization();
 
-    const user = await this.traineesRepository.findOne({
+    return this.traineesRepository.findOne({
       where: {
         id,
         user: {
-          organization: {
-            id: organizationId,
-          },
+          organizationId,
         },
       },
       relations: {
         user: true,
       },
     });
+  }
 
-    return user;
+  async findOneByUserId(userId: number) {
+    const { id: organizationId } =
+      this.organizationDomainService.getRequestOrganization();
+
+    return this.traineesRepository.findOne({
+      where: {
+        user: {
+          id: userId,
+          organizationId,
+        },
+      },
+      relations: {
+        user: true,
+      },
+    });
   }
 }

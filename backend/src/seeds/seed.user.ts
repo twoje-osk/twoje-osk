@@ -90,6 +90,24 @@ export const seedUsers = () => {
     password: bcrypt.hashSync('password', 10),
     organization: organizationsFactory.getAll()[0],
   });
+  usersFactory.generateFromData({
+    firstName: 'Trainee',
+    lastName: 'Trainee',
+    isActive: true,
+    email: 'trainee@example.com',
+    password: bcrypt.hashSync('password', 10),
+    organization: organizationsFactory.getAll()[0],
+    trainee: traineesFactory.generate(),
+  });
+  usersFactory.generateFromData({
+    firstName: 'Instructor',
+    lastName: 'Instructor',
+    isActive: true,
+    email: 'instructor@example.com',
+    password: bcrypt.hashSync('password', 10),
+    organization: organizationsFactory.getAll()[0],
+    instructor: instructorsFactory.generate(),
+  });
 
   Array.from({ length: 300 }).forEach(() => usersFactory.generate());
 };

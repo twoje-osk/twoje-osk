@@ -40,9 +40,7 @@ export class InstructorsService {
       where: {
         id,
         user: {
-          organization: {
-            id: organizationId,
-          },
+          organizationId,
         },
       },
       relations: {

@@ -36,7 +36,12 @@ export class User {
   isActive: boolean;
 
   @ManyToOne(() => Organization)
+  @JoinColumn({ name: 'organizationId' })
   organization: Organization;
+
+  @Exclude()
+  @Column({ nullable: true })
+  organizationId: number | null;
 
   @Column()
   createdAt: Date;
