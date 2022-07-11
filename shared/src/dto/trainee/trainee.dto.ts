@@ -1,6 +1,13 @@
-import { ApiProperty, PartialType } from '@nestjs/swagger';
-import { IsNotEmpty } from 'class-validator';
-import { DtoUser } from '../user/user.dto';
+import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import {
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
+// eslint-disable-next-line import/no-cycle
+import { DtoCreateUser, DtoUpdateUser, DtoUser } from '../user/user.dto';
 
 export class DtoTrainee {
   @ApiProperty()
@@ -21,19 +28,45 @@ export class DtoTrainee {
 
 export class DtoCreateTrainee {
   @ApiProperty()
-  user: DtoUser;
+  @IsNotEmpty()
+  @ValidateNested()
+  @Type(() => DtoCreateUser)
+  user: DtoCreateUser;
 
   @ApiProperty()
+  @IsNotEmpty()
   pesel: string;
 
   @ApiProperty()
+  @IsNotEmpty()
   pkk: string;
 
   @ApiProperty({ nullable: true })
+  @IsOptional()
+  @IsString()
   driversLicenseNumber: string | null;
 }
 
-export class DtoUpdateTrainee extends PartialType(DtoCreateTrainee) {}
+export class DtoUpdateTrainee {
+  @ApiProperty()
+  @IsNotEmpty()
+  @ValidateNested()
+  @Type(() => DtoUpdateUser)
+  user: DtoUpdateUser;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  pesel: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  pkk: string;
+
+  @ApiProperty({ nullable: true })
+  @IsOptional()
+  @IsString()
+  driversLicenseNumber: string | null;
+}
 
 export class TraineeFindAllResponseDto {
   @ApiProperty({
@@ -55,3 +88,20 @@ export class TraineeUpdateRequestDto {
   @IsNotEmpty()
   trainee: DtoUpdateTrainee;
 }
+
+export class TraineeAddNewRequestDto {
+  @ApiProperty()
+  @ValidateNested()
+  @Type(() => DtoCreateTrainee)
+  trainee: DtoCreateTrainee;
+}
+
+export class TraineeAddNewResponseDto {
+  @ApiProperty()
+  @IsNotEmpty()
+  trainee: DtoTrainee;
+}
+
+export class TraineeDisableResponseDto {}
+
+export class TraineeDisableRequestDto {}

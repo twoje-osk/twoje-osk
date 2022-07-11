@@ -59,7 +59,6 @@ export class UsersController {
         user.firstName,
         user.lastName,
         user.isActive,
-        user.createdAt,
         user.phoneNumber,
       ),
     };

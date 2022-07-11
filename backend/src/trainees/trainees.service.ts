@@ -1,16 +1,23 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DtoUser } from '@osk/shared';
 import { OrganizationDomainService } from 'organization-domain/organization-domain.service';
-import { DataSource, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { User } from 'users/entities/user.entity';
+import { UsersService } from 'users/users.service';
+import { Transactional } from 'typeorm-transactional-cls-hooked';
 import { Trainee } from './entities/trainee.entity';
+import { UserArguments } from '../types/UserArguments';
 
-interface TraineeArgument {
-  user?: DtoUser;
-  pesel?: string;
-  pkk?: string;
+export interface TraineeArguments {
+  user: UserArguments;
+  pesel: string;
+  pkk: string;
   driversLicenseNumber: string | null;
+}
+
+export interface TraineeArgumentsUpdate
+  extends Partial<Omit<TraineeArguments, 'user'>> {
+  user?: Partial<UserArguments>;
 }
 
 @Injectable()
@@ -19,7 +26,9 @@ export class TraineesService {
     @InjectRepository(Trainee)
     private traineesRepository: Repository<Trainee>,
     private organizationDomainService: OrganizationDomainService,
-    private dataSource: DataSource,
+    @InjectRepository(User)
+    private usersRepository: Repository<User>,
+    private usersService: UsersService,
   ) {}
 
   async findAll() {
@@ -63,37 +72,107 @@ export class TraineesService {
     return user;
   }
 
-  async update(trainee: Partial<TraineeArgument>, traineeId: number) {
+  @Transactional()
+  async create(trainee: TraineeArguments) {
     const { id: organizationId } =
       this.organizationDomainService.getRequestOrganization();
 
-    // eslint-disable-next-line consistent-return
-    await this.dataSource.transaction(async (entityManager) => {
-      const traineesRepository = entityManager.getRepository(Trainee);
-      const usersRepository = entityManager.getRepository(User);
-
-      const traineeToUpdate = await traineesRepository.findOne({
-        where: {
-          id: traineeId,
-          user: { organization: { id: organizationId } },
+    const doesUserOdTraineeExists = await this.traineesRepository.findOne({
+      where: [
+        {
+          user: {
+            email: trainee.user.email,
+            organization: { id: organizationId },
+          },
         },
-        relations: {
-          user: true,
+        {
+          pesel: trainee.pesel,
+          user: {
+            organization: { id: organizationId },
+          },
         },
-      });
-
-      if (traineeToUpdate === null) {
-        return new Error('TRAINEE_NOT_FOUND');
-      }
-
-      const updatedTrainee = await traineesRepository.save(
-        traineesRepository.merge(traineeToUpdate, trainee),
-      );
-
-      if (trainee.user !== undefined) {
-        await usersRepository.save(updatedTrainee.user);
-      }
+      ],
     });
+
+    if (doesUserOdTraineeExists !== null) {
+      throw new Error('TRAINEE_OR_USER_FOUND');
+    }
+
+    const createdUser = this.usersService.createUserWithoutSave(trainee.user);
+
+    const createdTrainee = this.traineesRepository.create({
+      user: createdUser,
+      pesel: trainee.pesel,
+      driversLicenseNumber: trainee.driversLicenseNumber,
+      pkk: trainee.pkk,
+    });
+
+    createdUser.trainee = createdTrainee;
+    await this.usersRepository.save(createdUser);
+
+    await this.traineesRepository.save(createdTrainee);
+    return createdTrainee;
+  }
+
+  @Transactional()
+  async update(trainee: TraineeArgumentsUpdate, traineeId: number) {
+    const { id: organizationId } =
+      this.organizationDomainService.getRequestOrganization();
+
+    const traineeToUpdate = await this.traineesRepository.findOne({
+      where: {
+        id: traineeId,
+        user: { organization: { id: organizationId } },
+      },
+      relations: {
+        user: true,
+      },
+    });
+
+    if (traineeToUpdate === null) {
+      throw new Error('TRAINEE_NOT_FOUND');
+    }
+
+    const updatedTrainee = await this.traineesRepository.save(
+      this.traineesRepository.merge(traineeToUpdate, trainee),
+    );
+
+    if (trainee.user !== undefined) {
+      await this.usersRepository.save(updatedTrainee.user);
+    }
+
+    return {};
+  }
+
+  @Transactional()
+  async disable(traineeId: number) {
+    const { id: organizationId } =
+      this.organizationDomainService.getRequestOrganization();
+
+    const traineeToDisable = await this.traineesRepository.findOne({
+      where: {
+        id: traineeId,
+        user: { organization: { id: organizationId } },
+      },
+      relations: {
+        user: true,
+      },
+    });
+
+    if (traineeToDisable === null) {
+      throw new Error('TRAINEE_NOT_FOUND');
+    }
+
+    if (traineeToDisable.user.isActive === false) {
+      throw new Error('TRAINEE_ALREADY_DISABLED');
+    }
+
+    const userToDisable = {
+      ...traineeToDisable.user,
+      isActive: false,
+    };
+
+    await this.usersRepository.save(userToDisable);
 
     return {};
   }
