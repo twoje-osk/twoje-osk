@@ -16,7 +16,6 @@ import {
   TraineeUpdateRequestDto,
   TraineeAddNewResponseDto,
   TraineeAddNewRequestDto,
-  TraineeDisableRequestDto,
   TraineeDisableResponseDto,
 } from '@osk/shared';
 import { TraineesService } from './trainees.service';
@@ -89,14 +88,13 @@ export class TraineesController {
     return {};
   }
 
-  // eslint-disable-next-line @osk/return-dto-match-api
   @ApiResponse({
     type: TraineeDisableResponseDto,
   })
   @Patch(':id/disable')
   async disable(
     @Param('id', ParseIntPipe) id: number,
-  ): Promise<TraineeDisableRequestDto> {
+  ): Promise<TraineeDisableResponseDto> {
     try {
       await this.traineesService.disable(id);
     } catch (error) {

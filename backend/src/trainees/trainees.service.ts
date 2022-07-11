@@ -5,20 +5,11 @@ import { Repository } from 'typeorm';
 import { User } from 'users/entities/user.entity';
 import { UsersService } from 'users/users.service';
 import { Transactional } from 'typeorm-transactional-cls-hooked';
+import {
+  TraineeArguments,
+  TraineeArgumentsUpdate,
+} from 'trainees/trainees.types';
 import { Trainee } from './entities/trainee.entity';
-import { UserArguments } from '../types/UserArguments';
-
-export interface TraineeArguments {
-  user: UserArguments;
-  pesel: string;
-  pkk: string;
-  driversLicenseNumber: string | null;
-}
-
-export interface TraineeArgumentsUpdate
-  extends Partial<Omit<TraineeArguments, 'user'>> {
-  user?: Partial<UserArguments>;
-}
 
 @Injectable()
 export class TraineesService {
@@ -123,9 +114,6 @@ export class TraineesService {
       where: {
         id: traineeId,
         user: { organization: { id: organizationId } },
-      },
-      relations: {
-        user: true,
       },
     });
 

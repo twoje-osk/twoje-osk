@@ -6,7 +6,6 @@ import {
   IsString,
   ValidateNested,
 } from 'class-validator';
-// eslint-disable-next-line import/no-cycle
 import { DtoCreateUser, DtoUpdateUser, DtoUser } from '../user/user.dto';
 
 export class DtoTrainee {
