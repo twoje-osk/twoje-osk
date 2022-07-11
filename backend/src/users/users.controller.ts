@@ -1,6 +1,17 @@
-import { Controller, Get, NotFoundException } from '@nestjs/common';
-import { ApiResponse } from '@nestjs/swagger';
-import { UserMyProfileResponseDto } from '@osk/shared';
+import {
+  Body,
+  ConflictException,
+  Controller,
+  Get,
+  NotFoundException,
+  Post,
+} from '@nestjs/common';
+import { ApiBody, ApiCreatedResponse, ApiResponse } from '@nestjs/swagger';
+import {
+  UserMyProfileResponseDto,
+  UserAddNewResponseDto,
+  UserAddNewRequestDto,
+} from '@osk/shared';
 import { CurrentUserService } from 'current-user/current-user.service';
 import { UsersService } from './users.service';
 
@@ -24,5 +35,32 @@ export class UsersController {
     }
 
     return { user };
+  }
+
+  @ApiCreatedResponse({
+    type: UserAddNewResponseDto,
+    description: 'Record created',
+  })
+  @ApiBody({ type: UserAddNewRequestDto })
+  @Post()
+  async create(
+    @Body() { user }: UserAddNewRequestDto,
+  ): Promise<UserAddNewResponseDto> {
+    const doesUserExist = await this.usersService.findOneByEmail(user.email);
+
+    if (doesUserExist) {
+      throw new ConflictException('An user with this email already exist.');
+    }
+
+    return {
+      user: await this.usersService.create(
+        user.email,
+        user.password,
+        user.firstName,
+        user.lastName,
+        user.isActive,
+        user.phoneNumber,
+      ),
+    };
   }
 }
