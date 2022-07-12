@@ -57,14 +57,12 @@ export class VehicleService {
   }
 
   async findOneByLicensePlate(licensePlate: string) {
-    const { organizationId } = this.currentUserService.getRequestCurrentUser();
+    const { id: organizationId } =
+      this.organizationDomainService.getRequestOrganization();
     return this.vehiclesRepository.findOne({
       where: {
         licensePlate,
         organization: { id: organizationId },
-      },
-      relations: {
-        organization: true,
       },
     });
   }
