@@ -43,11 +43,15 @@ export class User {
   @Column()
   phoneNumber: string;
 
-  @OneToOne<Trainee>('Trainee', (trainee) => trainee.user)
+  @OneToOne<Trainee>('Trainee', (trainee) => trainee.user, {
+    cascade: true,
+  })
   @JoinColumn()
   trainee: Trainee | null;
 
-  @OneToOne<Instructor>('Instructor', (instructor) => instructor.user)
+  @OneToOne<Instructor>('Instructor', (instructor) => instructor.user, {
+    cascade: true,
+  })
   @JoinColumn()
   instructor: Instructor | null;
 }

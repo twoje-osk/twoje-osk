@@ -20,8 +20,10 @@ export const organizationsFactory = new OrganizationsFactory();
 export const seedOrganizations = () => {
   organizationsFactory.generateFromData({
     name: 'Test OSK',
+    slug: 'test',
   });
   organizationsFactory.generateFromData({
     name: 'Other Test OSK',
+    slug: 'other-test',
   });
 };

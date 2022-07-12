@@ -1,5 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { DtoUser } from '../user/user.dto';
+import { Type } from 'class-transformer';
+import {
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
+import { DtoCreateUser, DtoUpdateUser, DtoUser } from '../user/user.dto';
 
 export class DtoTrainee {
   @ApiProperty()
@@ -14,8 +21,50 @@ export class DtoTrainee {
   @ApiProperty()
   pkk: string;
 
+  @ApiProperty({ nullable: true })
+  driversLicenseNumber: string | null;
+}
+
+export class DtoCreateTrainee {
   @ApiProperty()
-  driversLicenseNumber?: string;
+  @IsNotEmpty()
+  @ValidateNested()
+  @Type(() => DtoCreateUser)
+  user: DtoCreateUser;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  pesel: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  pkk: string;
+
+  @ApiProperty({ nullable: true })
+  @IsOptional()
+  @IsString()
+  driversLicenseNumber: string | null;
+}
+
+export class DtoUpdateTrainee {
+  @ApiProperty()
+  @IsNotEmpty()
+  @ValidateNested()
+  @Type(() => DtoUpdateUser)
+  user: DtoUpdateUser;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  pesel: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  pkk: string;
+
+  @ApiProperty({ nullable: true })
+  @IsOptional()
+  @IsString()
+  driversLicenseNumber: string | null;
 }
 
 export class TraineeFindAllResponseDto {
@@ -30,3 +79,28 @@ export class TraineeFindOneResponseDto {
   @ApiProperty()
   trainee: DtoTrainee;
 }
+
+export class TraineeUpdateResponseDto {}
+
+export class TraineeUpdateRequestDto {
+  @ApiProperty()
+  @IsNotEmpty()
+  trainee: DtoUpdateTrainee;
+}
+
+export class TraineeAddNewRequestDto {
+  @ApiProperty()
+  @ValidateNested()
+  @Type(() => DtoCreateTrainee)
+  trainee: DtoCreateTrainee;
+}
+
+export class TraineeAddNewResponseDto {
+  @ApiProperty()
+  @IsNotEmpty()
+  trainee: DtoTrainee;
+}
+
+export class TraineeDisableResponseDto {}
+
+export class TraineeDisableRequestDto {}

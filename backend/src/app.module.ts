@@ -1,9 +1,11 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { InstructorsModule } from 'instructors/instructors.module';
+import { OrganizationDomainMiddleware } from 'organization-domain/organization-domain.middleware';
+import { OrganizationDomainModule } from 'organization-domain/organization-domain.module';
 import { getConfiguration, NestConfiguration } from './config/configuration';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
@@ -48,6 +50,12 @@ import { VehiclesModule } from './vehicles/vehicles.module';
     CurrentUserModule,
     DebugModule,
     VehiclesModule,
+    OrganizationsModule,
+    OrganizationDomainModule,
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(OrganizationDomainMiddleware).forRoutes('*');
+  }
+}

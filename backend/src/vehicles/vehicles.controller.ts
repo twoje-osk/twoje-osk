@@ -97,7 +97,6 @@ export class VehiclesController {
   ): Promise<VehicleUpdateResponseDto> {
     const doesVehicleExist =
       (await this.vehicleService.findOneById(id)) !== null;
-
     if (!doesVehicleExist) {
       throw new NotFoundException('Vehicle with this id does not exist.');
     }

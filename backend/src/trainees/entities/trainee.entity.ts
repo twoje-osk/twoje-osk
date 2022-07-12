@@ -9,8 +9,8 @@ export class Trainee {
   @Column()
   pesel: string;
 
-  @Column({ nullable: true })
-  driversLicenseNumber?: string;
+  @Column({ nullable: true, type: 'text' })
+  driversLicenseNumber: string | null;
 
   @Column()
   pkk: string;
