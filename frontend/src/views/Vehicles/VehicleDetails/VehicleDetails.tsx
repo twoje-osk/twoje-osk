@@ -8,7 +8,6 @@ import {
   Typography,
 } from '@mui/material';
 import {
-  VehicleDeleteRequestDto,
   VehicleDeleteResponseDto,
   VehicleFindOneResponseDto,
 } from '@osk/shared';
@@ -47,10 +46,10 @@ export const VehicleDetails = () => {
   const onDelete = useCallback(async () => {
     setDeleteModalLoading(true);
 
-    const response = await makeRequest<
-      VehicleDeleteRequestDto,
-      VehicleDeleteResponseDto
-    >(`/api/vehicles/${vehicleId}`, 'DELETE');
+    const response = await makeRequest<VehicleDeleteResponseDto>(
+      `/api/vehicles/${vehicleId}`,
+      'DELETE',
+    );
 
     if (!response.ok) {
       setDeleteModalLoading(false);

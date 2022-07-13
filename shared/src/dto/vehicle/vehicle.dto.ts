@@ -107,7 +107,7 @@ export class VehicleFindOneResponseDto {
 
 export class VehicleAddNewResponseDto {
   @ApiProperty()
-  vehicle: DtoCreateVehicle;
+  vehicle: DtoVehicle;
 }
 
 export class VehicleAddNewRequestDto {
