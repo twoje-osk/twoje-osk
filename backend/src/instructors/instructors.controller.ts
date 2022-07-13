@@ -1,14 +1,18 @@
 import {
+  Body,
   Controller,
   Get,
   NotFoundException,
   Param,
   ParseIntPipe,
+  Patch,
 } from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
 import {
   InstructorFindAllResponseDto,
   InstructorFindOneResponseDto,
+  InstructorUpdateRequestDto,
+  InstructorUpdateResponseDto,
 } from '@osk/shared';
 import { InstructorsService } from './instructors.service';
 
@@ -40,5 +44,16 @@ export class InstructorsController {
     }
 
     return { instructor };
+  }
+
+  @ApiResponse({
+    type: InstructorUpdateRequestDto,
+  })
+  @Patch(':id')
+  async update(
+    @Body() { instructor }: InstructorUpdateRequestDto,
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<InstructorUpdateResponseDto> {
+    const updateResult = await this.instructorsService.update(instructor, id);
   }
 }
