@@ -30,14 +30,14 @@ interface MenuItem {
 
 const menuItemsForRole: Record<UserRole, MenuItem[]> = {
   [UserRole.Admin]: [
-    { text: 'Instruktorzy', icon: 'class', link: '/instruktorzy' },
     { text: 'Kursanci', icon: 'school', link: '/kursanci' },
+    { text: 'Instruktorzy', icon: 'class', link: '/instruktorzy' },
     { text: 'Pojazdy', icon: 'directions_car', link: '/pojazdy' },
     { text: 'Ogłoszenia', icon: 'campaign', link: '/ogloszenia' },
   ],
   [UserRole.Instructor]: [
-    { text: 'Instruktorzy', icon: 'class', link: '/instruktorzy' },
     { text: 'Kursanci', icon: 'school', link: '/kursanci' },
+    { text: 'Instruktorzy', icon: 'class', link: '/instruktorzy' },
     { text: 'Pojazdy', icon: 'directions_car', link: '/pojazdy' },
     { text: 'Ogłoszenia', icon: 'campaign', link: '/ogloszenia' },
   ],
