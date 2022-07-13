@@ -25,7 +25,6 @@ const defaultValues: InstructorsFormData = {
   lastName: '',
   email: '',
   phoneNumber: '',
-  instructorsLicense: '',
   photo: '',
 };
 

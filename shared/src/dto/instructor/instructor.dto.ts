@@ -1,16 +1,29 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { DtoUser } from '../user/user.dto';
+import { ApiProperty, PartialType } from '@nestjs/swagger';
+import { IsNotEmpty } from 'class-validator';
+import { DtoCreateUser, DtoUser } from '../user/user.dto';
 
 export class DtoInstructor {
   @ApiProperty()
+  @IsNotEmpty()
   id: number;
 
   @ApiProperty()
+  @IsNotEmpty()
   user: DtoUser;
 
   @ApiProperty({ nullable: true })
   photo: string | null;
 }
+
+export class DtoCreateInstructor {
+  @ApiProperty()
+  user: Partial<DtoCreateUser>;
+
+  @ApiProperty({ nullable: true })
+  photo: string | null;
+}
+
+export class DtoUpdateInstructor extends PartialType(DtoCreateInstructor) {}
 
 export class InstructorFindAllResponseDto {
   @ApiProperty({
@@ -27,10 +40,11 @@ export class InstructorFindOneResponseDto {
 
 export class InstructorUpdateRequestDto {
   @ApiProperty()
-  instructor: Partial<DtoInstructor>;
+  @IsNotEmpty()
+  instructor: DtoUpdateInstructor;
 }
 
 export class InstructorUpdateResponseDto {
   @ApiProperty()
-  instructorId: number;
+  instructor: DtoInstructor;
 }

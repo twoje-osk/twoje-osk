@@ -48,7 +48,9 @@ export class InstructorsService {
       where: {
         id,
         user: {
-          organizationId,
+          organization: {
+            id: organizationId,
+          },
         },
       },
       relations: {
@@ -91,7 +93,7 @@ export class InstructorsService {
   async update(
     instructor: InstructorUpdateFields,
     instructorId: number,
-  ): Promise<Try<number, 'NO_SUCH_INSTRUCTOR' | 'EMAIL_ALREADY_TAKEN'>> {
+  ): Promise<Try<Instructor, 'NO_SUCH_INSTRUCTOR' | 'EMAIL_ALREADY_TAKEN'>> {
     const { id: organizationId } =
       this.organizationDomainService.getRequestOrganization();
 
@@ -100,6 +102,9 @@ export class InstructorsService {
         id: instructorId,
         user: { organization: { id: organizationId } },
       },
+      relations: {
+        user: true,
+      },
     });
 
     if (instructorToBeUpdated === null) {
@@ -107,24 +112,26 @@ export class InstructorsService {
     }
 
     const { user } = instructor;
-    if (
-      user !== undefined &&
-      user.email !== undefined &&
-      user.email !== instructorToBeUpdated.user.email
-    ) {
-      const userByEmail = await this.usersService.findOneByEmail(user.email);
+    if (user !== undefined) {
+      if (
+        user.email !== undefined &&
+        user.email !== instructorToBeUpdated.user.email
+      ) {
+        const userByEmail = await this.usersService.findOneByEmail(user.email);
 
-      if (userByEmail !== null) {
-        return getFailure('EMAIL_ALREADY_TAKEN');
+        if (userByEmail !== null) {
+          return getFailure('EMAIL_ALREADY_TAKEN');
+        }
       }
-
-      await this.usersRepository.save(user);
+      await this.usersRepository.save(
+        this.usersRepository.merge(instructorToBeUpdated.user, user),
+      );
     }
 
     const updatedInstructor = await this.instructorsRepository.save(
       this.instructorsRepository.merge(instructorToBeUpdated, instructor),
     );
 
-    return getSuccess(updatedInstructor.id);
+    return getSuccess(updatedInstructor);
   }
 }

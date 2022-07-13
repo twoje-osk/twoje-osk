@@ -8,7 +8,11 @@ import {
   Toolbar,
   Typography,
 } from '@mui/material';
-import { InstructorFindOneResponseDto } from '@osk/shared';
+import {
+  InstructorFindOneResponseDto,
+  InstructorUpdateRequestDto,
+  InstructorUpdateResponseDto,
+} from '@osk/shared';
 import { useState } from 'react';
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom';
 import { Box } from 'reflexbox';
@@ -30,8 +34,32 @@ export const InstructorsEdit = () => {
     instructorId ? `/api/instructors/${instructorId}` : null,
   );
 
-  const handleSubmit = () => {
-    const toBeUpdated: Instructor;
+  const handleSubmit = async (instructorValues: InstructorsFormData) => {
+    const { photo } = instructorValues;
+    const body: InstructorUpdateRequestDto = {
+      instructor: {
+        user: { ...instructorValues },
+        photo,
+      },
+    };
+
+    setIsLoading(true);
+    const instructorApiUrl = `/api/instructors/${instructorId}`;
+    const response = await makeRequest<
+      InstructorUpdateResponseDto,
+      InstructorUpdateRequestDto
+    >(instructorApiUrl, 'PATCH', body);
+
+    if (!response.ok) {
+      setIsLoading(false);
+      showErrorSnackbar();
+      return;
+    }
+
+    navigate(`/instruktorzy/${response.data.instructor.id}`);
+    showSuccessSnackbar(
+      `Instruktor ${response.data.instructor.user.firstName} ${response.data.instructor.user.lastName} został zmodyfikowany`,
+    );
   };
 
   const { showErrorSnackbar, showSuccessSnackbar } = useCommonSnackbars();
@@ -90,11 +118,10 @@ export const InstructorsEdit = () => {
               Zapisz
             </LoadingButton>
             <Button
-              color="error"
               variant="outlined"
-              onClick={() => {
-                history.back();
-              }}
+              component={Link}
+              to={`/instruktorzy/${instructorId}`}
+              disabled={isLoading}
             >
               Anuluj
             </Button>

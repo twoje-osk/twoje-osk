@@ -61,7 +61,7 @@ export class InstructorsController {
   ): Promise<InstructorUpdateResponseDto> {
     const updateResult = await this.instructorsService.update(instructor, id);
     if (updateResult.ok === true) {
-      return { instructorId: updateResult.data };
+      return { instructor: updateResult.data };
     }
     if (updateResult.error === 'EMAIL_ALREADY_TAKEN') {
       throw new ConflictException('This email address has been already taken');
