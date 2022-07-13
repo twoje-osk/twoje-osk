@@ -27,6 +27,8 @@ const run = async () => {
     seedInstructors();
     seedUsers();
     seedVehicles();
+    seedAvailabilities();
+    seedLessons();
 
     const { factories } = Factory;
     await Promise.all(factories.map((factory) => factory.truncate(trx)));

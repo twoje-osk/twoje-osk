@@ -11,5 +11,6 @@ import { InstructorsService } from './instructors.service';
   imports: [TypeOrmModule.forFeature([Instructor, User]), UsersModule],
   exports: [InstructorsService],
   providers: [InstructorsService],
+  exports: [InstructorsService],
 })
 export class InstructorsModule {}

@@ -14,11 +14,14 @@ import {
   InstructorFindOneResponseDto,
   InstructorUpdateRequestDto,
   InstructorUpdateResponseDto,
+  UserRole,
 } from '@osk/shared';
 import { assertNever } from 'utils/assertNever';
+import { Roles } from 'common/guards/roles.decorator';
 import { InstructorsService } from './instructors.service';
 
 @Controller('instructors')
+@Roles(UserRole.Admin)
 export class InstructorsController {
   constructor(private readonly instructorsService: InstructorsService) {}
 

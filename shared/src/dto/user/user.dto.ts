@@ -3,6 +3,12 @@ import { Type } from 'class-transformer';
 import { IsNotEmpty } from 'class-validator';
 import { DtoOrganization } from '../organization/organization.dto';
 
+export enum UserRole {
+  Trainee = 'trainee',
+  Instructor = 'instructor',
+  Admin = 'admin',
+}
+
 export class DtoUser {
   @ApiProperty()
   @IsNotEmpty()
@@ -32,13 +38,17 @@ export class DtoUser {
   @IsNotEmpty()
   phoneNumber: string;
 
-  @ApiProperty()
-  @IsNotEmpty()
+  @ApiProperty({
+    type: 'string',
+  })
   createdAt: ApiDate;
 
   @ApiProperty()
   @IsNotEmpty()
   organization: DtoOrganization;
+
+  @ApiProperty({ enum: UserRole })
+  role: UserRole;
 }
 export class DtoCreateUser {
   @ApiProperty()
