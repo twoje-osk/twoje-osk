@@ -37,12 +37,18 @@ export class VehicleService {
     const { id: organizationId } =
       this.organizationDomainService.getRequestOrganization();
 
-    return this.vehiclesRepository.findOne({
+    const vehicleFound = await this.vehiclesRepository.findOne({
       where: {
         id,
         organization: { id: organizationId },
       },
     });
+
+    if (vehicleFound === null) {
+      throw new Error('VEHICLE_NOT_FOUND');
+    }
+
+    return vehicleFound;
   }
 
   async checkIfExistsByLicensePlate(licensePlate: string) {
@@ -68,6 +74,20 @@ export class VehicleService {
     const { id: organizationId } =
       this.organizationDomainService.getRequestOrganization();
 
+    const existsVehicleWithSameLicensePlate =
+      await this.vehiclesRepository.countBy({
+        licensePlate,
+        organization: { id: organizationId },
+      });
+
+    if (existsVehicleWithSameLicensePlate > 0) {
+      throw new Error('VEHICLE_SAME_LICENSE_PLATE');
+    }
+
+    if (vin.length !== 17) {
+      throw new Error('VIN_LENGTH_NOT_CORRECT');
+    }
+
     const newVehicle = this.vehiclesRepository.create({
       name,
       licensePlate,
@@ -88,7 +108,32 @@ export class VehicleService {
     const { id: organizationId } =
       this.organizationDomainService.getRequestOrganization();
 
-    const updatedVehicle = this.vehiclesRepository.update(
+    const vehicleToEdit = await this.vehiclesRepository.findOne({
+      where: {
+        id: vehicleId,
+        organization: { id: organizationId },
+      },
+    });
+
+    if (vehicleToEdit === null) {
+      throw new Error('VEHICLE_NOT_FOUND');
+    }
+
+    const existsVehicleWithSameLicensePlate =
+      await this.vehiclesRepository.countBy({
+        licensePlate: vehicle.licensePlate,
+        organization: { id: organizationId },
+      });
+
+    if (existsVehicleWithSameLicensePlate > 0) {
+      throw new Error('VEHICLE_SAME_LICENSE_PLATE');
+    }
+
+    if (vehicle.vin !== undefined && vehicle.vin?.length !== 17) {
+      throw new Error('VIN_LENGTH_NOT_CORRECT');
+    }
+
+    const updatedVehicle = await this.vehiclesRepository.update(
       {
         id: vehicleId,
         organization: { id: organizationId },
