@@ -6,7 +6,7 @@ import { InstructorsService } from 'instructors/instructors.service';
 import { OrganizationDomainService } from 'organization-domain/organization-domain.service';
 import { TraineesService } from 'trainees/trainees.service';
 import { LessThanOrEqual, MoreThanOrEqual, Not, Repository } from 'typeorm';
-import { Try } from 'types/Try';
+import { getFailure, getSuccess, Try } from 'types/Try';
 import { VehicleService } from 'vehicles/vehicles.service';
 import { Lesson } from './entities/lesson.entity';
 
@@ -72,26 +72,17 @@ export class LessonsService {
     const trainee = await this.traineesService.findOneByUserId(traineeId);
 
     if (trainee === null) {
-      return {
-        ok: false,
-        error: 'TRAINEE_DOES_NOT_EXIST',
-      };
+      return getFailure('TRAINEE_DOES_NOT_EXIST');
     }
 
     const instructor = await this.instructorsService.findOne(instructorId);
     if (instructor === null) {
-      return {
-        ok: false,
-        error: 'INSTRUCTOR_DOES_NOT_EXIST',
-      };
+      return getFailure('INSTRUCTOR_DOES_NOT_EXIST');
     }
 
     const vehicle = await this.vehicleService.findOneById(vehicleId);
     if (vehicle === null) {
-      return {
-        ok: false,
-        error: 'VEHICLE_DOES_NOT_EXIST',
-      };
+      return getFailure('VEHICLE_DOES_NOT_EXIST');
     }
 
     const isInstructorAvailable =
@@ -102,10 +93,7 @@ export class LessonsService {
       );
 
     if (!isInstructorAvailable) {
-      return {
-        ok: false,
-        error: 'INSTRUCTOR_OCCUPIED',
-      };
+      return getFailure('INSTRUCTOR_OCCUPIED');
     }
 
     const collidingLessonsCount = await this.lessonRepository.count({
@@ -120,10 +108,7 @@ export class LessonsService {
     });
 
     if (collidingLessonsCount > 0) {
-      return {
-        ok: false,
-        error: 'COLLIDING_LESSON',
-      };
+      return getFailure('COLLIDING_LESSON');
     }
 
     const insertResult = await this.lessonRepository.insert({
@@ -137,6 +122,6 @@ export class LessonsService {
 
     const createdLessonId: number = insertResult.identifiers[0]?.id;
 
-    return { ok: true, data: createdLessonId };
+    return getSuccess(createdLessonId);
   }
 }
