@@ -35,7 +35,7 @@ export class Lesson {
   @JoinColumn()
   trainee: Trainee;
 
-  @ManyToOne(() => Vehicle)
+  @ManyToOne(() => Vehicle, { nullable: true })
   @JoinColumn()
-  vehicle: Vehicle;
+  vehicle: Vehicle | null;
 }

@@ -4,6 +4,7 @@ import {
   NotFoundException,
   Param,
   ParseIntPipe,
+  Request,
 } from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
 import {
@@ -11,11 +12,10 @@ import {
   InstructorFindOneResponseDto,
   UserRole,
 } from '@osk/shared';
-import { Roles } from 'common/guards/roles.decorator';
+import { AuthRequest } from 'auth/auth.types';
 import { InstructorsService } from './instructors.service';
 
 @Controller('instructors')
-@Roles(UserRole.Admin)
 export class InstructorsController {
   constructor(private readonly instructorsService: InstructorsService) {}
 
@@ -23,8 +23,13 @@ export class InstructorsController {
     type: InstructorFindAllResponseDto,
   })
   @Get()
-  async findAll(): Promise<InstructorFindAllResponseDto> {
-    const instructors = await this.instructorsService.findAll();
+  async findAll(
+    @Request() request: AuthRequest,
+  ): Promise<InstructorFindAllResponseDto> {
+    const { role } = request.user;
+    const instructors = await this.instructorsService.findAll(
+      role === UserRole.Trainee ? true : undefined,
+    );
 
     return { instructors };
   }

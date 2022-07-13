@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { IsDate, IsNumber, IsOptional, Validate } from 'class-validator';
 import { addHours, startOfHour } from 'date-fns';
 import { DtoInstructor } from '../instructor/instructor.dto';
@@ -67,7 +67,9 @@ export class GetMyLessonsResponseDTO {
 export class CreateLessonForInstructorRequestDTO {
   @ApiProperty()
   @IsNumber()
-  vehicleId: number;
+  @IsOptional()
+  @Transform(({ value }) => value ?? null)
+  vehicleId: number | null;
 
   @ApiProperty({
     format: 'yyyy-MM-ddTHH:mm:ssZ',

@@ -38,9 +38,3 @@ export function isRangeAvailable(
     },
   );
 }
-
-export function getTodayWeek() {
-  return startOfWeek(new Date(), {
-    weekStartsOn: 1,
-  });
-}

@@ -13,6 +13,7 @@ import {
 } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useSWR from 'swr';
+import { RequestError } from '../../utils/makeRequest';
 import { getMakeRequestWithAuth } from './AuthContext.utils';
 
 interface AuthContextType {
@@ -74,7 +75,11 @@ const useAuthContextProvider = (): AuthContextType => {
     accessToken ? '/api/users/me' : null,
     getMakeRequestWithAuth(accessToken),
     {
-      onError: logOut,
+      onError: (error: RequestError) => {
+        if (error.status === 410) {
+          logOut();
+        }
+      },
     },
   );
 

@@ -1,14 +1,21 @@
-import styled from '@emotion/styled';
-import { CircularProgress } from '@mui/material';
+import {
+  Box,
+  Button,
+  ButtonGroup,
+  CircularProgress,
+  FormControl,
+  Icon,
+  InputLabel,
+  MenuItem,
+  Select,
+} from '@mui/material';
 import {
   CreateLessonForInstructorRequestDTO,
   CreateLessonForInstructorResponseDTO,
-  GetMyLessonsResponseDTO,
-  InstructorPublicAvailabilityResponseDTO,
 } from '@osk/shared';
 import { formatISO } from 'date-fns';
-import { useState } from 'react';
-import useSWR from 'swr';
+import { useMemo, useState } from 'react';
+import { Flex } from 'reflexbox';
 import { FullPageLoading } from '../../../components/FullPageLoading/FullPageLoading';
 import { GeneralAPIError } from '../../../components/GeneralAPIError/GeneralAPIError';
 import {
@@ -17,58 +24,72 @@ import {
 } from '../../../components/LessonsCalendar/LessonsCalendar';
 import { useCommonSnackbars } from '../../../hooks/useCommonSnackbars/useCommonSnackbars';
 import { useMakeRequestWithAuth } from '../../../hooks/useMakeRequestWithAuth/useMakeRequestWithAuth';
+import { useFetchData, useSelectedDate } from './MyLessons.hooks';
+import {
+  FullPageRelativeWrapper,
+  GroupedIconButton,
+  CalendarWrapper,
+  LoaderOverlay,
+} from './MyLessons.styled';
+import { getInstructorEvents, getUserEvents } from './MyLessons.utils';
 
 export const MyLessons = () => {
+  const [selectedInstructorId, setSelectedInstructorId] = useState<
+    number | null
+  >(null);
+
+  const { selectedDate, onPrevWeekClick, onTodayClick, onNextWeekClick } =
+    useSelectedDate();
+
   const {
-    data: lessonsData,
-    error: errorData,
-    mutate: lessonsMutate,
-  } = useSWR<GetMyLessonsResponseDTO>('/api/lessons');
-  const {
-    data: instructorsData,
-    error: instructorsError,
-    mutate: instructorsMutate,
-  } = useSWR<InstructorPublicAvailabilityResponseDTO>(
-    '/api/availability/instructors/1/public',
-  );
+    lessonsData,
+    errorData,
+    lessonsMutate,
+    instructorEventsData,
+    instructorsEventsError,
+    instructorsEventsMutate,
+    instructorsData,
+    instructorsError,
+  } = useFetchData({
+    selectedDate,
+    selectedInstructorId,
+    setSelectedInstructorId,
+  });
+
   const makeRequestWithAuth = useMakeRequestWithAuth();
   const { showErrorSnackbar } = useCommonSnackbars();
   const [isMutationLoading, setIsMutationLoading] = useState(false);
 
-  if (errorData || instructorsError) {
+  const instructorEvents: RequiredEvent[] = useMemo(
+    () => getInstructorEvents(instructorEventsData),
+    [instructorEventsData],
+  );
+
+  const userEvents: RequiredEvent[] = useMemo(
+    () => getUserEvents(lessonsData),
+    [lessonsData],
+  );
+
+  if (errorData || instructorsEventsError || instructorsError) {
     return <GeneralAPIError />;
   }
 
-  if (lessonsData === undefined || instructorsData === undefined) {
+  if (instructorsData === undefined) {
     return <FullPageLoading />;
   }
-
-  const instructorEvents: RequiredEvent[] = instructorsData.batches.map(
-    ({ from, to }) => ({
-      start: new Date(from),
-      end: new Date(to),
-    }),
-  );
-
-  const userEvents: RequiredEvent[] = lessonsData.lessons.map(
-    ({ from, to }) => ({
-      start: new Date(from),
-      end: new Date(to),
-    }),
-  );
 
   const createEvent = async (event: RequiredEvent) => {
     const body: CreateLessonForInstructorRequestDTO = {
       from: formatISO(event.start),
       to: formatISO(event.end),
-      vehicleId: 1,
+      vehicleId: null,
     };
 
     setIsMutationLoading(true);
     const response = await makeRequestWithAuth<
       CreateLessonForInstructorResponseDTO,
       CreateLessonForInstructorRequestDTO
-    >('/api/lessons/instructor/1', 'POST', body);
+    >(`/api/lessons/instructor/${selectedInstructorId}`, 'POST', body);
 
     if (!response.ok) {
       setIsMutationLoading(false);
@@ -76,42 +97,65 @@ export const MyLessons = () => {
       return;
     }
 
-    await Promise.all([lessonsMutate(), instructorsMutate()]);
+    await Promise.all([lessonsMutate(), instructorsEventsMutate()]);
 
     setIsMutationLoading(false);
   };
 
   return (
     <FullPageRelativeWrapper>
-      <LessonsCalendar
-        instructorEvents={instructorEvents}
-        userEvents={userEvents}
-        createEvent={createEvent}
-      />
-      {isMutationLoading && (
-        <LoaderOverlay>
-          <CircularProgress />
-        </LoaderOverlay>
-      )}
+      <Flex
+        marginBottom={24}
+        alignItems="center"
+        justifyContent="space-between"
+      >
+        <ButtonGroup disableElevation variant="outlined">
+          <GroupedIconButton onClick={onPrevWeekClick}>
+            <Icon>arrow_back</Icon>
+          </GroupedIconButton>
+          <Button variant="contained" onClick={onTodayClick}>
+            Dzisiaj
+          </Button>
+          <GroupedIconButton onClick={onNextWeekClick}>
+            <Icon>arrow_forward</Icon>
+          </GroupedIconButton>
+        </ButtonGroup>
+        <Box width={320}>
+          <FormControl fullWidth>
+            <InputLabel id="instructor-label">Instruktor</InputLabel>
+            <Select
+              labelId="instructor-label"
+              id="instructor"
+              value={selectedInstructorId}
+              label="Instruktor"
+              onChange={(e) =>
+                setSelectedInstructorId(e.target.value as number)
+              }
+            >
+              {instructorsData.instructors.map(({ id, user }) => (
+                <MenuItem value={id} key={id}>
+                  {user.firstName} {user.lastName}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
+      </Flex>
+      <CalendarWrapper>
+        <LessonsCalendar
+          instructorEvents={instructorEvents}
+          userEvents={userEvents}
+          createEvent={createEvent}
+          selectedDate={selectedDate}
+        />
+        {(isMutationLoading ||
+          instructorEventsData === undefined ||
+          lessonsData === undefined) && (
+          <LoaderOverlay>
+            <CircularProgress />
+          </LoaderOverlay>
+        )}
+      </CalendarWrapper>
     </FullPageRelativeWrapper>
   );
 };
-
-const FullPageRelativeWrapper = styled.div`
-  position: relative;
-  height: 100%;
-  padding: 32px;
-`;
-
-const LoaderOverlay = styled.div`
-  position: absolute;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(255, 255, 255, 0.8);
-  border-radius: 4px;
-`;

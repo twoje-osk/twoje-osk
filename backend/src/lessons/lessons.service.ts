@@ -63,7 +63,7 @@ export class LessonsService {
   async createTraineeLesson(
     instructorId: number,
     traineeId: number,
-    vehicleId: number,
+    vehicleId: number | null,
     from: Date,
     to: Date,
   ): Promise<
@@ -87,8 +87,10 @@ export class LessonsService {
       return getFailure('INSTRUCTOR_DOES_NOT_EXIST');
     }
 
-    const vehicle = await this.vehicleService.findOneById(vehicleId);
-    if (vehicle === null) {
+    const vehicle = vehicleId
+      ? await this.vehicleService.findOneById(vehicleId)
+      : null;
+    if (vehicleId !== null && vehicle === null) {
       return getFailure('VEHICLE_DOES_NOT_EXIST');
     }
 
