@@ -1,5 +1,5 @@
 import { Faker, faker } from '@faker-js/faker';
-import { EntityManager } from 'typeorm';
+import { EntityManager, EntityTarget } from 'typeorm';
 
 const getSeedFromString = (text: string): number =>
   text.split('').reduce((sum, c) => sum + c.charCodeAt(0), 0);
@@ -9,10 +9,16 @@ export abstract class Factory<T> {
 
   protected faker: Faker;
 
-  constructor(seedKey: string) {
+  public static factories: Factory<unknown>[] = [];
+
+  constructor(private entityType: EntityTarget<T>) {
+    const seedKey = (entityType.valueOf() as Function).name;
+
     this.faker = new Faker({
       locales: faker.locales,
     });
+
+    Factory.factories.push(this);
 
     this.faker.seed(getSeedFromString(seedKey));
     this.faker.setLocale('pl');
@@ -40,6 +46,12 @@ export abstract class Factory<T> {
   }
 
   public getAll = () => this.entities;
+
+  public truncate(trx: EntityManager) {
+    const { tableName } = trx.getRepository(this.entityType).metadata;
+
+    return trx.query(`TRUNCATE "${tableName}" CASCADE`);
+  }
 
   public save(trx: EntityManager) {
     return trx.save(this.entities);
