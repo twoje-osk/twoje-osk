@@ -30,7 +30,9 @@ export const InstructorsEdit = () => {
     instructorId ? `/api/instructors/${instructorId}` : null,
   );
 
-  const handleSubmit = () => {};
+  const handleSubmit = () => {
+    const toBeUpdated: Instructor;
+  };
 
   const { showErrorSnackbar, showSuccessSnackbar } = useCommonSnackbars();
   if (instructorId === undefined) {

@@ -7,6 +7,9 @@ export class DtoInstructor {
 
   @ApiProperty()
   user: DtoUser;
+
+  @ApiProperty({ nullable: true })
+  photo: string | null;
 }
 
 export class InstructorFindAllResponseDto {
@@ -20,4 +23,14 @@ export class InstructorFindAllResponseDto {
 export class InstructorFindOneResponseDto {
   @ApiProperty()
   instructor: DtoInstructor;
+}
+
+export class InstructorUpdateRequestDto {
+  @ApiProperty()
+  instructor: Partial<DtoInstructor>;
+}
+
+export class InstructorUpdateResponseDto {
+  @ApiProperty()
+  instructorId: number;
 }
