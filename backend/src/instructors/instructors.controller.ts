@@ -1,5 +1,6 @@
 import {
   Body,
+  ConflictException,
   Controller,
   Get,
   NotFoundException,
@@ -14,6 +15,7 @@ import {
   InstructorUpdateRequestDto,
   InstructorUpdateResponseDto,
 } from '@osk/shared';
+import { assertNever } from 'utils/assertNever';
 import { InstructorsService } from './instructors.service';
 
 @Controller('instructors')
@@ -47,7 +49,7 @@ export class InstructorsController {
   }
 
   @ApiResponse({
-    type: InstructorUpdateRequestDto,
+    type: InstructorUpdateResponseDto,
   })
   @Patch(':id')
   async update(
@@ -55,5 +57,15 @@ export class InstructorsController {
     @Param('id', ParseIntPipe) id: number,
   ): Promise<InstructorUpdateResponseDto> {
     const updateResult = await this.instructorsService.update(instructor, id);
+    if (updateResult.ok === true) {
+      return { instructorId: updateResult.data };
+    }
+    if (updateResult.error === 'EMAIL_ALREADY_TAKEN') {
+      throw new ConflictException('This email address has been already taken');
+    }
+    if (updateResult.error === 'NO_SUCH_INSTRUCTOR') {
+      throw new NotFoundException('There is no instructor with this id');
+    }
+    return assertNever(updateResult.error);
   }
 }

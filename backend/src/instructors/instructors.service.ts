@@ -2,21 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { OrganizationDomainService } from 'organization-domain/organization-domain.service';
 import { Repository } from 'typeorm';
+import { Transactional } from 'typeorm-transactional-cls-hooked';
+import { UsersService } from 'users/users.service';
+import { getFailure, getSuccess, Try } from 'types/Try';
 import { Instructor } from './entities/instructor.entity';
 import { User } from '../users/entities/user.entity';
-
-interface InstructorFields {
-  user: Partial<UserFields>;
-  photo: string | null;
-}
-
-interface UserFields {
-  email: string;
-  firstName: string;
-  lastName: string;
-  isActive: boolean;
-  phoneNumber: string;
-}
+import { InstructorUpdateFields } from './instructors.types';
 
 @Injectable()
 export class InstructorsService {
@@ -25,6 +16,7 @@ export class InstructorsService {
     private instructorsRepository: Repository<Instructor>,
     @InjectRepository(User)
     private usersRepository: Repository<User>,
+    private usersService: UsersService,
     private organizationDomainService: OrganizationDomainService,
   ) {}
 
@@ -68,6 +60,7 @@ export class InstructorsService {
     return user;
   }
 
+  @Transactional()
   async create(
     firstName: string,
     lastName: string,
@@ -96,18 +89,44 @@ export class InstructorsService {
     return newInstructor;
   }
 
-  async update(instructor: Partial<InstructorFields>, instructorId: number) {
-    const { user, ...instructorWithoutUser } = instructor;
-    if (user !== undefined) {
-      await this.usersRepository.update(
-        { instructor: { id: instructorId } },
-        user,
-      );
+  @Transactional()
+  async update(
+    instructor: InstructorUpdateFields,
+    instructorId: number,
+  ): Promise<Try<number, 'NO_SUCH_INSTRUCTOR' | 'EMAIL_ALREADY_TAKEN'>> {
+    const { id: organizationId } =
+      this.organizationDomainService.getRequestOrganization();
+
+    const instructorToBeUpdated = await this.instructorsRepository.findOne({
+      where: {
+        id: instructorId,
+        user: { organization: { id: organizationId } },
+      },
+    });
+
+    if (instructorToBeUpdated === null) {
+      return getFailure('NO_SUCH_INSTRUCTOR');
     }
 
-    await this.instructorsRepository.update(
-      { id: instructorId },
-      instructorWithoutUser,
+    const { user } = instructor;
+    if (
+      user !== undefined &&
+      user.email !== undefined &&
+      user.email !== instructorToBeUpdated.user.email
+    ) {
+      const userByEmail = await this.usersService.findOneByEmail(user.email);
+
+      if (userByEmail !== null) {
+        return getFailure('EMAIL_ALREADY_TAKEN');
+      }
+
+      await this.usersRepository.save(user);
+    }
+
+    const updatedInstructor = await this.instructorsRepository.save(
+      this.instructorsRepository.merge(instructorToBeUpdated, instructor),
     );
+
+    return getSuccess(updatedInstructor.id);
   }
 }
