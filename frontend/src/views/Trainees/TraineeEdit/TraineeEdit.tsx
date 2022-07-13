@@ -8,7 +8,11 @@ import {
   Toolbar,
   Typography,
 } from '@mui/material';
-import { TraineeFindOneResponseDto } from '@osk/shared';
+import {
+  TraineeFindOneResponseDto,
+  TraineeUpdateRequestDto,
+  TraineeUpdateResponseDto,
+} from '@osk/shared';
 import { parseISO } from 'date-fns';
 import { useState } from 'react';
 import { Navigate, useParams, Link, useNavigate } from 'react-router-dom';
@@ -17,8 +21,8 @@ import useSWR from 'swr';
 import { FullPageLoading } from '../../../components/FullPageLoading/FullPageLoading';
 import { GeneralAPIError } from '../../../components/GeneralAPIError/GeneralAPIError';
 import { useCommonSnackbars } from '../../../hooks/useCommonSnackbars/useCommonSnackbars';
+import { useMakeRequestWithAuth } from '../../../hooks/useMakeRequestWithAuth/useMakeRequestWithAuth';
 import { theme } from '../../../theme';
-import { sleep } from '../../../utils/sleep';
 import { TraineeForm } from '../TraineeForm/TraineeForm';
 import { TraineeFormData } from '../TraineeForm/TraineeForm.schema';
 
@@ -30,15 +34,29 @@ export const TraineeEdit = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const { showErrorSnackbar, showSuccessSnackbar } = useCommonSnackbars();
+  const makeRequest = useMakeRequestWithAuth();
 
   const onEdit = async (editedTrainee: TraineeFormData) => {
     setIsLoading(true);
 
-    // eslint-disable-next-line no-console
-    console.log(editedTrainee);
-    await sleep(1000);
+    const body: TraineeUpdateRequestDto = {
+      trainee: {
+        pesel: editedTrainee.pesel,
+        pkk: editedTrainee.pkk,
+        driversLicenseNumber: editedTrainee.driversLicenseNumber || null,
+        user: {
+          email: editedTrainee.email,
+          firstName: editedTrainee.firstName,
+          lastName: editedTrainee.lastName,
+          phoneNumber: editedTrainee.phoneNumber,
+        },
+      },
+    };
 
-    const response = { ok: true };
+    const response = await makeRequest<
+      TraineeUpdateResponseDto,
+      TraineeUpdateRequestDto
+    >(`/api/trainees/${traineeId}`, 'PATCH', body);
 
     if (!response.ok) {
       setIsLoading(false);

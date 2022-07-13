@@ -8,12 +8,13 @@ import {
   Toolbar,
   Typography,
 } from '@mui/material';
+import { TraineeAddNewRequestDto, TraineeAddNewResponseDto } from '@osk/shared';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Box } from 'reflexbox';
 import { useCommonSnackbars } from '../../../hooks/useCommonSnackbars/useCommonSnackbars';
+import { useMakeRequestWithAuth } from '../../../hooks/useMakeRequestWithAuth/useMakeRequestWithAuth';
 import { theme } from '../../../theme';
-import { sleep } from '../../../utils/sleep';
 import { TraineeForm } from '../TraineeForm/TraineeForm';
 import { TraineeFormData } from '../TraineeForm/TraineeForm.schema';
 
@@ -21,26 +22,31 @@ export const TraineeNew = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const { showErrorSnackbar, showSuccessSnackbar } = useCommonSnackbars();
+  const makeRequest = useMakeRequestWithAuth();
 
   const onSubmit = async (newTrainee: TraineeFormData) => {
     setIsLoading(true);
 
-    // eslint-disable-next-line no-console
-    console.log(newTrainee);
-    await sleep(1000);
-
-    const response = {
-      ok: true,
-      data: {
-        trainee: {
-          id: 1,
-          user: {
-            firstName: newTrainee.firstName,
-            lastName: newTrainee.lastName,
-          },
+    const body: TraineeAddNewRequestDto = {
+      trainee: {
+        pesel: newTrainee.pesel,
+        pkk: newTrainee.pkk,
+        driversLicenseNumber: newTrainee.driversLicenseNumber || null,
+        user: {
+          email: newTrainee.email,
+          firstName: newTrainee.firstName,
+          lastName: newTrainee.lastName,
+          phoneNumber: newTrainee.phoneNumber,
+          password: 'password',
+          isActive: false,
         },
       },
     };
+
+    const response = await makeRequest<
+      TraineeAddNewResponseDto,
+      TraineeAddNewRequestDto
+    >(`/api/trainees`, 'POST', body);
 
     if (!response.ok) {
       setIsLoading(false);

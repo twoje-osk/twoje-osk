@@ -7,7 +7,11 @@ import {
   Toolbar,
   Typography,
 } from '@mui/material';
-import { TraineeFindOneResponseDto } from '@osk/shared';
+import {
+  TraineeFindOneResponseDto,
+  TraineeUpdateRequestDto,
+  TraineeUpdateResponseDto,
+} from '@osk/shared';
 import { parseISO } from 'date-fns';
 import { useCallback } from 'react';
 import { Navigate, useParams, Link } from 'react-router-dom';
@@ -21,13 +25,14 @@ import { useActionModal } from '../../../hooks/useActionModal/useActionModal';
 import { theme } from '../../../theme';
 import { TraineeForm } from '../TraineeForm/TraineeForm';
 import { TraineeFormData } from '../TraineeForm/TraineeForm.schema';
-import { sleep } from '../../../utils/sleep';
+import { useMakeRequestWithAuth } from '../../../hooks/useMakeRequestWithAuth/useMakeRequestWithAuth';
 
 export const TraineeDetails = () => {
   const { traineeId } = useParams();
   const { data, error, mutate } = useSWR<TraineeFindOneResponseDto>(
     traineeId ? `/api/trainees/${traineeId}` : null,
   );
+  const makeRequest = useMakeRequestWithAuth();
 
   const {
     isLoading: isDeactivateModalLoading,
@@ -48,9 +53,18 @@ export const TraineeDetails = () => {
   const onDeactivate = useCallback(async () => {
     setDeactivateModalLoading(true);
 
-    await sleep(1000);
+    const body: TraineeUpdateRequestDto = {
+      trainee: {
+        user: {
+          isActive: false,
+        },
+      },
+    };
 
-    const response = { ok: true };
+    const response = await makeRequest<
+      TraineeUpdateResponseDto,
+      TraineeUpdateRequestDto
+    >(`/api/trainees/${traineeId}`, 'PATCH', body);
 
     if (!response.ok) {
       setDeactivateModalLoading(false);
@@ -67,18 +81,29 @@ export const TraineeDetails = () => {
     closeDeactivateModal,
     data?.trainee.user.firstName,
     data?.trainee.user.lastName,
+    makeRequest,
     mutate,
     setDeactivateModalLoading,
     showErrorSnackbar,
     showSuccessSnackbar,
+    traineeId,
   ]);
 
   const onActivate = useCallback(async () => {
     setActivateModalLoading(true);
 
-    await sleep(1000);
+    const body: TraineeUpdateRequestDto = {
+      trainee: {
+        user: {
+          isActive: true,
+        },
+      },
+    };
 
-    const response = { ok: true };
+    const response = await makeRequest<
+      TraineeUpdateResponseDto,
+      TraineeUpdateRequestDto
+    >(`/api/trainees/${traineeId}`, 'PATCH', body);
 
     if (!response.ok) {
       setActivateModalLoading(false);
@@ -95,10 +120,12 @@ export const TraineeDetails = () => {
     closeActivateModal,
     data?.trainee.user.firstName,
     data?.trainee.user.lastName,
+    makeRequest,
     mutate,
     setActivateModalLoading,
     showErrorSnackbar,
     showSuccessSnackbar,
+    traineeId,
   ]);
 
   if (traineeId === undefined) {
