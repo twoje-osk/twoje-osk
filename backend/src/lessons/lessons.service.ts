@@ -5,7 +5,14 @@ import { AvailabilityService } from 'availability/availability.service';
 import { InstructorsService } from 'instructors/instructors.service';
 import { OrganizationDomainService } from 'organization-domain/organization-domain.service';
 import { TraineesService } from 'trainees/trainees.service';
-import { LessThanOrEqual, MoreThanOrEqual, Not, Repository } from 'typeorm';
+import {
+  LessThan,
+  LessThanOrEqual,
+  MoreThan,
+  MoreThanOrEqual,
+  Not,
+  Repository,
+} from 'typeorm';
 import { getFailure, getSuccess, Try } from 'types/Try';
 import { VehicleService } from 'vehicles/vehicles.service';
 import { Lesson } from './entities/lesson.entity';
@@ -101,8 +108,8 @@ export class LessonsService {
         instructor: {
           id: instructorId,
         },
-        from: LessThanOrEqual(to),
-        to: MoreThanOrEqual(from),
+        from: LessThan(to),
+        to: MoreThan(from),
         status: Not(LessonStatus.Canceled),
       },
     });

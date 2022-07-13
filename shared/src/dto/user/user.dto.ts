@@ -1,11 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { DtoOrganization } from '../organization/organization.dto';
-
-export enum UserRole {
-  Trainee = 'trainee',
-  Instructor = 'instructor',
-  Admin = 'admin',
-}
+import { UserRole } from '../../types/user.types';
 
 export class DtoUser {
   @ApiProperty()

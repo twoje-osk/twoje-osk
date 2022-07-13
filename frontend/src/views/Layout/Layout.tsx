@@ -9,6 +9,7 @@ import {
   Container,
   Paper,
 } from '@mui/material';
+import { UserRole } from '@osk/shared/src/types/user.types';
 import { ComponentProps, forwardRef, ReactNode } from 'react';
 import { NavLink } from 'react-router-dom';
 import { Box, Flex } from 'reflexbox';
@@ -21,14 +22,36 @@ interface LayoutProps {
 
 const DRAWER_WIDTH = '320px';
 
-export const Layout = ({ children }: LayoutProps) => {
-  const menuItems = [
+interface MenuItem {
+  text: string;
+  icon: string;
+  link: string;
+}
+
+const menuItemsForRole: Record<UserRole, MenuItem[]> = {
+  [UserRole.Admin]: [
     { text: 'Instruktorzy', icon: 'class', link: '/instruktorzy' },
     { text: 'Kursanci', icon: 'school', link: '/kursanci' },
     { text: 'Pojazdy', icon: 'directions_car', link: '/pojazdy' },
     { text: 'Ogłoszenia', icon: 'campaign', link: '/ogloszenia' },
-  ];
-  const { logOut, user } = useAuth();
+  ],
+  [UserRole.Instructor]: [
+    { text: 'Instruktorzy', icon: 'class', link: '/instruktorzy' },
+    { text: 'Kursanci', icon: 'school', link: '/kursanci' },
+    { text: 'Pojazdy', icon: 'directions_car', link: '/pojazdy' },
+    { text: 'Ogłoszenia', icon: 'campaign', link: '/ogloszenia' },
+  ],
+  [UserRole.Trainee]: [
+    { text: 'Moje Jazdy', icon: 'toys', link: '/moje-jazdy' },
+    { text: 'Ogłoszenia', icon: 'campaign', link: '/' },
+    { text: 'Płatności', icon: 'attach_money', link: '/' },
+    { text: 'E-learning', icon: 'school', link: '/' },
+  ],
+};
+
+export const Layout = ({ children }: LayoutProps) => {
+  const { logOut, user, role } = useAuth();
+  const menuItems = role ? menuItemsForRole[role] : [];
   const userFullName = `${user?.firstName} ${user?.lastName}`;
 
   return (

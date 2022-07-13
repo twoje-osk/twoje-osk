@@ -1,8 +1,11 @@
+import { UserRole } from '@osk/shared/src/types/user.types';
 import { Routes, Route } from 'react-router-dom';
 import { RequireAuth } from './components/RequireAuth/RequireAuth';
+import { RequireRole } from './components/RequireRole/RequireRole';
 import { HomePage } from './views/HomePage/HomePage';
 import { InstructorsList } from './views/Instructors/InstructorsList/InstructorsList';
 import { Layout } from './views/Layout/Layout';
+import { MyLessons } from './views/Lessons/MyLessons/MyLessons';
 import { Login } from './views/Login/Login';
 import { TraineeDetails } from './views/Trainees/TraineeDetails/TraineeDetails';
 import { TraineesList } from './views/Trainees/TraineesList/TraineesList';
@@ -24,16 +27,27 @@ export const App = () => {
         }
       >
         <Route index element={<HomePage />} />
-        <Route path="/kursanci">
+        <Route path="/kursanci" element={<RequireRole role={UserRole.Admin} />}>
           <Route index element={<TraineesList />} />
           <Route path=":traineeId" element={<TraineeDetails />} />
         </Route>
-        <Route path="/instruktorzy" element={<InstructorsList />} />
-        <Route path="/pojazdy">
+        <Route
+          path="/instruktorzy"
+          element={<RequireRole role={UserRole.Admin} />}
+        >
+          <Route index element={<InstructorsList />} />
+        </Route>
+        <Route path="/pojazdy" element={<RequireRole role={UserRole.Admin} />}>
           <Route index element={<VehiclesList />} />
           <Route path="nowy" element={<VehicleNew />} />
           <Route path=":vehicleId/edytuj" element={<VehicleEdit />} />
           <Route path=":vehicleId" element={<VehicleDetails />} />
+        </Route>
+        <Route
+          path="/moje-jazdy"
+          element={<RequireRole role={UserRole.Trainee} />}
+        >
+          <Route index element={<MyLessons />} />
         </Route>
       </Route>
     </Routes>
