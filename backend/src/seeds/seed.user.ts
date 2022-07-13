@@ -19,7 +19,7 @@ const getUserType = (n: number) => {
 
 class UserFactory extends Factory<User> {
   constructor() {
-    super('User');
+    super(User);
   }
 
   public generate() {

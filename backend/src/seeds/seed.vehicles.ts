@@ -4,7 +4,7 @@ import { organizationsFactory } from './seed.organization';
 
 class VehicleFactory extends Factory<Vehicle> {
   constructor() {
-    super('Vehicle');
+    super(Vehicle);
   }
 
   public generate() {
