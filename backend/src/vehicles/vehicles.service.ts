@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { OrganizationDomainService } from 'organization-domain/organization-domain.service';
-import { Repository } from 'typeorm';
+import { Repository, Not } from 'typeorm';
 import { Vehicle } from './entities/vehicle.entity';
 
 interface VehicleArguments {
@@ -37,18 +37,12 @@ export class VehicleService {
     const { id: organizationId } =
       this.organizationDomainService.getRequestOrganization();
 
-    const vehicleFound = await this.vehiclesRepository.findOne({
+    return this.vehiclesRepository.findOne({
       where: {
         id,
         organization: { id: organizationId },
       },
     });
-
-    if (vehicleFound === null) {
-      throw new Error('VEHICLE_NOT_FOUND');
-    }
-
-    return vehicleFound;
   }
 
   async checkIfExistsByLicensePlate(licensePlate: string) {
@@ -62,6 +56,17 @@ export class VehicleService {
     return numberOfFoundVehicles > 0;
   }
 
+  async findOneByLicensePlate(licensePlate: string) {
+    const { id: organizationId } =
+      this.organizationDomainService.getRequestOrganization();
+    return this.vehiclesRepository.findOne({
+      where: {
+        licensePlate,
+        organization: { id: organizationId },
+      },
+    });
+  }
+
   async create(
     name: string,
     licensePlate: string,
@@ -73,20 +78,6 @@ export class VehicleService {
   ) {
     const { id: organizationId } =
       this.organizationDomainService.getRequestOrganization();
-
-    const existsVehicleWithSameLicensePlate =
-      await this.vehiclesRepository.countBy({
-        licensePlate,
-        organization: { id: organizationId },
-      });
-
-    if (existsVehicleWithSameLicensePlate > 0) {
-      throw new Error('VEHICLE_SAME_LICENSE_PLATE');
-    }
-
-    if (vin.length !== 17) {
-      throw new Error('VIN_LENGTH_NOT_CORRECT');
-    }
 
     const newVehicle = this.vehiclesRepository.create({
       name,
@@ -121,6 +112,7 @@ export class VehicleService {
 
     const existsVehicleWithSameLicensePlate =
       await this.vehiclesRepository.countBy({
+        id: Not(vehicleId),
         licensePlate: vehicle.licensePlate,
         organization: { id: organizationId },
       });
