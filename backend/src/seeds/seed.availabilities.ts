@@ -4,7 +4,7 @@ import { Factory } from './seed.utils';
 
 class AvailabilitiesFactory extends Factory<Availability> {
   constructor() {
-    super('Availabilities');
+    super(Availability);
   }
 
   public generate() {
