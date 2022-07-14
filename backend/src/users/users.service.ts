@@ -112,8 +112,8 @@ export class UsersService {
     const userToCreate = {
       ...user,
       password: user.password ? bcrypt.hashSync(user.password, 10) : undefined,
-      id: organizationId,
       createdAt: new Date(),
+      organizationId,
     };
 
     return this.usersRepository.create(userToCreate);
