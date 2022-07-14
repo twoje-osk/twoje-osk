@@ -6,6 +6,8 @@ import { seedTrainees } from './seed.trainees';
 import { seedVehicles } from './seed.vehicles';
 import { seedInstructors } from './seed.instructors';
 import { Factory } from './seed.utils';
+import { seedAvailabilities } from './seed.availabilities';
+import { seedLessons } from './seed.lessons';
 
 const clearSequences = async (trx: EntityManager) => {
   await trx.query(`
