@@ -39,6 +39,7 @@ export const InstructorsForm = ({
       initialValues={initialValues ?? defaultValues}
       validationSchema={instructorsFormSchema}
       onSubmit={onSubmit}
+      enableReinitialize
     >
       <Form noValidate>
         <Flex style={{ gap: '32px' }} alignItems="flex-start">
