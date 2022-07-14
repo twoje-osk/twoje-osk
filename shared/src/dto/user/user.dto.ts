@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsNotEmpty } from 'class-validator';
+import { IsEmail, IsNotEmpty, ValidateNested } from 'class-validator';
+import { ToLowerCase } from '../../utils/ToLowerCase';
 import { DtoOrganization } from '../organization/organization.dto';
 
 export class DtoUser {
@@ -43,6 +44,8 @@ export class DtoUser {
 export class DtoCreateUser {
   @ApiProperty()
   @IsNotEmpty()
+  @IsEmail()
+  @ToLowerCase()
   email: string;
 
   @ApiProperty()
@@ -69,6 +72,7 @@ export class DtoCreateUser {
 export class DtoUpdateUser {
   @ApiProperty()
   @IsNotEmpty()
+  @ToLowerCase()
   email: string;
 
   @ApiProperty()
@@ -110,6 +114,8 @@ export class UserUpdateResponseDto {}
 export class UserUpdateRequestDto {
   @ApiProperty()
   @IsNotEmpty()
+  @ValidateNested()
+  @Type(() => DtoUpdateUser)
   user: DtoUpdateUser;
 }
 

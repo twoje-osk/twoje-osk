@@ -6,6 +6,7 @@ import {
   IsString,
   ValidateNested,
 } from 'class-validator';
+import { ToUpperCase } from '../../utils/ToUpperCase';
 import { DtoCreateUser, DtoUpdateUser, DtoUser } from '../user/user.dto';
 
 export class DtoTrainee {
@@ -34,15 +35,20 @@ export class DtoCreateTrainee {
 
   @ApiProperty()
   @IsNotEmpty()
+  @ToUpperCase()
+  // Would be more valuable to user @IsNumberString()
   pesel: string;
 
   @ApiProperty()
   @IsNotEmpty()
+  @ToUpperCase()
+  // Would be more valuable to user @IsNumberString()
   pkk: string;
 
   @ApiProperty({ nullable: true })
   @IsOptional()
   @IsString()
+  @ToUpperCase()
   driversLicenseNumber: string | null;
 }
 
@@ -85,11 +91,14 @@ export class TraineeUpdateResponseDto {}
 export class TraineeUpdateRequestDto {
   @ApiProperty()
   @IsNotEmpty()
+  @ValidateNested()
+  @Type(() => DtoUpdateTrainee)
   trainee: DtoUpdateTrainee;
 }
 
 export class TraineeAddNewRequestDto {
   @ApiProperty()
+  @IsNotEmpty()
   @ValidateNested()
   @Type(() => DtoCreateTrainee)
   trainee: DtoCreateTrainee;
