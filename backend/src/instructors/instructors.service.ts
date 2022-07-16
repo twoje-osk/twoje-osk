@@ -34,6 +34,7 @@ export class InstructorsService {
       },
       relations: {
         user: true,
+        instructorsQualifications: true,
       },
     });
 
@@ -55,6 +56,7 @@ export class InstructorsService {
       },
       relations: {
         user: true,
+        instructorsQualifications: true,
       },
     });
     return user;
@@ -104,6 +106,7 @@ export class InstructorsService {
       },
       relations: {
         user: true,
+        instructorsQualifications: true,
       },
     });
 

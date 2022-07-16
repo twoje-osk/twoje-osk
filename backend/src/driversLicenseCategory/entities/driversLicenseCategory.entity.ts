@@ -5,6 +5,6 @@ export class DriversLicenseCategory {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'text' })
+  @Column({ type: 'text', unique: true })
   name: string;
 }

@@ -42,10 +42,13 @@ export const seedDriversLicenseCategories = () => [
     name: 'C1',
   }),
   driversLicenseCategoriesFactory.generateFromData({
+    name: 'C1+E',
+  }),
+  driversLicenseCategoriesFactory.generateFromData({
     name: 'C',
   }),
   driversLicenseCategoriesFactory.generateFromData({
-    name: 'C1+E',
+    name: 'C+E',
   }),
   driversLicenseCategoriesFactory.generateFromData({
     name: 'D1',

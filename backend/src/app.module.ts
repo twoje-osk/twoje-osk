@@ -9,6 +9,7 @@ import { OrganizationDomainModule } from 'organization-domain/organization-domai
 import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from 'common/guards/roles.guard';
 import { JwtAuthGuard } from 'auth/passport/jwt-auth.guard';
+import { DriversLicenseCategoriesModule } from 'driversLicenseCategory/driversLicenseCategory.module';
 import { getConfiguration, NestConfiguration } from './config/configuration';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
@@ -60,6 +61,7 @@ import { LessonsModule } from './lessons/lessons.module';
     OrganizationDomainModule,
     LessonsModule,
     AvailabilityModule,
+    DriversLicenseCategoriesModule,
   ],
   providers: [
     {
