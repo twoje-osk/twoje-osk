@@ -114,7 +114,7 @@ export class UsersService {
     const userToCreate = {
       ...user,
       password: user.password ? bcrypt.hashSync(user.password, 10) : undefined,
-      id: organizationId,
+      organization: { id: organizationId },
       createdAt: new Date(),
     };
 

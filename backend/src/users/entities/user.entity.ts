@@ -22,7 +22,7 @@ export class User {
   @Column()
   email: string;
 
-  @Column()
+  @Column({ nullable: true })
   @Exclude()
   password: string;
 
@@ -49,7 +49,7 @@ export class User {
   @Column()
   phoneNumber: string;
 
-  @OneToOne<Trainee>('Trainee', (trainee) => trainee.user)
+  @OneToOne<Trainee>('Trainee', (trainee) => trainee.user, { cascade: true })
   @JoinColumn({ name: 'traineeId' })
   trainee: Trainee | null;
 
@@ -57,7 +57,9 @@ export class User {
   @Column({ nullable: true })
   traineeId: number | null;
 
-  @OneToOne<Instructor>('Instructor', (instructor) => instructor.user)
+  @OneToOne<Instructor>('Instructor', (instructor) => instructor.user, {
+    cascade: true,
+  })
   @JoinColumn({ name: 'instructorId' })
   instructor: Instructor | null;
 
