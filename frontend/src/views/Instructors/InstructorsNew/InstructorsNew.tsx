@@ -59,7 +59,7 @@ export const InstructorsNew = () => {
 
     navigate(`/instruktorzy/${response.data.instructor.id}`);
     showSuccessSnackbar(
-      `Instruktor ${response.data.instructor.user.firstName} ${response.data.instructor.user.lastName} został zmodyfikowany`,
+      `Instruktor ${response.data.instructor.user.firstName} ${response.data.instructor.user.lastName} został utworzony`,
     );
   };
 

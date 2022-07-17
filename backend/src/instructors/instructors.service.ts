@@ -69,22 +69,17 @@ export class InstructorsService {
   async create(
     instructor: InstructorFields,
   ): Promise<Try<Instructor, 'EMAIL_ALREADY_TAKEN'>> {
-    const { id: organizationId } =
-      this.organizationDomainService.getRequestOrganization();
-
     const duplicatedUser = await this.usersService.findOneByEmail(
       instructor.user.email,
     );
 
-    if (duplicatedUser !== undefined) {
+    if (duplicatedUser) {
       return getFailure('EMAIL_ALREADY_TAKEN');
     }
 
-    const newUser = this.usersRepository.create({
+    const newUser = this.usersService.createUserWithoutSave({
       ...instructor.user,
-      organization: { id: organizationId },
     });
-    await this.usersRepository.save(newUser);
 
     // eslint-disable-next-line no-param-reassign
     instructor.instructorsQualifications =
@@ -100,10 +95,11 @@ export class InstructorsService {
       licenseNumber: instructor.licenseNumber,
       instructorsQualifications: instructor.instructorsQualifications,
     });
+    newUser.instructor = newInstructor;
+    await this.usersRepository.save(newUser);
     const createdInstructor = await this.instructorsRepository.save(
       newInstructor,
     );
-
     return getSuccess(createdInstructor);
   }
 
