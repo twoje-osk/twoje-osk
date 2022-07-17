@@ -7,6 +7,7 @@ import {
   ManyToOne,
   JoinColumn,
   OneToOne,
+  RelationId,
 } from 'typeorm';
 import { UserRole } from '@osk/shared';
 import type { Instructor } from '../../instructors/entities/instructor.entity';
@@ -40,6 +41,7 @@ export class User {
   organization: Organization;
 
   @Exclude()
+  @RelationId((person: User) => person.organization)
   @Column({ nullable: false })
   organizationId: number;
 
@@ -56,6 +58,7 @@ export class User {
   trainee: Trainee | null;
 
   @Exclude()
+  @RelationId((person: User) => person.trainee)
   @Column({ nullable: true })
   traineeId: number | null;
 
@@ -66,6 +69,7 @@ export class User {
   instructor: Instructor | null;
 
   @Exclude()
+  @RelationId((person: User) => person.instructor)
   @Column({ nullable: true })
   instructorId: number | null;
 

@@ -3,6 +3,7 @@ import { Flatten } from '../utils/Flatten';
 interface Configuration {
   isProduction: boolean;
   port: number;
+  adminPort: number;
   database: {
     host: string;
     database: string;
@@ -34,6 +35,7 @@ export const getConfiguration = (): Configuration => {
   return {
     isProduction: getVariable('NODE_ENV', 'development') === 'production',
     port: Number.parseInt(process.env.PORT ?? '8080', 10),
+    adminPort: Number.parseInt(process.env.ADMIN_PORT ?? '8081', 10),
     database: {
       host: getVariable('DATABASE_HOST'),
       database: getVariable('DATABASE_DATABASE'),

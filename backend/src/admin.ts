@@ -1,19 +1,14 @@
 import { Logger, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
-import {
-  initializeTransactionalContext,
-  patchTypeORMRepositoryWithBaseRepository,
-} from 'typeorm-transactional-cls-hooked';
-
+import AdminJS from 'adminjs';
 import '@adminjs/express';
 import { AdminModule } from '@adminjs/nestjs';
 import { Database, Resource } from '@adminjs/typeorm';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Organization } from 'organizations/entities/organization.admin';
 
-import AdminJS from 'adminjs';
-
+// @ts-ignore
+import { resources } from 'admin.imports';
 import { NestConfiguration, getConfiguration } from './config/configuration';
 
 @Module({
@@ -33,14 +28,14 @@ import { NestConfiguration, getConfiguration } from './config/configuration';
           password: configService.get('database.password'),
           database: configService.get('database.database'),
           schema: configService.get('database.schema'),
-          entities: [Organization],
+          entities: ['**/*.entity.admin.js'],
         };
       },
     }),
     AdminModule.createAdmin({
       adminJsOptions: {
         rootPath: '/admin',
-        resources: [Organization],
+        resources,
       },
     }),
   ],
@@ -50,14 +45,11 @@ export class AppModule {}
 async function bootstrap() {
   AdminJS.registerAdapter({ Database, Resource });
 
-  initializeTransactionalContext();
-  patchTypeORMRepositoryWithBaseRepository();
-
   const app = await NestFactory.create(AppModule);
   const configService: ConfigService<NestConfiguration> =
     app.get(ConfigService);
 
-  const port = configService.get('port');
+  const port = configService.get('adminPort');
 
   await app.listen(port, '0.0.0.0');
 
