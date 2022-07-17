@@ -12,6 +12,7 @@ import { VehicleDetails } from './views/Vehicles/VehicleDetails/VehicleDetails';
 import { VehicleEdit } from './views/Vehicles/VehiclesEdit/VehiclesEdit';
 import { VehiclesList } from './views/Vehicles/VehiclesList/VehiclesList';
 import { VehicleNew } from './views/Vehicles/VehiclesNew/VehiclesNew';
+import { InstructorsNew } from './views/Instructors/InstructorsNew/InstructorsNew';
 
 export const App = () => {
   return (
@@ -32,7 +33,7 @@ export const App = () => {
         </Route>
         <Route path="/instruktorzy">
           <Route index element={<InstructorsList />} />
-          <Route path="nowy" />
+          <Route path="nowy" element={<InstructorsNew />} />
           <Route path=":instructorId/edytuj" element={<InstructorsEdit />} />
           <Route path=":instructorId" element={<InstructorsDetails />} />
         </Route>

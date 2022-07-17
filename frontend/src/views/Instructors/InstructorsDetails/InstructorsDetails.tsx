@@ -13,7 +13,6 @@ import { Box } from 'reflexbox';
 import useSWR from 'swr';
 import { FullPageLoading } from '../../../components/FullPageLoading/FullPageLoading';
 import { GeneralAPIError } from '../../../components/GeneralAPIError/GeneralAPIError';
-import { useCommonSnackbars } from '../../../hooks/useCommonSnackbars/useCommonSnackbars';
 import { theme } from '../../../theme';
 import { InstructorsForm } from '../InstructorsForm/InstructorsForm';
 import { InstructorsFormData } from '../InstructorsForm/InstructorsForm.schema';
@@ -24,7 +23,6 @@ export const InstructorsDetails = () => {
     instructorId ? `/api/instructors/${instructorId}` : null,
   );
 
-  const { showErrorSnackbar, showSuccessSnackbar } = useCommonSnackbars();
   if (instructorId === undefined) {
     return <Navigate to="/" replace />;
   }
@@ -38,10 +36,18 @@ export const InstructorsDetails = () => {
   }
 
   const { instructor } = data;
+  const instructorsQualifications = instructor.instructorsQualifications.map(
+    (category) => {
+      return category.name;
+    },
+  );
   const initialValues: InstructorsFormData = {
     firstName: instructor.user.firstName,
     lastName: instructor.user.lastName,
     email: instructor.user.email,
+    licenseNumber: instructor.licenseNumber,
+    registrationNumber: instructor.registrationNumber,
+    instructorsQualifications,
     phoneNumber: instructor.user.phoneNumber,
   };
 

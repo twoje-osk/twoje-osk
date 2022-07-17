@@ -10,8 +10,10 @@ import {
   TableContainer,
   Icon,
   IconButton,
+  Button,
+  Stack,
 } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { Flex } from 'reflexbox';
 import useSWR from 'swr';
 import { InstructorFindAllResponseDto } from '@osk/shared';
@@ -42,14 +44,24 @@ export const InstructorsList = () => {
           pr: { xs: 1, sm: 1 },
         }}
       >
-        <Typography sx={{ flex: '1 1 100%' }} variant="h6" component="h1">
+        <Typography sx={{ flex: '1 1 30%' }} variant="h6" component="h1">
           {pageTitle}
         </Typography>
-        <Tooltip title="Filtruj listę">
-          <IconButton>
-            <Icon>filter_list</Icon>
-          </IconButton>
-        </Tooltip>
+        <Stack direction="row" alignItems="center" spacing={1}>
+          <Button
+            startIcon={<Icon>add</Icon>}
+            variant="contained"
+            component={Link}
+            to="nowy"
+          >
+            Dodaj Nowego Instruktora
+          </Button>
+          <Tooltip title="Filtruj listę">
+            <IconButton>
+              <Icon>filter_list</Icon>
+            </IconButton>
+          </Tooltip>
+        </Stack>
       </Toolbar>
       <TableContainer sx={{ flex: '1 1', overflow: 'auto' }}>
         <Table aria-label="Lista Instruktorów" stickyHeader>
@@ -58,7 +70,7 @@ export const InstructorsList = () => {
               <TableCell>Imię i Nazwisko</TableCell>
               <TableCell>Email</TableCell>
               <TableCell>Telefon</TableCell>
-              <TableCell>Samochód</TableCell>
+              <TableCell>Uprawnienia</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -74,7 +86,16 @@ export const InstructorsList = () => {
                 </TableCell>
                 <TableCell>{row.user.email}</TableCell>
                 <TableCell>{row.user.phoneNumber}</TableCell>
-                <TableCell />
+                <TableCell>
+                  {row.instructorsQualifications.reduce(
+                    (qualifications, el) => {
+                      return qualifications
+                        ? `${qualifications}, ${el.name}`
+                        : `${el.name}`;
+                    },
+                    '',
+                  )}
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>

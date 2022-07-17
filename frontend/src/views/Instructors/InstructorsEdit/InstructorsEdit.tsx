@@ -35,10 +35,19 @@ export const InstructorsEdit = () => {
   );
 
   const handleSubmit = async (instructorValues: InstructorsFormData) => {
-    const { photo } = instructorValues;
+    const {
+      photo,
+      registrationNumber,
+      licenseNumber,
+      instructorsQualifications,
+      ...userValues
+    } = instructorValues;
     const body: InstructorUpdateRequestDto = {
       instructor: {
-        user: { ...instructorValues },
+        registrationNumber,
+        licenseNumber,
+        instructorsQualifications,
+        user: { ...userValues },
         photo,
       },
     };
@@ -80,6 +89,11 @@ export const InstructorsEdit = () => {
     firstName: instructor.user.firstName,
     lastName: instructor.user.lastName,
     email: instructor.user.email,
+    licenseNumber: instructor.licenseNumber,
+    registrationNumber: instructor.registrationNumber,
+    instructorsQualifications: instructor.instructorsQualifications.map(
+      (category) => category.name,
+    ),
     phoneNumber: instructor.user.phoneNumber,
   };
 

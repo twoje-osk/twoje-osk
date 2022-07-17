@@ -1,8 +1,11 @@
 import styled from '@emotion/styled';
 import { Paper, Stack } from '@mui/material';
+import { DriversLicenseCategoryFindAllResponseDto } from '@osk/shared';
 import { Form, Formik, FormikHelpers, useField } from 'formik';
 import { ReactNode } from 'react';
 import { Flex } from 'reflexbox';
+import useSWR from 'swr';
+import { FPicklistField } from '../../../components/FPicklistField/FPicklistField';
 import { FTextField } from '../../../components/FTextField/FTextField';
 import { theme } from '../../../theme';
 import {
@@ -25,6 +28,9 @@ const defaultValues: InstructorsFormData = {
   lastName: '',
   email: '',
   phoneNumber: '',
+  licenseNumber: '',
+  registrationNumber: '',
+  instructorsQualifications: [],
   photo: '',
 };
 
@@ -34,6 +40,18 @@ export const InstructorsForm = ({
   onSubmit = () => undefined,
   children: actions,
 }: InstructorsFormProps) => {
+  const { data: driversLicenseCategoryData } =
+    useSWR<DriversLicenseCategoryFindAllResponseDto>(
+      '/api/drivers-license-categories',
+    );
+
+  let driversLicenseCategoryOptions: string[] = [];
+  if (driversLicenseCategoryData !== undefined) {
+    driversLicenseCategoryOptions = driversLicenseCategoryData.categories
+      ? driversLicenseCategoryData.categories.map((el) => el.name)
+      : [];
+  }
+
   return (
     <Formik<InstructorsFormData>
       initialValues={initialValues ?? defaultValues}
@@ -73,6 +91,31 @@ export const InstructorsForm = ({
               label="Numer telefonu"
               type="phoneNumber"
               disabled={disabled}
+            />
+            <FTextField
+              required
+              id="licenseNumber"
+              name="licenseNumber"
+              label="Numer legitymacji instruktorskiej"
+              type="licenseNumber"
+              disabled={disabled}
+            />
+            <FTextField
+              required
+              id="registrationNumber"
+              name="registrationNumber"
+              label="Numer ewidencyjny"
+              type="registrationNumber"
+              disabled={disabled}
+            />
+            <FPicklistField
+              id="instructorsQualifications"
+              label="Uprawnienia"
+              name="instructorsQualifications"
+              disabled={disabled}
+              options={driversLicenseCategoryOptions}
+              predefinedValues={initialValues?.instructorsQualifications ?? []}
+              multiple
             />
             {actions && <div>{actions}</div>}
           </Stack>

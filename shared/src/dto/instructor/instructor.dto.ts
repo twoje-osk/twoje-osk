@@ -1,6 +1,7 @@
-import { ApiProperty, PartialType } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
-import { DtoCreateUser, DtoUser } from '../user/user.dto';
+import { DriversLicenseCategoryUpdateRequestDto } from 'dto/driversLicenseCategory/driversLicenseCategory.dto';
+import { DtoCreateUser, DtoUpdateUser, DtoUser } from '../user/user.dto';
 
 export class DtoInstructor {
   @ApiProperty()
@@ -11,19 +12,61 @@ export class DtoInstructor {
   @IsNotEmpty()
   user: DtoUser;
 
+  @ApiProperty()
+  @IsNotEmpty()
+  registrationNumber: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  licenseNumber: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  instructorsQualifications: DriversLicenseCategoryUpdateRequestDto[];
+
   @ApiProperty({ nullable: true })
-  photo: string | null;
+  photo: string | null | undefined;
 }
 
 export class DtoCreateInstructor {
   @ApiProperty()
-  user: Partial<DtoCreateUser>;
+  user: DtoCreateUser;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  registrationNumber: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  licenseNumber: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  instructorsQualifications: DriversLicenseCategoryUpdateRequestDto[];
 
   @ApiProperty({ nullable: true })
   photo: string | null;
 }
 
-export class DtoUpdateInstructor extends PartialType(DtoCreateInstructor) {}
+export class DtoUpdateInstructor {
+  @ApiProperty()
+  user: Partial<DtoUpdateUser>;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  registrationNumber: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  licenseNumber: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  instructorsQualifications: DriversLicenseCategoryUpdateRequestDto[];
+
+  @ApiProperty({ nullable: true })
+  photo: string | null | undefined;
+}
 
 export class InstructorFindAllResponseDto {
   @ApiProperty({
@@ -45,6 +88,17 @@ export class InstructorUpdateRequestDto {
 }
 
 export class InstructorUpdateResponseDto {
+  @ApiProperty()
+  instructor: DtoInstructor;
+}
+
+export class InstructorCreateRequestDto {
+  @ApiProperty()
+  @IsNotEmpty()
+  instructor: DtoCreateInstructor;
+}
+
+export class InstructorCreateResponseDto {
   @ApiProperty()
   instructor: DtoInstructor;
 }
