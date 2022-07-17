@@ -1,3 +1,4 @@
+import { LoadingButton } from '@mui/lab';
 import {
   Breadcrumbs,
   Button,
@@ -7,18 +8,30 @@ import {
   Toolbar,
   Typography,
 } from '@mui/material';
-import { InstructorFindOneResponseDto } from '@osk/shared';
-import { Link, Navigate, useParams } from 'react-router-dom';
+import {
+  InstructorFindOneResponseDto,
+  InstructorUpdateRequestDto,
+  InstructorUpdateResponseDto,
+} from '@osk/shared';
+import { useState } from 'react';
+import { Link, Navigate, useNavigate, useParams } from 'react-router-dom';
 import { Box } from 'reflexbox';
 import useSWR from 'swr';
+import { DeactivateModal } from '../../../components/DeactivateModal/DeactivateModal';
+import { useCommonSnackbars } from '../../../hooks/useCommonSnackbars/useCommonSnackbars';
 import { FullPageLoading } from '../../../components/FullPageLoading/FullPageLoading';
 import { GeneralAPIError } from '../../../components/GeneralAPIError/GeneralAPIError';
+import { useMakeRequestWithAuth } from '../../../hooks/useMakeRequestWithAuth/useMakeRequestWithAuth';
 import { theme } from '../../../theme';
 import { InstructorsForm } from '../InstructorsForm/InstructorsForm';
 import { InstructorsFormData } from '../InstructorsForm/InstructorsForm.schema';
 
 export const InstructorsDetails = () => {
   const { instructorId } = useParams();
+  const makeRequest = useMakeRequestWithAuth();
+  const [isLoading, setIsLoading] = useState(false);
+  const [showDeactivateModal, setShowDeactivateModal] = useState(false);
+  const { showErrorSnackbar, showSuccessSnackbar } = useCommonSnackbars();
   const { data, error } = useSWR<InstructorFindOneResponseDto>(
     instructorId ? `/api/instructors/${instructorId}` : null,
   );
@@ -36,6 +49,7 @@ export const InstructorsDetails = () => {
   }
 
   const { instructor } = data;
+  const deactivateModalSubtitle = `Czy na pewno chcesz dezaktywować tego użytkownika? \n ${instructor.user.firstName} ${instructor.user.lastName} straci dostęp do wszystkich danych i funkcji systemu`;
   const instructorsQualifications = instructor.instructorsQualifications.map(
     (category) => {
       return category.name;
@@ -50,6 +64,45 @@ export const InstructorsDetails = () => {
     instructorsQualifications,
     phoneNumber: instructor.user.phoneNumber,
   };
+
+  const toggleDeactivateModal = () => {
+    setIsLoading(!isLoading);
+    setShowDeactivateModal(!showDeactivateModal);
+  };
+
+  const deactivateUser = async () => {
+    const { user, ...instructorValues } = instructor;
+    user.isActive = false;
+    const body = { instructor: { user, ...instructorValues } };
+    const instructorApiUrl = `/api/instructors/${instructorId}`;
+    const response = await makeRequest<
+      InstructorUpdateResponseDto,
+      InstructorUpdateRequestDto
+    >(instructorApiUrl, 'PATCH', body);
+
+    if (!response.ok) {
+      setIsLoading(false);
+      showErrorSnackbar();
+      return;
+    }
+
+    toggleDeactivateModal();
+    showSuccessSnackbar(
+      `Instruktor ${response.data.instructor.user.firstName} ${response.data.instructor.user.lastName} został dezaktywowany`,
+    );
+  };
+
+  if (showDeactivateModal) {
+    return (
+      <DeactivateModal
+        id="deactivateModal"
+        isOpen={showDeactivateModal}
+        onClose={toggleDeactivateModal}
+        onDeactivate={deactivateUser}
+        subtitle={deactivateModalSubtitle}
+      />
+    );
+  }
 
   return (
     <div>
@@ -84,13 +137,16 @@ export const InstructorsDetails = () => {
             >
               Edytuj
             </Button>
-            <Button
+            <LoadingButton
               color="error"
               variant="outlined"
+              onClick={toggleDeactivateModal}
               startIcon={<Icon>delete</Icon>}
+              disabled={!instructor.user.isActive || isLoading}
+              loading={isLoading}
             >
               Dezaktywuj
-            </Button>
+            </LoadingButton>
           </Stack>
         </InstructorsForm>
       </Box>
