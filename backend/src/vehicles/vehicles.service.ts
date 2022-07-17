@@ -26,23 +26,30 @@ export class VehicleService {
     const { id: organizationId } =
       this.organizationDomainService.getRequestOrganization();
 
-    return this.vehiclesRepository.find({
+    const vehicles = await this.vehiclesRepository.find({
       where: {
         organization: { id: organizationId },
       },
     });
+
+    return vehicles;
   }
 
   async findOneById(id: number) {
     const { id: organizationId } =
       this.organizationDomainService.getRequestOrganization();
-
-    return this.vehiclesRepository.findOne({
+    const vehicle = await this.vehiclesRepository.findOne({
       where: {
         id,
         organization: { id: organizationId },
       },
     });
+
+    if (vehicle === null) {
+      throw new Error('VEHICLE_NOT_FOUND');
+    }
+
+    return vehicle;
   }
 
   async checkIfExistsByLicensePlate(licensePlate: string) {
@@ -54,17 +61,6 @@ export class VehicleService {
       organization: { id: organizationId },
     });
     return numberOfFoundVehicles > 0;
-  }
-
-  async findOneByLicensePlate(licensePlate: string) {
-    const { id: organizationId } =
-      this.organizationDomainService.getRequestOrganization();
-    return this.vehiclesRepository.findOne({
-      where: {
-        licensePlate,
-        organization: { id: organizationId },
-      },
-    });
   }
 
   async create(
