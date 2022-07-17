@@ -81,24 +81,25 @@ export class TraineesService {
     const { id: organizationId } =
       this.organizationDomainService.getRequestOrganization();
 
-    const doesUserOdTraineeExists = await this.traineesRepository.findOne({
-      where: [
-        {
-          user: {
-            email: trainee.user.email,
-            organization: { id: organizationId },
+    const doesUserOrTraineeExistWithEmailOrPesel =
+      await this.traineesRepository.findOne({
+        where: [
+          {
+            user: {
+              email: trainee.user.email,
+              organization: { id: organizationId },
+            },
           },
-        },
-        {
-          pesel: trainee.pesel,
-          user: {
-            organization: { id: organizationId },
+          {
+            pesel: trainee.pesel,
+            user: {
+              organization: { id: organizationId },
+            },
           },
-        },
-      ],
-    });
+        ],
+      });
 
-    if (doesUserOdTraineeExists !== null) {
+    if (doesUserOrTraineeExistWithEmailOrPesel !== null) {
       throw new Error('TRAINEE_OR_USER_FOUND');
     }
 

@@ -56,6 +56,17 @@ export class VehicleService {
     return numberOfFoundVehicles > 0;
   }
 
+  async findOneByLicensePlate(licensePlate: string) {
+    const { id: organizationId } =
+      this.organizationDomainService.getRequestOrganization();
+    return this.vehiclesRepository.findOne({
+      where: {
+        licensePlate,
+        organization: { id: organizationId },
+      },
+    });
+  }
+
   async create(
     name: string,
     licensePlate: string,
