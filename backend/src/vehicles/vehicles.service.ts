@@ -26,13 +26,11 @@ export class VehicleService {
     const { id: organizationId } =
       this.organizationDomainService.getRequestOrganization();
 
-    const vehicles = await this.vehiclesRepository.find({
+    return this.vehiclesRepository.find({
       where: {
         organization: { id: organizationId },
       },
     });
-
-    return vehicles;
   }
 
   async findOneById(id: number) {
