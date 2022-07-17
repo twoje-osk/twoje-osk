@@ -49,8 +49,10 @@ export class User {
   @Column()
   phoneNumber: string;
 
-  @OneToOne<Trainee>('Trainee', (trainee) => trainee.user, { cascade: true })
-  @JoinColumn({ name: 'traineeId' })
+  @OneToOne<Trainee>('Trainee', (trainee) => trainee.user, {
+    cascade: true,
+  })
+  @JoinColumn({ referencedColumnName: 'traineeId' })
   trainee: Trainee | null;
 
   @Exclude()

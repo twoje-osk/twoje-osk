@@ -7,6 +7,8 @@ import { InstructorsEdit } from './views/Instructors/InstructorsEdit/Instructors
 import { Layout } from './views/Layout/Layout';
 import { Login } from './views/Login/Login';
 import { TraineeDetails } from './views/Trainees/TraineeDetails/TraineeDetails';
+import { TraineeEdit } from './views/Trainees/TraineeEdit/TraineeEdit';
+import { TraineeNew } from './views/Trainees/TraineeNew/TraineeNew';
 import { TraineesList } from './views/Trainees/TraineesList/TraineesList';
 import { VehicleDetails } from './views/Vehicles/VehicleDetails/VehicleDetails';
 import { VehicleEdit } from './views/Vehicles/VehiclesEdit/VehiclesEdit';
@@ -29,7 +31,9 @@ export const App = () => {
         <Route index element={<HomePage />} />
         <Route path="/kursanci">
           <Route index element={<TraineesList />} />
+          <Route path="nowy" element={<TraineeNew />} />
           <Route path=":traineeId" element={<TraineeDetails />} />
+          <Route path=":traineeId/edytuj" element={<TraineeEdit />} />
         </Route>
         <Route path="/instruktorzy">
           <Route index element={<InstructorsList />} />

@@ -17,10 +17,10 @@ import { useCallback } from 'react';
 import { Navigate, useParams, Link, useNavigate } from 'react-router-dom';
 import { Box } from 'reflexbox';
 import useSWR from 'swr';
-import { DeleteModal } from '../../../components/DeleteModal/DeleteModal';
+import { ActionModal } from '../../../components/ActionModal/ActionModal';
 import { FullPageLoading } from '../../../components/FullPageLoading/FullPageLoading';
 import { GeneralAPIError } from '../../../components/GeneralAPIError/GeneralAPIError';
-import { useDeleteModal } from '../../../hooks/useDeleteModal/useDeleteModal';
+import { useActionModal } from '../../../hooks/useActionModal/useActionModal';
 import { useCommonSnackbars } from '../../../hooks/useCommonSnackbars/useCommonSnackbars';
 import { useMakeRequestWithAuth } from '../../../hooks/useMakeRequestWithAuth/useMakeRequestWithAuth';
 import { theme } from '../../../theme';
@@ -41,7 +41,7 @@ export const VehicleDetails = () => {
     openModal: openDeleteModal,
     closeModal: closeDeleteModal,
     setLoading: setDeleteModalLoading,
-  } = useDeleteModal();
+  } = useActionModal();
   const { showErrorSnackbar, showSuccessSnackbar } = useCommonSnackbars();
 
   const onDelete = useCallback(async () => {
@@ -138,11 +138,11 @@ export const VehicleDetails = () => {
           </Stack>
         </VehiclesForm>
       </Box>
-      <DeleteModal
+      <ActionModal
         isOpen={isDeleteModalOpen}
         isLoading={isDeleteModalLoading}
         onClose={closeDeleteModal}
-        onDelete={onDelete}
+        onAction={onDelete}
         id="delete-vehicle-modal"
         title="Czy na pewno chcesz usunąć ten pojazd?"
       />

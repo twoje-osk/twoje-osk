@@ -17,4 +17,12 @@ export class OrganizationsService {
       },
     });
   }
+
+  getOrganizationById(id: number) {
+    return this.usersRepository.findOne({
+      where: {
+        id,
+      },
+    });
+  }
 }
