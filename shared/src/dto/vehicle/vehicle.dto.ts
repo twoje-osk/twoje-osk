@@ -1,5 +1,11 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
-import { IsNotEmpty, IsOptional, ValidateNested } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsOptional,
+  MaxLength,
+  MinLength,
+  ValidateNested,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class DtoVehicle {
@@ -16,6 +22,12 @@ export class DtoVehicle {
   licensePlate: string;
 
   @ApiProperty()
+  @MinLength(17, {
+    message: 'Vin is too short. 17 chars required.',
+  })
+  @MaxLength(17, {
+    message: 'Vin is too long. 17 chars required.',
+  })
   @IsNotEmpty()
   vin: string;
 
@@ -46,6 +58,12 @@ export class DtoCreateVehicle {
   licensePlate: string;
 
   @ApiProperty()
+  @MinLength(17, {
+    message: 'Vin is too short. 17 chars required.',
+  })
+  @MaxLength(17, {
+    message: 'Vin is too long. 17 chars required.',
+  })
   @IsNotEmpty()
   vin: string;
 
@@ -88,6 +106,8 @@ export class VehicleAddNewResponseDto {
 export class VehicleAddNewRequestDto {
   @ApiProperty()
   @IsNotEmpty()
+  @ValidateNested()
+  @Type(() => DtoCreateVehicle)
   vehicle: DtoCreateVehicle;
 }
 
@@ -96,6 +116,8 @@ export class VehicleUpdateResponseDto {}
 export class VehicleUpdateRequestDto {
   @ApiProperty()
   @IsNotEmpty()
+  @ValidateNested()
+  @Type(() => DtoUpdateVehicle)
   vehicle: DtoUpdateVehicle;
 }
 

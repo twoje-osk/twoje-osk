@@ -33,12 +33,7 @@ export class VehiclesController {
   })
   @Get()
   async findAll(): Promise<VehicleGetAllResponseDto> {
-    // eslint-disable-next-line no-useless-catch
-    try {
-      return { vehicles: await this.vehicleService.findAll() };
-    } catch (error) {
-      throw error;
-    }
+    return { vehicles: await this.vehicleService.findAll() };
   }
 
   @ApiResponse({
@@ -86,14 +81,6 @@ export class VehiclesController {
       ) {
         throw new ConflictException(
           'Vehicle with this license plate already exists.',
-        );
-      }
-      if (
-        error instanceof Error &&
-        error.message === 'VIN_LENGTH_NOT_CORRECT'
-      ) {
-        throw new BadRequestException(
-          `Provided VIN is not 17 chars long. Provided length: ${vehicle.licensePlate}.`,
         );
       }
       throw error;

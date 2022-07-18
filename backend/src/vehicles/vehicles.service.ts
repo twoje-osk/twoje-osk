@@ -73,6 +73,16 @@ export class VehicleService {
     const { id: organizationId } =
       this.organizationDomainService.getRequestOrganization();
 
+    const existsVehicleWithSameLicensePlate =
+      await this.vehiclesRepository.countBy({
+        licensePlate,
+        organization: { id: organizationId },
+      });
+
+    if (existsVehicleWithSameLicensePlate > 0) {
+      throw new Error('VEHICLE_SAME_LICENSE_PLATE');
+    }
+
     const newVehicle = this.vehiclesRepository.create({
       name,
       licensePlate,
@@ -113,10 +123,6 @@ export class VehicleService {
 
     if (existsVehicleWithSameLicensePlate > 0) {
       throw new Error('VEHICLE_SAME_LICENSE_PLATE');
-    }
-
-    if (vehicle.vin !== undefined && vehicle.vin?.length !== 17) {
-      throw new Error('VIN_LENGTH_NOT_CORRECT');
     }
 
     const updatedVehicle = await this.vehiclesRepository.update(
