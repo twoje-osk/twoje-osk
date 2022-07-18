@@ -98,8 +98,6 @@ export class VehicleFindOneResponseDto {
 
 export class VehicleAddNewResponseDto {
   @ApiProperty()
-  @ValidateNested()
-  @Type(() => DtoCreateVehicle)
   vehicle: DtoVehicle;
 }
 
