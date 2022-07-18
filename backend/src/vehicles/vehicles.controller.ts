@@ -9,6 +9,7 @@ import {
   Patch,
   ParseIntPipe,
   Delete,
+  BadRequestException,
 } from '@nestjs/common';
 import { ApiResponse, ApiBody, ApiCreatedResponse } from '@nestjs/swagger';
 import {
@@ -32,9 +33,7 @@ export class VehiclesController {
   })
   @Get()
   async findAll(): Promise<VehicleGetAllResponseDto> {
-    const vehicles = await this.vehicleService.findAll();
-
-    return { vehicles };
+    return { vehicles: await this.vehicleService.findAll() };
   }
 
   @ApiResponse({
@@ -44,13 +43,14 @@ export class VehiclesController {
   async findOne(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<VehicleFindOneResponseDto> {
-    const vehicle = await this.vehicleService.findOneById(id);
-
-    if (vehicle === null) {
-      throw new NotFoundException();
+    try {
+      return { vehicle: await this.vehicleService.findOneById(id) };
+    } catch (error) {
+      if (error instanceof Error && error.message === 'VEHICLE_NOT_FOUND') {
+        throw new NotFoundException('Vehicle with this id does not exist.');
+      }
+      throw error;
     }
-
-    return { vehicle };
   }
 
   @ApiCreatedResponse({
@@ -62,28 +62,29 @@ export class VehiclesController {
   async create(
     @Body() { vehicle }: VehicleAddNewRequestDto,
   ): Promise<VehicleAddNewResponseDto> {
-    const doesVehicleExist =
-      await this.vehicleService.checkIfExistsByLicensePlate(
-        vehicle.licensePlate,
-      );
-
-    if (doesVehicleExist) {
-      throw new ConflictException(
-        'Vehicle with this license plate already exists.',
-      );
+    try {
+      return {
+        vehicle: await this.vehicleService.create(
+          vehicle.name,
+          vehicle.licensePlate,
+          vehicle.vin,
+          vehicle.dateOfNextCheck,
+          vehicle.photo,
+          vehicle.additionalDetails,
+          vehicle.notes,
+        ),
+      };
+    } catch (error) {
+      if (
+        error instanceof Error &&
+        error.message === 'VEHICLE_SAME_LICENSE_PLATE'
+      ) {
+        throw new ConflictException(
+          'Vehicle with this license plate already exists.',
+        );
+      }
+      throw error;
     }
-
-    return {
-      vehicle: await this.vehicleService.create(
-        vehicle.name,
-        vehicle.licensePlate,
-        vehicle.vin,
-        vehicle.dateOfNextCheck,
-        vehicle.photo,
-        vehicle.additionalDetails,
-        vehicle.notes,
-      ),
-    };
   }
 
   @ApiResponse({
@@ -95,28 +96,30 @@ export class VehiclesController {
     @Body() { vehicle }: VehicleUpdateRequestDto,
     @Param('id', ParseIntPipe) id: number,
   ): Promise<VehicleUpdateResponseDto> {
-    const doesVehicleExist =
-      (await this.vehicleService.findOneById(id)) !== null;
-    if (!doesVehicleExist) {
-      throw new NotFoundException('Vehicle with this id does not exist.');
-    }
-
-    if (vehicle.licensePlate !== undefined) {
-      const alreadyExistingVehicle =
-        await this.vehicleService.findOneByLicensePlate(vehicle.licensePlate);
+    try {
+      return await this.vehicleService.update(vehicle, id);
+    } catch (error) {
+      if (error instanceof Error && error.message === 'VEHICLE_NOT_FOUND') {
+        throw new NotFoundException('Vehicle with this id does not exist.');
+      }
       if (
-        alreadyExistingVehicle !== undefined &&
-        alreadyExistingVehicle?.id !== id
+        error instanceof Error &&
+        error.message === 'VEHICLE_SAME_LICENSE_PLATE'
       ) {
         throw new ConflictException(
           'Vehicle with this license plate already exists.',
         );
       }
+      if (
+        error instanceof Error &&
+        error.message === 'VIN_LENGTH_NOT_CORRECT'
+      ) {
+        throw new BadRequestException(
+          `Provided VIN is not 17 chars long. Provided length: ${vehicle.licensePlate}`,
+        );
+      }
+      throw error;
     }
-
-    await this.vehicleService.update(vehicle, id);
-
-    return {};
   }
 
   @ApiResponse({

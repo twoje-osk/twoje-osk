@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { OrganizationDomainService } from 'organization-domain/organization-domain.service';
-import { Repository } from 'typeorm';
+import { Repository, Not } from 'typeorm';
 import { Vehicle } from './entities/vehicle.entity';
 
 interface VehicleArguments {
@@ -36,13 +36,18 @@ export class VehicleService {
   async findOneById(id: number) {
     const { id: organizationId } =
       this.organizationDomainService.getRequestOrganization();
-
-    return this.vehiclesRepository.findOne({
+    const vehicle = await this.vehiclesRepository.findOne({
       where: {
         id,
         organization: { id: organizationId },
       },
     });
+
+    if (vehicle === null) {
+      throw new Error('VEHICLE_NOT_FOUND');
+    }
+
+    return vehicle;
   }
 
   async checkIfExistsByLicensePlate(licensePlate: string) {
@@ -56,17 +61,6 @@ export class VehicleService {
     return numberOfFoundVehicles > 0;
   }
 
-  async findOneByLicensePlate(licensePlate: string) {
-    const { id: organizationId } =
-      this.organizationDomainService.getRequestOrganization();
-    return this.vehiclesRepository.findOne({
-      where: {
-        licensePlate,
-        organization: { id: organizationId },
-      },
-    });
-  }
-
   async create(
     name: string,
     licensePlate: string,
@@ -78,6 +72,16 @@ export class VehicleService {
   ) {
     const { id: organizationId } =
       this.organizationDomainService.getRequestOrganization();
+
+    const existsVehicleWithSameLicensePlate =
+      await this.vehiclesRepository.countBy({
+        licensePlate,
+        organization: { id: organizationId },
+      });
+
+    if (existsVehicleWithSameLicensePlate > 0) {
+      throw new Error('VEHICLE_SAME_LICENSE_PLATE');
+    }
 
     const newVehicle = this.vehiclesRepository.create({
       name,
@@ -99,7 +103,29 @@ export class VehicleService {
     const { id: organizationId } =
       this.organizationDomainService.getRequestOrganization();
 
-    const updatedVehicle = this.vehiclesRepository.update(
+    const vehicleToEdit = await this.vehiclesRepository.findOne({
+      where: {
+        id: vehicleId,
+        organization: { id: organizationId },
+      },
+    });
+
+    if (vehicleToEdit === null) {
+      throw new Error('VEHICLE_NOT_FOUND');
+    }
+
+    const existsVehicleWithSameLicensePlate =
+      await this.vehiclesRepository.countBy({
+        id: Not(vehicleId),
+        licensePlate: vehicle.licensePlate,
+        organization: { id: organizationId },
+      });
+
+    if (existsVehicleWithSameLicensePlate > 0) {
+      throw new Error('VEHICLE_SAME_LICENSE_PLATE');
+    }
+
+    const updatedVehicle = await this.vehiclesRepository.update(
       {
         id: vehicleId,
         organization: { id: organizationId },
