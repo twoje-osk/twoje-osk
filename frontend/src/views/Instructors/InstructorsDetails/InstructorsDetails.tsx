@@ -127,7 +127,11 @@ export const InstructorsDetails = () => {
         </Breadcrumbs>
       </Toolbar>
       <Box as="main" p="16px" pt="0">
-        <InstructorsForm initialValues={initialValues} disabled>
+        <InstructorsForm
+          initialValues={initialValues}
+          key={JSON.stringify(initialValues)}
+          disabled
+        >
           <Stack direction="row" spacing={1}>
             <Button
               variant="contained"
