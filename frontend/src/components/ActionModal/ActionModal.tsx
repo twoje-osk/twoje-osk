@@ -7,10 +7,21 @@ interface DeleteModalProps {
   isLoading?: boolean;
   onClose: () => void;
   onCancel?: () => void;
-  onDelete: () => void;
+  onAction: () => void;
   id: string;
   title: ReactNode;
   subtitle?: ReactNode;
+  actionButtonText?: ReactNode;
+  actionButtonColor?:
+    | 'inherit'
+    | 'primary'
+    | 'secondary'
+    | 'success'
+    | 'error'
+    | 'info'
+    | 'warning';
+  actionButtonIcon?: string;
+  cancelButtonText?: ReactNode;
 }
 
 const style = {
@@ -22,15 +33,19 @@ const style = {
   p: 4,
 };
 
-export const DeleteModal = ({
+export const ActionModal = ({
   id,
   isOpen,
   isLoading = false,
   onClose,
   onCancel = onClose,
-  onDelete,
+  onAction: onDelete,
   title,
   subtitle = 'Ta akcja jest nieodwracalna.',
+  actionButtonText = 'Usuń',
+  actionButtonColor = 'error',
+  actionButtonIcon = 'delete',
+  cancelButtonText = 'Anuluj',
 }: DeleteModalProps) => {
   return (
     <Modal
@@ -48,15 +63,15 @@ export const DeleteModal = ({
         </Typography>
         <Stack direction="row" spacing={1}>
           <LoadingButton
-            color="error"
+            color={actionButtonColor}
             variant="contained"
-            startIcon={<Icon>delete</Icon>}
+            startIcon={<Icon>{actionButtonIcon}</Icon>}
             onClick={onDelete}
             fullWidth
             loading={isLoading}
             disabled={isLoading}
           >
-            Usuń
+            {actionButtonText}
           </LoadingButton>
           <Button
             variant="outlined"
@@ -64,7 +79,7 @@ export const DeleteModal = ({
             fullWidth
             disabled={isLoading}
           >
-            Anuluj
+            {cancelButtonText}
           </Button>
         </Stack>
       </Paper>

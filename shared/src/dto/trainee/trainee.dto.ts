@@ -48,23 +48,23 @@ export class DtoCreateTrainee {
 
 export class DtoUpdateTrainee {
   @ApiProperty()
-  @IsNotEmpty()
+  @IsOptional()
   @ValidateNested()
   @Type(() => DtoUpdateUser)
-  user: DtoUpdateUser;
+  user?: Partial<DtoUpdateUser>;
 
   @ApiProperty()
-  @IsNotEmpty()
-  pesel: string;
+  @IsOptional()
+  pesel?: string;
 
   @ApiProperty()
-  @IsNotEmpty()
-  pkk: string;
+  @IsOptional()
+  pkk?: string;
 
   @ApiProperty({ nullable: true })
   @IsOptional()
   @IsString()
-  driversLicenseNumber: string | null;
+  driversLicenseNumber?: string | null;
 }
 
 export class TraineeFindAllResponseDto {
@@ -85,6 +85,8 @@ export class TraineeUpdateResponseDto {}
 export class TraineeUpdateRequestDto {
   @ApiProperty()
   @IsNotEmpty()
+  @ValidateNested()
+  @Type(() => DtoUpdateTrainee)
   trainee: DtoUpdateTrainee;
 }
 
