@@ -7,6 +7,7 @@ import {
   ManyToOne,
   JoinColumn,
   OneToOne,
+  RelationId,
 } from 'typeorm';
 import { UserRole } from '@osk/shared';
 import type { Instructor } from '../../instructors/entities/instructor.entity';
@@ -49,18 +50,24 @@ export class User {
   @Column()
   phoneNumber: string;
 
-  @OneToOne<Trainee>('Trainee', (trainee) => trainee.user)
+  @OneToOne<Trainee>('Trainee', (trainee) => trainee.user, {
+    cascade: true,
+  })
   @JoinColumn({ name: 'traineeId' })
   trainee: Trainee | null;
 
+  @RelationId((user: User) => user.trainee)
   @Exclude()
   @Column({ nullable: true })
   traineeId: number | null;
 
-  @OneToOne<Instructor>('Instructor', (instructor) => instructor.user)
+  @OneToOne<Instructor>('Instructor', (instructor) => instructor.user, {
+    cascade: true,
+  })
   @JoinColumn({ name: 'instructorId' })
   instructor: Instructor | null;
 
+  @RelationId((user: User) => user.instructor)
   @Exclude()
   @Column({ nullable: true })
   instructorId: number | null;

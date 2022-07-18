@@ -8,6 +8,8 @@ import { Layout } from './views/Layout/Layout';
 import { MyLessons } from './views/Lessons/MyLessons/MyLessons';
 import { Login } from './views/Login/Login';
 import { TraineeDetails } from './views/Trainees/TraineeDetails/TraineeDetails';
+import { TraineeEdit } from './views/Trainees/TraineeEdit/TraineeEdit';
+import { TraineeNew } from './views/Trainees/TraineeNew/TraineeNew';
 import { TraineesList } from './views/Trainees/TraineesList/TraineesList';
 import { VehicleDetails } from './views/Vehicles/VehicleDetails/VehicleDetails';
 import { VehicleEdit } from './views/Vehicles/VehiclesEdit/VehiclesEdit';
@@ -29,7 +31,9 @@ export const App = () => {
         <Route index element={<HomePage />} />
         <Route path="/kursanci" element={<RequireRole role={UserRole.Admin} />}>
           <Route index element={<TraineesList />} />
+          <Route path="nowy" element={<TraineeNew />} />
           <Route path=":traineeId" element={<TraineeDetails />} />
+          <Route path=":traineeId/edytuj" element={<TraineeEdit />} />
         </Route>
         <Route
           path="/instruktorzy"

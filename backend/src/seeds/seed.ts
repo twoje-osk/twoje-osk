@@ -4,33 +4,25 @@ import { seedUsers } from './seed.user';
 import { seedOrganizations } from './seed.organization';
 import { seedTrainees } from './seed.trainees';
 import { seedVehicles } from './seed.vehicles';
-import { EntityDbData, getEntitiesDbData } from './seed.entities';
 import { seedInstructors } from './seed.instructors';
 import { seedAvailabilities } from './seed.availabilities';
 import { seedLessons } from './seed.lessons';
+import { Factory } from './seed.utils';
 
-const clear = async (trx: EntityManager, entitiesDbData: EntityDbData[]) => {
-  await Promise.all(
-    entitiesDbData.map(({ repository }) =>
-      trx.query(`TRUNCATE "${repository.metadata.tableName}" CASCADE`),
-    ),
-  );
-
-  await Promise.all(
-    entitiesDbData.flatMap(({ sequences }) =>
-      sequences.map((sequence) =>
-        trx.query(`ALTER SEQUENCE "${sequence}" RESTART WITH 1`),
-      ),
-    ),
-  );
+const clearSequences = async (trx: EntityManager) => {
+  await trx.query(`
+    SELECT SETVAL(c.oid, s.start_value) FROM pg_class c
+      JOIN pg_namespace pn on c.relnamespace = pn.oid
+      JOIN pg_sequences s on s.sequencename = c.relname
+    WHERE c.relkind = 'S';
+  `);
 };
 
 const run = async () => {
   await dataSource.initialize();
 
   await dataSource.transaction(async (trx) => {
-    const entitiesDbData = getEntitiesDbData(trx);
-    await clear(trx, entitiesDbData);
+    await clearSequences(trx);
 
     seedOrganizations();
     seedTrainees();
@@ -40,7 +32,10 @@ const run = async () => {
     seedAvailabilities();
     seedLessons();
 
-    for (const { factory } of entitiesDbData) {
+    const { factories } = Factory;
+    await Promise.all(factories.map((factory) => factory.truncate(trx)));
+
+    for (const factory of factories) {
       // eslint-disable-next-line no-await-in-loop
       await factory.save(trx);
     }

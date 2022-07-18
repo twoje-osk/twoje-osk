@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CurrentUserService } from 'current-user/current-user.service';
 import { OrganizationDomainService } from 'organization-domain/organization-domain.service';
 import { Repository } from 'typeorm';
 import { Vehicle } from './entities/vehicle.entity';
@@ -20,7 +19,6 @@ export class VehicleService {
   constructor(
     @InjectRepository(Vehicle)
     private vehiclesRepository: Repository<Vehicle>,
-    private currentUserService: CurrentUserService,
     private organizationDomainService: OrganizationDomainService,
   ) {}
 
@@ -56,6 +54,17 @@ export class VehicleService {
       organization: { id: organizationId },
     });
     return numberOfFoundVehicles > 0;
+  }
+
+  async findOneByLicensePlate(licensePlate: string) {
+    const { id: organizationId } =
+      this.organizationDomainService.getRequestOrganization();
+    return this.vehiclesRepository.findOne({
+      where: {
+        licensePlate,
+        organization: { id: organizationId },
+      },
+    });
   }
 
   async create(

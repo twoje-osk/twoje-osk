@@ -3,7 +3,7 @@ import { Factory } from './seed.utils';
 
 class TraineesFactory extends Factory<Trainee> {
   constructor() {
-    super('Trainees');
+    super(Trainee);
   }
 
   public generate() {

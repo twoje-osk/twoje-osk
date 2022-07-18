@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 type State = 'closed' | 'open' | 'loading';
 
-export const useDeleteModal = () => {
+export const useActionModal = () => {
   const [state, setState] = useState<State>('closed');
   const setLoading = (isLoading: boolean) =>
     setState(isLoading ? 'loading' : 'open');

@@ -100,18 +100,17 @@ export class VehiclesController {
   ): Promise<VehicleUpdateResponseDto> {
     const doesVehicleExist =
       (await this.vehicleService.findOneById(id)) !== null;
-
     if (!doesVehicleExist) {
       throw new NotFoundException('Vehicle with this id does not exist.');
     }
 
     if (vehicle.licensePlate !== undefined) {
-      const doesVehicleWithThisLicensePlateExist =
-        await this.vehicleService.checkIfExistsByLicensePlate(
-          vehicle.licensePlate,
-        );
-
-      if (doesVehicleWithThisLicensePlateExist) {
+      const alreadyExistingVehicle =
+        await this.vehicleService.findOneByLicensePlate(vehicle.licensePlate);
+      if (
+        alreadyExistingVehicle !== undefined &&
+        alreadyExistingVehicle?.id !== id
+      ) {
         throw new ConflictException(
           'Vehicle with this license plate already exists.',
         );
