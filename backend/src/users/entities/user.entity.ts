@@ -46,7 +46,7 @@ export class User {
   @OneToOne<Trainee>('Trainee', (trainee) => trainee.user, {
     cascade: true,
   })
-  @JoinColumn({ referencedColumnName: 'traineeId' })
+  @JoinColumn()
   trainee: Trainee | null;
 
   @OneToOne<Instructor>('Instructor', (instructor) => instructor.user, {
