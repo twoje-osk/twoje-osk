@@ -1,5 +1,6 @@
 import {
   Body,
+  ConflictException,
   Controller,
   Get,
   NotFoundException,
@@ -63,7 +64,7 @@ export class TraineesController {
       return { trainee: await this.traineesService.create(trainee) };
     } catch (error) {
       if (error instanceof Error && error.message === 'TRAINEE_OR_USER_FOUND') {
-        throw new NotFoundException(
+        throw new ConflictException(
           'There is already a trainee which has the same pesel or an user with the same email',
         );
       }
