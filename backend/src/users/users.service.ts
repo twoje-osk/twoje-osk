@@ -113,7 +113,7 @@ export class UsersService {
       ...user,
       password: user.password ? bcrypt.hashSync(user.password, 10) : undefined,
       createdAt: new Date(),
-      organizationId,
+      organization: { id: organizationId },
     };
 
     return this.usersRepository.create(userToCreate);

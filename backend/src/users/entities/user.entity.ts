@@ -34,7 +34,9 @@ export class User {
   @Column({ default: true })
   isActive: boolean;
 
-  @ManyToOne(() => Organization)
+  @ManyToOne(() => Organization, {
+    nullable: false,
+  })
   organization: Organization;
 
   @Column()
