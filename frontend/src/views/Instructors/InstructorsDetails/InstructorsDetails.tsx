@@ -14,7 +14,7 @@ import {
   InstructorUpdateResponseDto,
 } from '@osk/shared';
 import { useState } from 'react';
-import { Link, Navigate, useNavigate, useParams } from 'react-router-dom';
+import { Link, Navigate, useParams } from 'react-router-dom';
 import { Box } from 'reflexbox';
 import useSWR from 'swr';
 import { DeactivateModal } from '../../../components/DeactivateModal/DeactivateModal';
