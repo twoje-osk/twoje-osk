@@ -4,6 +4,7 @@ import { Request } from 'express';
 export interface RequestUser {
   userId: JwtPayload['sub'];
   email: JwtPayload['email'];
+  role: JwtPayload['role'];
 }
 
 export interface RequestOrganization {

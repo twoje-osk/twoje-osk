@@ -22,8 +22,10 @@ export class UsersService {
   ) {}
 
   async findOneById(id: number): Promise<User | null> {
+    const { id: organizationId } =
+      this.organizationDomainService.getRequestOrganization();
     return this.usersRepository.findOne({
-      where: { id, isActive: true },
+      where: { id, organization: { id: organizationId }, isActive: true },
       relations: {
         organization: true,
       },
@@ -112,7 +114,7 @@ export class UsersService {
     const userToCreate = {
       ...user,
       password: user.password ? bcrypt.hashSync(user.password, 10) : undefined,
-      id: organizationId,
+      organization: { id: organizationId },
       createdAt: new Date(),
     };
 

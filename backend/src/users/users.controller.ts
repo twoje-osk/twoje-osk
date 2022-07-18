@@ -27,8 +27,8 @@ export class UsersController {
     type: UserMyProfileResponseDto,
   })
   async findMyProfile(): Promise<UserMyProfileResponseDto> {
-    const currentUserId = this.currentUserService.getRequestCurrentUser();
-    const user = await this.usersService.findOneById(currentUserId.userId);
+    const currentUser = this.currentUserService.getRequestCurrentUser();
+    const user = await this.usersService.findOneById(currentUser.userId);
 
     if (user === null) {
       throw new NotFoundException();

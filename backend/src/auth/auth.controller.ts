@@ -1,10 +1,14 @@
 import { Controller, Post, Request, UseGuards } from '@nestjs/common';
 import { ApiBody, ApiResponse } from '@nestjs/swagger';
 import { LoginAuthRequestDto, LoginAuthResponseDto } from '@osk/shared';
+import { User } from 'users/entities/user.entity';
 import { AuthService } from './auth.service';
-import { AuthRequest } from './auth.types';
 import { LocalAuthGuard } from './passport/local-auth.guard';
 import { SkipAuth } from './passport/skip-auth.guard';
+
+interface LocalAuthGuardRequest {
+  user: User;
+}
 
 @Controller('auth')
 export class AuthController {
@@ -19,7 +23,9 @@ export class AuthController {
   @ApiResponse({
     type: LoginAuthResponseDto,
   })
-  async login(@Request() req: AuthRequest): Promise<LoginAuthResponseDto> {
+  async login(
+    @Request() req: LocalAuthGuardRequest,
+  ): Promise<LoginAuthResponseDto> {
     return this.authService.login(req.user);
   }
 }

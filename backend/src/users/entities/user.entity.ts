@@ -1,4 +1,4 @@
-import { Exclude } from 'class-transformer';
+import { Exclude, Expose } from 'class-transformer';
 import {
   Entity,
   Column,
@@ -8,6 +8,7 @@ import {
   JoinColumn,
   OneToOne,
 } from 'typeorm';
+import { UserRole } from '@osk/shared';
 import type { Instructor } from '../../instructors/entities/instructor.entity';
 import type { Trainee } from '../../trainees/entities/trainee.entity';
 import { Organization } from '../../organizations/entities/organization.entity';
@@ -21,7 +22,7 @@ export class User {
   @Column()
   email: string;
 
-  @Column()
+  @Column({ nullable: true })
   @Exclude()
   password: string;
 
@@ -35,7 +36,12 @@ export class User {
   isActive: boolean;
 
   @ManyToOne(() => Organization)
+  @JoinColumn({ name: 'organizationId' })
   organization: Organization;
+
+  @Exclude()
+  @Column({ nullable: true })
+  organizationId: number | null;
 
   @Column()
   createdAt: Date;
@@ -49,9 +55,30 @@ export class User {
   @JoinColumn()
   trainee: Trainee | null;
 
+  @Exclude()
+  @Column({ nullable: true })
+  traineeId: number | null;
+
   @OneToOne<Instructor>('Instructor', (instructor) => instructor.user, {
     cascade: true,
   })
-  @JoinColumn()
+  @JoinColumn({ name: 'instructorId' })
   instructor: Instructor | null;
+
+  @Exclude()
+  @Column({ nullable: true })
+  instructorId: number | null;
+
+  @Expose()
+  get role(): UserRole {
+    if (this.traineeId !== null) {
+      return UserRole.Trainee;
+    }
+
+    if (this.instructorId !== null) {
+      return UserRole.Instructor;
+    }
+
+    return UserRole.Admin;
+  }
 }

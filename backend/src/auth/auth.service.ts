@@ -6,7 +6,6 @@ import * as bcrypt from 'bcrypt';
 import { Organization } from 'organizations/entities/organization.entity';
 import { Repository } from 'typeorm';
 import { User } from 'users/entities/user.entity';
-import { RequestUser } from './auth.types';
 
 @Injectable()
 export class AuthService {
@@ -38,10 +37,11 @@ export class AuthService {
     return user;
   }
 
-  async login(user: RequestUser) {
+  async login(user: User) {
     const payload: JwtPayload = {
       email: user.email,
-      sub: user.userId,
+      sub: user.id,
+      role: user.role,
     };
 
     return {

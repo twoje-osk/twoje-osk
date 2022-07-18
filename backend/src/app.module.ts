@@ -6,6 +6,10 @@ import { join } from 'path';
 import { InstructorsModule } from 'instructors/instructors.module';
 import { OrganizationDomainMiddleware } from 'organization-domain/organization-domain.middleware';
 import { OrganizationDomainModule } from 'organization-domain/organization-domain.module';
+import { APP_GUARD } from '@nestjs/core';
+import { RolesGuard } from 'common/guards/roles.guard';
+import { JwtAuthGuard } from 'auth/passport/jwt-auth.guard';
+import { DriversLicenseCategoriesModule } from 'driversLicenseCategory/driversLicenseCategory.module';
 import { getConfiguration, NestConfiguration } from './config/configuration';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
@@ -14,6 +18,8 @@ import { TraineesModule } from './trainees/trainees.module';
 import { CurrentUserModule } from './current-user/current-user.module';
 import { DebugModule } from './debug/debug.module';
 import { VehiclesModule } from './vehicles/vehicles.module';
+import { AvailabilityModule } from './availability/availability.module';
+import { LessonsModule } from './lessons/lessons.module';
 
 @Module({
   imports: [
@@ -36,6 +42,7 @@ import { VehiclesModule } from './vehicles/vehicles.module';
           migrations: ['dist/migrations/*.js'],
           synchronize: false,
           migrationsRun: configService.get('isProduction'),
+          logging: true,
         };
       },
     }),
@@ -52,6 +59,19 @@ import { VehiclesModule } from './vehicles/vehicles.module';
     VehiclesModule,
     OrganizationsModule,
     OrganizationDomainModule,
+    LessonsModule,
+    AvailabilityModule,
+    DriversLicenseCategoriesModule,
+  ],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
+    },
   ],
 })
 export class AppModule implements NestModule {

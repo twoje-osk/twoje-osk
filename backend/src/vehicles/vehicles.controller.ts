@@ -21,10 +21,13 @@ import {
   VehicleUpdateResponseDto,
   VehicleDeleteResponseDto,
   VehicleDeleteRequestDto,
+  UserRole,
 } from '@osk/shared';
+import { Roles } from 'common/guards/roles.decorator';
 import { VehicleService } from './vehicles.service';
 
 @Controller('vehicles')
+@Roles(UserRole.Admin, UserRole.Instructor)
 export class VehiclesController {
   constructor(private readonly vehicleService: VehicleService) {}
 
