@@ -1,33 +1,38 @@
 import styled from '@emotion/styled';
+import { LessonStatus } from '@osk/shared/src/types/lesson.types';
 import { getHours, isAfter, setHours, startOfDay } from 'date-fns';
 import { useMemo, useState } from 'react';
-import { Calendar, Views, Event, SlotInfo } from 'react-big-calendar';
+import { Calendar, Views, SlotInfo } from 'react-big-calendar';
+import { blue, green, grey, red } from '@mui/material/colors';
 import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
-import { useCommonSnackbars } from '../../hooks/useCommonSnackbars/useCommonSnackbars';
-import { isRangeAvailable, localizer } from './LessonsCalendar.utils';
-
-export interface RequiredEvent extends Event {
-  start: Date;
-  end: Date;
-}
-
-interface LessonsCalendarProps {
-  instructorEvents: RequiredEvent[];
-  userEvents: RequiredEvent[];
-  createEvent: (event: RequiredEvent) => Promise<void>;
-  selectedDate: Date;
-}
+import { useCommonSnackbars } from '../../../../hooks/useCommonSnackbars/useCommonSnackbars';
+import {
+  BackgroundEvent,
+  FrontEvent,
+  LessonEvent,
+  LessonsCalendarProps,
+  RequiredEvent,
+} from './LessonsCalendar.types';
+import {
+  getBackgroundEvents,
+  getFrontEvents,
+  isRangeAvailable,
+  localizer,
+} from './LessonsCalendar.utils';
+import { getTranslatedLessonStatus } from '../MyLessons.utils';
 
 export const LessonsCalendar = ({
   instructorEvents,
   userEvents,
   createEvent,
   selectedDate,
+  onLessonClick,
 }: LessonsCalendarProps) => {
   const { showInfoSnackbar } = useCommonSnackbars();
-  const [eventBeingCreate, setEventBeingCreate] =
-    useState<RequiredEvent | null>(null);
+  const [eventBeingCreated, setEventBeingCreate] = useState<LessonEvent | null>(
+    null,
+  );
 
   const onSelectSlot = async (slotInfo: SlotInfo) => {
     if (slotInfo.action !== 'select') {
@@ -39,9 +44,10 @@ export const LessonsCalendar = ({
       return;
     }
 
-    const newEvent: RequiredEvent = {
+    const newEvent: LessonEvent = {
       start: slotInfo.start,
       end: slotInfo.end,
+      status: LessonStatus.Requested,
     };
     setEventBeingCreate(newEvent);
     await createEvent(newEvent);
@@ -61,16 +67,16 @@ export const LessonsCalendar = ({
 
   return (
     <StylingWrapper>
-      <Calendar
+      <Calendar<FrontEvent<LessonEvent> | BackgroundEvent<RequiredEvent>>
         view={Views.WEEK}
         onView={() => undefined}
-        events={[
-          ...userEvents,
-          ...(eventBeingCreate ? [eventBeingCreate] : []),
-        ]}
+        events={getFrontEvents(
+          [...userEvents, ...(eventBeingCreated ? [eventBeingCreated] : [])],
+          getTranslatedLessonStatus,
+        )}
         date={selectedDate}
         onNavigate={() => undefined}
-        backgroundEvents={instructorEvents}
+        backgroundEvents={getBackgroundEvents(instructorEvents)}
         localizer={localizer}
         selectable
         onSelectSlot={onSelectSlot}
@@ -89,6 +95,20 @@ export const LessonsCalendar = ({
           next: 'Następny tydzień',
           previous: 'Następny poprzedni tydzień',
         }}
+        eventPropGetter={(event) => {
+          if (event.type === 'background') {
+            return {};
+          }
+
+          return {
+            className: event.status,
+          };
+        }}
+        onSelectEvent={(event) => {
+          if (event.type === 'front') {
+            onLessonClick(event);
+          }
+        }}
       />
     </StylingWrapper>
   );
@@ -101,8 +121,8 @@ const StylingWrapper = styled.div`
 
   .rbc-background-event {
     pointer-events: none;
-    border-color: rgb(26, 150, 19, 1);
-    background: rgb(26, 150, 19, 0.66);
+    background: ${green[200]};
+    border-color: ${green[200]};
   }
 
   .rbc-allday-cell {
@@ -123,5 +143,28 @@ const StylingWrapper = styled.div`
 
   .rbc-current-time-indicator {
     display: none;
+  }
+
+  .rbc-event {
+    &.${LessonStatus.Accepted} {
+      background: ${blue[500]};
+      border-color: ${blue[600]};
+    }
+
+    &.${LessonStatus.Finished} {
+      background: ${blue[200]};
+      border-color: ${blue[300]};
+    }
+
+    &.${LessonStatus.Canceled} {
+      background: ${red[500]};
+      border-color: ${red[600]};
+      opacity: 0.3;
+    }
+
+    &.${LessonStatus.Requested} {
+      background: ${grey[500]};
+      border-color: ${grey[600]};
+    }
   }
 `;

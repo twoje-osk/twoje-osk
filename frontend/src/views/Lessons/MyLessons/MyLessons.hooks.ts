@@ -6,6 +6,7 @@ import {
 import { formatISO, endOfWeek, addDays, startOfWeek } from 'date-fns';
 import { useMemo, useState } from 'react';
 import useSWR from 'swr';
+import { LessonEvent } from './LessonsCalendar/LessonsCalendar.types';
 import { getTodayWeek } from './MyLessons.utils';
 
 interface UseFetchDataArguments {
@@ -89,5 +90,26 @@ export const useSelectedDate = () => {
     onPrevWeekClick,
     onTodayClick,
     onNextWeekClick,
+  };
+};
+
+export const useEditModal = () => {
+  const [editingEvent, setEditingEvent] = useState<LessonEvent | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openEditModal = (eventToEdit: LessonEvent) => {
+    setEditingEvent(eventToEdit);
+    setIsModalOpen(true);
+  };
+
+  const closeEditModal = () => {
+    setIsModalOpen(false);
+  };
+
+  return {
+    openEditModal,
+    closeEditModal,
+    editingEvent,
+    isModalOpen,
   };
 };

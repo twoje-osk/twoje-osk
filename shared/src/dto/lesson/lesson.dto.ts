@@ -3,15 +3,9 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import { IsDate, IsNumber, IsOptional, Validate } from 'class-validator';
 import { addHours, startOfHour } from 'date-fns';
+import { LessonStatus } from '../../types/lesson.types';
 import { DtoInstructor } from '../instructor/instructor.dto';
 import { IsToGreaterThenFrom } from './lesson.validators';
-
-export enum LessonStatus {
-  Requested = 'Requested',
-  Accepted = 'Accepted',
-  Canceled = 'Canceled',
-  Finished = 'Finished',
-}
 
 export class LessonsDTO {
   @ApiProperty()

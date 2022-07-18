@@ -2,8 +2,13 @@ import {
   GetMyLessonsResponseDTO,
   InstructorPublicAvailabilityResponseDTO,
 } from '@osk/shared';
+import { LessonStatus } from '@osk/shared/src/types/lesson.types';
 import { startOfWeek } from 'date-fns';
-import { RequiredEvent } from '../../../components/LessonsCalendar/LessonsCalendar';
+import { assertNever } from '../../../utils/asserNever';
+import {
+  LessonEvent,
+  RequiredEvent,
+} from './LessonsCalendar/LessonsCalendar.types';
 
 export function getTodayWeek() {
   return startOfWeek(new Date(), {
@@ -24,10 +29,31 @@ export const getInstructorEvents = (
 
 export const getUserEvents = (
   lessonsData: GetMyLessonsResponseDTO | undefined,
-): RequiredEvent[] => {
+): LessonEvent[] => {
   const lessons = lessonsData?.lessons ?? [];
-  return lessons.map(({ from, to }) => ({
+  return lessons.map(({ from, to, status }) => ({
     start: new Date(from),
     end: new Date(to),
+    status,
   }));
 };
+
+export function getTranslatedLessonStatus(event: LessonEvent) {
+  switch (event.status) {
+    case LessonStatus.Accepted: {
+      return 'Zaakceptowana';
+    }
+    case LessonStatus.Canceled: {
+      return 'Anulowana';
+    }
+    case LessonStatus.Finished: {
+      return 'Zakończona';
+    }
+    case LessonStatus.Requested: {
+      return 'Niezaakceptowana';
+    }
+    // no default
+  }
+
+  return assertNever(event.status);
+}

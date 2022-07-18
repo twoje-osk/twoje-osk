@@ -1,7 +1,10 @@
 import { format, formatISO } from 'date-fns';
+import { assertNever } from './asserNever';
 
 export const LONG_DATE = 'dd/MM/yyyy';
 export const INPUT_DATE = 'yyyy-MM-dd';
+export const INPUT_DATETIME = "yyyy-MM-dd'T'HH:ss";
+export const TIME = 'HH:ss';
 
 const nullableFormat = (date: Date | null, dateFormat: string) =>
   date === null ? null : format(date, dateFormat);
@@ -9,8 +12,28 @@ const nullableFormat = (date: Date | null, dateFormat: string) =>
 export const formatLong = (date: Date | null) =>
   nullableFormat(date, LONG_DATE);
 
-export const formatInput = (date: Date | null) =>
-  nullableFormat(date, INPUT_DATE);
+export function getFormatForType(type: 'date' | 'datetime-local' | 'time') {
+  if (type === 'date') {
+    return INPUT_DATE;
+  }
+
+  if (type === 'datetime-local') {
+    return INPUT_DATETIME;
+  }
+
+  if (type === 'time') {
+    return TIME;
+  }
+
+  return assertNever(type);
+}
+
+export const formatInput = (
+  date: Date | null,
+  type: 'date' | 'datetime-local' | 'time',
+) => {
+  return nullableFormat(date, getFormatForType(type));
+};
 
 export function formatApi(date: Date): string;
 export function formatApi(date: null): null;

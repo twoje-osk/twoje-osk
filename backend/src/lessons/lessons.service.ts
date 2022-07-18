@@ -41,6 +41,7 @@ export class LessonsService {
         },
         from: from ? MoreThanOrEqual(from) : undefined,
         to: to ? LessThanOrEqual(to) : undefined,
+        status: Not(LessonStatus.Canceled),
       },
     });
   }

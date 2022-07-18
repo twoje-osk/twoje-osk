@@ -1,7 +1,7 @@
 import { TextField, TextFieldProps } from '@mui/material';
 import { isValid, parse } from 'date-fns';
 import { useField, useFormikContext } from 'formik';
-import { formatInput } from '../../utils/date';
+import { formatInput, getFormatForType } from '../../utils/date';
 
 type FTextFieldProps = Omit<
   Omit<Omit<TextFieldProps, 'onChange'>, 'onBlur'>,
@@ -10,7 +10,9 @@ type FTextFieldProps = Omit<
   name: string;
 };
 
-const isDateType = (type: React.HTMLInputTypeAttribute | undefined) =>
+const isDateType = (
+  type: React.HTMLInputTypeAttribute | undefined,
+): type is 'date' | 'datetime-local' | 'time' =>
   type === 'date' || type === 'datetime-local' || type === 'time';
 
 const getValue = (
@@ -21,7 +23,7 @@ const getValue = (
     return value;
   }
 
-  return formatInput(value);
+  return formatInput(value, type);
 };
 
 export const FTextField = (props: FTextFieldProps) => {
@@ -45,7 +47,11 @@ export const FTextField = (props: FTextFieldProps) => {
       return;
     }
 
-    const parsedDate = parse(e.target.value, 'yyyy-MM-dd', new Date());
+    const parsedDate = parse(
+      e.target.value,
+      getFormatForType(type),
+      new Date(),
+    );
 
     if (!isValid(parsedDate)) {
       setFieldValue(name, meta.initialValue);

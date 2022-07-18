@@ -6,7 +6,11 @@ import getDay from 'date-fns/getDay';
 import plPL from 'date-fns/locale/pl';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { isAfter, isBefore, isEqual } from 'date-fns';
-import type { RequiredEvent } from './LessonsCalendar';
+import type {
+  RequiredEvent,
+  FrontEvent,
+  BackgroundEvent,
+} from './LessonsCalendar.types';
 
 const locales = {
   pl: plPL,
@@ -37,4 +41,22 @@ export function isRangeAvailable(
       return afterCondition && beforeCondition;
     },
   );
+}
+
+export function getFrontEvents<T>(
+  events: T[],
+  getTitle: (event: T) => string,
+): FrontEvent<T>[] {
+  return events.map((event) => ({
+    ...event,
+    title: getTitle(event),
+    type: 'front',
+  }));
+}
+
+export function getBackgroundEvents<T>(events: T[]): BackgroundEvent<T>[] {
+  return events.map((event) => ({
+    ...event,
+    type: 'background',
+  }));
 }

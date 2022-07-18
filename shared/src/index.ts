@@ -8,3 +8,4 @@ export * from './dto/availability/availability.dto';
 export * from './dto/lesson/lesson.dto';
 export * from './authContext/jwtPayload';
 export * from './types/user.types';
+export * from './types/lesson.types';

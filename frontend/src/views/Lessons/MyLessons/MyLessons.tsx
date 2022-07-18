@@ -18,13 +18,12 @@ import { useMemo, useState } from 'react';
 import { Flex } from 'reflexbox';
 import { FullPageLoading } from '../../../components/FullPageLoading/FullPageLoading';
 import { GeneralAPIError } from '../../../components/GeneralAPIError/GeneralAPIError';
-import {
-  LessonsCalendar,
-  RequiredEvent,
-} from '../../../components/LessonsCalendar/LessonsCalendar';
+import { LessonsCalendar } from './LessonsCalendar/LessonsCalendar';
+import { RequiredEvent } from './LessonsCalendar/LessonsCalendar.types';
 import { useCommonSnackbars } from '../../../hooks/useCommonSnackbars/useCommonSnackbars';
 import { useMakeRequestWithAuth } from '../../../hooks/useMakeRequestWithAuth/useMakeRequestWithAuth';
-import { useFetchData, useSelectedDate } from './MyLessons.hooks';
+import { EditLessonModal } from './EditLessonModal/EditLessonModal';
+import { useEditModal, useFetchData, useSelectedDate } from './MyLessons.hooks';
 import {
   FullPageRelativeWrapper,
   GroupedIconButton,
@@ -56,19 +55,19 @@ export const MyLessons = () => {
     setSelectedInstructorId,
   });
 
+  const { isModalOpen, editingEvent, closeEditModal, openEditModal } =
+    useEditModal();
+
   const makeRequestWithAuth = useMakeRequestWithAuth();
   const { showErrorSnackbar } = useCommonSnackbars();
   const [isMutationLoading, setIsMutationLoading] = useState(false);
 
-  const instructorEvents: RequiredEvent[] = useMemo(
+  const instructorEvents = useMemo(
     () => getInstructorEvents(instructorEventsData),
     [instructorEventsData],
   );
 
-  const userEvents: RequiredEvent[] = useMemo(
-    () => getUserEvents(lessonsData),
-    [lessonsData],
-  );
+  const userEvents = useMemo(() => getUserEvents(lessonsData), [lessonsData]);
 
   if (errorData || instructorsEventsError || instructorsError) {
     return <GeneralAPIError />;
@@ -147,6 +146,7 @@ export const MyLessons = () => {
           userEvents={userEvents}
           createEvent={createEvent}
           selectedDate={selectedDate}
+          onLessonClick={openEditModal}
         />
         {(isMutationLoading ||
           instructorEventsData === undefined ||
@@ -156,6 +156,11 @@ export const MyLessons = () => {
           </LoaderOverlay>
         )}
       </CalendarWrapper>
+      <EditLessonModal
+        isOpen={isModalOpen}
+        event={editingEvent}
+        onClose={closeEditModal}
+      />
     </FullPageRelativeWrapper>
   );
 };
