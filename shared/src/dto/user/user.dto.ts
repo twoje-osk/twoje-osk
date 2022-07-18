@@ -1,6 +1,6 @@
 import { ApiProperty, PartialType, OmitType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsBoolean, IsEmail, IsNotEmpty } from 'class-validator';
+import { IsBoolean, IsEmail, IsNotEmpty, IsString } from 'class-validator';
 import { DtoOrganization } from '../organization/organization.dto';
 
 export class DtoUser {
