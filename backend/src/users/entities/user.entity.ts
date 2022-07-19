@@ -53,7 +53,7 @@ export class User {
   @OneToOne<Trainee>('Trainee', (trainee) => trainee.user, {
     cascade: true,
   })
-  @JoinColumn({ name: 'traineeId' })
+  @JoinColumn()
   trainee: Trainee | null;
 
   @RelationId((user: User) => user.trainee)
