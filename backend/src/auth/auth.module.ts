@@ -3,14 +3,12 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { NestConfiguration } from 'config/configuration';
-import { APP_GUARD } from '@nestjs/core';
 import { User } from 'users/entities/user.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { LocalStrategy } from './passport/local.strategy';
 import { JwtStrategy } from './passport/jwt.strategy';
-import { JwtAuthGuard } from './passport/jwt-auth.guard';
 
 @Module({
   imports: [
@@ -25,16 +23,7 @@ import { JwtAuthGuard } from './passport/jwt-auth.guard';
       inject: [ConfigService],
     }),
   ],
-  providers: [
-    AuthService,
-    LocalStrategy,
-    ConfigService,
-    JwtStrategy,
-    {
-      provide: APP_GUARD,
-      useClass: JwtAuthGuard,
-    },
-  ],
+  providers: [AuthService, LocalStrategy, ConfigService, JwtStrategy],
   controllers: [AuthController],
   exports: [AuthService],
 })

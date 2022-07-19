@@ -12,16 +12,15 @@ export class InstructorsService {
     private organizationDomainService: OrganizationDomainService,
   ) {}
 
-  async findAll() {
+  async findAll(isActive?: boolean) {
     const { id: organizationId } =
       this.organizationDomainService.getRequestOrganization();
 
     const users = await this.instructorsRepository.find({
       where: {
         user: {
-          organization: {
-            id: organizationId,
-          },
+          organizationId,
+          isActive,
         },
       },
       relations: {
@@ -40,9 +39,7 @@ export class InstructorsService {
       where: {
         id,
         user: {
-          organization: {
-            id: organizationId,
-          },
+          organizationId,
         },
       },
       relations: {
