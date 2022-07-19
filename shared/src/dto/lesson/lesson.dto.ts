@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
-import { Transform, Type } from 'class-transformer';
-import { IsDate, IsNumber, IsOptional, Validate } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsDate, IsOptional, Validate } from 'class-validator';
 import { addHours, startOfHour } from 'date-fns';
 import { LessonStatus } from '../../types/lesson.types';
 import { DtoInstructor } from '../instructor/instructor.dto';
@@ -59,12 +59,6 @@ export class GetMyLessonsResponseDTO {
 }
 
 export class CreateLessonForInstructorRequestDTO {
-  @ApiProperty()
-  @IsNumber()
-  @IsOptional()
-  @Transform(({ value }) => value ?? null)
-  vehicleId: number | null;
-
   @ApiProperty({
     format: 'yyyy-MM-ddTHH:mm:ssZ',
     default: startOfHour(new Date()).toISOString(),
@@ -89,3 +83,26 @@ export class CreateLessonForInstructorResponseDTO {
   @ApiProperty()
   createdLessonId: number;
 }
+
+export class UpdateLessonForInstructorRequestDTO {
+  @ApiProperty({
+    format: 'yyyy-MM-ddTHH:mm:ssZ',
+    default: startOfHour(new Date()).toISOString(),
+    type: Date,
+  })
+  @Type(() => Date)
+  @IsDate()
+  readonly from: ApiDate;
+
+  @ApiProperty({
+    format: 'yyyy-MM-ddTHH:mm:ssZ',
+    default: addHours(startOfHour(new Date()), 1).toISOString(),
+    type: Date,
+  })
+  @Type(() => Date)
+  @IsDate()
+  @Validate(IsToGreaterThenFrom, ['from'])
+  readonly to: ApiDate;
+}
+
+export class UpdateLessonForInstructorResponseDTO {}

@@ -4,6 +4,7 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
+  RelationId,
 } from 'typeorm';
 import { LessonStatus } from '@osk/shared';
 import { Vehicle } from '../../vehicles/entities/vehicle.entity';
@@ -31,9 +32,15 @@ export class Lesson {
   @JoinColumn()
   instructor: Instructor;
 
+  @RelationId((lesson: Lesson) => lesson.instructor)
+  instructorId: number;
+
   @ManyToOne(() => Trainee, { nullable: false })
   @JoinColumn()
   trainee: Trainee;
+
+  @RelationId((lesson: Lesson) => lesson.trainee)
+  traineeId: number;
 
   @ManyToOne(() => Vehicle, { nullable: true })
   @JoinColumn()
