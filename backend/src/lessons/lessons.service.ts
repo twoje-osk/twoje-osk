@@ -14,6 +14,11 @@ import {
   Not,
   Repository,
 } from 'typeorm';
+import {
+  IsolationLevel,
+  Propagation,
+  Transactional,
+} from 'typeorm-transactional-cls-hooked';
 import { getFailure, getSuccess, Try } from 'types/Try';
 import { Lesson } from './entities/lesson.entity';
 
@@ -102,6 +107,10 @@ export class LessonsService {
     return availabilities;
   }
 
+  @Transactional({
+    isolationLevel: IsolationLevel.SERIALIZABLE,
+    propagation: Propagation.REQUIRES_NEW,
+  })
   async updateTraineeLesson(
     lessonId: number,
     from: Date,
@@ -167,6 +176,10 @@ export class LessonsService {
     return getSuccess(undefined);
   }
 
+  @Transactional({
+    isolationLevel: IsolationLevel.SERIALIZABLE,
+    propagation: Propagation.REQUIRES_NEW,
+  })
   async createTraineeLesson(
     instructorId: number,
     traineeId: number,
@@ -226,6 +239,7 @@ export class LessonsService {
     return getSuccess(createdLessonId);
   }
 
+  @Transactional()
   async cancelTraineeLesson(
     lessonId: number,
   ): Promise<
