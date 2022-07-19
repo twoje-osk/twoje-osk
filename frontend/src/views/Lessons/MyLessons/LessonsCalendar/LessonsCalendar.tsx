@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
 import { LessonStatus } from '@osk/shared/src/types/lesson.types';
 import { getHours, isAfter, setHours, startOfDay } from 'date-fns';
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { Calendar, Views, SlotInfo } from 'react-big-calendar';
 import { blue, green, grey, red } from '@mui/material/colors';
 import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
@@ -30,9 +30,6 @@ export const LessonsCalendar = ({
   onLessonClick,
 }: LessonsCalendarProps) => {
   const { showInfoSnackbar } = useCommonSnackbars();
-  const [eventBeingCreated, setEventBeingCreate] = useState<LessonEvent | null>(
-    null,
-  );
 
   const onSelectSlot = async (slotInfo: SlotInfo) => {
     if (slotInfo.action !== 'select') {
@@ -49,9 +46,7 @@ export const LessonsCalendar = ({
       end: slotInfo.end,
       status: LessonStatus.Requested,
     };
-    setEventBeingCreate(newEvent);
-    await createEvent(newEvent);
-    setEventBeingCreate(null);
+    createEvent(newEvent);
   };
 
   const onSelecting = (range: { start: Date; end: Date }) => {
@@ -70,9 +65,8 @@ export const LessonsCalendar = ({
       <Calendar<FrontEvent<LessonEvent> | BackgroundEvent<RequiredEvent>>
         view={Views.WEEK}
         onView={() => undefined}
-        events={getFrontEvents(
-          [...userEvents, ...(eventBeingCreated ? [eventBeingCreated] : [])],
-          getTranslatedLessonStatus,
+        events={getFrontEvents(userEvents, ({ status }) =>
+          getTranslatedLessonStatus(status),
         )}
         date={selectedDate}
         onNavigate={() => undefined}

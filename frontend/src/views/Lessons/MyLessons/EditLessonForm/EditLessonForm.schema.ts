@@ -10,6 +10,12 @@ export interface LessonFormData {
   status: LessonStatus;
 }
 
+export interface LessonSubmitData {
+  start: Date;
+  end: Date;
+  status: LessonStatus;
+}
+
 setupYupLocale();
 export const lessonFormSchema: Yup.SchemaOf<LessonFormData> =
   Yup.object().shape({

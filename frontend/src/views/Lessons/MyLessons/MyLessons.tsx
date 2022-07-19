@@ -9,21 +9,17 @@ import {
   MenuItem,
   Select,
 } from '@mui/material';
-import {
-  CreateLessonForInstructorRequestDTO,
-  CreateLessonForInstructorResponseDTO,
-} from '@osk/shared';
-import { formatISO } from 'date-fns';
 import { useMemo, useState } from 'react';
 import { Flex } from 'reflexbox';
 import { FullPageLoading } from '../../../components/FullPageLoading/FullPageLoading';
 import { GeneralAPIError } from '../../../components/GeneralAPIError/GeneralAPIError';
 import { LessonsCalendar } from './LessonsCalendar/LessonsCalendar';
-import { RequiredEvent } from './LessonsCalendar/LessonsCalendar.types';
-import { useCommonSnackbars } from '../../../hooks/useCommonSnackbars/useCommonSnackbars';
-import { useMakeRequestWithAuth } from '../../../hooks/useMakeRequestWithAuth/useMakeRequestWithAuth';
 import { EditLessonModal } from './EditLessonModal/EditLessonModal';
-import { useEditModal, useFetchData, useSelectedDate } from './MyLessons.hooks';
+import {
+  useMyLessonsModal,
+  useFetchData,
+  useSelectedDate,
+} from './MyLessons.hooks';
 import {
   FullPageRelativeWrapper,
   GroupedIconButton,
@@ -43,10 +39,9 @@ export const MyLessons = () => {
   const {
     lessonsData,
     errorData,
-    lessonsMutate,
+    mutate,
     instructorEventsData,
     instructorsEventsError,
-    instructorsEventsMutate,
     instructorsData,
     instructorsError,
   } = useFetchData({
@@ -55,12 +50,16 @@ export const MyLessons = () => {
     setSelectedInstructorId,
   });
 
-  const { isModalOpen, editingEvent, closeEditModal, openEditModal } =
-    useEditModal();
-
-  const makeRequestWithAuth = useMakeRequestWithAuth();
-  const { showErrorSnackbar } = useCommonSnackbars();
-  const [isMutationLoading, setIsMutationLoading] = useState(false);
+  const {
+    closeEditModal,
+    openEditModal,
+    state: modalState,
+    openCreateModal,
+    onSubmit,
+  } = useMyLessonsModal({
+    mutate,
+    selectedInstructorId,
+  });
 
   const instructorEvents = useMemo(
     () => getInstructorEvents(instructorEventsData),
@@ -76,30 +75,6 @@ export const MyLessons = () => {
   if (instructorsData === undefined) {
     return <FullPageLoading />;
   }
-
-  const createEvent = async (event: RequiredEvent) => {
-    const body: CreateLessonForInstructorRequestDTO = {
-      from: formatISO(event.start),
-      to: formatISO(event.end),
-      vehicleId: null,
-    };
-
-    setIsMutationLoading(true);
-    const response = await makeRequestWithAuth<
-      CreateLessonForInstructorResponseDTO,
-      CreateLessonForInstructorRequestDTO
-    >(`/api/lessons/instructor/${selectedInstructorId}`, 'POST', body);
-
-    if (!response.ok) {
-      setIsMutationLoading(false);
-      showErrorSnackbar();
-      return;
-    }
-
-    await Promise.all([lessonsMutate(), instructorsEventsMutate()]);
-
-    setIsMutationLoading(false);
-  };
 
   return (
     <FullPageRelativeWrapper>
@@ -143,23 +118,28 @@ export const MyLessons = () => {
       <CalendarWrapper>
         <LessonsCalendar
           instructorEvents={instructorEvents}
-          userEvents={userEvents}
-          createEvent={createEvent}
+          userEvents={
+            modalState.isModalOpen && modalState.isCreating
+              ? [...userEvents, modalState.editingEvent]
+              : userEvents
+          }
+          createEvent={openCreateModal}
           selectedDate={selectedDate}
           onLessonClick={openEditModal}
         />
-        {(isMutationLoading ||
-          instructorEventsData === undefined ||
-          lessonsData === undefined) && (
+        {(instructorEventsData === undefined || lessonsData === undefined) && (
           <LoaderOverlay>
             <CircularProgress />
           </LoaderOverlay>
         )}
       </CalendarWrapper>
       <EditLessonModal
-        isOpen={isModalOpen}
-        event={editingEvent}
+        isOpen={modalState.isModalOpen}
+        event={modalState.isModalOpen ? modalState.editingEvent : null}
         onClose={closeEditModal}
+        isCreating={modalState.isModalOpen ? modalState.isCreating : false}
+        onSubmit={onSubmit}
+        isLoading={modalState.isModalOpen ? modalState.isLoading : false}
       />
     </FullPageRelativeWrapper>
   );

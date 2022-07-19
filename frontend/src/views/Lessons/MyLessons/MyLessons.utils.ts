@@ -38,8 +38,8 @@ export const getUserEvents = (
   }));
 };
 
-export function getTranslatedLessonStatus(event: LessonEvent) {
-  switch (event.status) {
+export function getTranslatedLessonStatus(status: LessonStatus) {
+  switch (status) {
     case LessonStatus.Accepted: {
       return 'Zaakceptowana';
     }
@@ -55,5 +55,5 @@ export function getTranslatedLessonStatus(event: LessonEvent) {
     // no default
   }
 
-  return assertNever(event.status);
+  return assertNever(status);
 }

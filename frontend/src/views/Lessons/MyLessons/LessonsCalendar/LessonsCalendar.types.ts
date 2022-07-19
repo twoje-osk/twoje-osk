@@ -12,7 +12,7 @@ export interface LessonEvent extends RequiredEvent {
 export interface LessonsCalendarProps {
   instructorEvents: RequiredEvent[];
   userEvents: LessonEvent[];
-  createEvent: (event: RequiredEvent) => Promise<void>;
+  createEvent: (event: LessonEvent) => void;
   selectedDate: Date;
   onLessonClick: (event: LessonEvent) => void;
 }

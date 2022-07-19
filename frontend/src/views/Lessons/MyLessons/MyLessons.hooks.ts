@@ -2,10 +2,14 @@ import {
   GetMyLessonsResponseDTO,
   InstructorPublicAvailabilityResponseDTO,
   InstructorFindAllResponseDto,
+  CreateLessonForInstructorRequestDTO,
+  CreateLessonForInstructorResponseDTO,
 } from '@osk/shared';
 import { formatISO, endOfWeek, addDays, startOfWeek } from 'date-fns';
-import { useMemo, useState } from 'react';
+import { Reducer, useMemo, useReducer, useState } from 'react';
 import useSWR from 'swr';
+import { useCommonSnackbars } from '../../../hooks/useCommonSnackbars/useCommonSnackbars';
+import { useMakeRequestWithAuth } from '../../../hooks/useMakeRequestWithAuth/useMakeRequestWithAuth';
 import { LessonEvent } from './LessonsCalendar/LessonsCalendar.types';
 import { getTodayWeek } from './MyLessons.utils';
 
@@ -58,13 +62,15 @@ export const useFetchData = ({
       revalidateOnFocus: false,
     });
 
+  const mutate = () =>
+    Promise.all([lessonsMutate(), instructorsEventsMutate()]);
+
   return {
+    mutate,
     lessonsData,
     errorData,
-    lessonsMutate,
     instructorEventsData,
     instructorsEventsError,
-    instructorsEventsMutate,
     instructorsData,
     instructorsError,
   };
@@ -93,23 +99,133 @@ export const useSelectedDate = () => {
   };
 };
 
-export const useEditModal = () => {
-  const [editingEvent, setEditingEvent] = useState<LessonEvent | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+type MyLessonsModalStore =
+  | {
+      isModalOpen: true;
+      isCreating: boolean;
+      editingEvent: LessonEvent;
+      isLoading: boolean;
+    }
+  | {
+      isModalOpen: false;
+    };
+
+type MyLessonsModalAction =
+  | {
+      type: 'close';
+    }
+  | {
+      type: 'edit' | 'create';
+      editingEvent: LessonEvent;
+    }
+  | {
+      type: 'submit';
+    }
+  | {
+      type: 'error';
+    };
+
+interface MyLessonsModalArguments {
+  mutate: () => Promise<unknown>;
+  selectedInstructorId: number | null;
+}
+
+export const useMyLessonsModal = ({
+  mutate,
+  selectedInstructorId,
+}: MyLessonsModalArguments) => {
+  const makeRequestWithAuth = useMakeRequestWithAuth();
+  const { showErrorSnackbar } = useCommonSnackbars();
+  const [store, dispatch] = useReducer<
+    Reducer<MyLessonsModalStore, MyLessonsModalAction>
+  >(
+    (prevStore, action) => {
+      if (action.type === 'close') {
+        return {
+          isModalOpen: false,
+        };
+      }
+
+      if (action.type === 'submit') {
+        return {
+          ...prevStore,
+          isLoading: true,
+        };
+      }
+
+      if (action.type === 'error') {
+        return {
+          ...prevStore,
+          isLoading: false,
+        };
+      }
+
+      return {
+        isModalOpen: true,
+        editingEvent: action.editingEvent,
+        isCreating: action.type === 'create',
+        isLoading: false,
+      };
+    },
+    {
+      isModalOpen: false,
+    },
+  );
 
   const openEditModal = (eventToEdit: LessonEvent) => {
-    setEditingEvent(eventToEdit);
-    setIsModalOpen(true);
+    dispatch({
+      type: 'edit',
+      editingEvent: eventToEdit,
+    });
+  };
+
+  const openCreateModal = (eventToEdit: LessonEvent) => {
+    dispatch({
+      type: 'create',
+      editingEvent: eventToEdit,
+    });
   };
 
   const closeEditModal = () => {
-    setIsModalOpen(false);
+    dispatch({
+      type: 'close',
+    });
+  };
+
+  const onCreateSubmit = async (event: LessonEvent) => {
+    const body: CreateLessonForInstructorRequestDTO = {
+      from: formatISO(event.start),
+      to: formatISO(event.end),
+      vehicleId: null,
+    };
+
+    dispatch({ type: 'submit' });
+
+    const response = await makeRequestWithAuth<
+      CreateLessonForInstructorResponseDTO,
+      CreateLessonForInstructorRequestDTO
+    >(`/api/lessons/instructor/${selectedInstructorId}`, 'POST', body);
+
+    if (!response.ok) {
+      dispatch({ type: 'error' });
+      showErrorSnackbar();
+      return;
+    }
+
+    await mutate();
+
+    dispatch({ type: 'close' });
+  };
+
+  const onSubmit = (event: LessonEvent) => {
+    onCreateSubmit(event);
   };
 
   return {
     openEditModal,
     closeEditModal,
-    editingEvent,
-    isModalOpen,
+    openCreateModal,
+    onSubmit,
+    state: store,
   };
 };
