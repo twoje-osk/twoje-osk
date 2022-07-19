@@ -6,6 +6,7 @@ export interface RequiredEvent {
 }
 
 export interface LessonEvent extends RequiredEvent {
+  id?: number;
   status: LessonStatus;
 }
 

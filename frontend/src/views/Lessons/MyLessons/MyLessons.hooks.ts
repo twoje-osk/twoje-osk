@@ -4,12 +4,16 @@ import {
   InstructorFindAllResponseDto,
   CreateLessonForInstructorRequestDTO,
   CreateLessonForInstructorResponseDTO,
+  UpdateLessonForInstructorRequestDTO,
+  UpdateLessonForInstructorResponseDTO,
 } from '@osk/shared';
 import { formatISO, endOfWeek, addDays, startOfWeek } from 'date-fns';
+import { FormikHelpers } from 'formik';
 import { Reducer, useMemo, useReducer, useState } from 'react';
 import useSWR from 'swr';
 import { useCommonSnackbars } from '../../../hooks/useCommonSnackbars/useCommonSnackbars';
 import { useMakeRequestWithAuth } from '../../../hooks/useMakeRequestWithAuth/useMakeRequestWithAuth';
+import { LessonFormData } from './EditLessonForm/EditLessonForm.schema';
 import { LessonEvent } from './LessonsCalendar/LessonsCalendar.types';
 import { getTodayWeek } from './MyLessons.utils';
 
@@ -196,7 +200,6 @@ export const useMyLessonsModal = ({
     const body: CreateLessonForInstructorRequestDTO = {
       from: formatISO(event.start),
       to: formatISO(event.end),
-      vehicleId: null,
     };
 
     dispatch({ type: 'submit' });
@@ -217,8 +220,64 @@ export const useMyLessonsModal = ({
     dispatch({ type: 'close' });
   };
 
-  const onSubmit = (event: LessonEvent) => {
-    onCreateSubmit(event);
+  const onEditSubmit = async (
+    event: LessonEvent,
+    helpers: FormikHelpers<LessonFormData>,
+  ) => {
+    if (!store.isModalOpen) {
+      return;
+    }
+
+    if (store.event.id === undefined) {
+      return;
+    }
+
+    const body: UpdateLessonForInstructorRequestDTO = {
+      from: formatISO(event.start),
+      to: formatISO(event.end),
+    };
+
+    dispatch({ type: 'submit' });
+
+    const response = await makeRequestWithAuth<
+      UpdateLessonForInstructorResponseDTO,
+      UpdateLessonForInstructorRequestDTO
+    >(`/api/lessons/${store.event.id}`, 'PATCH', body);
+
+    if (!response.ok && response.error.status === 409) {
+      dispatch({ type: 'error' });
+      helpers.setFieldError(
+        'date',
+        'Instruktor w podanym terminie jest zajęty',
+      );
+      return;
+    }
+
+    if (!response.ok) {
+      dispatch({ type: 'error' });
+      showErrorSnackbar();
+      return;
+    }
+
+    await mutate();
+
+    dispatch({ type: 'close' });
+  };
+
+  const onSubmit = (
+    event: LessonEvent,
+    helpers: FormikHelpers<LessonFormData>,
+  ) => {
+    if (!store.isModalOpen) {
+      return;
+    }
+
+    if (store.isCreating) {
+      onCreateSubmit(event);
+      return;
+    }
+
+    onEditSubmit(event, helpers);
   };
 
   return {

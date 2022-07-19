@@ -20,6 +20,22 @@ export class RequestError extends Error {
   }
 }
 
+async function getErrorMessageFromResponse(response: Response) {
+  try {
+    const errorData = await response.json();
+
+    if (
+      Object.hasOwn(errorData, 'message') &&
+      typeof errorData.message === 'string'
+    ) {
+      return errorData.message;
+    }
+    // eslint-disable-next-line no-empty
+  } catch {}
+
+  return response.statusText;
+}
+
 export const makeRequest = async <ResponseDto, RequestDto = never>(
   url: string,
   token: string | null,
@@ -36,7 +52,10 @@ export const makeRequest = async <ResponseDto, RequestDto = never>(
     if (!response.ok) {
       return {
         ok: false,
-        error: new RequestError(response.statusText, response.status),
+        error: new RequestError(
+          await getErrorMessageFromResponse(response),
+          response.status,
+        ),
       };
     }
 

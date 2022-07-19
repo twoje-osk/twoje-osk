@@ -31,7 +31,8 @@ export const getUserEvents = (
   lessonsData: GetMyLessonsResponseDTO | undefined,
 ): LessonEvent[] => {
   const lessons = lessonsData?.lessons ?? [];
-  return lessons.map(({ from, to, status }) => ({
+  return lessons.map(({ from, to, status, id }) => ({
+    id,
     start: new Date(from),
     end: new Date(to),
     status,

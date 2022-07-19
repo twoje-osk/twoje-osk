@@ -9,6 +9,7 @@ import {
   Box,
 } from '@mui/material';
 import { LessonStatus } from '@osk/shared/src/types/lesson.types';
+import { FormikHelpers } from 'formik';
 import { EditLessonForm } from '../EditLessonForm/EditLessonForm';
 import {
   LessonFormData,
@@ -23,7 +24,10 @@ interface EditLessonModalProps {
   isCreating: boolean;
   isLoading: boolean;
   onClose: () => void;
-  onSubmit: (values: LessonSubmitData) => void;
+  onSubmit: (
+    values: LessonSubmitData,
+    helpers: FormikHelpers<LessonFormData>,
+  ) => void;
 }
 
 const style = {

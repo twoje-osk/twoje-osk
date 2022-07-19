@@ -3,8 +3,8 @@ import { assertNever } from './asserNever';
 
 export const LONG_DATE = 'dd/MM/yyyy';
 export const INPUT_DATE = 'yyyy-MM-dd';
-export const INPUT_DATETIME = "yyyy-MM-dd'T'HH:ss";
-export const TIME = 'HH:ss';
+export const INPUT_DATETIME = "yyyy-MM-dd'T'HH:mm";
+export const TIME = 'HH:mm';
 
 const nullableFormat = (date: Date | null, dateFormat: string) =>
   date === null ? null : format(date, dateFormat);
