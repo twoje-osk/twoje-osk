@@ -103,7 +103,7 @@ type MyLessonsModalStore =
   | {
       isModalOpen: true;
       isCreating: boolean;
-      editingEvent: LessonEvent;
+      event: LessonEvent;
       isLoading: boolean;
     }
   | {
@@ -116,7 +116,7 @@ type MyLessonsModalAction =
     }
   | {
       type: 'edit' | 'create';
-      editingEvent: LessonEvent;
+      event: LessonEvent;
     }
   | {
       type: 'submit';
@@ -162,7 +162,7 @@ export const useMyLessonsModal = ({
 
       return {
         isModalOpen: true,
-        editingEvent: action.editingEvent,
+        event: action.event,
         isCreating: action.type === 'create',
         isLoading: false,
       };
@@ -175,14 +175,14 @@ export const useMyLessonsModal = ({
   const openEditModal = (eventToEdit: LessonEvent) => {
     dispatch({
       type: 'edit',
-      editingEvent: eventToEdit,
+      event: eventToEdit,
     });
   };
 
-  const openCreateModal = (eventToEdit: LessonEvent) => {
+  const openCreateModal = (eventToCreate: LessonEvent) => {
     dispatch({
       type: 'create',
-      editingEvent: eventToEdit,
+      event: eventToCreate,
     });
   };
 

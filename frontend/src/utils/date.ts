@@ -12,7 +12,9 @@ const nullableFormat = (date: Date | null, dateFormat: string) =>
 export const formatLong = (date: Date | null) =>
   nullableFormat(date, LONG_DATE);
 
-export function getFormatForType(type: 'date' | 'datetime-local' | 'time') {
+export function getFormatForInputType(
+  type: 'date' | 'datetime-local' | 'time',
+) {
   if (type === 'date') {
     return INPUT_DATE;
   }
@@ -32,7 +34,7 @@ export const formatInput = (
   date: Date | null,
   type: 'date' | 'datetime-local' | 'time',
 ) => {
-  return nullableFormat(date, getFormatForType(type));
+  return nullableFormat(date, getFormatForInputType(type));
 };
 
 export function formatApi(date: Date): string;

@@ -50,7 +50,7 @@ export function getTranslatedLessonStatus(status: LessonStatus) {
       return 'Zakończona';
     }
     case LessonStatus.Requested: {
-      return 'Niezaakceptowana';
+      return 'Oczekująca';
     }
     // no default
   }

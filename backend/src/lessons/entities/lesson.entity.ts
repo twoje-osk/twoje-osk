@@ -27,11 +27,11 @@ export class Lesson {
   })
   status: LessonStatus;
 
-  @ManyToOne(() => Instructor)
+  @ManyToOne(() => Instructor, { nullable: false })
   @JoinColumn()
   instructor: Instructor;
 
-  @ManyToOne(() => Trainee)
+  @ManyToOne(() => Trainee, { nullable: false })
   @JoinColumn()
   trainee: Trainee;
 

@@ -19,7 +19,7 @@ export class Availability {
   @Column()
   to: Date;
 
-  @ManyToOne(() => Instructor)
+  @ManyToOne(() => Instructor, { nullable: false })
   @JoinColumn()
   instructor: Instructor;
 

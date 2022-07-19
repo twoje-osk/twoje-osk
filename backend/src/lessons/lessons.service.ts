@@ -47,10 +47,16 @@ export class LessonsService {
   }
 
   async getLessonsByInstructor(instructorId: number, from: Date, to: Date) {
+    const organizationId =
+      this.organizationDomainService.getRequestOrganization().id;
+
     const availabilities = this.lessonRepository.find({
       where: {
         instructor: {
           id: instructorId,
+          user: {
+            organizationId,
+          },
         },
         from: MoreThanOrEqual(from),
         to: LessThanOrEqual(to),

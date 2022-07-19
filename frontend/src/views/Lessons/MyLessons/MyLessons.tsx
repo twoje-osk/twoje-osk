@@ -120,7 +120,7 @@ export const MyLessons = () => {
           instructorEvents={instructorEvents}
           userEvents={
             modalState.isModalOpen && modalState.isCreating
-              ? [...userEvents, modalState.editingEvent]
+              ? [...userEvents, modalState.event]
               : userEvents
           }
           createEvent={openCreateModal}
@@ -135,7 +135,7 @@ export const MyLessons = () => {
       </CalendarWrapper>
       <EditLessonModal
         isOpen={modalState.isModalOpen}
-        event={modalState.isModalOpen ? modalState.editingEvent : null}
+        event={modalState.isModalOpen ? modalState.event : null}
         onClose={closeEditModal}
         isCreating={modalState.isModalOpen ? modalState.isCreating : false}
         onSubmit={onSubmit}
