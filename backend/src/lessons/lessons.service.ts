@@ -225,4 +225,32 @@ export class LessonsService {
 
     return getSuccess(createdLessonId);
   }
+
+  async cancelTraineeLesson(
+    lessonId: number,
+  ): Promise<
+    Try<undefined, 'LESSON_DOES_NOT_EXIST' | 'LESSON_CANNOT_BE_UPDATED'>
+  > {
+    const { userId } = this.currentUserService.getRequestCurrentUser();
+    const lesson = await this.getById(lessonId, userId);
+
+    if (lesson === null) {
+      return getFailure('LESSON_DOES_NOT_EXIST');
+    }
+
+    if (lesson.status === LessonStatus.Finished) {
+      return getFailure('LESSON_CANNOT_BE_UPDATED');
+    }
+
+    await this.lessonRepository.update(
+      {
+        id: lessonId,
+      },
+      {
+        status: LessonStatus.Canceled,
+      },
+    );
+
+    return getSuccess(undefined);
+  }
 }

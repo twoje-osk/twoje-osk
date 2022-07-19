@@ -9,9 +9,11 @@ import {
   Patch,
   Post,
   Query,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
 import {
+  CancelLessonForInstructorResponseDTO,
   CreateLessonForInstructorRequestDTO,
   CreateLessonForInstructorResponseDTO,
   GetMyLessonsQueryDTO,
@@ -130,7 +132,7 @@ export class LessonsController {
     }
 
     if (error === 'LESSON_CANNOT_BE_UPDATED') {
-      throw new NotFoundException('This lesson cannot be updated');
+      throw new UnprocessableEntityException('This lesson cannot be updated');
     }
 
     if (error === 'TRAINEE_DOES_NOT_EXIST') {
@@ -149,6 +151,33 @@ export class LessonsController {
 
     if (error === 'INSTRUCTOR_OCCUPIED') {
       throw new ConflictException('Instructor is occupied at that time');
+    }
+
+    return assertNever(error);
+  }
+
+  @Patch(':lessonId/cancel')
+  @ApiResponse({
+    type: CancelLessonForInstructorResponseDTO,
+  })
+  @Roles(UserRole.Trainee)
+  async cancelLessonForInstructor(
+    @Param('lessonId', ParseIntPipe) lessonId: number,
+  ): Promise<CancelLessonForInstructorResponseDTO> {
+    const createTraineeLessonCall =
+      await this.lessonsService.cancelTraineeLesson(lessonId);
+
+    if (createTraineeLessonCall.ok === true) {
+      return {};
+    }
+
+    const { error } = createTraineeLessonCall;
+    if (error === 'LESSON_DOES_NOT_EXIST') {
+      throw new NotFoundException("Lesson with provided id doesn't exist");
+    }
+
+    if (error === 'LESSON_CANNOT_BE_UPDATED') {
+      throw new UnprocessableEntityException('This lesson cannot be updated');
     }
 
     return assertNever(error);

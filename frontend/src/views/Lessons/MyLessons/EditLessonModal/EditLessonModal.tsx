@@ -23,11 +23,13 @@ interface EditLessonModalProps {
   isOpen: boolean;
   isCreating: boolean;
   isLoading: boolean;
+  isCanceling: boolean;
   onClose: () => void;
   onSubmit: (
     values: LessonSubmitData,
     helpers: FormikHelpers<LessonFormData>,
   ) => void;
+  onLessonCancel: () => void;
 }
 
 const style = {
@@ -47,6 +49,8 @@ export const EditLessonModal = ({
   onClose,
   onSubmit,
   isLoading,
+  isCanceling,
+  onLessonCancel,
 }: EditLessonModalProps) => {
   const editingEnabled =
     event?.status === LessonStatus.Requested ||
@@ -75,7 +79,7 @@ export const EditLessonModal = ({
                   variant="contained"
                   startIcon={<Icon>save</Icon>}
                   type="submit"
-                  disabled={!editingEnabled}
+                  disabled={!editingEnabled || isCanceling}
                   loading={isLoading}
                 >
                   Zapisz
@@ -83,20 +87,22 @@ export const EditLessonModal = ({
                 <Button
                   variant="outlined"
                   onClick={onClose}
-                  disabled={isLoading}
+                  disabled={isLoading || isCanceling}
                 >
                   Anuluj
                 </Button>
               </Stack>
               {!isCreating && (
-                <Button
+                <LoadingButton
                   variant="contained"
-                  color="error"
                   startIcon={<Icon>delete</Icon>}
-                  disabled={!editingEnabled || isLoading}
+                  disabled={!editingEnabled || isLoading || isCanceling}
+                  onClick={onLessonCancel}
+                  loading={isCanceling}
+                  color="error"
                 >
                   Anuluj lekcję
-                </Button>
+                </LoadingButton>
               )}
             </Stack>
           </EditLessonForm>

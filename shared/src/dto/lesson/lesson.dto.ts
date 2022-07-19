@@ -106,3 +106,5 @@ export class UpdateLessonForInstructorRequestDTO {
 }
 
 export class UpdateLessonForInstructorResponseDTO {}
+
+export class CancelLessonForInstructorResponseDTO {}

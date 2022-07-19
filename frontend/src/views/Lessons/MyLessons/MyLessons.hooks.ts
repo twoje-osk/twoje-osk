@@ -6,6 +6,7 @@ import {
   CreateLessonForInstructorResponseDTO,
   UpdateLessonForInstructorRequestDTO,
   UpdateLessonForInstructorResponseDTO,
+  CancelLessonForInstructorResponseDTO,
 } from '@osk/shared';
 import { formatISO, endOfWeek, addDays, startOfWeek } from 'date-fns';
 import { FormikHelpers } from 'formik';
@@ -109,6 +110,7 @@ type MyLessonsModalStore =
       isCreating: boolean;
       event: LessonEvent;
       isLoading: boolean;
+      isCanceling: boolean;
     }
   | {
       isModalOpen: false;
@@ -121,6 +123,9 @@ type MyLessonsModalAction =
   | {
       type: 'edit' | 'create';
       event: LessonEvent;
+    }
+  | {
+      type: 'cancelStart';
     }
   | {
       type: 'submit';
@@ -139,7 +144,7 @@ export const useMyLessonsModal = ({
   selectedInstructorId,
 }: MyLessonsModalArguments) => {
   const makeRequestWithAuth = useMakeRequestWithAuth();
-  const { showErrorSnackbar } = useCommonSnackbars();
+  const { showErrorSnackbar, showSuccessSnackbar } = useCommonSnackbars();
   const [store, dispatch] = useReducer<
     Reducer<MyLessonsModalStore, MyLessonsModalAction>
   >(
@@ -154,12 +159,22 @@ export const useMyLessonsModal = ({
         return {
           ...prevStore,
           isLoading: true,
+          isCanceling: false,
+        };
+      }
+
+      if (action.type === 'cancelStart') {
+        return {
+          ...prevStore,
+          isLoading: false,
+          isCanceling: true,
         };
       }
 
       if (action.type === 'error') {
         return {
           ...prevStore,
+          isCanceling: false,
           isLoading: false,
         };
       }
@@ -169,6 +184,7 @@ export const useMyLessonsModal = ({
         event: action.event,
         isCreating: action.type === 'create',
         isLoading: false,
+        isCanceling: false,
       };
     },
     {
@@ -216,6 +232,7 @@ export const useMyLessonsModal = ({
     }
 
     await mutate();
+    showSuccessSnackbar('Lekcja została dodana');
 
     dispatch({ type: 'close' });
   };
@@ -261,6 +278,7 @@ export const useMyLessonsModal = ({
 
     await mutate();
 
+    showSuccessSnackbar('Lekcja została zmodyfikowana');
     dispatch({ type: 'close' });
   };
 
@@ -280,10 +298,40 @@ export const useMyLessonsModal = ({
     onEditSubmit(event, helpers);
   };
 
+  const onLessonCancel = async () => {
+    if (!store.isModalOpen) {
+      return;
+    }
+
+    if (store.event.id === undefined) {
+      return;
+    }
+
+    dispatch({ type: 'cancelStart' });
+
+    const response =
+      await makeRequestWithAuth<CancelLessonForInstructorResponseDTO>(
+        `/api/lessons/${store.event.id}/cancel`,
+        'PATCH',
+      );
+
+    if (!response.ok) {
+      dispatch({ type: 'error' });
+      showErrorSnackbar();
+      return;
+    }
+
+    await mutate();
+    showSuccessSnackbar('Lekcja została anulowana');
+
+    dispatch({ type: 'close' });
+  };
+
   return {
     openEditModal,
     closeEditModal,
     openCreateModal,
+    onLessonCancel,
     onSubmit,
     state: store,
   };

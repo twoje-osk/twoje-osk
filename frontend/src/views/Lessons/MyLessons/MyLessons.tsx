@@ -56,6 +56,7 @@ export const MyLessons = () => {
     state: modalState,
     openCreateModal,
     onSubmit,
+    onLessonCancel,
   } = useMyLessonsModal({
     mutate,
     selectedInstructorId,
@@ -140,6 +141,8 @@ export const MyLessons = () => {
         isCreating={modalState.isModalOpen ? modalState.isCreating : false}
         onSubmit={onSubmit}
         isLoading={modalState.isModalOpen ? modalState.isLoading : false}
+        onLessonCancel={onLessonCancel}
+        isCanceling={modalState.isModalOpen ? modalState.isCanceling : false}
       />
     </FullPageRelativeWrapper>
   );
