@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { OrganizationDomainService } from 'organization-domain/organization-domain.service';
 import { Repository, Not } from 'typeorm';
+import { Try, getFailure, getSuccess } from 'types/Try';
 import { Vehicle } from './entities/vehicle.entity';
 
 interface VehicleArguments {
@@ -69,7 +70,7 @@ export class VehicleService {
     photo: string | null,
     additionalDetails: string | null,
     notes: string | null,
-  ) {
+  ): Promise<Try<Vehicle, 'VEHICLE_SAME_LICENSE_PLATE'>> {
     const { id: organizationId } =
       this.organizationDomainService.getRequestOrganization();
 
@@ -80,10 +81,10 @@ export class VehicleService {
       });
 
     if (existsVehicleWithSameLicensePlate > 0) {
-      throw new Error('VEHICLE_SAME_LICENSE_PLATE');
+      return getFailure('VEHICLE_SAME_LICENSE_PLATE');
     }
 
-    const newVehicle = this.vehiclesRepository.create({
+    const vehicleToCreate = this.vehiclesRepository.create({
       name,
       licensePlate,
       vin,
@@ -94,12 +95,22 @@ export class VehicleService {
       organization: { id: organizationId },
     });
 
-    await this.vehiclesRepository.save(newVehicle);
+    await this.vehiclesRepository.save(vehicleToCreate);
 
-    return newVehicle;
+    return getSuccess(vehicleToCreate);
   }
 
-  async update(vehicle: Partial<VehicleArguments>, vehicleId: number) {
+  async update(
+    vehicle: Partial<VehicleArguments>,
+    vehicleId: number,
+  ): Promise<
+    Try<
+      undefined,
+      | 'VEHICLE_NOT_FOUND'
+      | 'VEHICLE_SAME_LICENSE_PLATE'
+      | 'VIN_LENGTH_NOT_CORRECT'
+    >
+  > {
     const { id: organizationId } =
       this.organizationDomainService.getRequestOrganization();
 
@@ -111,7 +122,7 @@ export class VehicleService {
     });
 
     if (vehicleToEdit === null) {
-      throw new Error('VEHICLE_NOT_FOUND');
+      return getFailure('VEHICLE_NOT_FOUND');
     }
 
     const existsVehicleWithSameLicensePlate =
@@ -122,28 +133,41 @@ export class VehicleService {
       });
 
     if (existsVehicleWithSameLicensePlate > 0) {
-      throw new Error('VEHICLE_SAME_LICENSE_PLATE');
+      return getFailure('VEHICLE_SAME_LICENSE_PLATE');
     }
 
-    const updatedVehicle = await this.vehiclesRepository.update(
+    await this.vehiclesRepository.update(
       {
         id: vehicleId,
         organization: { id: organizationId },
       },
       vehicle,
     );
-    return updatedVehicle;
+    return getSuccess(undefined);
   }
 
-  async remove(vehicleId: number) {
+  async remove(
+    vehicleId: number,
+  ): Promise<Try<undefined, 'VEHICLE_NOT_FOUND'>> {
     const { id: organizationId } =
       this.organizationDomainService.getRequestOrganization();
 
-    const removedVehicle = this.vehiclesRepository.delete({
+    const vehicleToEdit = await this.vehiclesRepository.findOne({
+      where: {
+        id: vehicleId,
+        organization: { id: organizationId },
+      },
+    });
+
+    if (vehicleToEdit === null) {
+      return getFailure('VEHICLE_NOT_FOUND');
+    }
+
+    this.vehiclesRepository.delete({
       id: vehicleId,
       organization: { id: organizationId },
     });
 
-    return removedVehicle;
+    return getSuccess(undefined);
   }
 }
