@@ -9,6 +9,7 @@ import {
   TraineeArguments,
   TraineeArgumentsUpdate,
 } from 'trainees/trainees.types';
+import { getFailure, getSuccess, Try } from 'types/Try';
 import { Trainee } from './entities/trainee.entity';
 
 @Injectable()
@@ -77,7 +78,9 @@ export class TraineesService {
   }
 
   @Transactional()
-  async create(trainee: TraineeArguments) {
+  async create(
+    trainee: TraineeArguments,
+  ): Promise<Try<Trainee, 'TRAINEE_OR_USER_FOUND'>> {
     const { id: organizationId } =
       this.organizationDomainService.getRequestOrganization();
 
@@ -100,7 +103,7 @@ export class TraineesService {
       });
 
     if (doesUserOrTraineeExistWithEmailOrPesel !== null) {
-      throw new Error('TRAINEE_OR_USER_FOUND');
+      return getFailure('TRAINEE_OR_USER_FOUND');
     }
 
     const createdUser = this.usersService.createUserWithoutSave(trainee.user);
@@ -116,11 +119,14 @@ export class TraineesService {
     await this.usersRepository.save(createdUser);
 
     await this.traineesRepository.save(createdTrainee);
-    return createdTrainee;
+    return getSuccess(createdTrainee);
   }
 
   @Transactional()
-  async update(trainee: TraineeArgumentsUpdate, traineeId: number) {
+  async update(
+    trainee: TraineeArgumentsUpdate,
+    traineeId: number,
+  ): Promise<Try<undefined, 'TRAINEE_NOT_FOUND'>> {
     const { id: organizationId } =
       this.organizationDomainService.getRequestOrganization();
 
@@ -132,7 +138,7 @@ export class TraineesService {
     });
 
     if (traineeToUpdate === null) {
-      throw new Error('TRAINEE_NOT_FOUND');
+      return getFailure('TRAINEE_NOT_FOUND');
     }
 
     const updatedTrainee = await this.traineesRepository.save(
@@ -143,11 +149,13 @@ export class TraineesService {
       await this.usersRepository.save(updatedTrainee.user);
     }
 
-    return {};
+    return getSuccess(undefined);
   }
 
   @Transactional()
-  async disable(traineeId: number) {
+  async disable(
+    traineeId: number,
+  ): Promise<Try<undefined, 'TRAINEE_NOT_FOUND' | 'TRAINEE_ALREADY_DISABLED'>> {
     const { id: organizationId } =
       this.organizationDomainService.getRequestOrganization();
 
@@ -162,11 +170,11 @@ export class TraineesService {
     });
 
     if (traineeToDisable === null) {
-      throw new Error('TRAINEE_NOT_FOUND');
+      return getFailure('TRAINEE_NOT_FOUND');
     }
 
     if (traineeToDisable.user.isActive === false) {
-      throw new Error('TRAINEE_ALREADY_DISABLED');
+      return getFailure('TRAINEE_ALREADY_DISABLED');
     }
 
     const userToDisable = {
@@ -176,6 +184,6 @@ export class TraineesService {
 
     await this.usersRepository.save(userToDisable);
 
-    return {};
+    return getSuccess(undefined);
   }
 }

@@ -21,6 +21,7 @@ import {
   TraineeDisableResponseDto,
 } from '@osk/shared';
 import { Roles } from 'common/guards/roles.decorator';
+import { assertNever } from 'utils/assertNever';
 import { TraineesService } from './trainees.service';
 
 @Roles(UserRole.Admin, UserRole.Instructor)
@@ -60,16 +61,20 @@ export class TraineesController {
   async create(
     @Body() { trainee }: TraineeAddNewRequestDto,
   ): Promise<TraineeAddNewResponseDto> {
-    try {
-      return { trainee: await this.traineesService.create(trainee) };
-    } catch (error) {
-      if (error instanceof Error && error.message === 'TRAINEE_OR_USER_FOUND') {
-        throw new ConflictException(
-          'There is already a trainee which has the same pesel or an user with the same email',
-        );
-      }
-      throw error;
+    const createTraineeCall = await this.traineesService.create(trainee);
+
+    if (createTraineeCall.ok) {
+      return { trainee: createTraineeCall.data };
     }
+
+    const { error } = createTraineeCall;
+
+    if (error === 'TRAINEE_OR_USER_FOUND') {
+      throw new ConflictException(
+        'There is already a trainee which has the same pesel or an user with the same email',
+      );
+    }
+    return assertNever(error);
   }
 
   @ApiResponse({
@@ -81,15 +86,18 @@ export class TraineesController {
     @Body() { trainee }: TraineeUpdateRequestDto,
     @Param('id', ParseIntPipe) id: number,
   ): Promise<TraineeUpdateResponseDto> {
-    try {
-      await this.traineesService.update(trainee, id);
-    } catch (error) {
-      if (error instanceof Error && error.message === 'TRAINEE_NOT_FOUND') {
-        throw new NotFoundException('Trainee with this id does not exist.');
-      }
-      throw error;
+    const updateTraineeCall = await this.traineesService.update(trainee, id);
+
+    if (updateTraineeCall.ok) {
+      return { trainee: updateTraineeCall.data };
     }
-    return {};
+
+    const { error } = updateTraineeCall;
+
+    if (error === 'TRAINEE_NOT_FOUND') {
+      throw new NotFoundException('Trainee with this id does not exist.');
+    }
+    return assertNever(error);
   }
 
   @ApiResponse({
