@@ -1,16 +1,17 @@
-import { Typography } from '@mui/material';
-import { Flex } from 'reflexbox';
+import { UserRole } from '@osk/shared/src/types/user.types';
+import { Navigate } from 'react-router-dom';
+import { useAuth } from '../../hooks/useAuth/useAuth';
 
 export const HomePage = () => {
-  return (
-    <Flex
-      width="100%"
-      height="100%"
-      justifyContent="center"
-      alignItems="center"
-      flexDirection="column"
-    >
-      <Typography variant="h4">Witaj na stronie domowej!</Typography>
-    </Flex>
-  );
+  const { role } = useAuth();
+
+  if (role === UserRole.Admin || role === UserRole.Instructor) {
+    return <Navigate to="/kursanci" replace />;
+  }
+
+  if (role === UserRole.Trainee) {
+    return <Navigate to="/moje-jazdy" replace />;
+  }
+
+  return <Navigate to="/login" replace />;
 };
