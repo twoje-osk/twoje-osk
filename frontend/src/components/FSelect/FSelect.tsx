@@ -7,8 +7,8 @@ import {
 } from '@mui/material';
 import { useField } from 'formik';
 
-type FSelectProps = Omit<
-  SelectProps,
+type FSelectProps<T> = Omit<
+  SelectProps<T>,
   'onChange' | 'onBlur' | 'value' | 'labelId'
 > & {
   id: string;
@@ -16,7 +16,8 @@ type FSelectProps = Omit<
   helperText?: string;
 };
 
-export const FSelect = (props: FSelectProps) => {
+// eslint-disable-next-line react/function-component-definition
+export function FSelect<T>(props: FSelectProps<T>) {
   const { name, type, helperText: externalHelperText, label, id } = props;
 
   const [field, meta] = useField({
@@ -31,10 +32,10 @@ export const FSelect = (props: FSelectProps) => {
   return (
     <FormControl>
       {label && <InputLabel id={labelId}>{label}</InputLabel>}
-      <Select {...props} {...field} error={hasError} labelId={labelId} />
+      <Select<T> {...props} {...field} error={hasError} labelId={labelId} />
       {helperText && (
         <FormHelperText error={hasError}>{helperText}</FormHelperText>
       )}
     </FormControl>
   );
-};
+}
