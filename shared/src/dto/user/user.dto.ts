@@ -1,6 +1,6 @@
 import { ApiProperty, PartialType, OmitType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsBoolean, IsNotEmpty, IsString } from 'class-validator';
+import { IsBoolean, IsEmail, IsNotEmpty, IsString } from 'class-validator';
 import { DtoOrganization } from '../organization/organization.dto';
 import { UserRole } from '../../types/user.types';
 
@@ -11,6 +11,7 @@ export class DtoUser {
 
   @ApiProperty()
   @IsNotEmpty()
+  @IsEmail()
   email: string;
 
   @ApiProperty()
@@ -49,7 +50,7 @@ export class DtoUser {
 export class DtoCreateUser {
   @ApiProperty()
   @IsNotEmpty()
-  @IsString()
+  @IsEmail()
   email: string;
 
   @ApiProperty()
