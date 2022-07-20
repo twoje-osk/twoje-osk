@@ -8,6 +8,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Request,
 } from '@nestjs/common';
 import { ApiBody, ApiResponse } from '@nestjs/swagger';
 import {
@@ -19,8 +20,10 @@ import {
   InstructorCreateResponseDto,
   UserRole,
 } from '@osk/shared';
+import { AuthRequest } from 'auth/auth.types';
 import { assertNever } from 'utils/assertNever';
 import { Roles } from 'common/guards/roles.decorator';
+
 import { InstructorsService } from './instructors.service';
 
 @Controller('instructors')
@@ -32,8 +35,13 @@ export class InstructorsController {
     type: InstructorFindAllResponseDto,
   })
   @Get()
-  async findAll(): Promise<InstructorFindAllResponseDto> {
-    const instructors = await this.instructorsService.findAll();
+  async findAll(
+    @Request() request: AuthRequest,
+  ): Promise<InstructorFindAllResponseDto> {
+    const { role } = request.user;
+    const instructors = await this.instructorsService.findAll(
+      role === UserRole.Trainee ? true : undefined,
+    );
 
     return { instructors };
   }

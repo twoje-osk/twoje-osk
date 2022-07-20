@@ -2,12 +2,7 @@ import { ApiProperty, PartialType, OmitType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsBoolean, IsNotEmpty, IsString } from 'class-validator';
 import { DtoOrganization } from '../organization/organization.dto';
-
-export enum UserRole {
-  Trainee = 'trainee',
-  Instructor = 'instructor',
-  Admin = 'admin',
-}
+import { UserRole } from '../../types/user.types';
 
 export class DtoUser {
   @ApiProperty()
@@ -41,6 +36,7 @@ export class DtoUser {
   @ApiProperty({
     type: 'string',
   })
+  @IsNotEmpty()
   createdAt: ApiDate;
 
   @ApiProperty()

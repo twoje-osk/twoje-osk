@@ -33,6 +33,7 @@
     "@osk/eslint-plugin": "1.0.0",
     "@osk/shared": "1.0.0",
     "@types/bcrypt": "^5.0.0",
+    "@types/react-big-calendar": "^0.38.1",
     "bcrypt": "^5.0.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.13.2",

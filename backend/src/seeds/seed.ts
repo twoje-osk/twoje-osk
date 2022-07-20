@@ -5,6 +5,8 @@ import { seedOrganizations } from './seed.organization';
 import { seedTrainees } from './seed.trainees';
 import { seedVehicles } from './seed.vehicles';
 import { seedInstructors } from './seed.instructors';
+import { seedAvailabilities } from './seed.availabilities';
+import { seedLessons } from './seed.lessons';
 import { Factory } from './seed.utils';
 import { seedAvailabilities } from './seed.availabilities';
 import { seedLessons } from './seed.lessons';

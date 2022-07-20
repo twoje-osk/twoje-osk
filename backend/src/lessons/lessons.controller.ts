@@ -6,15 +6,20 @@ import {
   NotFoundException,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
   Query,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
 import {
+  CancelLessonForInstructorResponseDTO,
   CreateLessonForInstructorRequestDTO,
   CreateLessonForInstructorResponseDTO,
   GetMyLessonsQueryDTO,
   GetMyLessonsResponseDTO,
+  UpdateLessonForInstructorRequestDTO,
+  UpdateLessonForInstructorResponseDTO,
   UserRole,
 } from '@osk/shared';
 import { Roles } from 'common/guards/roles.decorator';
@@ -69,7 +74,6 @@ export class LessonsController {
       await this.lessonsService.createTraineeLesson(
         instructorId,
         currentUser.userId,
-        body.vehicleId,
         body.from,
         body.to,
       );
@@ -89,8 +93,54 @@ export class LessonsController {
       throw new NotFoundException("Instructor with provided id doesn't exist");
     }
 
-    if (error === 'VEHICLE_DOES_NOT_EXIST') {
-      throw new NotFoundException("Vehicle with provided id doesn't exist");
+    if (error === 'COLLIDING_LESSON') {
+      throw new ConflictException(
+        'Lesson for that time has already been scheduled',
+      );
+    }
+
+    if (error === 'INSTRUCTOR_OCCUPIED') {
+      throw new ConflictException('Instructor is occupied at that time');
+    }
+
+    return assertNever(error);
+  }
+
+  @Patch(':lessonId')
+  @ApiResponse({
+    type: UpdateLessonForInstructorResponseDTO,
+  })
+  @Roles(UserRole.Trainee)
+  async updateLessonForInstructor(
+    @Param('lessonId', ParseIntPipe) lessonId: number,
+    @Body() body: UpdateLessonForInstructorRequestDTO,
+  ): Promise<UpdateLessonForInstructorResponseDTO> {
+    const createTraineeLessonCall =
+      await this.lessonsService.updateTraineeLesson(
+        lessonId,
+        body.from,
+        body.to,
+      );
+
+    if (createTraineeLessonCall.ok === true) {
+      return {};
+    }
+
+    const { error } = createTraineeLessonCall;
+    if (error === 'LESSON_DOES_NOT_EXIST') {
+      throw new NotFoundException("Lesson with provided id doesn't exist");
+    }
+
+    if (error === 'LESSON_CANNOT_BE_UPDATED') {
+      throw new UnprocessableEntityException('This lesson cannot be updated');
+    }
+
+    if (error === 'TRAINEE_DOES_NOT_EXIST') {
+      throw new NotFoundException("Trainee with provided id doesn't exist");
+    }
+
+    if (error === 'INSTRUCTOR_DOES_NOT_EXIST') {
+      throw new NotFoundException("Instructor with provided id doesn't exist");
     }
 
     if (error === 'COLLIDING_LESSON') {
@@ -101,6 +151,33 @@ export class LessonsController {
 
     if (error === 'INSTRUCTOR_OCCUPIED') {
       throw new ConflictException('Instructor is occupied at that time');
+    }
+
+    return assertNever(error);
+  }
+
+  @Patch(':lessonId/cancel')
+  @ApiResponse({
+    type: CancelLessonForInstructorResponseDTO,
+  })
+  @Roles(UserRole.Trainee)
+  async cancelLessonForInstructor(
+    @Param('lessonId', ParseIntPipe) lessonId: number,
+  ): Promise<CancelLessonForInstructorResponseDTO> {
+    const createTraineeLessonCall =
+      await this.lessonsService.cancelTraineeLesson(lessonId);
+
+    if (createTraineeLessonCall.ok === true) {
+      return {};
+    }
+
+    const { error } = createTraineeLessonCall;
+    if (error === 'LESSON_DOES_NOT_EXIST') {
+      throw new NotFoundException("Lesson with provided id doesn't exist");
+    }
+
+    if (error === 'LESSON_CANNOT_BE_UPDATED') {
+      throw new UnprocessableEntityException('This lesson cannot be updated');
     }
 
     return assertNever(error);

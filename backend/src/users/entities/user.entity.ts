@@ -35,13 +35,13 @@ export class User {
   @Column({ default: true })
   isActive: boolean;
 
-  @ManyToOne(() => Organization)
+  @ManyToOne(() => Organization, { nullable: false })
   @JoinColumn({ name: 'organizationId' })
   organization: Organization;
 
   @Exclude()
-  @Column({ nullable: true })
-  organizationId: number | null;
+  @Column({ nullable: false })
+  organizationId: number;
 
   @Column()
   createdAt: Date;
@@ -52,7 +52,7 @@ export class User {
   @OneToOne<Trainee>('Trainee', (trainee) => trainee.user, {
     cascade: true,
   })
-  @JoinColumn()
+  @JoinColumn({ name: 'traineeId' })
   trainee: Trainee | null;
 
   @Exclude()

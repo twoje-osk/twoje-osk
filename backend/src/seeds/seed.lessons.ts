@@ -1,3 +1,4 @@
+import { setHours, startOfHour } from 'date-fns';
 import { Lesson } from '../lessons/entities/lesson.entity';
 import { instructorsFactory } from './seed.instructors';
 import { traineesFactory } from './seed.trainees';
@@ -16,24 +17,26 @@ class LessonsFactory extends Factory<Lesson> {
   }
 }
 export const lessonsFactory = new LessonsFactory();
+
+const today = startOfHour(new Date());
 export const seedLessons = () => [
   lessonsFactory.generateFromData({
-    from: new Date('2022-07-05T10:00:00.00Z'),
-    to: new Date('2022-07-05T11:00:00.00Z'),
+    from: setHours(today, 10),
+    to: setHours(today, 11),
     instructor: instructorsFactory.getAll()[0],
     trainee: traineesFactory.getAll()[0],
     vehicle: vehiclesFactory.getAll()[0],
   }),
   lessonsFactory.generateFromData({
-    from: new Date('2022-07-05T13:00:00.00Z'),
-    to: new Date('2022-07-05T14:00:00.00Z'),
+    from: setHours(today, 13),
+    to: setHours(today, 14),
     instructor: instructorsFactory.getAll()[0],
     trainee: traineesFactory.getAll()[0],
     vehicle: vehiclesFactory.getAll()[0],
   }),
   lessonsFactory.generateFromData({
-    from: new Date('2022-07-05T17:00:00.00Z'),
-    to: new Date('2022-07-05T18:00:00.00Z'),
+    from: setHours(today, 17),
+    to: setHours(today, 18),
     instructor: instructorsFactory.getAll()[0],
     trainee: traineesFactory.getAll()[0],
     vehicle: vehiclesFactory.getAll()[0],

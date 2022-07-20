@@ -1,4 +1,4 @@
-import { UserRole } from 'dto/user/user.dto';
+import { UserRole } from '../types/user.types';
 
 export interface JwtPayload {
   sub: number;

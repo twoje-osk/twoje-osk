@@ -13,6 +13,7 @@ import { ApiBody, ApiResponse } from '@nestjs/swagger';
 import {
   TraineeFindAllResponseDto,
   TraineeFindOneResponseDto,
+  UserRole,
   TraineeUpdateResponseDto,
   TraineeUpdateRequestDto,
   TraineeAddNewResponseDto,

@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsDate, IsNotEmpty, IsOptional } from 'class-validator';
+import { IsDate, IsOptional } from 'class-validator';
 
 export class CreateAvailabilityDto {}
 
@@ -11,14 +11,12 @@ export class AvailabilityBatch {
     type: 'string',
     format: 'YYYY-mm-DDTHH:mm:ss.SZ',
   })
-  @IsNotEmpty()
   from: ApiDate;
 
   @ApiProperty({
     type: 'string',
     format: 'YYYY-mm-DDTHH:mm:ss.SZ',
   })
-  @IsNotEmpty()
   to: ApiDate;
 }
 
