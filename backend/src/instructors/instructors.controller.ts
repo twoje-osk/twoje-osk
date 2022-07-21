@@ -72,7 +72,7 @@ export class InstructorsController {
   ): Promise<InstructorCreateResponseDto> {
     const createResult = await this.instructorsService.create(instructor);
     if (createResult.ok === true) {
-      return { instructor: createResult.data };
+      return { id: createResult.data };
     }
     if (createResult.error === 'EMAIL_ALREADY_TAKEN') {
       throw new ConflictException('This email address has been already taken');
@@ -90,7 +90,7 @@ export class InstructorsController {
   ): Promise<InstructorUpdateResponseDto> {
     const updateResult = await this.instructorsService.update(instructor, id);
     if (updateResult.ok === true) {
-      return { instructor: updateResult.data };
+      return { id: updateResult.data };
     }
     if (updateResult.error === 'EMAIL_ALREADY_TAKEN') {
       throw new ConflictException('This email address has been already taken');

@@ -19,7 +19,6 @@ import {
   TraineeAddNewResponseDto,
   TraineeAddNewRequestDto,
   TraineeDisableResponseDto,
-  UserRole,
 } from '@osk/shared';
 import { Roles } from 'common/guards/roles.decorator';
 import { TraineesService } from './trainees.service';

@@ -8,6 +8,7 @@ import {
   SelectChangeEvent,
   SelectProps,
 } from '@mui/material';
+import { PicklistOption } from '@osk/shared/src/types/picklist.types';
 import { useField } from 'formik';
 import { useState } from 'react';
 
@@ -16,8 +17,8 @@ type FPicklistFieldProps = Omit<
   'value' | 'onChange' | 'renderValue'
 > & {
   name: string;
-  options: string[];
-  predefinedValues: string[];
+  options: PicklistOption[];
+  predefinedValues: number[];
 };
 
 export const FPicklistField = (props: FPicklistFieldProps) => {
@@ -27,7 +28,7 @@ export const FPicklistField = (props: FPicklistFieldProps) => {
     name,
   });
 
-  const [selectedCategories, setSelectedCategories] = useState<string[]>(
+  const [selectedCategories, setSelectedCategories] = useState<number[]>(
     predefinedValues ?? [],
   );
 
@@ -56,15 +57,18 @@ export const FPicklistField = (props: FPicklistFieldProps) => {
         defaultValue={undefined}
         renderValue={(selected) => (
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-            {selected.map((option: string) => (
-              <Chip key={option} label={option} />
+            {selected.map((value: number) => (
+              <Chip
+                key={value}
+                label={options.find((el) => el.value === value)?.label}
+              />
             ))}
           </Box>
         )}
       >
         {options.map((option) => (
-          <MenuItem key={option} value={option}>
-            {option}
+          <MenuItem key={option.value} value={option.value}>
+            {option.label}
           </MenuItem>
         ))}
       </Select>

@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
-import { DriversLicenseCategoryUpdateRequestDto } from 'dto/driversLicenseCategory/driversLicenseCategory.dto';
+import { DtoDriversLicenseCategory } from '../driversLicenseCategory/driversLicenseCategory.dto';
 import { DtoCreateUser, DtoUpdateUser, DtoUser } from '../user/user.dto';
 
 export class DtoInstructor {
@@ -22,10 +22,57 @@ export class DtoInstructor {
 
   @ApiProperty()
   @IsNotEmpty()
-  instructorsQualifications: DriversLicenseCategoryUpdateRequestDto[];
+  instructorsQualifications: number[];
 
   @ApiProperty({ nullable: true })
   photo: string | null | undefined;
+}
+
+export class DtoLessonInstructor {
+  @ApiProperty()
+  @IsNotEmpty()
+  id: number;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  user: DtoUser;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  registrationNumber: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  licenseNumber: string;
+
+  @ApiProperty({
+    isArray: true,
+    type: DtoDriversLicenseCategory,
+  })
+  instructorsQualifications: DtoDriversLicenseCategory[];
+
+  @ApiProperty({ nullable: true })
+  photo: string | null | undefined;
+}
+
+export class DtoFindOneInstructor {
+  @ApiProperty()
+  user: DtoCreateUser;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  registrationNumber: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  licenseNumber: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  instructorsQualifications: DtoDriversLicenseCategory[];
+
+  @ApiProperty({ nullable: true })
+  photo: string | null;
 }
 
 export class DtoCreateInstructor {
@@ -42,7 +89,7 @@ export class DtoCreateInstructor {
 
   @ApiProperty()
   @IsNotEmpty()
-  instructorsQualifications: DriversLicenseCategoryUpdateRequestDto[];
+  instructorsQualifications: number[];
 
   @ApiProperty({ nullable: true })
   photo: string | null;
@@ -62,7 +109,7 @@ export class DtoUpdateInstructor {
 
   @ApiProperty()
   @IsNotEmpty()
-  instructorsQualifications: DriversLicenseCategoryUpdateRequestDto[];
+  instructorsQualifications: number[];
 
   @ApiProperty({ nullable: true })
   photo: string | null | undefined;
@@ -71,14 +118,14 @@ export class DtoUpdateInstructor {
 export class InstructorFindAllResponseDto {
   @ApiProperty({
     isArray: true,
-    type: DtoInstructor,
+    type: DtoFindOneInstructor,
   })
-  instructors: DtoInstructor[];
+  instructors: DtoFindOneInstructor[];
 }
 
 export class InstructorFindOneResponseDto {
   @ApiProperty()
-  instructor: DtoInstructor;
+  instructor: DtoFindOneInstructor;
 }
 
 export class InstructorUpdateRequestDto {
@@ -89,7 +136,7 @@ export class InstructorUpdateRequestDto {
 
 export class InstructorUpdateResponseDto {
   @ApiProperty()
-  instructor: DtoInstructor;
+  id: number;
 }
 
 export class InstructorCreateRequestDto {
@@ -100,5 +147,5 @@ export class InstructorCreateRequestDto {
 
 export class InstructorCreateResponseDto {
   @ApiProperty()
-  instructor: DtoInstructor;
+  id: number;
 }

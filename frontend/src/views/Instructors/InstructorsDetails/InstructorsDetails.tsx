@@ -50,18 +50,16 @@ export const InstructorsDetails = () => {
 
   const { instructor } = data;
   const deactivateModalSubtitle = `Czy na pewno chcesz dezaktywować tego użytkownika? \n ${instructor.user.firstName} ${instructor.user.lastName} straci dostęp do wszystkich danych i funkcji systemu`;
-  const instructorsQualifications = instructor.instructorsQualifications.map(
-    (category) => {
-      return category.name;
-    },
-  );
+
   const initialValues: InstructorsFormData = {
     firstName: instructor.user.firstName,
     lastName: instructor.user.lastName,
     email: instructor.user.email,
     licenseNumber: instructor.licenseNumber,
     registrationNumber: instructor.registrationNumber,
-    instructorsQualifications,
+    instructorsQualifications: instructor.instructorsQualifications.map(
+      (category) => category.id,
+    ),
     phoneNumber: instructor.user.phoneNumber,
   };
 
@@ -71,9 +69,23 @@ export const InstructorsDetails = () => {
   };
 
   const deactivateUser = async () => {
-    const { user, ...instructorValues } = instructor;
-    user.isActive = false;
-    const body = { instructor: { user, ...instructorValues } };
+    const {
+      photo,
+      registrationNumber,
+      licenseNumber,
+      instructorsQualifications,
+      ...userValues
+    } = initialValues;
+    const body: InstructorUpdateRequestDto = {
+      instructor: {
+        registrationNumber,
+        licenseNumber,
+        instructorsQualifications,
+        user: { ...userValues },
+        photo,
+      },
+    };
+    body.instructor.user.isActive = false;
     const instructorApiUrl = `/api/instructors/${instructorId}`;
     const response = await makeRequest<
       InstructorUpdateResponseDto,
@@ -88,7 +100,7 @@ export const InstructorsDetails = () => {
 
     toggleDeactivateModal();
     showSuccessSnackbar(
-      `Instruktor ${response.data.instructor.user.firstName} ${response.data.instructor.user.lastName} został dezaktywowany`,
+      `Instruktor ${initialValues.firstName} ${initialValues.lastName} został dezaktywowany`,
     );
   };
 

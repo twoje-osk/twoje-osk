@@ -22,7 +22,7 @@ export class DriversLicenseCategoryFindAllResponseDto {
 export class DriversLicenseCategoryUpdateRequestDto {
   @ApiProperty({
     isArray: true,
-    type: 'string',
+    type: 'DtoDriversLicenseCategory',
   })
   categories: DtoDriversLicenseCategory[];
 }

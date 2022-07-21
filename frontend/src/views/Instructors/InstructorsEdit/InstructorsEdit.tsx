@@ -34,6 +34,32 @@ export const InstructorsEdit = () => {
     instructorId ? `/api/instructors/${instructorId}` : null,
   );
 
+  const { showErrorSnackbar, showSuccessSnackbar } = useCommonSnackbars();
+  if (instructorId === undefined) {
+    return <Navigate to="/" replace />;
+  }
+
+  if (error) {
+    return <GeneralAPIError />;
+  }
+
+  if (data === undefined) {
+    return <FullPageLoading />;
+  }
+
+  const { instructor } = data;
+  const initialValues: InstructorsFormData = {
+    firstName: instructor.user.firstName,
+    lastName: instructor.user.lastName,
+    email: instructor.user.email,
+    licenseNumber: instructor.licenseNumber,
+    registrationNumber: instructor.registrationNumber,
+    instructorsQualifications: instructor.instructorsQualifications.map(
+      (category) => category.id,
+    ),
+    phoneNumber: instructor.user.phoneNumber,
+  };
+
   const handleSubmit = async (instructorValues: InstructorsFormData) => {
     const {
       photo,
@@ -65,36 +91,10 @@ export const InstructorsEdit = () => {
       return;
     }
 
-    navigate(`/instruktorzy/${response.data.instructor.id}`);
+    navigate(`/instruktorzy/${response.data.id}`);
     showSuccessSnackbar(
-      `Instruktor ${response.data.instructor.user.firstName} ${response.data.instructor.user.lastName} został zmodyfikowany`,
+      `Instruktor ${initialValues.firstName} ${initialValues.lastName} został zmodyfikowany`,
     );
-  };
-
-  const { showErrorSnackbar, showSuccessSnackbar } = useCommonSnackbars();
-  if (instructorId === undefined) {
-    return <Navigate to="/" replace />;
-  }
-
-  if (error) {
-    return <GeneralAPIError />;
-  }
-
-  if (data === undefined) {
-    return <FullPageLoading />;
-  }
-
-  const { instructor } = data;
-  const initialValues: InstructorsFormData = {
-    firstName: instructor.user.firstName,
-    lastName: instructor.user.lastName,
-    email: instructor.user.email,
-    licenseNumber: instructor.licenseNumber,
-    registrationNumber: instructor.registrationNumber,
-    instructorsQualifications: instructor.instructorsQualifications.map(
-      (category) => category.name,
-    ),
-    phoneNumber: instructor.user.phoneNumber,
   };
 
   return (

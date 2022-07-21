@@ -65,7 +65,7 @@ export class InstructorsService {
   @Transactional()
   async create(
     instructor: InstructorFields,
-  ): Promise<Try<Instructor, 'EMAIL_ALREADY_TAKEN'>> {
+  ): Promise<Try<number, 'EMAIL_ALREADY_TAKEN'>> {
     const duplicatedUser = await this.usersService.findOneByEmail(
       instructor.user.email,
     );
@@ -78,8 +78,7 @@ export class InstructorsService {
       ...instructor.user,
     });
 
-    // eslint-disable-next-line no-param-reassign
-    instructor.instructorsQualifications =
+    const instructorsQualifications =
       await this.driversLicenseCategoryRepository.find({
         where: {
           name: In(instructor.instructorsQualifications),
@@ -90,21 +89,21 @@ export class InstructorsService {
       user: newUser,
       registrationNumber: instructor.registrationNumber,
       licenseNumber: instructor.licenseNumber,
-      instructorsQualifications: instructor.instructorsQualifications,
+      instructorsQualifications,
     });
     newUser.instructor = newInstructor;
     await this.usersRepository.save(newUser);
     const createdInstructor = await this.instructorsRepository.save(
       newInstructor,
     );
-    return getSuccess(createdInstructor);
+    return getSuccess(createdInstructor.id);
   }
 
   @Transactional()
   async update(
     instructor: InstructorUpdateFields,
     instructorId: number,
-  ): Promise<Try<Instructor, 'NO_SUCH_INSTRUCTOR' | 'EMAIL_ALREADY_TAKEN'>> {
+  ): Promise<Try<number, 'NO_SUCH_INSTRUCTOR' | 'EMAIL_ALREADY_TAKEN'>> {
     const { id: organizationId } =
       this.organizationDomainService.getRequestOrganization();
 
@@ -138,21 +137,24 @@ export class InstructorsService {
         this.usersRepository.merge(instructorToBeUpdated.user, user),
       );
     }
+    const {
+      instructorsQualifications: updatedQualifications,
+      ...restOfArguments
+    } = instructor;
 
-    if (instructor.instructorsQualifications !== undefined) {
-      // eslint-disable-next-line no-param-reassign
-      instructor.instructorsQualifications =
+    if (updatedQualifications !== undefined) {
+      instructorToBeUpdated.instructorsQualifications =
         await this.driversLicenseCategoryRepository.find({
           where: {
-            name: In(instructor.instructorsQualifications),
+            name: In(updatedQualifications),
           },
         });
     }
 
     const updatedInstructor = await this.instructorsRepository.save(
-      this.instructorsRepository.merge(instructorToBeUpdated, instructor),
+      this.instructorsRepository.merge(instructorToBeUpdated, restOfArguments),
     );
 
-    return getSuccess(updatedInstructor);
+    return getSuccess(updatedInstructor.id);
   }
 }

@@ -8,8 +8,6 @@ import { seedInstructors } from './seed.instructors';
 import { seedAvailabilities } from './seed.availabilities';
 import { seedLessons } from './seed.lessons';
 import { Factory } from './seed.utils';
-import { seedAvailabilities } from './seed.availabilities';
-import { seedLessons } from './seed.lessons';
 import { seedDriversLicenseCategories } from './seed.driversLicenseCategories';
 
 const clearSequences = async (trx: EntityManager) => {

@@ -9,7 +9,7 @@ export interface InstructorsFormData {
   licenseNumber: string;
   registrationNumber: string;
   photo?: string | null;
-  instructorsQualifications: string[];
+  instructorsQualifications: number[];
 }
 
 setupYupLocale();

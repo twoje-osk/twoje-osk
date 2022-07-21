@@ -15,6 +15,5 @@ import { InstructorsService } from './instructors.service';
   ],
   exports: [InstructorsService],
   providers: [InstructorsService],
-  exports: [InstructorsService],
 })
 export class InstructorsModule {}

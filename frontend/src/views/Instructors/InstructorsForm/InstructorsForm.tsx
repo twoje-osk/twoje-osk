@@ -5,6 +5,7 @@ import { Form, Formik, FormikHelpers, useField } from 'formik';
 import { ReactNode } from 'react';
 import { Flex } from 'reflexbox';
 import useSWR from 'swr';
+import { PicklistOption } from '@osk/shared/src/types/picklist.types';
 import { FPicklistField } from '../../../components/FPicklistField/FPicklistField';
 import { FTextField } from '../../../components/FTextField/FTextField';
 import { theme } from '../../../theme';
@@ -45,10 +46,12 @@ export const InstructorsForm = ({
       '/api/drivers-license-categories',
     );
 
-  let driversLicenseCategoryOptions: string[] = [];
+  let driversLicenseCategoryOptions: PicklistOption[] = [];
   if (driversLicenseCategoryData !== undefined) {
     driversLicenseCategoryOptions = driversLicenseCategoryData.categories
-      ? driversLicenseCategoryData.categories.map((el) => el.name)
+      ? driversLicenseCategoryData.categories.map((el) => {
+          return { value: el.id, label: el.name };
+        })
       : [];
   }
 
