@@ -12,6 +12,9 @@ interface Configuration {
     port: number;
   };
   jwtSecret: string;
+  adminPort: number;
+  adminCookieSecret: string;
+  adminDisableAuth: boolean;
 }
 
 export type NestConfiguration = Flatten<Configuration>;
@@ -31,6 +34,9 @@ const getVariable = (key: string, defaultValue?: string) => {
 };
 
 export const getConfiguration = (): Configuration => {
+  const adminDisableAuth =
+    getVariable('ADMIN_DISABLE_AUTH', 'false') === 'true';
+
   return {
     isProduction: getVariable('NODE_ENV', 'development') === 'production',
     port: Number.parseInt(process.env.PORT ?? '8080', 10),
@@ -43,5 +49,13 @@ export const getConfiguration = (): Configuration => {
       port: Number.parseInt(getVariable('DATABASE_PORT'), 10),
     },
     jwtSecret: getVariable('JWT_SECRET'),
+    adminPort: Number.parseInt(process.env.ADMIN_PORT ?? '8081', 10),
+    adminCookieSecret: getVariable(
+      'ADMIN_COOKIE_SECRET',
+      // Setting the default value only if the auth is disabled
+      // to make it only required when auth is enabled
+      adminDisableAuth ? '' : undefined,
+    ),
+    adminDisableAuth,
   };
 };

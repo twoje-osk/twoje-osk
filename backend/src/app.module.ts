@@ -45,7 +45,7 @@ import { LessonsModule } from './lessons/lessons.module';
       },
     }),
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'client'),
+      rootPath: join(__dirname, '../..', 'client'),
     }),
     AuthModule,
     UsersModule,

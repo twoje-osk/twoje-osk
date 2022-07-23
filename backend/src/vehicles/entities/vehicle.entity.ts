@@ -1,4 +1,10 @@
-import { Column, Entity, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import {
+  Column,
+  Entity,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  RelationId,
+} from 'typeorm';
 import { Organization } from '../../organizations/entities/organization.entity';
 
 @Entity()
@@ -29,4 +35,7 @@ export class Vehicle {
 
   @ManyToOne(() => Organization)
   organization: Organization;
+
+  @RelationId((vehicle: Vehicle) => vehicle.organization)
+  organizationId: number;
 }

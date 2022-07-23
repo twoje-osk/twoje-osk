@@ -32,9 +32,34 @@ services:
       - DATABASE_PASSWORD=postgres
       - DATABASE_PORT=5432
       - DATABASE_SCHEMA=public
-      - JWT_SECRET=jwtSecret
     ports:
       - 8080:8080
+
+  admin:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.admin
+    restart: always
+    depends_on:
+      - shared
+      - postgres
+    volumes:
+      - ./backend/src:/usr/src/app/backend/src
+      - ./shared/src:/usr/src/app/shared/src
+      - shared:/usr/src/app/shared/dist
+    env_file:
+      - backend/.env.docker
+    environment:
+      - ADMIN_PORT=8081
+      - ADMIN_DISABLE_AUTH=true
+      - DATABASE_HOST=postgres
+      - DATABASE_DATABASE=postgres
+      - DATABASE_USER=postgres
+      - DATABASE_PASSWORD=postgres
+      - DATABASE_PORT=5432
+      - DATABASE_SCHEMA=public
+    ports:
+      - 8081:8081
 
   frontend:
     build:
