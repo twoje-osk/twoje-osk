@@ -30,9 +30,7 @@ export class TraineesService {
     const users = await this.traineesRepository.find({
       where: {
         user: {
-          organization: {
-            id: organizationId,
-          },
+          organizationId,
         },
       },
       relations: {
@@ -90,13 +88,13 @@ export class TraineesService {
           {
             user: {
               email: trainee.user.email,
-              organization: { id: organizationId },
+              organizationId,
             },
           },
           {
             pesel: trainee.pesel,
             user: {
-              organization: { id: organizationId },
+              organizationId,
             },
           },
         ],
@@ -133,7 +131,10 @@ export class TraineesService {
     const traineeToUpdate = await this.traineesRepository.findOne({
       where: {
         id: traineeId,
-        user: { organization: { id: organizationId } },
+        user: { organizationId },
+      },
+      relations: {
+        user: true,
       },
     });
 
@@ -162,7 +163,7 @@ export class TraineesService {
     const traineeToDisable = await this.traineesRepository.findOne({
       where: {
         id: traineeId,
-        user: { organization: { id: organizationId } },
+        user: { organizationId },
       },
       relations: {
         user: true,
@@ -177,12 +178,9 @@ export class TraineesService {
       return getFailure('TRAINEE_ALREADY_DISABLED');
     }
 
-    const userToDisable = {
-      ...traineeToDisable.user,
-      isActive: false,
-    };
+    traineeToDisable.user.isActive = false;
 
-    await this.usersRepository.save(userToDisable);
+    await this.usersRepository.save(traineeToDisable.user);
 
     return getSuccess(undefined);
   }
