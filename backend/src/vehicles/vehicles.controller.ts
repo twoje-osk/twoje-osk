@@ -47,14 +47,18 @@ export class VehiclesController {
   async findOne(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<VehicleFindOneResponseDto> {
-    try {
-      return { vehicle: await this.vehicleService.findOneById(id) };
-    } catch (error) {
-      if (error instanceof Error && error.message === 'VEHICLE_NOT_FOUND') {
-        throw new NotFoundException('Vehicle with this id does not exist.');
-      }
-      throw error;
+    const findVehicleCall = await this.vehicleService.findOneById(id);
+
+    if (findVehicleCall.ok) {
+      return { vehicle: findVehicleCall.data };
     }
+
+    const { error } = findVehicleCall;
+
+    if (error === 'VEHICLE_NOT_FOUND') {
+      throw new ConflictException('Vehicle with this id does not exist.');
+    }
+    return assertNever(error);
   }
 
   @ApiCreatedResponse({
@@ -100,7 +104,7 @@ export class VehiclesController {
     @Param('id', ParseIntPipe) id: number,
   ): Promise<VehicleUpdateResponseDto> {
     const updateVehicleCall = await this.vehicleService.update(vehicle, id);
-    if (updateVehicleCall.ok === true) {
+    if (updateVehicleCall.ok) {
       return {
         vehicle: updateVehicleCall.data,
       };

@@ -34,21 +34,21 @@ export class VehicleService {
     });
   }
 
-  async findOneById(id: number) {
+  async findOneById(id: number): Promise<Try<Vehicle, 'VEHICLE_NOT_FOUND'>> {
     const { id: organizationId } =
       this.organizationDomainService.getRequestOrganization();
-    const vehicle = await this.vehiclesRepository.findOne({
+    const vehicleToFind = await this.vehiclesRepository.findOne({
       where: {
         id,
         organization: { id: organizationId },
       },
     });
 
-    if (vehicle === null) {
-      throw new Error('VEHICLE_NOT_FOUND');
+    if (vehicleToFind === null) {
+      return getFailure('VEHICLE_NOT_FOUND');
     }
 
-    return vehicle;
+    return getSuccess(vehicleToFind);
   }
 
   async checkIfExistsByLicensePlate(licensePlate: string) {

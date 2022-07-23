@@ -3,6 +3,7 @@ import {
   ConflictException,
   Controller,
   Get,
+  MethodNotAllowedException,
   NotFoundException,
   Param,
   ParseIntPipe,
@@ -107,21 +108,23 @@ export class TraineesController {
   async disable(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<TraineeDisableResponseDto> {
-    try {
-      await this.traineesService.disable(id);
-    } catch (error) {
-      if (error instanceof Error && error.message === 'TRAINEE_NOT_FOUND') {
-        throw new NotFoundException('Trainee with this id does not exist.');
-      }
-      if (
-        error instanceof Error &&
-        error.message === 'TRAINEE_ALREADY_DISABLED'
-      ) {
-        throw new NotFoundException(
-          'Trainee with this id is already disabled.',
-        );
-      }
+    const disableTraineeCall = await this.traineesService.disable(id);
+
+    if (disableTraineeCall.ok) {
+      return { trainee: disableTraineeCall.data };
     }
-    return {};
+
+    const { error } = disableTraineeCall;
+
+    if (error === 'TRAINEE_NOT_FOUND') {
+      throw new NotFoundException('Trainee with this id does not exist.');
+    }
+
+    if (error === 'TRAINEE_ALREADY_DISABLED') {
+      throw new MethodNotAllowedException(
+        'Trainee with this id is already disabled.',
+      );
+    }
+    return assertNever(error);
   }
 }
