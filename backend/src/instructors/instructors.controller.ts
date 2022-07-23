@@ -43,8 +43,6 @@ export class InstructorsController {
   ): Promise<InstructorFindOneResponseDto> {
     const instructor = await this.instructorsService.findOne(+id);
 
-    console.log(instructor);
-
     if (instructor === null) {
       throw new NotFoundException();
     }

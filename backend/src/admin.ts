@@ -8,7 +8,10 @@ import { Database, Resource } from '@adminjs/typeorm';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 // @ts-ignore
-import { resources } from 'admin.imports';
+import { resources } from 'admin/admin.imports';
+import { optionsWithAuth, withCustomResourceOptions } from 'admin/admin.utils';
+import { RESOURCE_OVERRIDES } from 'admin/admin.constants';
+import { FAVICON, LOGO } from 'admin/admin.assets';
 import { NestConfiguration, getConfiguration } from './config/configuration';
 
 @Module({
@@ -32,10 +35,25 @@ import { NestConfiguration, getConfiguration } from './config/configuration';
         };
       },
     }),
-    AdminModule.createAdmin({
-      adminJsOptions: {
-        rootPath: '/admin',
-        resources,
+    AdminModule.createAdminAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService<NestConfiguration, true>) => {
+        return optionsWithAuth(
+          configService.get('adminDisableAuth'),
+          configService.get('adminCookieSecret'),
+        )({
+          adminJsOptions: {
+            rootPath: '/',
+            resources: withCustomResourceOptions(resources, RESOURCE_OVERRIDES),
+            branding: {
+              companyName: 'Super Admin Panel | Twoje OSK',
+              logo: LOGO,
+              withMadeWithLove: false,
+              favicon: FAVICON,
+            },
+          },
+        });
       },
     }),
   ],
@@ -53,6 +71,6 @@ async function bootstrap() {
 
   await app.listen(port, '0.0.0.0');
 
-  Logger.log(`Admin app running on http://localhost:${port}/admin`);
+  Logger.log(`Admin app running on http://localhost:${port}`);
 }
 bootstrap();

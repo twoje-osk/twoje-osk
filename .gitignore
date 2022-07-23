@@ -52,5 +52,5 @@ backend/client
 
 # Backend
 backend/src/**/*.entity.admin.ts
-backend/src/admin.imports.ts
+backend/src/admin/admin.imports.ts
 backend/.adminjs

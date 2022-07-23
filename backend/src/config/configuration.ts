@@ -3,7 +3,6 @@ import { Flatten } from '../utils/Flatten';
 interface Configuration {
   isProduction: boolean;
   port: number;
-  adminPort: number;
   database: {
     host: string;
     database: string;
@@ -13,6 +12,9 @@ interface Configuration {
     port: number;
   };
   jwtSecret: string;
+  adminPort: number;
+  adminCookieSecret: string;
+  adminDisableAuth: boolean;
 }
 
 export type NestConfiguration = Flatten<Configuration>;
@@ -35,7 +37,6 @@ export const getConfiguration = (): Configuration => {
   return {
     isProduction: getVariable('NODE_ENV', 'development') === 'production',
     port: Number.parseInt(process.env.PORT ?? '8080', 10),
-    adminPort: Number.parseInt(process.env.ADMIN_PORT ?? '8081', 10),
     database: {
       host: getVariable('DATABASE_HOST'),
       database: getVariable('DATABASE_DATABASE'),
@@ -45,5 +46,11 @@ export const getConfiguration = (): Configuration => {
       port: Number.parseInt(getVariable('DATABASE_PORT'), 10),
     },
     jwtSecret: getVariable('JWT_SECRET'),
+    adminPort: Number.parseInt(process.env.ADMIN_PORT ?? '8081', 10),
+    adminCookieSecret: getVariable(
+      'ADMIN_COOKIE_SECRET',
+      'ADMIN_COOKIE_SECRET',
+    ),
+    adminDisableAuth: getVariable('ADMIN_DISABLE_AUTH', 'false') === 'true',
   };
 };

@@ -54,7 +54,10 @@ ${imports.join(';\n')};
 export const resources = [${classes.join(', ')}];
 `.trimStart();
 
-  await writeFile(join(__dirname, '../src/admin.imports.ts'), importsFile);
+  await writeFile(
+    join(__dirname, '../src/admin/admin.imports.ts'),
+    importsFile,
+  );
 }
 
 run();
