@@ -3,12 +3,12 @@ import {
   ConflictException,
   Controller,
   Get,
-  MethodNotAllowedException,
   NotFoundException,
   Param,
   ParseIntPipe,
   Patch,
   Post,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import { ApiBody, ApiResponse } from '@nestjs/swagger';
 import {
@@ -121,7 +121,7 @@ export class TraineesController {
     }
 
     if (error === 'TRAINEE_ALREADY_DISABLED') {
-      throw new MethodNotAllowedException(
+      throw new UnprocessableEntityException(
         'Trainee with this id is already disabled.',
       );
     }
