@@ -1,10 +1,8 @@
 import passwordsFeature from '@adminjs/passwords';
 import * as bcrypt from 'bcrypt';
 import { CurrentAdmin, ResourceWithOptions } from 'adminjs';
-import { User } from 'users/entities/user.entity.admin';
-import { Instructor } from 'instructors/entities/instructor.entity.admin';
-import { Trainee } from 'trainees/entities/trainee.entity.admin';
-import { Vehicle } from 'vehicles/entities/vehicle.entity.admin';
+// Importing from another file to make type checking successful
+import { User, Instructor, Trainee, Vehicle } from './admin.resource-overrides';
 
 export const ADMIN_ACCOUNT: CurrentAdmin = {
   email: 'super@example.com',
