@@ -32,7 +32,6 @@ services:
       - DATABASE_PASSWORD=postgres
       - DATABASE_PORT=5432
       - DATABASE_SCHEMA=public
-      - JWT_SECRET=jwtSecret
     ports:
       - 8080:8080
 
@@ -59,7 +58,6 @@ services:
       - DATABASE_PASSWORD=postgres
       - DATABASE_PORT=5432
       - DATABASE_SCHEMA=public
-      - JWT_SECRET=jwtSecret
     ports:
       - 8081:8081
 

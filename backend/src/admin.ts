@@ -7,6 +7,7 @@ import { AdminModule } from '@adminjs/nestjs';
 import { Database, Resource } from '@adminjs/typeorm';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
+// Adding `@ts-ignore` so that it doesn't throw an error when the admin entities aren't built
 // @ts-ignore
 import { resources } from 'admin/admin.imports';
 import { optionsWithAuth, withCustomResourceOptions } from 'admin/admin.utils';

@@ -11,16 +11,13 @@
     "prebuild": "rimraf dist",
     "migrate": "typeorm-ts-node-esm migration:run -d src/data-source.ts",
     "copy-client": "cp -R ../frontend/dist ./client",
-
     "admin:dev": "nest start --config nest-cli.admin.json --watch",
     "admin:start": "nest start --config nest-cli.admin.json",
     "admin:build": "nest build --config nest-cli.admin.json",
     "admin:start:prod": "node dist/src/admin",
     "admin:build-entities": "ts-node scripts/createAdminEntities.ts",
-
     "type-check": "tsc --noEmit",
     "lint": "eslint src --ext ts",
-
     "typeorm": "typeorm-ts-node-esm -d src/data-source.ts",
     "create-migration": "typeorm-ts-node-esm migration:generate -d src/data-source.ts",
     "create-empty-migration": "typeorm-ts-node-esm migration:create",

@@ -1,6 +1,7 @@
 import passwordsFeature from '@adminjs/passwords';
 import * as bcrypt from 'bcrypt';
 import { CurrentAdmin, ResourceWithOptions } from 'adminjs';
+// Adding `@ts-ignore` so that it doesn't throw an error when the admin entities aren't built
 // @ts-ignore
 import { User, Instructor, Trainee, Vehicle } from './admin.imports';
 

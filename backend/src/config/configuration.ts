@@ -34,6 +34,9 @@ const getVariable = (key: string, defaultValue?: string) => {
 };
 
 export const getConfiguration = (): Configuration => {
+  const adminDisableAuth =
+    getVariable('ADMIN_DISABLE_AUTH', 'false') === 'true';
+
   return {
     isProduction: getVariable('NODE_ENV', 'development') === 'production',
     port: Number.parseInt(process.env.PORT ?? '8080', 10),
@@ -49,8 +52,10 @@ export const getConfiguration = (): Configuration => {
     adminPort: Number.parseInt(process.env.ADMIN_PORT ?? '8081', 10),
     adminCookieSecret: getVariable(
       'ADMIN_COOKIE_SECRET',
-      'ADMIN_COOKIE_SECRET',
+      // Setting the default value only if the auth is disabled
+      // to make it only required when auth is enabled
+      adminDisableAuth ? '' : undefined,
     ),
-    adminDisableAuth: getVariable('ADMIN_DISABLE_AUTH', 'false') === 'true',
+    adminDisableAuth,
   };
 };
