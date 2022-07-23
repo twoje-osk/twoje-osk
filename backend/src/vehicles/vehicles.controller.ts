@@ -20,7 +20,6 @@ import {
   VehicleUpdateRequestDto,
   VehicleUpdateResponseDto,
   VehicleDeleteResponseDto,
-  VehicleDeleteRequestDto,
   UserRole,
 } from '@osk/shared';
 import { Roles } from 'common/guards/roles.decorator';
@@ -130,7 +129,6 @@ export class VehiclesController {
   @ApiResponse({
     type: VehicleDeleteResponseDto,
   })
-  @ApiBody({ type: VehicleDeleteRequestDto })
   @Delete(':id')
   async remove(
     @Param('id', ParseIntPipe) id: number,
