@@ -1,0 +1,45 @@
+FROM node:16-alpine AS builder-base
+
+RUN apk --no-cache add --virtual .builds-deps build-base python3
+
+ENV NODE_ENV=production
+
+WORKDIR /usr/src/app
+
+COPY package.json yarn.lock .yarnrc.yml ./
+COPY .yarn/ ./.yarn/
+COPY eslint-plugin/package.json ./eslint-plugin/
+COPY backend/package.json ./backend/
+COPY frontend/package.json ./frontend/
+COPY shared/package.json ./shared/
+
+RUN yarn install --immutable
+
+COPY .eslintignore .prettierrc tsconfig.json ./
+COPY eslint-plugin/ eslint-plugin/
+
+FROM builder-base AS shared
+WORKDIR /usr/src/app
+COPY shared/ ./shared/
+
+WORKDIR /usr/src/app/shared
+RUN yarn build
+
+FROM shared AS backend
+WORKDIR /usr/src/app
+COPY backend/ ./backend/
+
+WORKDIR /usr/src/app/backend
+RUN yarn admin:build-entities
+RUN yarn prebuild
+RUN yarn admin:build
+
+FROM builder-base
+WORKDIR /usr/src/app
+COPY --from=shared /usr/src/app/shared ./shared/
+COPY --from=backend /usr/src/app/backend ./backend/
+
+RUN ls /usr/src/app/backend
+
+WORKDIR /usr/src/app/backend
+CMD ["yarn", "admin:start:prod"]

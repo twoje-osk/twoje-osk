@@ -22,6 +22,27 @@ services:
     ports:
       - 8080:8080
 
+  admin:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.admin
+    restart: always
+    depends_on:
+      - postgres
+    env_file:
+      - backend/.env.docker
+    environment:
+      - ADMIN_PORT=8081
+      - DATABASE_HOST=postgres
+      - DATABASE_DATABASE=postgres
+      - DATABASE_USER=postgres
+      - DATABASE_PASSWORD=postgres
+      - DATABASE_PORT=5432
+      - DATABASE_SCHEMA=public
+      - JWT_SECRET=jwtSecret
+    ports:
+      - 8081:8081
+
   postgres:
     image: postgres
     restart: always

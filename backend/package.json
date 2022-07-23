@@ -6,20 +6,25 @@
     "dev": "nest start --watch",
     "dev:debug": "nest start --debug --watch",
     "start": "nest start",
+    "build": "nest build",
+    "start:prod": "node dist/src/main",
+    "prebuild": "rimraf dist",
+    "migrate": "typeorm-ts-node-esm migration:run -d src/data-source.ts",
+    "copy-client": "cp -R ../frontend/dist ./client",
+
+    "admin:dev": "nest start --config nest-cli.admin.json --watch",
+    "admin:start": "nest start --config nest-cli.admin.json",
+    "admin:build": "nest build --config nest-cli.admin.json",
+    "admin:start:prod": "node dist/src/admin",
+    "admin:build-entities": "ts-node scripts/createAdminEntities.ts",
+
     "type-check": "tsc --noEmit",
     "lint": "eslint src --ext ts",
-    "build": "nest build",
-    "start:prod": "node dist/main",
-    "prebuild": "rimraf dist",
+
     "typeorm": "typeorm-ts-node-esm -d src/data-source.ts",
     "create-migration": "typeorm-ts-node-esm migration:generate -d src/data-source.ts",
     "create-empty-migration": "typeorm-ts-node-esm migration:create",
-    "migrate": "typeorm-ts-node-esm migration:run -d src/data-source.ts",
-    "seed": "ts-node ./src/seeds/seed.ts",
-    "copy-client": "cp -R ../frontend/dist ./client",
-    "admin:start": "nest start --config nest-cli.admin.json",
-    "admin:build-entities": "ts-node scripts/createAdminEntities.ts",
-    "admin": "yarn admin:build-entities && yarn admin:start"
+    "seed": "ts-node ./src/seeds/seed.ts"
   },
   "dependencies": {
     "@adminjs/express": "^5.0.0",
