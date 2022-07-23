@@ -50,7 +50,7 @@ backend/client
 !.yarn/sdks
 !.yarn/versions
 
-# Backend
+# Admin
 backend/src/**/*.entity.admin.ts
 backend/src/admin/admin.imports.ts
 backend/.adminjs
