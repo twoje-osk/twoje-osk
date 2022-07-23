@@ -3,10 +3,14 @@ import { sync } from 'glob';
 import { readFile, writeFile } from 'node:fs/promises';
 import { dirname, extname, relative, join } from 'node:path';
 
+interface Import {
+  classNames: string[];
+  path: string;
+}
+
 async function run() {
   const matches = sync(join(__dirname, '../src/**/*.entity.ts'));
-  const imports: string[] = [];
-  const classes: string[] = [];
+  const imports: Import[] = [];
 
   await Promise.all(
     matches.map(async (path) => {
@@ -36,22 +40,27 @@ async function run() {
         .replace(/(\.entity)/g, '$1.admin');
       const newValue = `import { BaseEntity } from "typeorm";\n${newValueWithoutImport}`;
 
-      imports.push(
-        `import { ${classNames.join(', ')} } from '${relative(
-          join(__dirname, '../src'),
-          outPath.replace(/\.ts$/, ''),
-        )}'`,
-      );
-      classes.push(...classNames);
+      imports.push({
+        classNames,
+        path: relative(join(__dirname, '../src'), outPath.replace(/\.ts$/, '')),
+      });
 
       return writeFile(outPath, newValue);
     }),
   );
 
-  const importsFile = `
-${imports.join(';\n')};
+  imports.sort((a, b) => a.path.localeCompare(b.path));
 
-export const resources = [${classes.join(', ')}];
+  const importClassNames = imports
+    .flatMap(({ classNames }) => `  ${classNames}`)
+    .join(',\n');
+
+  const importsFile = `
+${imports.map(getImport).join(';\n')};
+
+${imports.map(getExport).join(';\n')};
+
+export const resources = [\n${importClassNames},\n];
 `.trimStart();
 
   await writeFile(
@@ -61,3 +70,13 @@ export const resources = [${classes.join(', ')}];
 }
 
 run();
+
+// UTILS
+function getImport({ classNames, path }: Import) {
+  return `import { ${classNames.join(', ')} } from '${path}'`;
+}
+
+// UTILS
+function getExport({ classNames, path }: Import) {
+  return `export { ${classNames.join(', ')} } from '${path}'`;
+}

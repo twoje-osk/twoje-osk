@@ -2,7 +2,7 @@ import passwordsFeature from '@adminjs/passwords';
 import * as bcrypt from 'bcrypt';
 import { CurrentAdmin, ResourceWithOptions } from 'adminjs';
 // Importing from another file to make type checking successful
-import { User, Instructor, Trainee, Vehicle } from './admin.resource-overrides';
+import { User, Instructor, Trainee, Vehicle } from './admin.imports';
 
 export const ADMIN_ACCOUNT: CurrentAdmin = {
   email: 'super@example.com',
