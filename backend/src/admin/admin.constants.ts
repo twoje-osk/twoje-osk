@@ -12,7 +12,16 @@ export const ADMIN_ACCOUNT: CurrentAdmin = {
 export const RESOURCE_OVERRIDES: ResourceWithOptions[] = [
   {
     resource: User,
-    options: {},
+    options: {
+      properties: {
+        traineeId: {
+          isDisabled: true,
+        },
+        instructorId: {
+          isDisabled: true,
+        },
+      },
+    },
     features: [
       passwordsFeature({
         properties: {
