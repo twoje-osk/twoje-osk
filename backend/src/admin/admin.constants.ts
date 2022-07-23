@@ -1,7 +1,7 @@
 import passwordsFeature from '@adminjs/passwords';
 import * as bcrypt from 'bcrypt';
 import { CurrentAdmin, ResourceWithOptions } from 'adminjs';
-// Importing from another file to make type checking successful
+// @ts-ignore
 import { User, Instructor, Trainee, Vehicle } from './admin.imports';
 
 export const ADMIN_ACCOUNT: CurrentAdmin = {
