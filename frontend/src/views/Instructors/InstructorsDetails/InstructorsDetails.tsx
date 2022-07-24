@@ -17,7 +17,6 @@ import { useState } from 'react';
 import { Link, Navigate, useParams } from 'react-router-dom';
 import { Box } from 'reflexbox';
 import useSWR from 'swr';
-import { DeactivateModal } from '../../../components/DeactivateModal/DeactivateModal';
 import { useCommonSnackbars } from '../../../hooks/useCommonSnackbars/useCommonSnackbars';
 import { FullPageLoading } from '../../../components/FullPageLoading/FullPageLoading';
 import { GeneralAPIError } from '../../../components/GeneralAPIError/GeneralAPIError';
@@ -25,6 +24,7 @@ import { useMakeRequestWithAuth } from '../../../hooks/useMakeRequestWithAuth/us
 import { theme } from '../../../theme';
 import { InstructorsForm } from '../InstructorsForm/InstructorsForm';
 import { InstructorsFormData } from '../InstructorsForm/InstructorsForm.schema';
+import { ActionModal } from '../../../components/ActionModal/ActionModal';
 
 export const InstructorsDetails = () => {
   const { instructorId } = useParams();
@@ -49,6 +49,8 @@ export const InstructorsDetails = () => {
   }
 
   const { instructor } = data;
+  const deactivateModalTitle = 'Jesteś pewien';
+  const deactivateModalActionButtonLabel = 'Dezaktywuj';
   const deactivateModalSubtitle = `Czy na pewno chcesz dezaktywować tego użytkownika? \n ${instructor.user.firstName} ${instructor.user.lastName} straci dostęp do wszystkich danych i funkcji systemu`;
 
   const initialValues: InstructorsFormData = {
@@ -81,11 +83,13 @@ export const InstructorsDetails = () => {
         registrationNumber,
         licenseNumber,
         instructorsQualifications,
-        user: { ...userValues },
+        user: {
+          ...userValues,
+          isActive: false,
+        },
         photo,
       },
     };
-    body.instructor.user.isActive = false;
     const instructorApiUrl = `/api/instructors/${instructorId}`;
     const response = await makeRequest<
       InstructorUpdateResponseDto,
@@ -106,11 +110,13 @@ export const InstructorsDetails = () => {
 
   if (showDeactivateModal) {
     return (
-      <DeactivateModal
+      <ActionModal
         id="deactivateModal"
         isOpen={showDeactivateModal}
         onClose={toggleDeactivateModal}
-        onDeactivate={deactivateUser}
+        onAction={deactivateUser}
+        actionButtonText={deactivateModalActionButtonLabel}
+        title={deactivateModalTitle}
         subtitle={deactivateModalSubtitle}
       />
     );

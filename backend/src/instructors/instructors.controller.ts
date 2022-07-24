@@ -10,7 +10,7 @@ import {
   Post,
   Request,
 } from '@nestjs/common';
-import { ApiBody, ApiResponse } from '@nestjs/swagger';
+import { ApiResponse } from '@nestjs/swagger';
 import {
   InstructorFindAllResponseDto,
   InstructorFindOneResponseDto,
@@ -65,7 +65,6 @@ export class InstructorsController {
   @ApiResponse({
     type: InstructorCreateResponseDto,
   })
-  @ApiBody({ type: InstructorCreateRequestDto })
   @Post()
   async create(
     @Body() { instructor }: InstructorCreateRequestDto,
@@ -76,6 +75,11 @@ export class InstructorsController {
     }
     if (createResult.error === 'EMAIL_ALREADY_TAKEN') {
       throw new ConflictException('This email address has been already taken');
+    }
+    if (createResult.error === 'WRONG_CATEGORIES') {
+      throw new NotFoundException(
+        'Provided drivers license categories are invalid',
+      );
     }
     return assertNever(createResult.error);
   }
@@ -97,6 +101,11 @@ export class InstructorsController {
     }
     if (updateResult.error === 'NO_SUCH_INSTRUCTOR') {
       throw new NotFoundException('There is no instructor with this id');
+    }
+    if (updateResult.error === 'WRONG_CATEGORIES') {
+      throw new NotFoundException(
+        'Provided drivers license categories are invalid',
+      );
     }
     return assertNever(updateResult.error);
   }

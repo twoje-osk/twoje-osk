@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { OrganizationDomainService } from 'organization-domain/organization-domain.service';
-import { Repository, In } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Transactional } from 'typeorm-transactional-cls-hooked';
 import { UsersService } from 'users/users.service';
 import { getFailure, getSuccess, Try } from 'types/Try';
-import { DriversLicenseCategory } from 'driversLicenseCategory/entities/driversLicenseCategory.entity';
+import { DriversLicenseCategoriesService } from 'driversLicenseCategory/driversLicenseCategory.service';
 import { Instructor } from './entities/instructor.entity';
 import { User } from '../users/entities/user.entity';
 import { InstructorFields, InstructorUpdateFields } from './instructors.types';
@@ -13,8 +13,7 @@ import { InstructorFields, InstructorUpdateFields } from './instructors.types';
 @Injectable()
 export class InstructorsService {
   constructor(
-    @InjectRepository(DriversLicenseCategory)
-    private driversLicenseCategoryRepository: Repository<DriversLicenseCategory>,
+    private driversLicenseCategoryService: DriversLicenseCategoriesService,
     @InjectRepository(Instructor)
     private instructorsRepository: Repository<Instructor>,
     @InjectRepository(User)
@@ -65,7 +64,7 @@ export class InstructorsService {
   @Transactional()
   async create(
     instructor: InstructorFields,
-  ): Promise<Try<number, 'EMAIL_ALREADY_TAKEN'>> {
+  ): Promise<Try<number, 'EMAIL_ALREADY_TAKEN' | 'WRONG_CATEGORIES'>> {
     const duplicatedUser = await this.usersService.findOneByEmail(
       instructor.user.email,
     );
@@ -79,11 +78,13 @@ export class InstructorsService {
     });
 
     const instructorsQualifications =
-      await this.driversLicenseCategoryRepository.find({
-        where: {
-          name: In(instructor.instructorsQualifications),
-        },
-      });
+      await this.driversLicenseCategoryService.findCategoriesById(
+        instructor.instructorsQualifications,
+      );
+
+    if (instructorsQualifications === undefined) {
+      return getFailure('WRONG_CATEGORIES');
+    }
 
     const newInstructor = this.instructorsRepository.create({
       user: newUser,
@@ -103,14 +104,19 @@ export class InstructorsService {
   async update(
     instructor: InstructorUpdateFields,
     instructorId: number,
-  ): Promise<Try<number, 'NO_SUCH_INSTRUCTOR' | 'EMAIL_ALREADY_TAKEN'>> {
+  ): Promise<
+    Try<
+      number,
+      'NO_SUCH_INSTRUCTOR' | 'EMAIL_ALREADY_TAKEN' | 'WRONG_CATEGORIES'
+    >
+  > {
     const { id: organizationId } =
       this.organizationDomainService.getRequestOrganization();
 
     const instructorToBeUpdated = await this.instructorsRepository.findOne({
       where: {
         id: instructorId,
-        user: { organization: { id: organizationId } },
+        user: { organizationId },
       },
       relations: {
         user: true,
@@ -143,12 +149,15 @@ export class InstructorsService {
     } = instructor;
 
     if (updatedQualifications !== undefined) {
+      const driversLicenseCategories =
+        await this.driversLicenseCategoryService.findCategoriesById(
+          updatedQualifications,
+        );
+      if (driversLicenseCategories === undefined) {
+        return getFailure('WRONG_CATEGORIES');
+      }
       instructorToBeUpdated.instructorsQualifications =
-        await this.driversLicenseCategoryRepository.find({
-          where: {
-            name: In(updatedQualifications),
-          },
-        });
+        driversLicenseCategories;
     }
 
     const updatedInstructor = await this.instructorsRepository.save(

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, ValidateNested } from 'class-validator';
 
 export class DtoDriversLicenseCategory {
   @ApiProperty()
@@ -12,6 +12,7 @@ export class DtoDriversLicenseCategory {
 }
 
 export class DriversLicenseCategoryFindAllResponseDto {
+  @ValidateNested({ each: true })
   @ApiProperty({
     isArray: true,
     type: DtoDriversLicenseCategory,
@@ -20,6 +21,7 @@ export class DriversLicenseCategoryFindAllResponseDto {
 }
 
 export class DriversLicenseCategoryUpdateRequestDto {
+  @ValidateNested({ each: true })
   @ApiProperty({
     isArray: true,
     type: 'DtoDriversLicenseCategory',

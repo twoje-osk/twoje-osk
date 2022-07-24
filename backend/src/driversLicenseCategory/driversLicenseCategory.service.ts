@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, In } from 'typeorm';
 import { DriversLicenseCategory } from './entities/driversLicenseCategory.entity';
 
 @Injectable()
@@ -10,9 +10,15 @@ export class DriversLicenseCategoriesService {
     private driversLicenseCategoryRepository: Repository<DriversLicenseCategory>,
   ) {}
 
-  async findAll() {
-    const categories = await this.driversLicenseCategoryRepository.find();
+  findAll() {
+    return this.driversLicenseCategoryRepository.find();
+  }
 
-    return categories;
+  findCategoriesById(ids: number[]) {
+    return this.driversLicenseCategoryRepository.find({
+      where: {
+        id: In(ids),
+      },
+    });
   }
 }

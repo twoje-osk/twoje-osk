@@ -22,6 +22,5 @@ export const instructorsFormSchema: Yup.SchemaOf<InstructorsFormData> =
     phoneNumber: Yup.string().required(),
     licenseNumber: Yup.string().required(),
     registrationNumber: Yup.string().required(),
-    // eslint-disable-next-line react/forbid-prop-types
-    instructorsQualifications: Yup.array(),
+    instructorsQualifications: Yup.array().of(Yup.number().required()),
   });

@@ -42,7 +42,6 @@ import { LessonsModule } from './lessons/lessons.module';
           migrations: ['dist/migrations/*.js'],
           synchronize: false,
           migrationsRun: configService.get('isProduction'),
-          logging: true,
         };
       },
     }),
