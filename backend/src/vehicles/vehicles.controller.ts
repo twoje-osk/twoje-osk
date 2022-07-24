@@ -119,7 +119,7 @@ export class VehiclesController {
     }
     if (error === 'VIN_LENGTH_NOT_CORRECT') {
       throw new BadRequestException(
-        `Provided VIN is not 17 chars long. Provided length: ${vehicle.licensePlate}`,
+        `Provided VIN is not 17 chars long. Provided length.`,
       );
     }
 
