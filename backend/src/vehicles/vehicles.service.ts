@@ -104,12 +104,7 @@ export class VehicleService {
     vehicle: Partial<VehicleArguments>,
     vehicleId: number,
   ): Promise<
-    Try<
-      undefined,
-      | 'VEHICLE_NOT_FOUND'
-      | 'VEHICLE_SAME_LICENSE_PLATE'
-      | 'VIN_LENGTH_NOT_CORRECT'
-    >
+    Try<undefined, 'VEHICLE_NOT_FOUND' | 'VEHICLE_SAME_LICENSE_PLATE'>
   > {
     const { id: organizationId } =
       this.organizationDomainService.getRequestOrganization();

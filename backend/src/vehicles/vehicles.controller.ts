@@ -9,7 +9,6 @@ import {
   Patch,
   ParseIntPipe,
   Delete,
-  BadRequestException,
 } from '@nestjs/common';
 import { ApiResponse, ApiBody, ApiCreatedResponse } from '@nestjs/swagger';
 import {
@@ -117,12 +116,6 @@ export class VehiclesController {
         'Vehicle with this license plate already exists.',
       );
     }
-    if (error === 'VIN_LENGTH_NOT_CORRECT') {
-      throw new BadRequestException(
-        `Provided VIN is not 17 chars long. Provided length: ${vehicle.licensePlate}`,
-      );
-    }
-
     return assertNever(error);
   }
 
