@@ -97,7 +97,7 @@ export class ResetPasswordService {
     const hostname = this.configService.get('hostname');
     const protocol = isHttps ? 'https' : 'http';
     const { slug } = this.organizationDomainService.getRequestOrganization();
-    const resetPasswordUrl = `${protocol}://${slug}.${hostname}/account/reset-password/${token}`;
+    const resetPasswordUrl = `${protocol}://${slug}.${hostname}/account/reset/${token}`;
 
     await this.mailService.sendEmail(email, 'Password reset', {
       html: `<a href="${resetPasswordUrl}">Reset password</a>`,

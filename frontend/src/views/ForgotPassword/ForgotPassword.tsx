@@ -4,48 +4,44 @@ import {
   Button,
   Container,
   Icon,
-  Link,
   Paper,
   Typography,
 } from '@mui/material';
-import { Link as RouterLink, Navigate, useLocation } from 'react-router-dom';
+import { grey } from '@mui/material/colors';
 import { Form, Formik } from 'formik';
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Box, Flex } from 'reflexbox';
 import { FTextField } from '../../components/FTextField/FTextField';
 import { FullPageLoading } from '../../components/FullPageLoading/FullPageLoading';
 import { GeneralAPIError } from '../../components/GeneralAPIError/GeneralAPIError';
-import { RequireAuthLocationState } from '../../components/RequireAuth/RequireAuth';
-import { useAuth } from '../../hooks/useAuth/useAuth';
 import { useUnauthorizedOrganizationData } from '../../hooks/useUnauthorizedOrganizationData/useUnauthorizedOrganizationData';
-import { LoginForm, LoginFormSchema } from './Login.schema';
-import { LoginHiddenWrapper, LoginLoaderWrapper } from './Login.styled';
-import { authenticate } from './Login.utils';
+import {
+  ForgotPasswordForm,
+  ForgotPasswordFormSchema,
+} from './ForgotPassword.schema';
+import {
+  ForgotPasswordHiddenWrapper,
+  ForgotPasswordLoaderWrapper,
+} from './ForgotPassword.styled';
+import { sendResetRequest } from './ForgotPassword.utils';
 
-export const Login = () => {
+export const ForgotPassword = () => {
   const { oskName, error } = useUnauthorizedOrganizationData();
   const [formError, setFormError] = useState<string | undefined>(undefined);
-  const { accessToken, logIn } = useAuth();
-  const location = useLocation();
-  const locationState = location.state as RequireAuthLocationState | undefined;
-  const navigatedFrom = locationState?.from.pathname ?? '/';
+  const [wasSubmitted, setWasSubmitted] = useState<boolean>(false);
 
-  const onSubmit = async (values: LoginForm) => {
+  const onSubmit = async (values: ForgotPasswordForm) => {
     setFormError(undefined);
-    const result = await authenticate(values.email, values.password);
+    const result = await sendResetRequest(values.email);
 
     if (!result.ok) {
       return setFormError(result.error);
     }
 
-    logIn(result.data.accessToken);
-
+    setWasSubmitted(true);
     return undefined;
   };
-
-  if (accessToken) {
-    return <Navigate to={navigatedFrom} replace />;
-  }
 
   if (error) {
     return (
@@ -61,40 +57,69 @@ export const Login = () => {
 
   const isLoading = oskName === undefined;
 
+  const header = (
+    <Flex justifyContent="center" alignItems="center">
+      <Flex mr="1rem">
+        <Icon sx={{ fontSize: 48 }}>car_rental</Icon>
+      </Flex>
+      <Typography variant="h3" component="h1">
+        {oskName}
+      </Typography>
+    </Flex>
+  );
+
+  if (wasSubmitted) {
+    return (
+      <Container component="main" maxWidth="sm">
+        <Flex width="100%" height="100vh" alignItems="center">
+          <Paper sx={{ width: '100%', position: 'relative' }} elevation={2}>
+            <Box p="2rem">
+              {header}
+              <Box marginY="1rem">
+                <Alert severity="success">
+                  Na przypisany do Twojego konta adres e-mail wysłaliśmy
+                  instrukcję dalszego postępowania.
+                </Alert>
+              </Box>
+              <Button variant="outlined" component={Link} to="/">
+                Wróć do logowania
+              </Button>
+            </Box>
+          </Paper>
+        </Flex>
+      </Container>
+    );
+  }
+
   return (
     <Container component="main" maxWidth="sm">
       <Flex width="100%" height="100vh" alignItems="center">
         <Paper sx={{ width: '100%', position: 'relative' }} elevation={2}>
-          <LoginLoaderWrapper
+          <ForgotPasswordLoaderWrapper
             aria-hidden={!isLoading}
             className={!isLoading ? 'hidden' : undefined}
           >
             <FullPageLoading />
-          </LoginLoaderWrapper>
-          <LoginHiddenWrapper
+          </ForgotPasswordLoaderWrapper>
+          <ForgotPasswordHiddenWrapper
             aria-hidden={isLoading}
             className={isLoading ? 'hidden' : undefined}
           >
             <Box p="2rem">
-              <Flex justifyContent="center" alignItems="center">
-                <Flex mr="1rem">
-                  <Icon sx={{ fontSize: 48 }}>car_rental</Icon>
-                </Flex>
-                <Typography variant="h3" component="h1">
-                  {oskName}
-                </Typography>
-              </Flex>
-              <Formik<LoginForm>
+              {header}
+              <Typography marginTop="1rem" color={grey[700]} align="center">
+                Podaj adres e-mail konta, do którego chcesz odzyskać dostęp.
+              </Typography>
+              <Formik<ForgotPasswordForm>
                 initialValues={{
                   email: '',
-                  password: '',
                 }}
-                validationSchema={LoginFormSchema}
+                validationSchema={ForgotPasswordFormSchema}
                 onSubmit={onSubmit}
               >
                 {({ isSubmitting }) => (
                   <Form noValidate>
-                    <Flex flexDirection="column" mt="0.25rem">
+                    <Flex flexDirection="column">
                       <FTextField
                         name="email"
                         label="Email"
@@ -102,21 +127,6 @@ export const Login = () => {
                         required
                         disabled={isLoading}
                       />
-                      <FTextField
-                        name="password"
-                        label="Hasło"
-                        type="password"
-                        margin="normal"
-                        required
-                        disabled={isLoading}
-                      />
-                      <Link
-                        component={RouterLink}
-                        to="/account/zapomnialem-haslo"
-                        marginBottom="0.5rem"
-                      >
-                        Nie pamiętasz hasła?
-                      </Link>
                       {formError && (
                         <Box my="0.5rem">
                           <Alert severity="error">{formError}</Alert>
@@ -129,14 +139,15 @@ export const Login = () => {
                           loading={isSubmitting}
                           disabled={isLoading}
                         >
-                          Zaloguj Się
+                          Przypomnij Hasło
                         </LoadingButton>
                         <Button
                           variant="outlined"
-                          type="button"
                           disabled={isLoading}
+                          component={Link}
+                          to="/"
                         >
-                          Zapisz Się na Kurs
+                          Wróć do logowania
                         </Button>
                       </Flex>
                     </Flex>
@@ -144,7 +155,7 @@ export const Login = () => {
                 )}
               </Formik>
             </Box>
-          </LoginHiddenWrapper>
+          </ForgotPasswordHiddenWrapper>
         </Paper>
       </Flex>
     </Container>

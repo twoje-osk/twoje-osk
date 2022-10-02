@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString, Length } from 'class-validator';
 
 export class LoginAuthRequestDto {
   @ApiProperty({ default: 'admin@example.com' })
@@ -29,7 +29,7 @@ export class ForgotPasswordRequestDto {
 export class ForgotPasswordResponseDto {}
 
 export class ResetPasswordRequestDto {
-  @ApiProperty({ default: '83c39cf95ef7e5179344c2d4721d5c96' })
+  @ApiProperty({ default: '' })
   @IsString()
   @IsNotEmpty()
   token: string;
@@ -37,6 +37,7 @@ export class ResetPasswordRequestDto {
   @ApiProperty({ default: 'password123' })
   @IsString()
   @IsNotEmpty()
+  @Length(8, 64)
   password: string;
 }
 

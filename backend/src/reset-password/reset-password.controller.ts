@@ -1,9 +1,9 @@
 import {
   Body,
   Controller,
-  NotFoundException,
   Post,
   Request,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { ApiBody, ApiResponse } from '@nestjs/swagger';
 import { Request as ExpressRequest } from 'express';
@@ -56,7 +56,7 @@ export class ResetPasswordController {
     );
 
     if (!result.ok && result.error === 'TOKEN_NOT_FOUND') {
-      throw new NotFoundException();
+      throw new UnauthorizedException();
     }
 
     return {};
