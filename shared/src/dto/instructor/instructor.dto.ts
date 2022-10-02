@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Transform } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
   IsNotEmpty,
   IsNumber,
@@ -133,7 +133,8 @@ export class DtoCreateInstructor {
 export class DtoUpdateInstructor {
   @ApiProperty()
   @ValidateNested()
-  user: Partial<DtoUpdateUser>;
+  @Type(() => DtoUpdateUser)
+  user: DtoUpdateUser;
 
   @ApiProperty()
   @IsNotEmpty()
@@ -176,6 +177,7 @@ export class InstructorUpdateRequestDto {
   @ApiProperty()
   @ValidateNested()
   @IsNotEmpty()
+  @Type(() => DtoUpdateInstructor)
   instructor: DtoUpdateInstructor;
 }
 
