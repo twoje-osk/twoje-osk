@@ -20,6 +20,7 @@ import { AvailabilityModule } from './availability/availability.module';
 import { LessonsModule } from './lessons/lessons.module';
 import { MailModule } from './mail/mail.module';
 import { CustomConfigModule } from './config/config.module';
+import { ResetPasswordModule } from './reset-password/reset-password.module';
 
 @Module({
   imports: [
@@ -59,6 +60,7 @@ import { CustomConfigModule } from './config/config.module';
     AvailabilityModule,
     MailModule,
     CustomConfigModule,
+    ResetPasswordModule,
   ],
   providers: [
     {

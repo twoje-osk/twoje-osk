@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { EmailOptions, MailgunService } from '@nextnm/nestjs-mailgun';
 import { CustomConfigService } from 'config/config.service';
 import { EmailContents } from './mail.types';
@@ -10,7 +10,11 @@ export class MailService {
     private configService: CustomConfigService,
   ) {}
 
-  public sendEmail(to: string, subject: string, contents: EmailContents) {
+  public async sendEmail(
+    to: string,
+    subject: string,
+    contents: EmailContents,
+  ): Promise<void> {
     const domain = this.configService.get('mailgun.domain');
 
     const options: EmailOptions = {
@@ -20,6 +24,12 @@ export class MailService {
       text: contents.text,
       html: contents.html,
     };
+
+    if (this.configService.get('mailgun.apiKey') === undefined) {
+      Logger.debug('No Mailgun API Key. Logging email contents', options);
+
+      return undefined;
+    }
 
     return this.mailgunService.createEmail(domain, options);
   }

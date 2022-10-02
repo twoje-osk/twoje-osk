@@ -11,8 +11,8 @@ import { MailService } from './mail.service';
       inject: [ConfigService],
       useFactory: (configService: CustomConfigService) => ({
         username: 'noreply',
-        key: configService.get('mailgun.apiKey')!,
-        url: configService.get('mailgun.apiDomain')!,
+        key: configService.get('mailgun.apiKey') ?? 'dummy-key',
+        url: configService.get('mailgun.apiDomain'),
       }),
     }),
   ],

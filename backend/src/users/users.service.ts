@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import * as bcrypt from 'bcrypt';
 import { OrganizationDomainService } from 'organization-domain/organization-domain.service';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
@@ -28,7 +29,7 @@ export class UsersService {
     });
   }
 
-  async loginByEmail(email: string) {
+  async findOneByEmailFromAll(email: string) {
     return this.usersRepository.findOne({
       where: { email },
       relations: {
@@ -38,11 +39,11 @@ export class UsersService {
   }
 
   async findOneByEmail(email: string) {
+    const { id: organizationId } =
+      this.organizationDomainService.getRequestOrganization();
+
     return this.usersRepository.findOne({
-      where: { email },
-      relations: {
-        organization: true,
-      },
+      where: { email, organizationId },
     });
   }
 
@@ -79,6 +80,21 @@ export class UsersService {
         organization: { id: organizationId },
       },
       user,
+    );
+
+    return updatedUser;
+  }
+
+  async changePassword(userId: number, password: string) {
+    const hashedPassword = bcrypt.hashSync(password, 10);
+
+    const updatedUser = this.usersRepository.update(
+      {
+        id: userId,
+      },
+      {
+        password: hashedPassword,
+      },
     );
 
     return updatedUser;

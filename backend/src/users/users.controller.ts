@@ -46,7 +46,9 @@ export class UsersController {
   async create(
     @Body() { user }: UserAddNewRequestDto,
   ): Promise<UserAddNewResponseDto> {
-    const doesUserExist = await this.usersService.findOneByEmail(user.email);
+    const doesUserExist = await this.usersService.findOneByEmailFromAll(
+      user.email,
+    );
 
     if (doesUserExist) {
       throw new ConflictException('An user with this email already exist.');
