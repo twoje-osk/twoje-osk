@@ -25,12 +25,16 @@ export class MailService {
       html: contents.html,
     };
 
-    if (this.configService.get('mailgun.apiKey') === undefined) {
+    if (
+      this.configService.get('mailgun.apiKey') === undefined ||
+      to.endsWith('@example.com')
+    ) {
       Logger.debug('No Mailgun API Key. Logging email contents', options);
 
       return undefined;
     }
 
-    return this.mailgunService.createEmail(domain, options);
+    await this.mailgunService.createEmail(domain, options);
+    return undefined;
   }
 }

@@ -22,20 +22,16 @@ export class ResetPasswordService {
     private configService: CustomConfigService,
   ) {}
 
-  public async create(email: string): Promise<Try<string, 'USER_NOT_FOUND'>> {
-    const user = await this.usersService.findOneByEmail(email);
-
-    if (user === null) {
-      return getFailure('USER_NOT_FOUND');
-    }
-
+  public async createToken(
+    userId: number,
+  ): Promise<Try<string, 'USER_NOT_FOUND'>> {
     const expireDate = add(new Date(), { hours: 1 });
 
     const { hashedToken, token } = await getToken();
-    const resetPasswordToken: Omit<ResetPasswordToken, 'id' | 'userId'> = {
+    const resetPasswordToken = {
       isValid: true,
       expireDate,
-      user,
+      user: { id: userId },
       token: hashedToken,
     };
 
@@ -83,26 +79,36 @@ export class ResetPasswordService {
     );
   }
 
-  async initiatePasswordReset(
-    email: string,
-    isHttps: boolean,
-  ): Promise<Try<undefined, 'UNABLE_TO_CREATE_TOKEN'>> {
-    const result = await this.create(email);
-
-    if (!result.ok) {
-      return getFailure('UNABLE_TO_CREATE_TOKEN');
-    }
-
-    const token = result.data;
+  async sendResetEmail(email: string, token: string, isHttps: boolean) {
     const hostname = this.configService.get('hostname');
     const protocol = isHttps ? 'https' : 'http';
     const { slug } = this.organizationDomainService.getRequestOrganization();
     const resetPasswordUrl = `${protocol}://${slug}.${hostname}/account/reset/${token}`;
 
     await this.mailService.sendEmail(email, 'Password reset', {
-      html: `<a href="${resetPasswordUrl}">Reset password</a>`,
+      html: `<a href="${resetPasswordUrl}">Zresetuj hasło</a>`,
       text: `${resetPasswordUrl}`,
     });
+  }
+
+  async initiatePasswordReset(
+    email: string,
+    isHttps: boolean,
+  ): Promise<Try<undefined, 'UNABLE_TO_CREATE_TOKEN'>> {
+    const user = await this.usersService.findOneByEmail(email);
+
+    if (user === null) {
+      return getFailure('UNABLE_TO_CREATE_TOKEN');
+    }
+
+    const result = await this.createToken(user.id);
+
+    if (!result.ok) {
+      return getFailure('UNABLE_TO_CREATE_TOKEN');
+    }
+
+    const token = result.data;
+    this.sendResetEmail(email, token, isHttps);
 
     return getSuccess(undefined);
   }

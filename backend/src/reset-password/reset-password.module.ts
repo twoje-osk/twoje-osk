@@ -13,6 +13,7 @@ import { ResetPasswordController } from './reset-password.controller';
     TypeOrmModule.forFeature([ResetPasswordToken]),
     UsersModule,
     MailModule,
+    ResetPasswordModule,
   ],
   controllers: [ResetPasswordController],
 })
