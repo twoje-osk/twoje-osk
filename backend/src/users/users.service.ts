@@ -1,4 +1,3 @@
-import * as bcrypt from 'bcrypt';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { OrganizationDomainService } from 'organization-domain/organization-domain.service';
@@ -7,7 +6,6 @@ import { User } from './entities/user.entity';
 
 export interface UserArguments {
   email?: string;
-  password?: string;
   firstName?: string;
   lastName?: string;
   isActive?: boolean;
@@ -54,23 +52,19 @@ export class UsersService {
 
   async create(
     email: string,
-    password: string,
     firstName: string,
     lastName: string,
     isActive: boolean,
     phoneNumber: string,
   ) {
-    const { id: organizationId } =
-      this.organizationDomainService.getRequestOrganization();
-    const newUser = this.usersRepository.create({
+    const newUser = this.createUserWithoutSave({
       email,
-      password,
       firstName,
-      lastName,
       isActive,
-      organization: { id: organizationId },
+      lastName,
       phoneNumber,
     });
+
     await this.usersRepository.save(newUser);
 
     return newUser;
@@ -111,7 +105,7 @@ export class UsersService {
 
     const userToCreate = {
       ...user,
-      password: user.password ? bcrypt.hashSync(user.password, 10) : undefined,
+      password: undefined,
       createdAt: new Date(),
       organization: { id: organizationId },
     };

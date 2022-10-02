@@ -55,7 +55,6 @@ export class UsersController {
     return {
       user: await this.usersService.create(
         user.email,
-        user.password,
         user.firstName,
         user.lastName,
         user.isActive,
