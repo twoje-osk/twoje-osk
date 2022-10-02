@@ -1,5 +1,4 @@
 import { Logger, Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import AdminJS from 'adminjs';
 import '@adminjs/express';
@@ -13,17 +12,15 @@ import { resources } from 'admin/admin.imports';
 import { optionsWithAuth, withCustomResourceOptions } from 'admin/admin.utils';
 import { RESOURCE_OVERRIDES } from 'admin/admin.constants';
 import { FAVICON, LOGO } from 'admin/admin.assets';
-import { NestConfiguration, getConfiguration } from './config/configuration';
+import { CustomConfigService } from 'config/config.service';
+import { CustomConfigModule } from 'config/config.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      load: [getConfiguration],
-    }),
     TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService<NestConfiguration>) => {
+      imports: [CustomConfigModule],
+      inject: [CustomConfigService],
+      useFactory: (configService: CustomConfigService) => {
         return {
           type: 'postgres',
           host: configService.get('database.host'),
@@ -37,9 +34,9 @@ import { NestConfiguration, getConfiguration } from './config/configuration';
       },
     }),
     AdminModule.createAdminAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService<NestConfiguration, true>) => {
+      imports: [CustomConfigModule],
+      inject: [CustomConfigService],
+      useFactory: (configService: CustomConfigService) => {
         return optionsWithAuth(
           configService.get('adminDisableAuth'),
           configService.get('adminCookieSecret'),
@@ -65,8 +62,7 @@ async function bootstrap() {
   AdminJS.registerAdapter({ Database, Resource });
 
   const app = await NestFactory.create(AppModule);
-  const configService: ConfigService<NestConfiguration> =
-    app.get(ConfigService);
+  const configService: CustomConfigService = app.get(CustomConfigService);
 
   const port = configService.get('adminPort');
 

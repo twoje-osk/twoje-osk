@@ -27,7 +27,19 @@
         "message": "`with` is disallowed in strict mode because it makes code impossible to predict and optimize."
       }
     ],
-    "no-warning-comments": "warn"
+    "no-warning-comments": "warn",
+    "@typescript-eslint/ban-types": [
+      "error",
+      {
+        "types": {
+          "ConfigService": {
+            "message": "Use `CustomConfigService` for better type safety",
+            "fixWith": "CustomConfigService"
+          }
+        },
+        "extendDefaults": false
+      }
+    ]
   },
   "overrides": [
     {
