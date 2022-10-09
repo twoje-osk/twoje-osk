@@ -55,6 +55,7 @@
     "express-formidable": "^1.2.0",
     "express-session": "^1.17.3",
     "glob": "^8.0.3",
+    "nestjs-request-context": "^2.1.0",
     "passport": "^0.5.2",
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",

@@ -9,6 +9,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from 'common/guards/roles.guard';
 import { JwtAuthGuard } from 'auth/passport/jwt-auth.guard';
 import { CustomConfigService } from 'config/config.service';
+import { RequestContextModule } from 'nestjs-request-context';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { OrganizationsModule } from './organizations/organizations.module';
@@ -48,7 +49,6 @@ import { ResetPasswordModule } from './reset-password/reset-password.module';
     }),
     AuthModule,
     UsersModule,
-    OrganizationsModule,
     TraineesModule,
     InstructorsModule,
     CurrentUserModule,
@@ -61,6 +61,7 @@ import { ResetPasswordModule } from './reset-password/reset-password.module';
     MailModule,
     CustomConfigModule,
     ResetPasswordModule,
+    RequestContextModule,
   ],
   providers: [
     {
