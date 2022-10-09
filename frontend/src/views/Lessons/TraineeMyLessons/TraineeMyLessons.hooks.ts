@@ -16,7 +16,7 @@ import { useCommonSnackbars } from '../../../hooks/useCommonSnackbars/useCommonS
 import { useMakeRequestWithAuth } from '../../../hooks/useMakeRequestWithAuth/useMakeRequestWithAuth';
 import { LessonFormData } from './EditLessonForm/EditLessonForm.schema';
 import { LessonEvent } from './LessonsCalendar/LessonsCalendar.types';
-import { getTodayWeek } from './MyLessons.utils';
+import { getTodayWeek } from './TraineeMyLessons.utils';
 
 interface UseFetchDataArguments {
   selectedDate: Date;

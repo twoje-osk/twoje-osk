@@ -39,7 +39,12 @@ export const App = () => {
         }
       >
         <Route index element={<HomePage />} />
-        <Route path="/kursanci" element={<RequireRole role={UserRole.Admin} />}>
+        <Route
+          path="/kursanci"
+          element={
+            <RequireRole roles={[UserRole.Admin, UserRole.Instructor]} />
+          }
+        >
           <Route index element={<TraineesList />} />
           <Route path="nowy" element={<TraineeNew />} />
           <Route path=":traineeId" element={<TraineeDetails />} />
@@ -47,14 +52,21 @@ export const App = () => {
         </Route>
         <Route
           path="/instruktorzy"
-          element={<RequireRole role={UserRole.Admin} />}
+          element={
+            <RequireRole roles={[UserRole.Admin, UserRole.Instructor]} />
+          }
         >
           <Route index element={<InstructorsList />} />
           <Route path="nowy" element={<InstructorsNew />} />
           <Route path=":instructorId/edytuj" element={<InstructorsEdit />} />
           <Route path=":instructorId" element={<InstructorsDetails />} />
         </Route>
-        <Route path="/pojazdy" element={<RequireRole role={UserRole.Admin} />}>
+        <Route
+          path="/pojazdy"
+          element={
+            <RequireRole roles={[UserRole.Admin, UserRole.Instructor]} />
+          }
+        >
           <Route index element={<VehiclesList />} />
           <Route path="nowy" element={<VehicleNew />} />
           <Route path=":vehicleId/edytuj" element={<VehicleEdit />} />
@@ -62,7 +74,9 @@ export const App = () => {
         </Route>
         <Route
           path="/moje-jazdy"
-          element={<RequireRole role={UserRole.Trainee} />}
+          element={
+            <RequireRole roles={[UserRole.Trainee, UserRole.Instructor]} />
+          }
         >
           <Route index element={<MyLessons />} />
         </Route>

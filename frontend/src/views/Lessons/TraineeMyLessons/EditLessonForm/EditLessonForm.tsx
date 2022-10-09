@@ -12,7 +12,7 @@ import { ReactNode } from 'react';
 import useSWR from 'swr';
 import { FSelect } from '../../../../components/FSelect/FSelect';
 import { FTextField } from '../../../../components/FTextField/FTextField';
-import { getTranslatedLessonStatus } from '../MyLessons.utils';
+import { getTranslatedLessonStatus } from '../TraineeMyLessons.utils';
 import {
   LessonFormData,
   lessonFormSchema,

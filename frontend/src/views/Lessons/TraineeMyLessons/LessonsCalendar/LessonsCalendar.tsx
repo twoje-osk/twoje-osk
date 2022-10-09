@@ -20,7 +20,7 @@ import {
   isRangeAvailable,
   localizer,
 } from './LessonsCalendar.utils';
-import { getTranslatedLessonStatus } from '../MyLessons.utils';
+import { getTranslatedLessonStatus } from '../TraineeMyLessons.utils';
 
 export const LessonsCalendar = ({
   instructorEvents,
