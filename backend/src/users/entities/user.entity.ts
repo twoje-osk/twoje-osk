@@ -22,9 +22,9 @@ export class User {
   @Column()
   email: string;
 
-  @Column()
   @Exclude()
-  password: string;
+  @Column({ nullable: true, type: 'varchar' })
+  password: string | null;
 
   @Column()
   firstName: string;
@@ -32,7 +32,7 @@ export class User {
   @Column()
   lastName: string;
 
-  @Column({ default: true })
+  @Column({ default: false })
   isActive: boolean;
 
   @ManyToOne(() => Organization, { nullable: false })

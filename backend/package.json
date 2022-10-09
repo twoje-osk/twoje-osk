@@ -39,6 +39,7 @@
     "@nestjs/serve-static": "^2.2.2",
     "@nestjs/swagger": "^5.2.1",
     "@nestjs/typeorm": "^8.0.3",
+    "@nextnm/nestjs-mailgun": "^2.0.0",
     "@osk/eslint-plugin": "1.0.0",
     "@osk/shared": "1.0.0",
     "@types/bcrypt": "^5.0.0",

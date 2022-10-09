@@ -15,6 +15,12 @@ interface Configuration {
   adminPort: number;
   adminCookieSecret: string;
   adminDisableAuth: boolean;
+  mailgun: {
+    apiKey?: string;
+    apiDomain?: string;
+    domain: string;
+  };
+  hostname: string;
 }
 
 export type NestConfiguration = Flatten<Configuration>;
@@ -57,5 +63,11 @@ export const getConfiguration = (): Configuration => {
       adminDisableAuth ? '' : undefined,
     ),
     adminDisableAuth,
+    mailgun: {
+      apiKey: process.env.MAILGUN_API_KEY,
+      apiDomain: process.env.MAILGUN_API_DOMAIN,
+      domain: getVariable('MAILGUN_DOMAIN', 'localhost'),
+    },
+    hostname: getVariable('SERVER_HOSTNAME'),
   };
 };
