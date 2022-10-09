@@ -124,5 +124,6 @@ function mapEventToFormValues(
     startTime: combineDateWithTime(new Date(), event.start),
     endTime: combineDateWithTime(new Date(), event.end),
     status: event.status,
+    instructorId: event.instructorId,
   };
 }

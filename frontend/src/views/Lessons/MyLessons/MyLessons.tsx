@@ -127,6 +127,7 @@ export const MyLessons = () => {
           createEvent={openCreateModal}
           selectedDate={selectedDate}
           onLessonClick={openEditModal}
+          selectedInstructorId={selectedInstructorId}
         />
         {(instructorEventsData === undefined || lessonsData === undefined) && (
           <LoaderOverlay>

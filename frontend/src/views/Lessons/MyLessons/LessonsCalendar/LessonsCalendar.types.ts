@@ -8,6 +8,7 @@ export interface RequiredEvent {
 export interface LessonEvent extends RequiredEvent {
   id?: number;
   status: LessonStatus;
+  instructorId: number | null;
 }
 
 export interface LessonsCalendarProps {
@@ -16,6 +17,7 @@ export interface LessonsCalendarProps {
   createEvent: (event: LessonEvent) => void;
   selectedDate: Date;
   onLessonClick: (event: LessonEvent) => void;
+  selectedInstructorId: number | null;
 }
 
 export type BackgroundEvent<T> = T & { type: 'background' };

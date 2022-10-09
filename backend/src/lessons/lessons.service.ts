@@ -48,6 +48,9 @@ export class LessonsService {
         to: to ? LessThanOrEqual(to) : undefined,
         status: Not(LessonStatus.Canceled),
       },
+      relations: {
+        instructor: true,
+      },
     });
   }
 

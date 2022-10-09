@@ -31,11 +31,12 @@ export const getUserEvents = (
   lessonsData: GetMyLessonsResponseDTO | undefined,
 ): LessonEvent[] => {
   const lessons = lessonsData?.lessons ?? [];
-  return lessons.map(({ from, to, status, id }) => ({
+  return lessons.map(({ from, to, status, id, instructor }) => ({
     id,
     start: new Date(from),
     end: new Date(to),
     status,
+    instructorId: instructor.id,
   }));
 };
 

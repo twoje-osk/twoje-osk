@@ -28,6 +28,7 @@ export const LessonsCalendar = ({
   createEvent,
   selectedDate,
   onLessonClick,
+  selectedInstructorId,
 }: LessonsCalendarProps) => {
   const { showInfoSnackbar } = useCommonSnackbars();
 
@@ -45,6 +46,7 @@ export const LessonsCalendar = ({
       start: slotInfo.start,
       end: slotInfo.end,
       status: LessonStatus.Requested,
+      instructorId: selectedInstructorId,
     };
     createEvent(newEvent);
   };
