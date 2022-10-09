@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { OrganizationDomainService } from 'organization-domain/organization-domain.service';
 import { Repository } from 'typeorm';
@@ -21,6 +21,7 @@ export class TraineesService {
     private organizationDomainService: OrganizationDomainService,
     @InjectRepository(User)
     private usersRepository: Repository<User>,
+    @Inject(forwardRef(() => UsersService))
     private usersService: UsersService,
     private resetPasswordService: ResetPasswordService,
   ) {}
