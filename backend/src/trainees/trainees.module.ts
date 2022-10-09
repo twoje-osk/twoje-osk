@@ -11,8 +11,8 @@ import { Trainee } from './entities/trainee.entity';
   controllers: [TraineesController],
   imports: [
     TypeOrmModule.forFeature([Trainee, User]),
-    forwardRef(() => UsersModule),
-    ResetPasswordModule,
+    UsersModule,
+    forwardRef(() => ResetPasswordModule),
   ],
   providers: [TraineesService],
   exports: [TraineesService],

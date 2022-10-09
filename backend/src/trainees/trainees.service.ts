@@ -21,8 +21,8 @@ export class TraineesService {
     private organizationDomainService: OrganizationDomainService,
     @InjectRepository(User)
     private usersRepository: Repository<User>,
-    @Inject(forwardRef(() => UsersService))
     private usersService: UsersService,
+    @Inject(forwardRef(() => ResetPasswordService))
     private resetPasswordService: ResetPasswordService,
   ) {}
 
