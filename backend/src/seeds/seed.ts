@@ -14,7 +14,7 @@ const clearSequences = async (trx: EntityManager) => {
     SELECT SETVAL(c.oid, s.start_value, false) FROM pg_class c
       JOIN pg_namespace pn on c.relnamespace = pn.oid
       JOIN pg_sequences s on s.sequencename = c.relname
-    WHERE c.relkind = 'S';
+    WHERE c.relkind = 'S' AND c.relname != 'migrations_id_seq';
   `);
 };
 

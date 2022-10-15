@@ -1,4 +1,4 @@
-import { ApiProperty, PartialType, OmitType } from '@nestjs/swagger';
+import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsBoolean, IsEmail, IsNotEmpty, IsString } from 'class-validator';
 import { DtoOrganization } from '../organization/organization.dto';
@@ -13,10 +13,6 @@ export class DtoUser {
   @IsNotEmpty()
   @IsEmail()
   email: string;
-
-  @ApiProperty()
-  @IsNotEmpty()
-  password: string;
 
   @ApiProperty()
   @IsNotEmpty()
@@ -56,11 +52,6 @@ export class DtoCreateUser {
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  password: string;
-
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsString()
   firstName: string;
 
   @ApiProperty()
@@ -79,9 +70,7 @@ export class DtoCreateUser {
   phoneNumber: string;
 }
 
-export class DtoUpdateUser extends OmitType(PartialType(DtoCreateUser), [
-  'password',
-]) {}
+export class DtoUpdateUser extends PartialType(DtoCreateUser) {}
 
 export class UserAddNewResponseDto {
   @ApiProperty()

@@ -8,9 +8,11 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Request,
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { ApiBody, ApiResponse } from '@nestjs/swagger';
+import { Request as ExpressRequest } from 'express';
 import {
   TraineeFindAllResponseDto,
   TraineeFindOneResponseDto,
@@ -61,8 +63,13 @@ export class TraineesController {
   @Post()
   async create(
     @Body() { trainee }: TraineeAddNewRequestDto,
+    @Request() req: ExpressRequest,
   ): Promise<TraineeAddNewResponseDto> {
-    const createTraineeCall = await this.traineesService.create(trainee);
+    const isHttps = req.protocol === 'https';
+    const createTraineeCall = await this.traineesService.create(
+      trainee,
+      isHttps,
+    );
 
     if (createTraineeCall.ok) {
       return { trainee: createTraineeCall.data };
