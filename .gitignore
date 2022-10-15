@@ -54,3 +54,8 @@ backend/client
 backend/src/**/*.entity.admin.ts
 backend/src/admin/admin.imports.ts
 backend/.adminjs
+
+# Certficiates secrets
+secrets_*.yaml
+!secrets_*.enc.yaml
+*tls_domain_cert.pfx
