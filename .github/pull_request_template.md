@@ -6,6 +6,7 @@
 ## What part of the app is affected?
 * [ ] Frontend
 * [ ] Backend
+* [ ] Infrastructure
 
 ## Screenshots or Video Recording (if appropriate):
 <!-- Provide some Screenshots or Video Recordings -->
