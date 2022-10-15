@@ -27,7 +27,9 @@ class UserFactory extends Factory<User> {
     user.firstName = this.faker.name.firstName();
     user.lastName = this.faker.name.lastName();
     user.isActive = true;
-    user.email = this.faker.internet.email(user.firstName, user.lastName);
+    user.email = this.faker.internet
+      .email(user.firstName, user.lastName)
+      .toLowerCase();
     user.password = bcrypt.hashSync('password', 10);
     user.organization = this.faker.helpers.arrayElement(
       organizationsFactory.getAll(),

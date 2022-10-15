@@ -1,2 +1,7 @@
 src/migrations/*
 dist
+
+# Admin
+src/**/*.entity.admin.ts
+src/admin/admin.imports.ts
+.adminjs

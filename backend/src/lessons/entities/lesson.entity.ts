@@ -4,9 +4,9 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
-  RelationId,
 } from 'typeorm';
 import { LessonStatus } from '@osk/shared';
+import { Exclude } from 'class-transformer';
 import { Vehicle } from '../../vehicles/entities/vehicle.entity';
 import { Instructor } from '../../instructors/entities/instructor.entity';
 import { Trainee } from '../../trainees/entities/trainee.entity';
@@ -29,20 +29,26 @@ export class Lesson {
   status: LessonStatus;
 
   @ManyToOne(() => Instructor, { nullable: false })
-  @JoinColumn()
+  @JoinColumn({ name: 'instructorId' })
   instructor: Instructor;
 
-  @RelationId((lesson: Lesson) => lesson.instructor)
+  @Exclude()
+  @Column()
   instructorId: number;
 
   @ManyToOne(() => Trainee, { nullable: false })
-  @JoinColumn()
+  @JoinColumn({ name: 'traineeId' })
   trainee: Trainee;
 
-  @RelationId((lesson: Lesson) => lesson.trainee)
+  @Exclude()
+  @Column()
   traineeId: number;
 
   @ManyToOne(() => Vehicle, { nullable: true })
-  @JoinColumn()
+  @JoinColumn({ name: 'vehicleId' })
   vehicle: Vehicle | null;
+
+  @Exclude()
+  @Column({ nullable: true })
+  vehicleId: number | null;
 }

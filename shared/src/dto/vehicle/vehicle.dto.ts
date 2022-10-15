@@ -1,24 +1,23 @@
-import { ApiProperty, PartialType } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
 import {
+  IsDate,
   IsNotEmpty,
   IsOptional,
   MaxLength,
   MinLength,
+  IsString,
   ValidateNested,
 } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 
 export class DtoVehicle {
   @ApiProperty()
-  @IsNotEmpty()
   id: number;
 
   @ApiProperty()
-  @IsNotEmpty()
   name: string;
 
   @ApiProperty()
-  @IsNotEmpty()
   licensePlate: string;
 
   @ApiProperty()
@@ -32,29 +31,27 @@ export class DtoVehicle {
   vin: string;
 
   @ApiProperty()
-  @IsNotEmpty()
   dateOfNextCheck: ApiDate;
 
   @ApiProperty({ nullable: true })
-  @IsOptional()
   photo: string | null;
 
   @ApiProperty({ nullable: true })
-  @IsOptional()
   additionalDetails: string | null;
 
   @ApiProperty({ nullable: true })
-  @IsOptional()
   notes: string | null;
 }
 
 export class DtoCreateVehicle {
   @ApiProperty()
   @IsNotEmpty()
+  @IsString()
   name: string;
 
   @ApiProperty()
   @IsNotEmpty()
+  @IsString()
   licensePlate: string;
 
   @ApiProperty()
@@ -65,19 +62,31 @@ export class DtoCreateVehicle {
     message: 'Vin is too long. 17 chars required.',
   })
   @IsNotEmpty()
+  @IsString()
   vin: string;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'string', format: 'YYYY-mm-DDTHH:mm:ss.SZ' })
   @IsNotEmpty()
+  @IsDate()
+  @Type(() => Date)
   dateOfNextCheck: ApiDate;
 
-  @ApiProperty({ nullable: true })
+  @ApiPropertyOptional({ nullable: true, type: 'string' })
+  @IsOptional()
+  @IsString()
+  @Transform(({ value }) => value ?? null)
   photo: string | null;
 
-  @ApiProperty({ nullable: true })
+  @ApiPropertyOptional({ nullable: true, type: 'string' })
+  @IsOptional()
+  @IsString()
+  @Transform(({ value }) => value ?? null)
   additionalDetails: string | null;
 
-  @ApiProperty({ nullable: true })
+  @ApiPropertyOptional({ nullable: true, type: 'string' })
+  @IsOptional()
+  @IsString()
+  @Transform(({ value }) => value ?? null)
   notes: string | null;
 }
 
@@ -120,5 +129,3 @@ export class VehicleUpdateRequestDto {
 }
 
 export class VehicleDeleteResponseDto {}
-
-export class VehicleDeleteRequestDto {}

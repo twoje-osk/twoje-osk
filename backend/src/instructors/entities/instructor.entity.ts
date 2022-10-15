@@ -5,7 +5,9 @@ import {
   PrimaryGeneratedColumn,
   ManyToMany,
   JoinTable,
+  RelationId,
 } from 'typeorm';
+import { Exclude } from 'class-transformer';
 import { DriversLicenseCategory } from '../../driversLicenseCategory/entities/driversLicenseCategory.entity';
 import type { User } from '../../users/entities/user.entity';
 
@@ -16,6 +18,10 @@ export class Instructor {
 
   @OneToOne<User>('User', (user) => user.instructor)
   user: User;
+
+  @Exclude()
+  @RelationId((instructor: Instructor) => instructor.user)
+  userId: number;
 
   @Column({ type: 'text' })
   registrationNumber: string;

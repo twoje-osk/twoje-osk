@@ -1,4 +1,11 @@
-import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Exclude } from 'class-transformer';
+import {
+  Column,
+  Entity,
+  OneToOne,
+  PrimaryGeneratedColumn,
+  RelationId,
+} from 'typeorm';
 import type { User } from '../../users/entities/user.entity';
 
 @Entity()
@@ -17,4 +24,8 @@ export class Trainee {
 
   @OneToOne<User>('User', (user) => user.trainee)
   user: User;
+
+  @Exclude()
+  @RelationId((trainee: Trainee) => trainee.user)
+  userId: number;
 }

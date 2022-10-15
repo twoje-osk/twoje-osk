@@ -12,11 +12,23 @@ import { seedDriversLicenseCategories } from './seed.driversLicenseCategories';
 
 const clearSequences = async (trx: EntityManager) => {
   await trx.query(`
-    SELECT SETVAL(c.oid, s.start_value) FROM pg_class c
+    SELECT SETVAL(c.oid, s.start_value, false) FROM pg_class c
       JOIN pg_namespace pn on c.relnamespace = pn.oid
       JOIN pg_sequences s on s.sequencename = c.relname
-    WHERE c.relkind = 'S';
+    WHERE c.relkind = 'S' AND c.relname != 'migrations_id_seq';
   `);
+};
+
+const truncateAll = (trx: EntityManager) => {
+  const { factories } = Factory;
+  return Promise.all(factories.map((factory) => factory.truncate(trx)));
+};
+
+const saveAll = (trx: EntityManager) => {
+  const { factories } = Factory;
+  const allEntities = factories.flatMap((factory) => factory.getAll());
+
+  return trx.save(allEntities);
 };
 
 const run = async () => {
@@ -24,6 +36,7 @@ const run = async () => {
 
   await dataSource.transaction(async (trx) => {
     await clearSequences(trx);
+    await truncateAll(trx);
 
     seedDriversLicenseCategories();
     seedOrganizations();
@@ -34,13 +47,7 @@ const run = async () => {
     seedAvailabilities();
     seedLessons();
 
-    const { factories } = Factory;
-    await Promise.all(factories.map((factory) => factory.truncate(trx)));
-
-    for (const factory of factories) {
-      // eslint-disable-next-line no-await-in-loop
-      await factory.save(trx);
-    }
+    await saveAll(trx);
   });
 
   await dataSource.destroy();

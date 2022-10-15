@@ -49,3 +49,8 @@ backend/client
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+
+# Admin
+backend/src/**/*.entity.admin.ts
+backend/src/admin/admin.imports.ts
+backend/.adminjs
