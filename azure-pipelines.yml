@@ -143,16 +143,3 @@ stages:
               tags: |
                 latest
             displayName: Push Docker image to ACR
-          - task: AzureRmWebAppDeployment@4
-            inputs:
-              ConnectionType: 'AzureRM'
-              azureSubscription: 'Romeo_Student'
-              appType: 'webAppContainer'
-              WebAppName: 'twoje-osk'
-              deployToSlotOrASE: true
-              ResourceGroupName: 'osk-prod-back-rg'
-              SlotName: 'production'
-              DockerNamespace: '$(ACR_ADDRESS)'
-              DockerRepository: '$(DOCKER_REPO)'
-              DockerImageTag: 'latest'
-            displayName: Deploy app
