@@ -61,7 +61,7 @@ stages:
             persistCredentials: true
           - bash: |
               if [[ "$(Build.Reason)" != "PullRequest" ]]; then
-                DIFFS=`git diff HEAD HEAD~1 --name-only -- 'frontend' 'backend' 'shared' 'yarn.lock' 'docker/Dockerfile.backend'`
+                DIFFS=`git diff HEAD HEAD~ --name-only -- 'frontend' 'backend' 'shared' 'yarn.lock' 'docker/Dockerfile.backend'`
               else
                 DIFFS=`git diff HEAD origin/$(System.PullRequest.TargetBranch) --name-only -- 'frontend' 'backend' 'shared' 'yarn.lock' 'docker/Dockerfile.backend'`
               fi
