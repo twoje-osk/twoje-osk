@@ -38,7 +38,7 @@ import { ResetPasswordModule } from './reset-password/reset-password.module';
           database: configService.get('database.database'),
           schema: configService.get('database.schema'),
           entities: ['**/*.entity.js'],
-          migrations: ['dist/migrations/*.js'],
+          migrations: ['dist/src/migrations/*.js'],
           synchronize: false,
           migrationsRun: configService.get('isProduction'),
         };
