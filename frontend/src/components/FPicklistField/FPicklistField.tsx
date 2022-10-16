@@ -7,8 +7,12 @@ import {
   Select,
   SelectProps,
 } from '@mui/material';
-import { PicklistOption } from '@osk/shared/src/types/picklist.types';
 import { useField } from 'formik';
+
+export type PicklistOption = {
+  value: number;
+  label: string;
+};
 
 type FPicklistFieldProps = Omit<
   SelectProps,
