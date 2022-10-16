@@ -59,6 +59,7 @@ stages:
         steps:
           - checkout: self
             persistCredentials: true
+            fetchDepth: 5
           - bash: |
               if [[ "$(Build.Reason)" != "PullRequest" ]]; then
                 DIFFS=`git diff HEAD HEAD~ --name-only -- 'frontend' 'backend' 'shared' 'yarn.lock' 'docker/Dockerfile.backend'`
