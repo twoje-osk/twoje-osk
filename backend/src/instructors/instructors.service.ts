@@ -94,9 +94,11 @@ export class InstructorsService {
     });
     newUser.instructor = newInstructor;
     await this.usersRepository.save(newUser);
+
     const createdInstructor = await this.instructorsRepository.save(
       newInstructor,
     );
+
     return getSuccess(createdInstructor.id);
   }
 

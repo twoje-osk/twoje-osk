@@ -39,9 +39,17 @@ export class InstructorsController {
     @Request() request: AuthRequest,
   ): Promise<InstructorFindAllResponseDto> {
     const { role } = request.user;
-    const instructors = await this.instructorsService.findAll(
+    const instructorsData = await this.instructorsService.findAll(
       role === UserRole.Trainee ? true : undefined,
     );
+    const instructors = instructorsData.map((instructor) => {
+      return {
+        ...instructor,
+        instructorsQualifications: instructor.instructorsQualifications.map(
+          (category) => category.id,
+        ),
+      };
+    });
 
     return { instructors };
   }
@@ -53,13 +61,22 @@ export class InstructorsController {
   async findOne(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<InstructorFindOneResponseDto> {
-    const instructor = await this.instructorsService.findOne(+id);
+    const instructorData = await this.instructorsService.findOne(+id);
 
-    if (instructor === null) {
+    if (instructorData === null) {
       throw new NotFoundException();
     }
 
-    return { instructor };
+    const instructor = {
+      ...instructorData,
+      instructorsQualifications: instructorData.instructorsQualifications.map(
+        (category) => category.id,
+      ),
+    };
+
+    return {
+      instructor,
+    };
   }
 
   @ApiResponse({

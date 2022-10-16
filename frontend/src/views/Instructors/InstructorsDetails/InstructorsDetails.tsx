@@ -17,6 +17,7 @@ import { useState } from 'react';
 import { Link, Navigate, useParams } from 'react-router-dom';
 import { Box } from 'reflexbox';
 import useSWR from 'swr';
+import { useActionModal } from '../../../hooks/useActionModal/useActionModal';
 import { useCommonSnackbars } from '../../../hooks/useCommonSnackbars/useCommonSnackbars';
 import { FullPageLoading } from '../../../components/FullPageLoading/FullPageLoading';
 import { GeneralAPIError } from '../../../components/GeneralAPIError/GeneralAPIError';
@@ -31,8 +32,24 @@ export const InstructorsDetails = () => {
   const makeRequest = useMakeRequestWithAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [showDeactivateModal, setShowDeactivateModal] = useState(false);
+  const {
+    setLoading: setActivateModalLoading,
+    setOpen: setActivateModalOpen,
+    isLoading: isActivateModalLoading,
+    isOpen: isActivateModalOpen,
+    openModal: openActivateModal,
+    closeModal: closeActivateModall,
+  } = useActionModal();
+  const {
+    setLoading: setDeactivateModalLoading,
+    setOpen: setDeactivateModalOpen,
+    isLoading: isDeactivateModalLoading,
+    isOpen: isDeactivateModalOpen,
+    openModal: openDeactivateModal,
+    closeModal: closeDeactivateModall,
+  } = useActionModal();
   const { showErrorSnackbar, showSuccessSnackbar } = useCommonSnackbars();
-  const { data, error } = useSWR<InstructorFindOneResponseDto>(
+  const { data, error, mutate } = useSWR<InstructorFindOneResponseDto>(
     instructorId ? `/api/instructors/${instructorId}` : null,
   );
 
@@ -49,9 +66,12 @@ export const InstructorsDetails = () => {
   }
 
   const { instructor } = data;
-  const deactivateModalTitle = 'Jesteś pewien';
+  const activateModalTitle = 'Jesteś pewien?';
+  const modalTitle = 'Jesteś pewien?';
   const deactivateModalActionButtonLabel = 'Dezaktywuj';
-  const deactivateModalSubtitle = `Czy na pewno chcesz dezaktywować tego użytkownika? \n ${instructor.user.firstName} ${instructor.user.lastName} straci dostęp do wszystkich danych i funkcji systemu`;
+  const deactivateModalSubtitle = `Czy na pewno chcesz dezaktywować tego użytkownika? ${instructor.user.firstName} ${instructor.user.lastName} straci dostęp do wszystkich danych i funkcji systemu`;
+  const activateModalActionButtonLabel = 'Aktywuj';
+  const activateModalSubtitle= `Czy na pewno chcesz aktywować tego użytkownika?`;
 
   const initialValues: InstructorsFormData = {
     firstName: instructor.user.firstName,
@@ -59,18 +79,11 @@ export const InstructorsDetails = () => {
     email: instructor.user.email,
     licenseNumber: instructor.licenseNumber,
     registrationNumber: instructor.registrationNumber,
-    instructorsQualifications: instructor.instructorsQualifications.map(
-      (category) => category.id,
-    ),
+    instructorsQualifications: instructor.instructorsQualifications,
     phoneNumber: instructor.user.phoneNumber,
   };
 
-  const toggleDeactivateModal = () => {
-    setIsLoading(!isLoading);
-    setShowDeactivateModal(!showDeactivateModal);
-  };
-
-  const deactivateUser = async () => {
+  const toggleIsUserActive = async () => {
     const {
       photo,
       registrationNumber,
@@ -85,11 +98,16 @@ export const InstructorsDetails = () => {
         instructorsQualifications,
         user: {
           ...userValues,
-          isActive: false,
+          isActive: !instructor.user.isActive,
         },
         photo,
       },
     };
+    if (instructor.user.isActive) {
+      setDeactivateModalLoading(true);
+    } else {
+      setActivateModalLoading(true);
+    }
     const instructorApiUrl = `/api/instructors/${instructorId}`;
     const response = await makeRequest<
       InstructorUpdateResponseDto,
@@ -97,30 +115,21 @@ export const InstructorsDetails = () => {
     >(instructorApiUrl, 'PATCH', body);
 
     if (!response.ok) {
-      setIsLoading(false);
       showErrorSnackbar();
-      return;
+    } else {
+      showSuccessSnackbar(
+        `Instruktor ${initialValues.firstName} ${initialValues.lastName} został dezaktywowany`,
+      );
     }
-
-    toggleDeactivateModal();
-    showSuccessSnackbar(
-      `Instruktor ${initialValues.firstName} ${initialValues.lastName} został dezaktywowany`,
-    );
+    await mutate();
+    if (instructor.user.isActive) {
+      setDeactivateModalLoading(false);
+      setDeactivateModalOpen(false);
+    } else {
+      setActivateModalLoading(false);
+      setActivateModalOpen(false);
+    }
   };
-
-  if (showDeactivateModal) {
-    return (
-      <ActionModal
-        id="deactivateModal"
-        isOpen={showDeactivateModal}
-        onClose={toggleDeactivateModal}
-        onAction={deactivateUser}
-        actionButtonText={deactivateModalActionButtonLabel}
-        title={deactivateModalTitle}
-        subtitle={deactivateModalSubtitle}
-      />
-    );
-  }
 
   return (
     <div>
@@ -159,19 +168,60 @@ export const InstructorsDetails = () => {
             >
               Edytuj
             </Button>
+            {instructor.user.isActive ?
             <LoadingButton
               color="error"
               variant="outlined"
-              onClick={toggleDeactivateModal}
+              onClick={() => setDeactivateModalOpen(true)}
               startIcon={<Icon>delete</Icon>}
-              disabled={!instructor.user.isActive || isLoading}
+              disabled={isLoading}
               loading={isLoading}
             >
               Dezaktywuj
-            </LoadingButton>
+            </LoadingButton> :
+            <LoadingButton
+              color="success"
+              variant="outlined"
+              onClick={() => setActivateModalOpen(true)}
+              startIcon={<Icon>check</Icon>}
+              disabled={isLoading}
+              loading={isLoading}
+            >
+              Aktywuj
+            </LoadingButton>}
           </Stack>
         </InstructorsForm>
       </Box>
+      <ActionModal
+        id="deactivateModal"
+        isOpen={isDeactivateModalOpen}
+        isLoading={isDeactivateModalLoading}
+        onClose={() => setDeactivateModalOpen(false)}
+        onAction={toggleIsUserActive}
+        actionButtonText={deactivateModalActionButtonLabel}
+        title="Czy na pewno chcesz dezaktywować tego instruktora?"
+        subtitle={
+          <span>
+            Po dezaktywowaniu {instructor.user.firstName} {instructor.user.lastName} <strong>straci</strong> dostęp do systemu.
+          </span>
+        }
+      />
+      <ActionModal
+        id="activateModal"
+        actionButtonColor='success'
+        actionButtonIcon='check'
+        isOpen={isActivateModalOpen}
+        isLoading={isActivateModalLoading}
+        onClose={() => setActivateModalOpen(false)}
+        onAction={toggleIsUserActive}
+        actionButtonText={activateModalActionButtonLabel}
+        title="Czy na pewno chcesz aktywować tego instruktora?"
+        subtitle={
+          <span>
+            Po aktywowaniu {instructor.user.firstName} {instructor.user.lastName} <strong>zyska</strong> dostęp do systemu.
+          </span>
+        }
+      />
     </div>
   );
 };

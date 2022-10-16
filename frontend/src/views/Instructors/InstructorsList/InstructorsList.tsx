@@ -16,25 +16,37 @@ import {
 import { useNavigate, Link } from 'react-router-dom';
 import { Flex } from 'reflexbox';
 import useSWR from 'swr';
-import { InstructorFindAllResponseDto } from '@osk/shared';
+import {
+  DriversLicenseCategoryFindAllResponseDto,
+  InstructorFindAllResponseDto,
+} from '@osk/shared';
 import { FullPageLoading } from '../../../components/FullPageLoading/FullPageLoading';
 import { GeneralAPIError } from '../../../components/GeneralAPIError/GeneralAPIError';
 
 export const InstructorsList = () => {
-  const { data, error } =
+  const { data: instructorsData, error: instructorsError } =
     useSWR<InstructorFindAllResponseDto>('/api/instructors');
+  const { data: qualificationsData, error: qualificationsError } =
+    useSWR<DriversLicenseCategoryFindAllResponseDto>(
+      '/api/drivers-license-categories',
+    );
   const navigate = useNavigate();
   const pageTitle = 'Instruktorzy';
 
-  if (error) {
+  if (instructorsError || qualificationsError) {
     return <GeneralAPIError />;
   }
 
-  if (data === undefined) {
+  if (instructorsData === undefined || qualificationsData === undefined) {
     return <FullPageLoading />;
   }
 
-  const rows = data.instructors;
+  const rows = instructorsData.instructors;
+  const qualifications = Object.fromEntries(
+    qualificationsData.categories.map((quali) => {
+      return [quali.id, quali.name];
+    }),
+  );
 
   return (
     <Flex flexDirection="column" height="100%">
@@ -71,6 +83,7 @@ export const InstructorsList = () => {
               <TableCell>Email</TableCell>
               <TableCell>Telefon</TableCell>
               <TableCell>Uprawnienia</TableCell>
+              <TableCell>Aktywny</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -87,13 +100,17 @@ export const InstructorsList = () => {
                 <TableCell>{row.user.email}</TableCell>
                 <TableCell>{row.user.phoneNumber}</TableCell>
                 <TableCell>
-                  {row.instructorsQualifications.reduce(
-                    (qualifications, el) => {
-                      return qualifications
-                        ? `${qualifications}, ${el.name}`
-                        : `${el.name}`;
-                    },
-                    '',
+                  {row.instructorsQualifications
+                    .map((id) => {
+                      return qualifications[id.toString()];
+                    })
+                    .join(', ')}
+                </TableCell>
+                <TableCell>
+                  {row.user.isActive ? (
+                    <Icon color="success">check</Icon>
+                  ) : (
+                    <Icon color="error">close</Icon>
                   )}
                 </TableCell>
               </TableRow>

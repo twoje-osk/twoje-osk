@@ -33,6 +33,9 @@ export class Instructor {
   @JoinTable()
   instructorsQualifications: DriversLicenseCategory[];
 
+  @RelationId((instructor: Instructor) => instructor.instructorsQualifications)
+  instructorsQualificationsIds: number[];
+
   @Column({ nullable: true, type: 'text' })
   photo: string | null;
 }

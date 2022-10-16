@@ -19,8 +19,15 @@ export const instructorsFormSchema: Yup.SchemaOf<InstructorsFormData> =
     firstName: Yup.string().required(),
     lastName: Yup.string().required(),
     email: Yup.string().required().email(),
-    phoneNumber: Yup.string().required(),
-    licenseNumber: Yup.string().required(),
-    registrationNumber: Yup.string().required(),
+    phoneNumber: Yup.string()
+      .min(9)
+      .max(12)
+      .matches(/\+{1}[0-9]{11}|[0-9]{9}/)
+      .required(),
+    licenseNumber: Yup.string()
+      .length(10)
+      .matches(/[\d\w]{6}/)
+      .required(),
+    registrationNumber: Yup.string().length(6).matches(/\d{6}/).required(),
     instructorsQualifications: Yup.array().of(Yup.number().required()),
   });

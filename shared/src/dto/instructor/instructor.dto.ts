@@ -1,4 +1,9 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import {
+  ApiProperty,
+  ApiPropertyOptional,
+  OmitType,
+  PartialType,
+} from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import {
   IsNotEmpty,
@@ -7,7 +12,6 @@ import {
   IsString,
   ValidateNested,
 } from 'class-validator';
-import { DtoDriversLicenseCategory } from '../driversLicenseCategory/driversLicenseCategory.dto';
 import { DtoCreateUser, DtoUpdateUser, DtoUser } from '../user/user.dto';
 
 export class DtoInstructor {
@@ -19,6 +23,7 @@ export class DtoInstructor {
   @ApiProperty()
   @IsNotEmpty()
   @ValidateNested()
+  @Type(() => DtoUser)
   user: DtoUser;
 
   @ApiProperty()
@@ -35,67 +40,6 @@ export class DtoInstructor {
   @IsNotEmpty()
   @IsNumber({}, { each: true })
   instructorsQualifications: number[];
-
-  @ApiPropertyOptional({ nullable: true, type: 'string' })
-  @IsOptional()
-  @IsString()
-  @Transform(({ value }) => value ?? null)
-  photo: string | null | undefined;
-}
-
-export class DtoLessonInstructor {
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsNumber()
-  id: number;
-
-  @ApiProperty()
-  @IsNotEmpty()
-  user: DtoUser;
-
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsString()
-  registrationNumber: string;
-
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsString()
-  licenseNumber: string;
-
-  @ValidateNested({ each: true })
-  @ApiProperty({
-    isArray: true,
-    type: DtoDriversLicenseCategory,
-  })
-  instructorsQualifications: DtoDriversLicenseCategory[];
-
-  @ApiPropertyOptional({ nullable: true, type: 'string' })
-  @IsOptional()
-  @IsString()
-  @Transform(({ value }) => value ?? null)
-  photo: string | null | undefined;
-}
-
-export class DtoFindOneInstructor {
-  @ApiProperty()
-  @ValidateNested()
-  user: DtoCreateUser;
-
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsString()
-  registrationNumber: string;
-
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsString()
-  licenseNumber: string;
-
-  @ApiProperty()
-  @ValidateNested({ each: true })
-  @IsNotEmpty()
-  instructorsQualifications: DtoDriversLicenseCategory[];
 
   @ApiPropertyOptional({ nullable: true, type: 'string' })
   @IsOptional()
@@ -107,6 +51,7 @@ export class DtoFindOneInstructor {
 export class DtoCreateInstructor {
   @ApiProperty()
   @ValidateNested()
+  @Type(() => DtoCreateUser)
   user: DtoCreateUser;
 
   @ApiProperty()
@@ -130,47 +75,31 @@ export class DtoCreateInstructor {
   photo: string | null;
 }
 
-export class DtoUpdateInstructor {
+export class DtoUpdateInstructor extends OmitType(
+  PartialType(DtoCreateInstructor),
+  ['user'],
+) {
   @ApiProperty()
+  @IsOptional()
   @ValidateNested()
   @Type(() => DtoUpdateUser)
   user: DtoUpdateUser;
-
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsString()
-  registrationNumber: string;
-
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsString()
-  licenseNumber: string;
-
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsNumber({}, { each: true })
-  instructorsQualifications: number[];
-
-  @ApiPropertyOptional({ nullable: true, type: 'string' })
-  @IsOptional()
-  @IsString()
-  @Transform(({ value }) => value ?? null)
-  photo: string | null | undefined;
 }
 
 export class InstructorFindAllResponseDto {
   @ApiProperty({
     isArray: true,
-    type: DtoFindOneInstructor,
+    type: DtoInstructor,
   })
-  @ValidateNested({ each: true })
-  instructors: DtoFindOneInstructor[];
+  @ValidateNested()
+  @Type(() => DtoInstructor)
+  instructors: DtoInstructor[];
 }
 
 export class InstructorFindOneResponseDto {
   @ValidateNested()
   @ApiProperty()
-  instructor: DtoFindOneInstructor;
+  instructor: DtoInstructor;
 }
 
 export class InstructorUpdateRequestDto {
@@ -191,6 +120,7 @@ export class InstructorCreateRequestDto {
   @ApiProperty()
   @IsNotEmpty()
   @ValidateNested()
+  @Type(() => DtoCreateInstructor)
   instructor: DtoCreateInstructor;
 }
 

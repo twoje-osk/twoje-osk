@@ -54,9 +54,7 @@ export const InstructorsEdit = () => {
     email: instructor.user.email,
     licenseNumber: instructor.licenseNumber,
     registrationNumber: instructor.registrationNumber,
-    instructorsQualifications: instructor.instructorsQualifications.map(
-      (category) => category.id,
-    ),
+    instructorsQualifications: instructor.instructorsQualifications,
     phoneNumber: instructor.user.phoneNumber,
   };
 

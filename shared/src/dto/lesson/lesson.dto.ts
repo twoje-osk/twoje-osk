@@ -4,7 +4,7 @@ import { Type } from 'class-transformer';
 import { IsDate, IsOptional, Validate } from 'class-validator';
 import { addHours, startOfHour } from 'date-fns';
 import { LessonStatus } from '../../types/lesson.types';
-import { DtoLessonInstructor } from '../instructor/instructor.dto';
+import { DtoInstructor } from '../instructor/instructor.dto';
 import { IsToGreaterThenFrom } from './lesson.validators';
 
 export class LessonsDTO {
@@ -25,9 +25,9 @@ export class LessonsDTO {
   status: LessonStatus;
 
   @ApiProperty({
-    type: DtoLessonInstructor,
+    type: DtoInstructor,
   })
-  instructor: DtoLessonInstructor;
+  instructor: DtoInstructor;
 }
 
 export class GetMyLessonsQueryDTO {

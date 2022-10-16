@@ -57,9 +57,9 @@ export const InstructorsNew = () => {
       return;
     }
 
-    navigate(`/instruktorzy/${response.data.instructor.id}`);
+    navigate(`/instruktorzy/${response.data.id}`);
     showSuccessSnackbar(
-      `Instruktor ${response.data.instructor.user.firstName} ${response.data.instructor.user.lastName} został utworzony`,
+      `Instruktor ${userValues.firstName} ${userValues.lastName} został utworzony`,
     );
   };
 
