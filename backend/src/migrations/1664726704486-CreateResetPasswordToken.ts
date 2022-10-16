@@ -11,7 +11,7 @@ export class CreateResetPasswordToken1664726704486 implements MigrationInterface
 
     public async down(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`ALTER TABLE "reset_password_token" DROP CONSTRAINT "FK_3fde3055d9d16236c05d030915e"`);
-        await queryRunner.query(`DROP INDEX "public"."IDX_609174ec22ebfd1b8dd71f867a"`);
+        await queryRunner.query(`DROP INDEX "IDX_609174ec22ebfd1b8dd71f867a"`);
         await queryRunner.query(`DROP TABLE "reset_password_token"`);
     }
 

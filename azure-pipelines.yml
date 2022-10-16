@@ -61,7 +61,7 @@ stages:
             persistCredentials: true
           - bash: |
               if [[ "$(Build.Reason)" != "PullRequest" ]]; then
-                DIFFS=`git diff HEAD HEAD~1 --name-only -- 'frontend' 'backend' 'shared' 'yarn.lock' 'docker/Dockerfile.backend'`
+                DIFFS=`git diff HEAD HEAD~ --name-only -- 'frontend' 'backend' 'shared' 'yarn.lock' 'docker/Dockerfile.backend'`
               else
                 DIFFS=`git diff HEAD origin/$(System.PullRequest.TargetBranch) --name-only -- 'frontend' 'backend' 'shared' 'yarn.lock' 'docker/Dockerfile.backend'`
               fi
@@ -143,16 +143,3 @@ stages:
               tags: |
                 latest
             displayName: Push Docker image to ACR
-          - task: AzureRmWebAppDeployment@4
-            inputs:
-              ConnectionType: 'AzureRM'
-              azureSubscription: 'Romeo_Student'
-              appType: 'webAppContainer'
-              WebAppName: 'twoje-osk'
-              deployToSlotOrASE: true
-              ResourceGroupName: 'osk-prod-back-rg'
-              SlotName: 'production'
-              DockerNamespace: '$(ACR_ADDRESS)'
-              DockerRepository: '$(DOCKER_REPO)'
-              DockerImageTag: 'latest'
-            displayName: Deploy app
