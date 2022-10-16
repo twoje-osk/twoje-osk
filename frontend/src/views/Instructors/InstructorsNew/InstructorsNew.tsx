@@ -39,7 +39,7 @@ export const InstructorsNew = () => {
         registrationNumber,
         licenseNumber,
         instructorsQualifications,
-        user: { ...userValues, password: '', isActive: false },
+        user: { ...userValues, isActive: false },
         photo: photo ?? null,
       },
     };
