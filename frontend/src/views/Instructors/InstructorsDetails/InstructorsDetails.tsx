@@ -34,14 +34,14 @@ export const InstructorsDetails = () => {
     isLoading: isActivateModalLoading,
     isOpen: isActivateModalOpen,
     openModal: openActivateModal,
-    closeModal: closeActivateModall,
+    closeModal: closeActivateModal,
   } = useActionModal();
   const {
     setLoading: setDeactivateModalLoading,
     isLoading: isDeactivateModalLoading,
     isOpen: isDeactivateModalOpen,
     openModal: openDeactivateModal,
-    closeModal: closeDeactivateModall,
+    closeModal: closeDeactivateModal,
   } = useActionModal();
   const { showErrorSnackbar, showSuccessSnackbar } = useCommonSnackbars();
   const { data, error, mutate } = useSWR<InstructorFindOneResponseDto>(
@@ -73,6 +73,15 @@ export const InstructorsDetails = () => {
   };
 
   const toggleIsUserActive = async () => {
+    const setModalLoading = instructor.user.isActive
+      ? setDeactivateModalLoading
+      : setActivateModalLoading;
+    const snackbarMessage = instructor.user.isActive
+      ? `Instruktor ${initialValues.firstName} ${initialValues.lastName} został dezaktywowany`
+      : `Instruktor ${initialValues.firstName} ${initialValues.lastName} został aktywowany`;
+    const closeModal = instructor.user.isActive
+      ? closeDeactivateModal
+      : closeActivateModal;
     const {
       photo,
       registrationNumber,
@@ -104,20 +113,16 @@ export const InstructorsDetails = () => {
     >(instructorApiUrl, 'PATCH', body);
 
     if (!response.ok) {
+      setModalLoading(false);
       showErrorSnackbar();
-    } else {
-      showSuccessSnackbar(
-        `Instruktor ${initialValues.firstName} ${initialValues.lastName} został dezaktywowany`,
-      );
+      return;
     }
+
+    setModalLoading(false);
+    showSuccessSnackbar(snackbarMessage);
+
     await mutate();
-    if (instructor.user.isActive) {
-      setDeactivateModalLoading(false);
-      closeDeactivateModall();
-    } else {
-      setActivateModalLoading(false);
-      closeActivateModall();
-    }
+    closeModal();
   };
 
   return (
@@ -187,7 +192,7 @@ export const InstructorsDetails = () => {
         id="deactivateModal"
         isOpen={isDeactivateModalOpen}
         isLoading={isDeactivateModalLoading}
-        onClose={() => closeDeactivateModall()}
+        onClose={closeDeactivateModal}
         onAction={toggleIsUserActive}
         actionButtonText="Dezaktywuj"
         title="Czy na pewno chcesz dezaktywować tego instruktora?"
@@ -205,7 +210,7 @@ export const InstructorsDetails = () => {
         actionButtonIcon="check"
         isOpen={isActivateModalOpen}
         isLoading={isActivateModalLoading}
-        onClose={() => closeActivateModall()}
+        onClose={closeActivateModal}
         onAction={toggleIsUserActive}
         actionButtonText="Aktywuj"
         title="Czy na pewno chcesz aktywować tego instruktora?"
