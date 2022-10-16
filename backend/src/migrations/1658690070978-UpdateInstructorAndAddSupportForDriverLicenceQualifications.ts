@@ -23,8 +23,8 @@ export class UpdateInstructorAndAddSupportForDriverLicenceQualifications16586900
         await queryRunner.query(`ALTER TABLE "instructor" DROP COLUMN "photo"`);
         await queryRunner.query(`ALTER TABLE "instructor" DROP COLUMN "licenseNumber"`);
         await queryRunner.query(`ALTER TABLE "instructor" DROP COLUMN "registrationNumber"`);
-        await queryRunner.query(`DROP INDEX "public"."IDX_61273963d575e0d62044c17248"`);
-        await queryRunner.query(`DROP INDEX "public"."IDX_0edbd6938de3e618c553e5a269"`);
+        await queryRunner.query(`DROP INDEX "IDX_61273963d575e0d62044c17248"`);
+        await queryRunner.query(`DROP INDEX "IDX_0edbd6938de3e618c553e5a269"`);
         await queryRunner.query(`DROP TABLE "instructor_instructors_qualifications_drivers_license_category"`);
         await queryRunner.query(`DROP TABLE "drivers_license_category"`);
     }
