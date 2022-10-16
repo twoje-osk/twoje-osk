@@ -8,8 +8,12 @@ export class UpdateInstructorAndAddSupportForDriverLicenceQualifications16586900
         await queryRunner.query(`CREATE TABLE "instructor_instructors_qualifications_drivers_license_category" ("instructorId" integer NOT NULL, "driversLicenseCategoryId" integer NOT NULL, CONSTRAINT "PK_7b57c6fa8f1fb6727f955378446" PRIMARY KEY ("instructorId", "driversLicenseCategoryId"))`);
         await queryRunner.query(`CREATE INDEX "IDX_0edbd6938de3e618c553e5a269" ON "instructor_instructors_qualifications_drivers_license_category" ("instructorId") `);
         await queryRunner.query(`CREATE INDEX "IDX_61273963d575e0d62044c17248" ON "instructor_instructors_qualifications_drivers_license_category" ("driversLicenseCategoryId") `);
-        await queryRunner.query(`ALTER TABLE "instructor" ADD "registrationNumber" text NOT NULL`);
-        await queryRunner.query(`ALTER TABLE "instructor" ADD "licenseNumber" text NOT NULL`);
+        await queryRunner.query(`ALTER TABLE "instructor" ADD "registrationNumber" text;`);
+        await queryRunner.query(`ALTER TABLE "instructor" ADD "licenseNumber" text;`);
+        await queryRunner.query(`UPDATE "instructor" SET "registrationNumber"='000000' WHERE "registrationNumber" IS NULL;`);
+        await queryRunner.query(`UPDATE "instructor" SET "licenseNumber"='XXXXXXXXXX' WHERE "licenseNumber" IS NULL;`);
+        await queryRunner.query(`ALTER TABLE "instructor" ALTER COLUMN "registrationNumber" SET NOT NULL;`);
+        await queryRunner.query(`ALTER TABLE "instructor" ALTER COLUMN "licenseNumber" SET NOT NULL;`);
         await queryRunner.query(`ALTER TABLE "instructor" ADD "photo" text`);
         await queryRunner.query(`ALTER TABLE "user" ALTER COLUMN "password" DROP NOT NULL`);
         await queryRunner.query(`ALTER TABLE "instructor_instructors_qualifications_drivers_license_category" ADD CONSTRAINT "FK_0edbd6938de3e618c553e5a269b" FOREIGN KEY ("instructorId") REFERENCES "instructor"("id") ON DELETE CASCADE ON UPDATE CASCADE`);
