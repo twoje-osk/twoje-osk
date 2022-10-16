@@ -1,5 +1,14 @@
+import {
+  Entity,
+  OneToOne,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToMany,
+  JoinTable,
+  RelationId,
+} from 'typeorm';
 import { Exclude } from 'class-transformer';
-import { Entity, OneToOne, PrimaryGeneratedColumn, RelationId } from 'typeorm';
+import { DriversLicenseCategory } from '../../driversLicenseCategory/entities/driversLicenseCategory.entity';
 import type { User } from '../../users/entities/user.entity';
 
 @Entity()
@@ -13,4 +22,20 @@ export class Instructor {
   @Exclude()
   @RelationId((instructor: Instructor) => instructor.user)
   userId: number;
+
+  @Column({ type: 'text' })
+  registrationNumber: string;
+
+  @Column({ type: 'text' })
+  licenseNumber: string;
+
+  @ManyToMany(() => DriversLicenseCategory)
+  @JoinTable()
+  instructorsQualifications: DriversLicenseCategory[];
+
+  @RelationId((instructor: Instructor) => instructor.instructorsQualifications)
+  instructorsQualificationsIds: number[];
+
+  @Column({ nullable: true, type: 'text' })
+  photo: string | null;
 }

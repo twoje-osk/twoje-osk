@@ -18,6 +18,7 @@ import {
   CreateLessonForInstructorResponseDTO,
   GetMyLessonsQueryDTO,
   GetMyLessonsResponseDTO,
+  LessonsDTO,
   UpdateLessonForInstructorRequestDTO,
   UpdateLessonForInstructorResponseDTO,
   UserRole,
@@ -48,15 +49,27 @@ export class LessonsController {
 
     const currentUser = this.currentUserService.getRequestCurrentUser();
 
-    const lessons = await this.lessonsService.findAllByTrainee(
+    const lessonsData = await this.lessonsService.findAllByTrainee(
       currentUser.userId,
       from,
       to,
     );
+    const lessons: LessonsDTO[] = [];
+    const lessonsResult: GetMyLessonsResponseDTO = { lessons };
+    lessonsData.forEach((lessonData) => {
+      const instructor = {
+        ...lessonData.instructor,
+        instructorsQualifications:
+          lessonData.instructor.instructorsQualifications.map(
+            (category) => category.id,
+          ),
+      };
 
-    return {
-      lessons,
-    };
+      const lesson = { ...lessonData, instructor };
+      lessonsResult.lessons.push(lesson);
+    });
+
+    return lessonsResult;
   }
 
   @Post('instructor/:instructorId')

@@ -8,6 +8,7 @@ import { seedInstructors } from './seed.instructors';
 import { seedAvailabilities } from './seed.availabilities';
 import { seedLessons } from './seed.lessons';
 import { Factory } from './seed.utils';
+import { seedDriversLicenseCategories } from './seed.driversLicenseCategories';
 
 const clearSequences = async (trx: EntityManager) => {
   await trx.query(`
@@ -35,9 +36,9 @@ const run = async () => {
 
   await dataSource.transaction(async (trx) => {
     await clearSequences(trx);
-
     await truncateAll(trx);
 
+    seedDriversLicenseCategories();
     seedOrganizations();
     seedTrainees();
     seedInstructors();

@@ -5,6 +5,8 @@ import { RequireRole } from './components/RequireRole/RequireRole';
 import { ForgotPassword } from './views/ForgotPassword/ForgotPassword';
 import { HomePage } from './views/HomePage/HomePage';
 import { InstructorsList } from './views/Instructors/InstructorsList/InstructorsList';
+import { InstructorsDetails } from './views/Instructors/InstructorsDetails/InstructorsDetails';
+import { InstructorsEdit } from './views/Instructors/InstructorsEdit/InstructorsEdit';
 import { Layout } from './views/Layout/Layout';
 import { MyLessons } from './views/Lessons/MyLessons/MyLessons';
 import { Login } from './views/Login/Login';
@@ -17,6 +19,7 @@ import { VehicleDetails } from './views/Vehicles/VehicleDetails/VehicleDetails';
 import { VehicleEdit } from './views/Vehicles/VehiclesEdit/VehiclesEdit';
 import { VehiclesList } from './views/Vehicles/VehiclesList/VehiclesList';
 import { VehicleNew } from './views/Vehicles/VehiclesNew/VehiclesNew';
+import { InstructorsNew } from './views/Instructors/InstructorsNew/InstructorsNew';
 
 export const App = () => {
   return (
@@ -47,6 +50,9 @@ export const App = () => {
           element={<RequireRole role={UserRole.Admin} />}
         >
           <Route index element={<InstructorsList />} />
+          <Route path="nowy" element={<InstructorsNew />} />
+          <Route path=":instructorId/edytuj" element={<InstructorsEdit />} />
+          <Route path=":instructorId" element={<InstructorsDetails />} />
         </Route>
         <Route path="/pojazdy" element={<RequireRole role={UserRole.Admin} />}>
           <Route index element={<VehiclesList />} />

@@ -21,8 +21,10 @@ export class UsersService {
   ) {}
 
   async findOneById(id: number): Promise<User | null> {
+    const { id: organizationId } =
+      this.organizationDomainService.getRequestOrganization();
     return this.usersRepository.findOne({
-      where: { id, isActive: true },
+      where: { id, organization: { id: organizationId }, isActive: true },
       relations: {
         organization: true,
       },

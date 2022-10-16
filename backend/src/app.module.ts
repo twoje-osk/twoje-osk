@@ -8,6 +8,7 @@ import { OrganizationDomainModule } from 'organization-domain/organization-domai
 import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from 'common/guards/roles.guard';
 import { JwtAuthGuard } from 'auth/passport/jwt-auth.guard';
+import { DriversLicenseCategoriesModule } from 'driversLicenseCategory/driversLicenseCategory.module';
 import { CustomConfigService } from 'config/config.service';
 import { RequestContextModule } from 'nestjs-request-context';
 import { AuthModule } from './auth/auth.module';
@@ -58,6 +59,7 @@ import { ResetPasswordModule } from './reset-password/reset-password.module';
     OrganizationDomainModule,
     LessonsModule,
     AvailabilityModule,
+    DriversLicenseCategoriesModule,
     MailModule,
     CustomConfigModule,
     ResetPasswordModule,
