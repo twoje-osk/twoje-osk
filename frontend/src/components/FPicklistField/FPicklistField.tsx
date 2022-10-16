@@ -5,12 +5,10 @@ import {
   InputLabel,
   MenuItem,
   Select,
-  SelectChangeEvent,
   SelectProps,
 } from '@mui/material';
 import { PicklistOption } from '@osk/shared/src/types/picklist.types';
 import { useField } from 'formik';
-import { useState } from 'react';
 
 type FPicklistFieldProps = Omit<
   SelectProps,
@@ -28,22 +26,6 @@ export const FPicklistField = (props: FPicklistFieldProps) => {
     name,
   });
 
-  const [selectedCategories, setSelectedCategories] = useState<number[]>(
-    predefinedValues ?? [],
-  );
-
-  const handleChange = (
-    event: SelectChangeEvent<typeof selectedCategories>,
-  ) => {
-    const {
-      target: { value },
-    } = event;
-    if (typeof value !== 'string') {
-      setSelectedCategories(value);
-      field.onChange(event);
-    }
-  };
-
   return (
     <FormControl sx={{ m: 1, width: '100%' }}>
       <InputLabel id="label" sx={{ background: 'white', px: '0.4rem' }}>
@@ -51,10 +33,7 @@ export const FPicklistField = (props: FPicklistFieldProps) => {
       </InputLabel>
       <Select
         {...remainingProps}
-        value={selectedCategories}
-        name={name}
-        onChange={handleChange}
-        defaultValue={undefined}
+        {...field}
         renderValue={(selected) => (
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
             {selected.map((value: number) => (
