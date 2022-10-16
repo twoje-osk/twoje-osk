@@ -9,7 +9,9 @@ import {
   Box,
 } from '@mui/material';
 import { LessonStatus } from '@osk/shared/src/types/lesson.types';
+import { UserRole } from '@osk/shared/src/types/user.types';
 import { FormikHelpers } from 'formik';
+import { useAuth } from '../../../../hooks/useAuth/useAuth';
 import { EditLessonForm } from '../EditLessonForm/EditLessonForm';
 import {
   LessonFormData,
@@ -52,7 +54,9 @@ export const EditLessonModal = ({
   isCanceling,
   onLessonCancel,
 }: EditLessonModalProps) => {
+  const { role } = useAuth();
   const editingEnabled =
+    role === UserRole.Instructor ||
     event?.status === LessonStatus.Requested ||
     event?.status === LessonStatus.Accepted;
 
@@ -71,7 +75,7 @@ export const EditLessonModal = ({
             onSubmit={onSubmit}
             initialValues={mapEventToFormValues(event)}
             disabled={!editingEnabled || isLoading}
-            showStatus={!isCreating}
+            showStatus={!isCreating || role === UserRole.Instructor}
           >
             <Stack direction="row" justifyContent="space-between" spacing={1}>
               <Stack direction="row" spacing={1}>
@@ -92,17 +96,14 @@ export const EditLessonModal = ({
                   Anuluj
                 </Button>
               </Stack>
-              {!isCreating && (
-                <LoadingButton
-                  variant="contained"
-                  startIcon={<Icon>delete</Icon>}
-                  disabled={!editingEnabled || isLoading || isCanceling}
-                  onClick={onLessonCancel}
-                  loading={isCanceling}
-                  color="error"
-                >
-                  Anuluj lekcję
-                </LoadingButton>
+              {role === UserRole.Trainee && (
+                <TraineeActionButtons
+                  isCreating={isCreating}
+                  editingEnabled={editingEnabled}
+                  isLoading={isLoading}
+                  isCanceling={isCanceling}
+                  onLessonCancel={onLessonCancel}
+                />
               )}
             </Stack>
           </EditLessonForm>
@@ -125,5 +126,38 @@ function mapEventToFormValues(
     endTime: combineDateWithTime(new Date(), event.end),
     status: event.status,
     instructorId: event.instructorId,
+    traineeId: event.traineeId,
   };
 }
+
+interface TraineeActionButtonsProps {
+  isCreating: boolean;
+  editingEnabled: boolean;
+  isLoading: boolean;
+  isCanceling: boolean;
+  onLessonCancel: () => void;
+}
+const TraineeActionButtons = ({
+  isCreating,
+  editingEnabled,
+  isCanceling,
+  isLoading,
+  onLessonCancel,
+}: TraineeActionButtonsProps) => {
+  if (isCreating) {
+    return null;
+  }
+
+  return (
+    <LoadingButton
+      variant="contained"
+      startIcon={<Icon>delete</Icon>}
+      disabled={!editingEnabled || isLoading || isCanceling}
+      onClick={onLessonCancel}
+      loading={isCanceling}
+      color="error"
+    >
+      Anuluj lekcję
+    </LoadingButton>
+  );
+};

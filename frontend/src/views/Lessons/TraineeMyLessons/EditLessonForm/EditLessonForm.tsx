@@ -5,13 +5,18 @@ import {
   InputLabel,
   FormControl,
 } from '@mui/material';
-import { InstructorFindAllResponseDto } from '@osk/shared';
+import {
+  InstructorFindAllResponseDto,
+  TraineeFindAllResponseDto,
+} from '@osk/shared';
 import { LessonStatus } from '@osk/shared/src/types/lesson.types';
+import { UserRole } from '@osk/shared/src/types/user.types';
 import { Form, Formik, FormikHelpers } from 'formik';
 import { ReactNode } from 'react';
 import useSWR from 'swr';
 import { FSelect } from '../../../../components/FSelect/FSelect';
 import { FTextField } from '../../../../components/FTextField/FTextField';
+import { useAuth } from '../../../../hooks/useAuth/useAuth';
 import { getTranslatedLessonStatus } from '../TraineeMyLessons.utils';
 import {
   LessonFormData,
@@ -37,6 +42,7 @@ const defaultValues: LessonFormData = {
   endTime: new Date(),
   status: LessonStatus.Requested,
   instructorId: null,
+  traineeId: null,
 };
 
 export const EditLessonForm = ({
@@ -46,8 +52,14 @@ export const EditLessonForm = ({
   disabled = false,
   showStatus = false,
 }: EditLessonFormProps) => {
-  const { data: instructorsData } =
-    useSWR<InstructorFindAllResponseDto>('/api/instructors');
+  const { user } = useAuth();
+  const isTrainee = user?.role === UserRole.Trainee;
+  const { data: instructorsData } = useSWR<InstructorFindAllResponseDto>(() =>
+    isTrainee ? '/api/instructors' : null,
+  );
+  const { data: traineesData } = useSWR<TraineeFindAllResponseDto>(() =>
+    !isTrainee ? '/api/trainees' : null,
+  );
 
   return (
     <Formik<LessonFormData>
@@ -61,6 +73,7 @@ export const EditLessonForm = ({
           end: combineDateWithTime(values.date, values.endTime),
           status: values.status,
           instructorId: values.instructorId,
+          traineeId: values.traineeId,
         };
 
         return onSubmit(submitData, formikHelpers);
@@ -97,7 +110,12 @@ export const EditLessonForm = ({
               disabled={disabled}
             />
             {showStatus && (
-              <FSelect id="status-picker" label="Status" name="status" disabled>
+              <FSelect
+                id="status-picker"
+                label="Status"
+                name="status"
+                disabled={isTrainee}
+              >
                 {Object.values(LessonStatus).map((status) => (
                   <MenuItem value={status} key={status}>
                     {getTranslatedLessonStatus(status)}
@@ -124,6 +142,20 @@ export const EditLessonForm = ({
                   ) : null}
                 </Select>
               </FormControl>
+            )}
+            {!isTrainee && (
+              <FSelect
+                name="traineeId"
+                id="traineeId"
+                fullWidth
+                label="Kursant"
+              >
+                {traineesData?.trainees.map((trainee) => (
+                  <MenuItem value={trainee.id} key={trainee.id}>
+                    {trainee.user.firstName} {trainee.user.lastName}
+                  </MenuItem>
+                ))}
+              </FSelect>
             )}
             {actions && <div>{actions}</div>}
           </Stack>

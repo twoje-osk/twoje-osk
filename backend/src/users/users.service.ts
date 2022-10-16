@@ -27,6 +27,8 @@ export class UsersService {
       where: { id, organization: { id: organizationId }, isActive: true },
       relations: {
         organization: true,
+        instructor: true,
+        trainee: true,
       },
     });
   }

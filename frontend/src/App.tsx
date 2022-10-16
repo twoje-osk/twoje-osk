@@ -80,6 +80,20 @@ export const App = () => {
         >
           <Route index element={<MyLessons />} />
         </Route>
+        <Route
+          path="/moja-dostepnosc"
+          element={<RequireRole role={UserRole.Instructor} />}
+        >
+          <Route index element={null} />
+        </Route>
+        <Route
+          path="/ogloszenia"
+          element={
+            <RequireRole roles={[UserRole.Trainee, UserRole.Instructor]} />
+          }
+        >
+          <Route index element={null} />
+        </Route>
       </Route>
     </Routes>
   );

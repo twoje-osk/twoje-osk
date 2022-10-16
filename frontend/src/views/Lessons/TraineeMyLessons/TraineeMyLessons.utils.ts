@@ -1,6 +1,6 @@
 import {
-  GetMyLessonsResponseDTO,
   InstructorPublicAvailabilityResponseDTO,
+  LessonsDTO,
 } from '@osk/shared';
 import { LessonStatus } from '@osk/shared/src/types/lesson.types';
 import { startOfWeek } from 'date-fns';
@@ -27,16 +27,14 @@ export const getInstructorEvents = (
   }));
 };
 
-export const getUserEvents = (
-  lessonsData: GetMyLessonsResponseDTO | undefined,
-): LessonEvent[] => {
-  const lessons = lessonsData?.lessons ?? [];
-  return lessons.map(({ from, to, status, id, instructor }) => ({
+export const getUserEvents = (lessons: LessonsDTO[]): LessonEvent[] => {
+  return lessons.map(({ from, to, status, id, instructor, trainee }) => ({
     id,
     start: new Date(from),
     end: new Date(to),
     status,
     instructorId: instructor.id,
+    traineeId: trainee.id,
   }));
 };
 

@@ -1,108 +1,16 @@
 import {
-  GetMyLessonsResponseDTO,
-  InstructorPublicAvailabilityResponseDTO,
-  InstructorFindAllResponseDto,
-  CreateLessonForInstructorRequestDTO,
-  CreateLessonForInstructorResponseDTO,
-  UpdateLessonForInstructorRequestDTO,
-  UpdateLessonForInstructorResponseDTO,
   CancelLessonForInstructorResponseDTO,
+  UpdateLessonResponseDTO,
+  UpdateLessonRequestDTO,
+  CreateLessonRequestDTO,
+  CreateLessonResponseDTO,
 } from '@osk/shared';
-import { formatISO, endOfWeek, addDays, startOfWeek } from 'date-fns';
-import { FormikHelpers } from 'formik';
-import { Reducer, useMemo, useReducer, useState } from 'react';
-import useSWR from 'swr';
+import { LessonStatus } from '@osk/shared/src/types/lesson.types';
+import { formatISO } from 'date-fns';
+import { Reducer, useReducer } from 'react';
 import { useCommonSnackbars } from '../../../hooks/useCommonSnackbars/useCommonSnackbars';
 import { useMakeRequestWithAuth } from '../../../hooks/useMakeRequestWithAuth/useMakeRequestWithAuth';
-import { LessonFormData } from './EditLessonForm/EditLessonForm.schema';
-import { LessonEvent } from './LessonsCalendar/LessonsCalendar.types';
-import { getTodayWeek } from './TraineeMyLessons.utils';
-
-interface UseFetchDataArguments {
-  selectedDate: Date;
-  selectedInstructorId: number | null;
-  setSelectedInstructorId: (newSelectedInstructorId: number) => void;
-}
-
-export const useFetchData = ({
-  selectedDate,
-  selectedInstructorId,
-  setSelectedInstructorId,
-}: UseFetchDataArguments) => {
-  const currentlySelectedDateQueryParams = useMemo(() => {
-    const params = new URLSearchParams();
-    params.set('from', formatISO(selectedDate));
-    params.set('to', formatISO(endOfWeek(selectedDate, { weekStartsOn: 1 })));
-
-    return params;
-  }, [selectedDate]);
-
-  const getInstructorEventsDataUrl = () => {
-    if (selectedInstructorId === null) {
-      return undefined;
-    }
-
-    return `/api/availability/instructors/${selectedInstructorId}/public?${currentlySelectedDateQueryParams}`;
-  };
-
-  const {
-    data: lessonsData,
-    error: errorData,
-    mutate: lessonsMutate,
-  } = useSWR<GetMyLessonsResponseDTO>(
-    `/api/trainee/lessons?${currentlySelectedDateQueryParams}`,
-  );
-  const {
-    data: instructorEventsData,
-    error: instructorsEventsError,
-    mutate: instructorsEventsMutate,
-  } = useSWR<InstructorPublicAvailabilityResponseDTO>(
-    getInstructorEventsDataUrl(),
-  );
-  const { data: instructorsData, error: instructorsError } =
-    useSWR<InstructorFindAllResponseDto>('/api/instructors', {
-      onSuccess: (data) => {
-        setSelectedInstructorId(data.instructors[0]?.id ?? -1);
-      },
-      revalidateOnFocus: false,
-    });
-
-  const mutate = () =>
-    Promise.all([lessonsMutate(), instructorsEventsMutate()]);
-
-  return {
-    mutate,
-    lessonsData,
-    errorData,
-    instructorEventsData,
-    instructorsEventsError,
-    instructorsData,
-    instructorsError,
-  };
-};
-
-export const useSelectedDate = () => {
-  const [selectedDate, setSelectedDate] = useState(getTodayWeek());
-
-  const onPrevWeekClick = () => {
-    setSelectedDate(addDays(selectedDate, -7));
-  };
-
-  const onTodayClick = () => {
-    setSelectedDate(startOfWeek(new Date(), { weekStartsOn: 1 }));
-  };
-
-  const onNextWeekClick = () => {
-    setSelectedDate(addDays(selectedDate, 7));
-  };
-
-  return {
-    selectedDate,
-    onPrevWeekClick,
-    onTodayClick,
-    onNextWeekClick,
-  };
-};
+import { LessonEvent } from '../TraineeMyLessons/LessonsCalendar/LessonsCalendar.types';
 
 type MyLessonsModalStore =
   | {
@@ -137,13 +45,11 @@ type MyLessonsModalAction =
 interface MyLessonsModalArguments {
   mutate: () => Promise<unknown>;
   instructorId: number | null;
-  traineeId: number | null;
 }
 
 export const useMyLessonsModal = ({
   mutate,
   instructorId,
-  traineeId,
 }: MyLessonsModalArguments) => {
   const makeRequestWithAuth = useMakeRequestWithAuth();
   const { showErrorSnackbar, showSuccessSnackbar } = useCommonSnackbars();
@@ -208,8 +114,9 @@ export const useMyLessonsModal = ({
       type: 'create',
       event: {
         ...eventToCreate,
+        status: LessonStatus.Accepted,
         instructorId,
-        traineeId,
+        traineeId: null,
       },
     });
   };
@@ -221,17 +128,25 @@ export const useMyLessonsModal = ({
   };
 
   const onCreateSubmit = async (event: LessonEvent) => {
-    const body: CreateLessonForInstructorRequestDTO = {
+    if (event.traineeId === null) {
+      dispatch({ type: 'error' });
+      showErrorSnackbar();
+      return;
+    }
+
+    const body: CreateLessonRequestDTO = {
       from: formatISO(event.start),
       to: formatISO(event.end),
+      status: event.status,
+      traineeId: event.traineeId,
     };
 
     dispatch({ type: 'submit' });
 
     const response = await makeRequestWithAuth<
-      CreateLessonForInstructorResponseDTO,
-      CreateLessonForInstructorRequestDTO
-    >(`/api/trainee/lessons/instructor/${instructorId}`, 'POST', body);
+      CreateLessonResponseDTO,
+      CreateLessonRequestDTO
+    >(`/api/instructor/lessons`, 'POST', body);
 
     if (!response.ok) {
       dispatch({ type: 'error' });
@@ -245,10 +160,7 @@ export const useMyLessonsModal = ({
     dispatch({ type: 'close' });
   };
 
-  const onEditSubmit = async (
-    event: LessonEvent,
-    helpers: FormikHelpers<LessonFormData>,
-  ) => {
+  const onEditSubmit = async (event: LessonEvent) => {
     if (!store.isModalOpen) {
       return;
     }
@@ -257,26 +169,18 @@ export const useMyLessonsModal = ({
       return;
     }
 
-    const body: UpdateLessonForInstructorRequestDTO = {
+    const body: UpdateLessonRequestDTO = {
       from: formatISO(event.start),
       to: formatISO(event.end),
+      status: event.status,
     };
 
     dispatch({ type: 'submit' });
 
     const response = await makeRequestWithAuth<
-      UpdateLessonForInstructorResponseDTO,
-      UpdateLessonForInstructorRequestDTO
-    >(`/api/trainee/lessons/${store.event.id}`, 'PATCH', body);
-
-    if (!response.ok && response.error.status === 409) {
-      dispatch({ type: 'error' });
-      helpers.setFieldError(
-        'date',
-        'Instruktor w podanym terminie jest zajęty',
-      );
-      return;
-    }
+      UpdateLessonResponseDTO,
+      UpdateLessonRequestDTO
+    >(`/api/instructor/lessons/${store.event.id}`, 'PUT', body);
 
     if (!response.ok) {
       dispatch({ type: 'error' });
@@ -290,10 +194,7 @@ export const useMyLessonsModal = ({
     dispatch({ type: 'close' });
   };
 
-  const onSubmit = (
-    event: LessonEvent,
-    helpers: FormikHelpers<LessonFormData>,
-  ) => {
+  const onSubmit = (event: LessonEvent) => {
     if (!store.isModalOpen) {
       return;
     }
@@ -303,7 +204,7 @@ export const useMyLessonsModal = ({
       return;
     }
 
-    onEditSubmit(event, helpers);
+    onEditSubmit(event);
   };
 
   const onLessonCancel = async () => {

@@ -17,7 +17,6 @@ import {
 import {
   getBackgroundEvents,
   getFrontEvents,
-  isRangeAvailable,
   localizer,
 } from './LessonsCalendar.utils';
 import { getTranslatedLessonStatus } from '../TraineeMyLessons.utils';
@@ -28,7 +27,8 @@ export const LessonsCalendar = ({
   createEvent,
   selectedDate,
   onLessonClick,
-  selectedInstructorId,
+  canCreateEvent,
+  allowCreationOnlyAfterToday,
 }: LessonsCalendarProps) => {
   const { showInfoSnackbar } = useCommonSnackbars();
 
@@ -37,21 +37,24 @@ export const LessonsCalendar = ({
       return;
     }
 
-    if (!isRangeAvailable(slotInfo, instructorEvents)) {
+    if (!canCreateEvent(slotInfo)) {
       showInfoSnackbar('Lekcja w podanych godzinach nie jest dostępna.');
       return;
     }
 
-    const newEvent: LessonEvent = {
+    const newEvent = {
       start: slotInfo.start,
       end: slotInfo.end,
       status: LessonStatus.Requested,
-      instructorId: selectedInstructorId,
     };
     createEvent(newEvent);
   };
 
   const onSelecting = (range: { start: Date; end: Date }) => {
+    if (!allowCreationOnlyAfterToday) {
+      return true;
+    }
+
     return isAfter(range.end, startOfDay(new Date()));
   };
 

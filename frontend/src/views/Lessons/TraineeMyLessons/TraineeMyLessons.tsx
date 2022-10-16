@@ -25,10 +25,14 @@ import {
   GroupedIconButton,
   CalendarWrapper,
   LoaderOverlay,
-} from './TraineeMyLessons.styled';
+} from '../MyLessons/MyLessons.styled';
 import { getInstructorEvents, getUserEvents } from './TraineeMyLessons.utils';
+import { isRangeAvailable } from './LessonsCalendar/LessonsCalendar.utils';
+import { useAuth } from '../../../hooks/useAuth/useAuth';
 
 export const TraineeMyLessons = () => {
+  const auth = useAuth();
+  const traineeId = auth.user?.trainee?.id!;
   const [selectedInstructorId, setSelectedInstructorId] = useState<
     number | null
   >(null);
@@ -59,7 +63,8 @@ export const TraineeMyLessons = () => {
     onLessonCancel,
   } = useMyLessonsModal({
     mutate,
-    selectedInstructorId,
+    instructorId: selectedInstructorId,
+    traineeId,
   });
 
   const instructorEvents = useMemo(
@@ -67,7 +72,10 @@ export const TraineeMyLessons = () => {
     [instructorEventsData],
   );
 
-  const userEvents = useMemo(() => getUserEvents(lessonsData), [lessonsData]);
+  const userEvents = useMemo(
+    () => getUserEvents(lessonsData?.lessons ?? []),
+    [lessonsData],
+  );
 
   if (errorData || instructorsEventsError || instructorsError) {
     return <GeneralAPIError />;
@@ -127,7 +135,10 @@ export const TraineeMyLessons = () => {
           createEvent={openCreateModal}
           selectedDate={selectedDate}
           onLessonClick={openEditModal}
-          selectedInstructorId={selectedInstructorId}
+          canCreateEvent={(slotInfo) =>
+            isRangeAvailable(slotInfo, instructorEvents)
+          }
+          allowCreationOnlyAfterToday
         />
         {(instructorEventsData === undefined || lessonsData === undefined) && (
           <LoaderOverlay>

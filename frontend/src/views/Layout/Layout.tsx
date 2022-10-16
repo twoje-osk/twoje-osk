@@ -37,6 +37,11 @@ const menuItemsForRole: Record<UserRole, MenuItem[]> = {
   ],
   [UserRole.Instructor]: [
     { text: 'Moje Jazdy', icon: 'toys', link: '/moje-jazdy' },
+    {
+      text: 'Moja Dostępność',
+      icon: 'event_available',
+      link: '/moja-dostepnosc',
+    },
     { text: 'Kursanci', icon: 'school', link: '/kursanci' },
     { text: 'Instruktorzy', icon: 'class', link: '/instruktorzy' },
     { text: 'Pojazdy', icon: 'directions_car', link: '/pojazdy' },
