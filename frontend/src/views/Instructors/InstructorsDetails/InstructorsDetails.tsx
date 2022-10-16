@@ -13,7 +13,6 @@ import {
   InstructorUpdateRequestDto,
   InstructorUpdateResponseDto,
 } from '@osk/shared';
-import { useState } from 'react';
 import { Link, Navigate, useParams } from 'react-router-dom';
 import { Box } from 'reflexbox';
 import useSWR from 'swr';
@@ -30,11 +29,8 @@ import { ActionModal } from '../../../components/ActionModal/ActionModal';
 export const InstructorsDetails = () => {
   const { instructorId } = useParams();
   const makeRequest = useMakeRequestWithAuth();
-  const [isLoading, setIsLoading] = useState(false);
-  const [showDeactivateModal, setShowDeactivateModal] = useState(false);
   const {
     setLoading: setActivateModalLoading,
-    setOpen: setActivateModalOpen,
     isLoading: isActivateModalLoading,
     isOpen: isActivateModalOpen,
     openModal: openActivateModal,
@@ -42,7 +38,6 @@ export const InstructorsDetails = () => {
   } = useActionModal();
   const {
     setLoading: setDeactivateModalLoading,
-    setOpen: setDeactivateModalOpen,
     isLoading: isDeactivateModalLoading,
     isOpen: isDeactivateModalOpen,
     openModal: openDeactivateModal,
@@ -66,12 +61,6 @@ export const InstructorsDetails = () => {
   }
 
   const { instructor } = data;
-  const activateModalTitle = 'Jesteś pewien?';
-  const modalTitle = 'Jesteś pewien?';
-  const deactivateModalActionButtonLabel = 'Dezaktywuj';
-  const deactivateModalSubtitle = `Czy na pewno chcesz dezaktywować tego użytkownika? ${instructor.user.firstName} ${instructor.user.lastName} straci dostęp do wszystkich danych i funkcji systemu`;
-  const activateModalActionButtonLabel = 'Aktywuj';
-  const activateModalSubtitle= `Czy na pewno chcesz aktywować tego użytkownika?`;
 
   const initialValues: InstructorsFormData = {
     firstName: instructor.user.firstName,
@@ -124,10 +113,10 @@ export const InstructorsDetails = () => {
     await mutate();
     if (instructor.user.isActive) {
       setDeactivateModalLoading(false);
-      setDeactivateModalOpen(false);
+      closeDeactivateModall();
     } else {
       setActivateModalLoading(false);
-      setActivateModalOpen(false);
+      closeActivateModall();
     }
   };
 
@@ -168,27 +157,29 @@ export const InstructorsDetails = () => {
             >
               Edytuj
             </Button>
-            {instructor.user.isActive ?
-            <LoadingButton
-              color="error"
-              variant="outlined"
-              onClick={() => setDeactivateModalOpen(true)}
-              startIcon={<Icon>delete</Icon>}
-              disabled={isLoading}
-              loading={isLoading}
-            >
-              Dezaktywuj
-            </LoadingButton> :
-            <LoadingButton
-              color="success"
-              variant="outlined"
-              onClick={() => setActivateModalOpen(true)}
-              startIcon={<Icon>check</Icon>}
-              disabled={isLoading}
-              loading={isLoading}
-            >
-              Aktywuj
-            </LoadingButton>}
+            {instructor.user.isActive ? (
+              <LoadingButton
+                color="error"
+                variant="outlined"
+                onClick={() => openDeactivateModal()}
+                startIcon={<Icon>delete</Icon>}
+                disabled={isDeactivateModalLoading}
+                loading={isDeactivateModalLoading}
+              >
+                Dezaktywuj
+              </LoadingButton>
+            ) : (
+              <LoadingButton
+                color="success"
+                variant="outlined"
+                onClick={() => openActivateModal()}
+                startIcon={<Icon>check</Icon>}
+                disabled={isActivateModalLoading}
+                loading={isActivateModalLoading}
+              >
+                Aktywuj
+              </LoadingButton>
+            )}
           </Stack>
         </InstructorsForm>
       </Box>
@@ -196,29 +187,32 @@ export const InstructorsDetails = () => {
         id="deactivateModal"
         isOpen={isDeactivateModalOpen}
         isLoading={isDeactivateModalLoading}
-        onClose={() => setDeactivateModalOpen(false)}
+        onClose={() => closeDeactivateModall()}
         onAction={toggleIsUserActive}
-        actionButtonText={deactivateModalActionButtonLabel}
+        actionButtonText="Dezaktywuj"
         title="Czy na pewno chcesz dezaktywować tego instruktora?"
         subtitle={
           <span>
-            Po dezaktywowaniu {instructor.user.firstName} {instructor.user.lastName} <strong>straci</strong> dostęp do systemu.
+            Po dezaktywowaniu {instructor.user.firstName}{' '}
+            {instructor.user.lastName} <strong>straci</strong> dostęp do
+            systemu.
           </span>
         }
       />
       <ActionModal
         id="activateModal"
-        actionButtonColor='success'
-        actionButtonIcon='check'
+        actionButtonColor="success"
+        actionButtonIcon="check"
         isOpen={isActivateModalOpen}
         isLoading={isActivateModalLoading}
-        onClose={() => setActivateModalOpen(false)}
+        onClose={() => closeActivateModall()}
         onAction={toggleIsUserActive}
-        actionButtonText={activateModalActionButtonLabel}
+        actionButtonText="Aktywuj"
         title="Czy na pewno chcesz aktywować tego instruktora?"
         subtitle={
           <span>
-            Po aktywowaniu {instructor.user.firstName} {instructor.user.lastName} <strong>zyska</strong> dostęp do systemu.
+            Po aktywowaniu {instructor.user.firstName}{' '}
+            {instructor.user.lastName} <strong>zyska</strong> dostęp do systemu.
           </span>
         }
       />
