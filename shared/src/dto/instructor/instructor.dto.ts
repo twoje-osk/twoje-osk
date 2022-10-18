@@ -39,7 +39,7 @@ export class DtoInstructor {
   @ApiProperty()
   @IsNotEmpty()
   @IsNumber({}, { each: true })
-  instructorsQualifications: number[];
+  instructorsQualificationsIds: number[];
 
   @ApiPropertyOptional({ nullable: true, type: 'string' })
   @IsOptional()
@@ -67,7 +67,7 @@ export class DtoCreateInstructor {
   @ApiProperty()
   @IsNotEmpty()
   @IsNumber({}, { each: true })
-  instructorsQualifications: number[];
+  instructorsQualificationsIds: number[];
 
   @ApiPropertyOptional({ nullable: true, type: 'string' })
   @IsOptional()

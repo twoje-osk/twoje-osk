@@ -100,7 +100,7 @@ export const InstructorsList = () => {
                 <TableCell>{row.user.email}</TableCell>
                 <TableCell>{row.user.phoneNumber}</TableCell>
                 <TableCell>
-                  {row.instructorsQualifications
+                  {row.instructorsQualificationsIds
                     .map((id) => qualifications[id.toString()])
                     .join(', ')}
                 </TableCell>

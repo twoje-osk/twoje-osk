@@ -4,7 +4,7 @@ export interface InstructorFields {
   user: UserArguments;
   registrationNumber: string;
   licenseNumber: string;
-  instructorsQualifications: number[];
+  instructorsQualificationsIds: number[];
   photo: string | null;
 }
 

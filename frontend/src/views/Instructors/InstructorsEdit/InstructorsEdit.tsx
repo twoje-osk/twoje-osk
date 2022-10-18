@@ -54,7 +54,7 @@ export const InstructorsEdit = () => {
     email: instructor.user.email,
     licenseNumber: instructor.licenseNumber,
     registrationNumber: instructor.registrationNumber,
-    instructorsQualifications: instructor.instructorsQualifications,
+    instructorsQualificationsIds: instructor.instructorsQualificationsIds,
     phoneNumber: instructor.user.phoneNumber,
   };
 
@@ -63,14 +63,14 @@ export const InstructorsEdit = () => {
       photo,
       registrationNumber,
       licenseNumber,
-      instructorsQualifications,
+      instructorsQualificationsIds,
       ...userValues
     } = instructorValues;
     const body: InstructorUpdateRequestDto = {
       instructor: {
         registrationNumber,
         licenseNumber,
-        instructorsQualifications,
+        instructorsQualificationsIds,
         user: { ...userValues },
         photo,
       },

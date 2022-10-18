@@ -33,7 +33,7 @@ const defaultValues: InstructorsFormData = {
   phoneNumber: '',
   licenseNumber: '',
   registrationNumber: '',
-  instructorsQualifications: [],
+  instructorsQualificationsIds: [],
   photo: '',
 };
 
@@ -54,7 +54,6 @@ export const InstructorsForm = ({
           return { value: el.id, label: el.name };
         })
       : [];
-
   return (
     <Formik<InstructorsFormData>
       initialValues={initialValues ?? defaultValues}
@@ -112,12 +111,14 @@ export const InstructorsForm = ({
               disabled={disabled}
             />
             <FPicklistField
-              id="instructorsQualifications"
+              id="instructorsQualificationsIds"
               label="Uprawnienia"
-              name="instructorsQualifications"
+              name="instructorsQualificationsIds"
               disabled={disabled}
               options={driversLicenseCategoryOptions}
-              predefinedValues={initialValues?.instructorsQualifications ?? []}
+              predefinedValues={
+                initialValues?.instructorsQualificationsIds ?? []
+              }
               multiple
             />
             {actions && <div>{actions}</div>}
