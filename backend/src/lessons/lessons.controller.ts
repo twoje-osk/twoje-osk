@@ -59,10 +59,6 @@ export class LessonsController {
     lessonsData.forEach((lessonData) => {
       const instructor = {
         ...lessonData.instructor,
-        instructorsQualifications:
-          lessonData.instructor.instructorsQualifications.map(
-            (category) => category.id,
-          ),
       };
 
       const lesson = { ...lessonData, instructor };

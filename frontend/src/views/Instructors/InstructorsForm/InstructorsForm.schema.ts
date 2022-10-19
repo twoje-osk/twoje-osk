@@ -9,7 +9,7 @@ export interface InstructorsFormData {
   licenseNumber: string;
   registrationNumber: string;
   photo?: string | null;
-  instructorsQualifications: number[];
+  instructorsQualificationsIds: number[];
 }
 
 setupYupLocale();
@@ -29,5 +29,5 @@ export const instructorsFormSchema: Yup.SchemaOf<InstructorsFormData> =
       .matches(/[\d\w]{6}/)
       .required(),
     registrationNumber: Yup.string().length(6).matches(/\d{6}/).required(),
-    instructorsQualifications: Yup.array().of(Yup.number().required()),
+    instructorsQualificationsIds: Yup.array().of(Yup.number().required()),
   });

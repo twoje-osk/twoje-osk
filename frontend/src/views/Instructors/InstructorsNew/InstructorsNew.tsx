@@ -31,14 +31,14 @@ export const InstructorsNew = () => {
       photo,
       registrationNumber,
       licenseNumber,
-      instructorsQualifications,
+      instructorsQualificationsIds,
       ...userValues
     } = instructorValues;
     const body: InstructorCreateRequestDto = {
       instructor: {
         registrationNumber,
         licenseNumber,
-        instructorsQualifications,
+        instructorsQualificationsIds,
         user: { ...userValues, isActive: false },
         photo: photo ?? null,
       },

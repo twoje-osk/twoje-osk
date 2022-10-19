@@ -79,7 +79,7 @@ export class InstructorsService {
 
     const instructorsQualifications =
       await this.driversLicenseCategoryService.findCategoriesById(
-        instructor.instructorsQualifications,
+        instructor.instructorsQualificationsIds,
       );
 
     if (instructorsQualifications === undefined) {
@@ -146,7 +146,7 @@ export class InstructorsService {
       );
     }
     const {
-      instructorsQualifications: updatedQualifications,
+      instructorsQualificationsIds: updatedQualifications,
       ...restOfArguments
     } = instructor;
 
