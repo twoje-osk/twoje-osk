@@ -10,3 +10,4 @@ export * from './authContext/jwtPayload';
 export * from './dto/driversLicenseCategory/driversLicenseCategory.dto';
 export * from './types/user.types';
 export * from './types/lesson.types';
+export * from './dto/payment/payment.dto';
