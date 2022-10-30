@@ -20,6 +20,7 @@ import { VehicleEdit } from './views/Vehicles/VehiclesEdit/VehiclesEdit';
 import { VehiclesList } from './views/Vehicles/VehiclesList/VehiclesList';
 import { VehicleNew } from './views/Vehicles/VehiclesNew/VehiclesNew';
 import { InstructorsNew } from './views/Instructors/InstructorsNew/InstructorsNew';
+import { Availability } from './views/Availability/Availability';
 
 export const App = () => {
   return (
@@ -84,7 +85,7 @@ export const App = () => {
           path="/moja-dostepnosc"
           element={<RequireRole role={UserRole.Instructor} />}
         >
-          <Route index element={null} />
+          <Route index element={<Availability />} />
         </Route>
         <Route
           path="/ogloszenia"

@@ -105,7 +105,11 @@ export const InstructorMyLessons = () => {
       <CalendarWrapper>
         <LessonsCalendar
           instructorEvents={[]}
-          userEvents={userEvents}
+          userEvents={
+            modalState.isModalOpen && modalState.isCreating
+              ? [...userEvents, modalState.event]
+              : userEvents
+          }
           createEvent={openCreateModal}
           selectedDate={selectedDate}
           onLessonClick={openEditModal}
