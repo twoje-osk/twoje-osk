@@ -59,3 +59,7 @@ backend/.adminjs
 secrets_*.yaml
 !secrets_*.enc.yaml
 *tls_domain_cert.pfx
+
+# Exclude files
+
+exclude/**
