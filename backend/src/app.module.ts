@@ -1,5 +1,4 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
@@ -9,7 +8,9 @@ import { OrganizationDomainModule } from 'organization-domain/organization-domai
 import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from 'common/guards/roles.guard';
 import { JwtAuthGuard } from 'auth/passport/jwt-auth.guard';
-import { getConfiguration, NestConfiguration } from './config/configuration';
+import { DriversLicenseCategoriesModule } from 'driversLicenseCategory/driversLicenseCategory.module';
+import { CustomConfigService } from 'config/config.service';
+import { RequestContextModule } from 'nestjs-request-context';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { OrganizationsModule } from './organizations/organizations.module';
@@ -19,16 +20,16 @@ import { DebugModule } from './debug/debug.module';
 import { VehiclesModule } from './vehicles/vehicles.module';
 import { AvailabilityModule } from './availability/availability.module';
 import { LessonsModule } from './lessons/lessons.module';
+import { MailModule } from './mail/mail.module';
+import { CustomConfigModule } from './config/config.module';
+import { ResetPasswordModule } from './reset-password/reset-password.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      load: [getConfiguration],
-    }),
     TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService<NestConfiguration>) => {
+      imports: [CustomConfigModule],
+      inject: [CustomConfigService],
+      useFactory: (configService: CustomConfigService) => {
         return {
           type: 'postgres',
           host: configService.get('database.host'),
@@ -38,7 +39,7 @@ import { LessonsModule } from './lessons/lessons.module';
           database: configService.get('database.database'),
           schema: configService.get('database.schema'),
           entities: ['**/*.entity.js'],
-          migrations: ['dist/migrations/*.js'],
+          migrations: ['dist/src/migrations/*.js'],
           synchronize: false,
           migrationsRun: configService.get('isProduction'),
         };
@@ -49,7 +50,6 @@ import { LessonsModule } from './lessons/lessons.module';
     }),
     AuthModule,
     UsersModule,
-    OrganizationsModule,
     TraineesModule,
     InstructorsModule,
     CurrentUserModule,
@@ -59,6 +59,11 @@ import { LessonsModule } from './lessons/lessons.module';
     OrganizationDomainModule,
     LessonsModule,
     AvailabilityModule,
+    DriversLicenseCategoriesModule,
+    MailModule,
+    CustomConfigModule,
+    ResetPasswordModule,
+    RequestContextModule,
   ],
   providers: [
     {

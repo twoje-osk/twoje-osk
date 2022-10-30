@@ -12,7 +12,7 @@ export class AddOrganizationSlug1654379020087 implements MigrationInterface {
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
-      await queryRunner.query(`DROP INDEX "public"."IDX_a08804baa7c5d5427067c49a31"`);
+      await queryRunner.query(`DROP INDEX "IDX_a08804baa7c5d5427067c49a31"`);
       await queryRunner.query(`ALTER TABLE "organization" DROP CONSTRAINT "UQ_a08804baa7c5d5427067c49a31f"`);
       await queryRunner.query(`ALTER TABLE "organization" DROP COLUMN "slug"`);
     }

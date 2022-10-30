@@ -24,7 +24,7 @@ export class AuthService {
       where: { email, organization, isActive: true },
     });
 
-    if (!user) {
+    if (!user || user.password === null) {
       return null;
     }
 

@@ -34,7 +34,7 @@ class UserFactory extends Factory<User> {
     user.organization = this.faker.helpers.arrayElement(
       organizationsFactory.getAll(),
     );
-    user.phoneNumber = this.faker.phone.phoneNumber('### ### ###');
+    user.phoneNumber = this.faker.phone.phoneNumber('#########');
     user.createdAt = new Date();
 
     const userType = getUserType(

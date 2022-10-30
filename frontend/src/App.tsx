@@ -1,12 +1,16 @@
 import { UserRole } from '@osk/shared/src/types/user.types';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { RequireAuth } from './components/RequireAuth/RequireAuth';
 import { RequireRole } from './components/RequireRole/RequireRole';
+import { ForgotPassword } from './views/ForgotPassword/ForgotPassword';
 import { HomePage } from './views/HomePage/HomePage';
 import { InstructorsList } from './views/Instructors/InstructorsList/InstructorsList';
+import { InstructorsDetails } from './views/Instructors/InstructorsDetails/InstructorsDetails';
+import { InstructorsEdit } from './views/Instructors/InstructorsEdit/InstructorsEdit';
 import { Layout } from './views/Layout/Layout';
 import { MyLessons } from './views/Lessons/MyLessons/MyLessons';
 import { Login } from './views/Login/Login';
+import { ResetPassword } from './views/ResetPassword/ResetPassword';
 import { TraineeDetails } from './views/Trainees/TraineeDetails/TraineeDetails';
 import { TraineeEdit } from './views/Trainees/TraineeEdit/TraineeEdit';
 import { TraineeNew } from './views/Trainees/TraineeNew/TraineeNew';
@@ -15,11 +19,17 @@ import { VehicleDetails } from './views/Vehicles/VehicleDetails/VehicleDetails';
 import { VehicleEdit } from './views/Vehicles/VehiclesEdit/VehiclesEdit';
 import { VehiclesList } from './views/Vehicles/VehiclesList/VehiclesList';
 import { VehicleNew } from './views/Vehicles/VehiclesNew/VehiclesNew';
+import { InstructorsNew } from './views/Instructors/InstructorsNew/InstructorsNew';
 
 export const App = () => {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
+      <Route path="/account/zapomnialem-haslo" element={<ForgotPassword />} />
+      <Route path="/account/reset">
+        <Route index element={<Navigate to="/account/zapomnialem-haslo" />} />
+        <Route path=":token" element={<ResetPassword />} />
+      </Route>
       <Route
         path="/"
         element={
@@ -40,6 +50,9 @@ export const App = () => {
           element={<RequireRole role={UserRole.Admin} />}
         >
           <Route index element={<InstructorsList />} />
+          <Route path="nowy" element={<InstructorsNew />} />
+          <Route path=":instructorId/edytuj" element={<InstructorsEdit />} />
+          <Route path=":instructorId" element={<InstructorsDetails />} />
         </Route>
         <Route path="/pojazdy" element={<RequireRole role={UserRole.Admin} />}>
           <Route index element={<VehiclesList />} />

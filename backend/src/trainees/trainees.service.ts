@@ -10,6 +10,7 @@ import {
   TraineeArgumentsUpdate,
 } from 'trainees/trainees.types';
 import { getFailure, getSuccess, Try } from 'types/Try';
+import { ResetPasswordService } from 'reset-password/reset-password.service';
 import { Trainee } from './entities/trainee.entity';
 
 @Injectable()
@@ -21,6 +22,7 @@ export class TraineesService {
     @InjectRepository(User)
     private usersRepository: Repository<User>,
     private usersService: UsersService,
+    private resetPasswordService: ResetPasswordService,
   ) {}
 
   async findAll() {
@@ -78,6 +80,7 @@ export class TraineesService {
   @Transactional()
   async create(
     trainee: TraineeArguments,
+    isHttps: boolean,
   ): Promise<Try<Trainee, 'TRAINEE_OR_USER_FOUND'>> {
     const { id: organizationId } =
       this.organizationDomainService.getRequestOrganization();
@@ -117,6 +120,18 @@ export class TraineesService {
     await this.usersRepository.save(createdUser);
 
     await this.traineesRepository.save(createdTrainee);
+
+    const tokenResult = await this.resetPasswordService.createToken(
+      createdUser.id,
+    );
+    if (tokenResult.ok) {
+      this.resetPasswordService.sendResetEmail(
+        createdUser.email,
+        tokenResult.data,
+        isHttps,
+      );
+    }
+
     return getSuccess(createdTrainee);
   }
 

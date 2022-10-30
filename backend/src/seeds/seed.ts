@@ -8,13 +8,14 @@ import { seedInstructors } from './seed.instructors';
 import { seedAvailabilities } from './seed.availabilities';
 import { seedLessons } from './seed.lessons';
 import { Factory } from './seed.utils';
+import { seedDriversLicenseCategories } from './seed.driversLicenseCategories';
 
 const clearSequences = async (trx: EntityManager) => {
   await trx.query(`
     SELECT SETVAL(c.oid, s.start_value, false) FROM pg_class c
       JOIN pg_namespace pn on c.relnamespace = pn.oid
       JOIN pg_sequences s on s.sequencename = c.relname
-    WHERE c.relkind = 'S';
+    WHERE c.relkind = 'S' AND c.relname != 'migrations_id_seq';
   `);
 };
 
@@ -35,9 +36,9 @@ const run = async () => {
 
   await dataSource.transaction(async (trx) => {
     await clearSequences(trx);
-
     await truncateAll(trx);
 
+    seedDriversLicenseCategories();
     seedOrganizations();
     seedTrainees();
     seedInstructors();

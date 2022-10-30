@@ -1,12 +1,9 @@
-import { Inject, Injectable, Scope } from '@nestjs/common';
-import { REQUEST } from '@nestjs/core';
 import { AuthRequest, RequestOrganization } from 'auth/auth.types';
+import { RequestContext } from 'nestjs-request-context';
 
-@Injectable({ scope: Scope.REQUEST })
 export class OrganizationDomainService {
-  constructor(@Inject(REQUEST) private request: AuthRequest) {}
-
   getRequestOrganization(): RequestOrganization {
-    return this.request.organization;
+    const request = RequestContext.currentContext.req as AuthRequest;
+    return request.organization;
   }
 }

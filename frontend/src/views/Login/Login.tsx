@@ -4,29 +4,26 @@ import {
   Button,
   Container,
   Icon,
+  Link,
   Paper,
   Typography,
 } from '@mui/material';
-import { OrganizationGetPublicInfoResponseDto } from '@osk/shared';
+import { Link as RouterLink, Navigate, useLocation } from 'react-router-dom';
 import { Form, Formik } from 'formik';
 import { useState } from 'react';
-import { Navigate, useLocation } from 'react-router-dom';
 import { Box, Flex } from 'reflexbox';
-import useSWR from 'swr';
 import { FTextField } from '../../components/FTextField/FTextField';
 import { FullPageLoading } from '../../components/FullPageLoading/FullPageLoading';
 import { GeneralAPIError } from '../../components/GeneralAPIError/GeneralAPIError';
 import { RequireAuthLocationState } from '../../components/RequireAuth/RequireAuth';
 import { useAuth } from '../../hooks/useAuth/useAuth';
+import { useUnauthorizedOrganizationData } from '../../hooks/useUnauthorizedOrganizationData/useUnauthorizedOrganizationData';
 import { LoginForm, LoginFormSchema } from './Login.schema';
 import { LoginHiddenWrapper, LoginLoaderWrapper } from './Login.styled';
 import { authenticate } from './Login.utils';
 
 export const Login = () => {
-  const { data, error } =
-    useSWR<OrganizationGetPublicInfoResponseDto>('/api/organization');
-
-  const oskName = data?.organization.name;
+  const { oskName, error } = useUnauthorizedOrganizationData();
   const [formError, setFormError] = useState<string | undefined>(undefined);
   const { accessToken, logIn } = useAuth();
   const location = useLocation();
@@ -62,7 +59,7 @@ export const Login = () => {
     );
   }
 
-  const isLoading = data === undefined;
+  const isLoading = oskName === undefined;
 
   return (
     <Container component="main" maxWidth="sm">
@@ -113,6 +110,13 @@ export const Login = () => {
                         required
                         disabled={isLoading}
                       />
+                      <Link
+                        component={RouterLink}
+                        to="/account/zapomnialem-haslo"
+                        marginBottom="0.5rem"
+                      >
+                        Nie pamiętasz hasła?
+                      </Link>
                       {formError && (
                         <Box my="0.5rem">
                           <Alert severity="error">{formError}</Alert>

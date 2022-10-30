@@ -37,7 +37,6 @@ export const TraineeNew = () => {
           firstName: newTrainee.firstName,
           lastName: newTrainee.lastName,
           phoneNumber: newTrainee.phoneNumber,
-          password: 'password',
           isActive: false,
         },
       },

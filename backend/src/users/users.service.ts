@@ -1,13 +1,12 @@
-import * as bcrypt from 'bcrypt';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import * as bcrypt from 'bcrypt';
 import { OrganizationDomainService } from 'organization-domain/organization-domain.service';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 
 export interface UserArguments {
   email?: string;
-  password?: string;
   firstName?: string;
   lastName?: string;
   isActive?: boolean;
@@ -22,15 +21,17 @@ export class UsersService {
   ) {}
 
   async findOneById(id: number): Promise<User | null> {
+    const { id: organizationId } =
+      this.organizationDomainService.getRequestOrganization();
     return this.usersRepository.findOne({
-      where: { id, isActive: true },
+      where: { id, organization: { id: organizationId }, isActive: true },
       relations: {
         organization: true,
       },
     });
   }
 
-  async loginByEmail(email: string) {
+  async findOneByEmailFromAll(email: string) {
     return this.usersRepository.findOne({
       where: { email },
       relations: {
@@ -40,11 +41,11 @@ export class UsersService {
   }
 
   async findOneByEmail(email: string) {
+    const { id: organizationId } =
+      this.organizationDomainService.getRequestOrganization();
+
     return this.usersRepository.findOne({
-      where: { email },
-      relations: {
-        organization: true,
-      },
+      where: { email, organizationId },
     });
   }
 
@@ -54,23 +55,19 @@ export class UsersService {
 
   async create(
     email: string,
-    password: string,
     firstName: string,
     lastName: string,
     isActive: boolean,
     phoneNumber: string,
   ) {
-    const { id: organizationId } =
-      this.organizationDomainService.getRequestOrganization();
-    const newUser = this.usersRepository.create({
+    const newUser = this.createUserWithoutSave({
       email,
-      password,
       firstName,
-      lastName,
       isActive,
-      organization: { id: organizationId },
+      lastName,
       phoneNumber,
     });
+
     await this.usersRepository.save(newUser);
 
     return newUser;
@@ -85,6 +82,21 @@ export class UsersService {
         organization: { id: organizationId },
       },
       user,
+    );
+
+    return updatedUser;
+  }
+
+  async changePassword(userId: number, password: string) {
+    const hashedPassword = bcrypt.hashSync(password, 10);
+
+    const updatedUser = this.usersRepository.update(
+      {
+        id: userId,
+      },
+      {
+        password: hashedPassword,
+      },
     );
 
     return updatedUser;
@@ -111,7 +123,7 @@ export class UsersService {
 
     const userToCreate = {
       ...user,
-      password: user.password ? bcrypt.hashSync(user.password, 10) : undefined,
+      password: undefined,
       createdAt: new Date(),
       organization: { id: organizationId },
     };
