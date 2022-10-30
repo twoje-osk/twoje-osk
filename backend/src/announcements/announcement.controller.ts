@@ -18,14 +18,18 @@ import {
   AnnouncementFindOneResponseDto,
   AnnouncementUpdateRequestDto,
   AnnouncementUpdateResponseDto,
+  UserRole,
 } from '@osk/shared';
+import { Roles } from 'common/guards/roles.decorator';
 import { assertNever } from 'utils/assertNever';
 import { AnnouncementsService } from './announcement.service';
 
+@Roles(UserRole.Admin)
 @Controller('announcements')
 export class AnnouncementsController {
   constructor(private readonly announcementsService: AnnouncementsService) {}
 
+  @Roles(UserRole.Trainee, UserRole.Instructor, UserRole.Admin)
   @ApiResponse({
     type: AnnouncementFindAllResponseDto,
   })
