@@ -1,9 +1,11 @@
+import { Exclude } from 'class-transformer';
 import {
   Column,
   Entity,
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
+  RelationId,
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 
@@ -12,16 +14,21 @@ export class Announcement {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => User, { nullable: false })
-  @JoinColumn()
-  createdBy: User;
-
-  @Column()
-  createdAt: Date;
-
   @Column()
   subject: string;
 
   @Column()
   body: string;
+
+  @ManyToOne(() => User, { nullable: false })
+  @JoinColumn({ name: 'createdById' })
+  createdBy: User;
+
+  @Exclude()
+  @Column()
+  @RelationId((announcement: Announcement) => announcement.createdBy)
+  createdById: number;
+
+  @Column()
+  createdAt: Date;
 }

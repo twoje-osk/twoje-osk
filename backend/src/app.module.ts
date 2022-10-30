@@ -11,6 +11,7 @@ import { JwtAuthGuard } from 'auth/passport/jwt-auth.guard';
 import { DriversLicenseCategoriesModule } from 'driversLicenseCategory/driversLicenseCategory.module';
 import { CustomConfigService } from 'config/config.service';
 import { RequestContextModule } from 'nestjs-request-context';
+import { AnnouncementsModule } from 'announcements/announcement.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { OrganizationsModule } from './organizations/organizations.module';
@@ -49,6 +50,7 @@ import { ResetPasswordModule } from './reset-password/reset-password.module';
       rootPath: join(__dirname, '../..', 'client'),
     }),
     AuthModule,
+    AnnouncementsModule,
     UsersModule,
     TraineesModule,
     InstructorsModule,
