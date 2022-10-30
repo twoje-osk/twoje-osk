@@ -116,7 +116,7 @@ export class AnnouncementsService {
       return getFailure('ANNOUNCEMENT_NOT_FOUND');
     }
 
-    this.announcementsRepository.delete(announcementToBeRemoved.id);
+    await this.announcementsRepository.delete(announcementToBeRemoved.id);
 
     return getSuccess(undefined);
   }

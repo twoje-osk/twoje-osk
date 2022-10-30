@@ -46,7 +46,7 @@ export class AnnouncementsController {
   async findOne(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<AnnouncementFindOneResponseDto> {
-    const announcement = await this.announcementsService.findOne(+id);
+    const announcement = await this.announcementsService.findOne(id);
     if (announcement === null) {
       throw new NotFoundException();
     }
@@ -75,7 +75,7 @@ export class AnnouncementsController {
   ): Promise<AnnouncementUpdateResponseDto> {
     const updateResult = await this.announcementsService.update(
       announcement,
-      +id,
+      id,
     );
     if (updateResult.ok === true) {
       return { id: updateResult.data };
@@ -93,7 +93,7 @@ export class AnnouncementsController {
   async delete(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<AnnouncementDeleteResponseDto> {
-    const deleteResult = await this.announcementsService.delete(+id);
+    const deleteResult = await this.announcementsService.delete(id);
     if (deleteResult.ok === true) {
       return { announcement: deleteResult.data };
     }
