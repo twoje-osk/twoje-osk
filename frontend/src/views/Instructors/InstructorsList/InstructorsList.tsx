@@ -83,7 +83,7 @@ export const InstructorsList = () => {
               <TableCell>Email</TableCell>
               <TableCell>Telefon</TableCell>
               <TableCell>Uprawnienia</TableCell>
-              <TableCell>Aktywny</TableCell>
+              <TableCell align="center">Aktywny</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -104,7 +104,7 @@ export const InstructorsList = () => {
                     .map((id) => qualifications[id.toString()])
                     .join(', ')}
                 </TableCell>
-                <TableCell>
+                <TableCell align="center">
                   {row.user.isActive ? (
                     <Icon color="success">check</Icon>
                   ) : (

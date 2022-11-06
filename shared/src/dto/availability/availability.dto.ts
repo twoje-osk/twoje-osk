@@ -47,3 +47,27 @@ export class InstructorPublicAvailabilityResponseDTO {
   })
   batches: AvailabilityBatch[];
 }
+
+export class AvailabilityDTO {
+  @ApiProperty({ type: 'number' })
+  id: number;
+
+  @ApiProperty({
+    type: 'string',
+    format: 'YYYY-mm-DDTHH:mm:ss.SZ',
+  })
+  from: ApiDate;
+
+  @ApiProperty({
+    type: 'string',
+    format: 'YYYY-mm-DDTHH:mm:ss.SZ',
+  })
+  to: ApiDate;
+}
+export class InstructorAvailabilityResponseDTO {
+  @ApiProperty({
+    isArray: true,
+    type: AvailabilityDTO,
+  })
+  availabilities: AvailabilityDTO[];
+}

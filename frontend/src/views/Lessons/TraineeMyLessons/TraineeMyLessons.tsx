@@ -15,11 +15,7 @@ import { FullPageLoading } from '../../../components/FullPageLoading/FullPageLoa
 import { GeneralAPIError } from '../../../components/GeneralAPIError/GeneralAPIError';
 import { LessonsCalendar } from './LessonsCalendar/LessonsCalendar';
 import { EditLessonModal } from './EditLessonModal/EditLessonModal';
-import {
-  useMyLessonsModal,
-  useFetchData,
-  useSelectedDate,
-} from './TraineeMyLessons.hooks';
+import { useMyLessonsModal, useFetchData } from './TraineeMyLessons.hooks';
 import {
   FullPageRelativeWrapper,
   GroupedIconButton,
@@ -29,6 +25,7 @@ import {
 import { getInstructorEvents, getUserEvents } from './TraineeMyLessons.utils';
 import { isRangeAvailable } from './LessonsCalendar/LessonsCalendar.utils';
 import { useAuth } from '../../../hooks/useAuth/useAuth';
+import { useSelectedDate } from '../../../hooks/useSelectedDate/useSelectedDate';
 
 export const TraineeMyLessons = () => {
   const auth = useAuth();

@@ -12,7 +12,6 @@ import { useMemo, useState } from 'react';
 import { Flex } from 'reflexbox';
 import useSWR from 'swr';
 import { LessonStatus } from '@osk/shared/src/types/lesson.types';
-import { useSelectedDate } from '../TraineeMyLessons/TraineeMyLessons.hooks';
 import { useMyLessonsModal } from './InstructorMyLessons.hooks';
 import {
   CalendarWrapper,
@@ -25,6 +24,7 @@ import { getUserEvents } from '../TraineeMyLessons/TraineeMyLessons.utils';
 import { GeneralAPIError } from '../../../components/GeneralAPIError/GeneralAPIError';
 import { EditLessonModal } from '../TraineeMyLessons/EditLessonModal/EditLessonModal';
 import { useAuth } from '../../../hooks/useAuth/useAuth';
+import { useSelectedDate } from '../../../hooks/useSelectedDate/useSelectedDate';
 
 export const InstructorMyLessons = () => {
   const { user } = useAuth();

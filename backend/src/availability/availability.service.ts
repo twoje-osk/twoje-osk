@@ -40,6 +40,30 @@ export class AvailabilityService {
     return availabilities;
   }
 
+  async getAvailabilitiesByInstructorUserId(
+    userId: number,
+    from: Date,
+    to: Date,
+  ) {
+    const organizationId =
+      this.organizationDomainService.getRequestOrganization().id;
+
+    const availabilities = this.availabilityRepository.find({
+      where: {
+        instructor: {
+          user: {
+            id: userId,
+            organizationId,
+          },
+        },
+        from: MoreThanOrEqual(from),
+        to: LessThanOrEqual(to),
+      },
+    });
+
+    return availabilities;
+  }
+
   async isInstructorAvailable(instructorId: number, from: Date, to: Date) {
     const organizationId =
       this.organizationDomainService.getRequestOrganization().id;

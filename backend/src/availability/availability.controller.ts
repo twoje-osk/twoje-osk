@@ -8,15 +8,22 @@ import {
 } from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
 import {
+  InstructorAvailabilityResponseDTO,
   InstructorPublicAvailabilityQueryDTO,
   InstructorPublicAvailabilityResponseDTO,
+  UserRole,
 } from '@osk/shared';
+import { Roles } from 'common/guards/roles.decorator';
+import { CurrentUserService } from 'current-user/current-user.service';
 import { endOfWeek, startOfWeek } from 'date-fns';
 import { AvailabilityService } from './availability.service';
 
 @Controller('availability')
 export class AvailabilityController {
-  constructor(private readonly availabilityService: AvailabilityService) {}
+  constructor(
+    private readonly availabilityService: AvailabilityService,
+    private readonly currentUserService: CurrentUserService,
+  ) {}
 
   @ApiResponse({
     type: InstructorPublicAvailabilityResponseDTO,
@@ -38,5 +45,28 @@ export class AvailabilityController {
       );
 
     return { batches };
+  }
+
+  @ApiResponse({
+    type: InstructorAvailabilityResponseDTO,
+  })
+  @Get()
+  @Roles(UserRole.Instructor)
+  @UsePipes(new ValidationPipe({ transform: true }))
+  async getMyAvailability(
+    @Query() query: InstructorPublicAvailabilityQueryDTO,
+  ): Promise<InstructorAvailabilityResponseDTO> {
+    const user = this.currentUserService.getRequestCurrentUser();
+    const from = query.from ?? startOfWeek(new Date());
+    const to = query.to ?? endOfWeek(new Date());
+
+    const availabilities =
+      await this.availabilityService.getAvailabilitiesByInstructorUserId(
+        user.userId,
+        from,
+        to,
+      );
+
+    return { availabilities };
   }
 }

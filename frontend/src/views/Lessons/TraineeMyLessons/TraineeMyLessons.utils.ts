@@ -3,18 +3,11 @@ import {
   LessonsDTO,
 } from '@osk/shared';
 import { LessonStatus } from '@osk/shared/src/types/lesson.types';
-import { startOfWeek } from 'date-fns';
 import { assertNever } from '../../../utils/asserNever';
 import {
   LessonEvent,
   RequiredEvent,
 } from './LessonsCalendar/LessonsCalendar.types';
-
-export function getTodayWeek() {
-  return startOfWeek(new Date(), {
-    weekStartsOn: 1,
-  });
-}
 
 export const getInstructorEvents = (
   instructorEventsData: InstructorPublicAvailabilityResponseDTO | undefined,

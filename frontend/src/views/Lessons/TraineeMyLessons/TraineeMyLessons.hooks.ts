@@ -8,15 +8,14 @@ import {
   UpdateLessonForInstructorResponseDTO,
   CancelLessonForInstructorResponseDTO,
 } from '@osk/shared';
-import { formatISO, endOfWeek, addDays, startOfWeek } from 'date-fns';
+import { formatISO, endOfWeek } from 'date-fns';
 import { FormikHelpers } from 'formik';
-import { Reducer, useMemo, useReducer, useState } from 'react';
+import { Reducer, useMemo, useReducer } from 'react';
 import useSWR from 'swr';
 import { useCommonSnackbars } from '../../../hooks/useCommonSnackbars/useCommonSnackbars';
 import { useMakeRequestWithAuth } from '../../../hooks/useMakeRequestWithAuth/useMakeRequestWithAuth';
 import { LessonFormData } from './EditLessonForm/EditLessonForm.schema';
 import { LessonEvent } from './LessonsCalendar/LessonsCalendar.types';
-import { getTodayWeek } from './TraineeMyLessons.utils';
 
 interface UseFetchDataArguments {
   selectedDate: Date;
@@ -78,29 +77,6 @@ export const useFetchData = ({
     instructorsEventsError,
     instructorsData,
     instructorsError,
-  };
-};
-
-export const useSelectedDate = () => {
-  const [selectedDate, setSelectedDate] = useState(getTodayWeek());
-
-  const onPrevWeekClick = () => {
-    setSelectedDate(addDays(selectedDate, -7));
-  };
-
-  const onTodayClick = () => {
-    setSelectedDate(startOfWeek(new Date(), { weekStartsOn: 1 }));
-  };
-
-  const onNextWeekClick = () => {
-    setSelectedDate(addDays(selectedDate, 7));
-  };
-
-  return {
-    selectedDate,
-    onPrevWeekClick,
-    onTodayClick,
-    onNextWeekClick,
   };
 };
 
