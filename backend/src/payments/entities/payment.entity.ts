@@ -5,8 +5,8 @@ import {
   PrimaryGeneratedColumn,
   RelationId,
 } from 'typeorm';
-import type { Trainee } from 'trainees/entities/trainee.entity';
 import { Exclude } from 'class-transformer';
+import { Trainee } from '../../trainees/entities/trainee.entity';
 
 @Entity()
 export class Payment {
@@ -19,7 +19,9 @@ export class Payment {
   @Column()
   date: Date;
 
-  @ManyToOne<Trainee>('Trainee', (trainee) => trainee.payments)
+  @ManyToOne<Trainee>('Trainee', (trainee) => trainee.payments, {
+    nullable: false,
+  })
   trainee: Trainee;
 
   @Exclude()
