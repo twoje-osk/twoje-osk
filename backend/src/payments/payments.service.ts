@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CurrentUserService } from 'current-user/current-user.service';
 import { OrganizationDomainService } from 'organization-domain/organization-domain.service';
-import { Trainee } from 'trainees/entities/trainee.entity';
+import { TraineesService } from 'trainees/trainees.service';
 import { Repository } from 'typeorm';
 import { Transactional } from 'typeorm-transactional-cls-hooked';
 import { getFailure, getSuccess, Try } from 'types/Try';
@@ -12,12 +12,11 @@ import { PaymentArguments, PaymentArgumentsUpdate } from './payments.types';
 @Injectable()
 export class PaymentsService {
   constructor(
-    @InjectRepository(Trainee)
-    private traineesRepository: Repository<Trainee>,
     @InjectRepository(Payment)
     private paymentsRepository: Repository<Payment>,
     private organizationDomainService: OrganizationDomainService,
     private currentUserService: CurrentUserService,
+    private traineesService: TraineesService,
   ) {}
 
   async findAll() {
@@ -61,35 +60,13 @@ export class PaymentsService {
     return payments;
   }
 
-  async findAllPersonalPayments() {
-    const { id: organizationId } =
-      this.organizationDomainService.getRequestOrganization();
-    const { userId } = this.currentUserService.getRequestCurrentUser();
-
-    const payments = await this.paymentsRepository.find({
-      where: {
-        trainee: {
-          user: {
-            id: userId,
-            organizationId,
-          },
-        },
-      },
-      relations: {
-        trainee: { user: true },
-      },
-    });
-
-    return payments;
-  }
-
   @Transactional()
   async findOneById(
     paymentId: number,
+    userId?: number,
   ): Promise<Try<Payment, 'PAYMENT_NOT_FOUND'>> {
     const { id: organizationId } =
       this.organizationDomainService.getRequestOrganization();
-    const { userId } = this.currentUserService.getRequestCurrentUser();
 
     const payment = await this.paymentsRepository.findOne({
       where: {
@@ -133,20 +110,9 @@ export class PaymentsService {
   async create(
     payment: PaymentArguments,
   ): Promise<Try<Payment, 'TRAINEE_NOT_FOUND'>> {
-    const { id: organizationId } =
-      this.organizationDomainService.getRequestOrganization();
-
-    const findTraineeCall = await this.traineesRepository.findOne({
-      where: {
-        id: payment.idTrainee,
-        user: {
-          organizationId,
-        },
-      },
-      relations: {
-        user: true,
-      },
-    });
+    const findTraineeCall = await this.traineesService.findOneByUserId(
+      payment.idTrainee,
+    );
 
     if (findTraineeCall === null) {
       return getFailure('TRAINEE_NOT_FOUND');
