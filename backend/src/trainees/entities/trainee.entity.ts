@@ -1,7 +1,9 @@
 import { Exclude } from 'class-transformer';
+import { Payment } from 'payments/entities/payment.entity';
 import {
   Column,
   Entity,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   RelationId,
@@ -28,4 +30,7 @@ export class Trainee {
   @Exclude()
   @RelationId((trainee: Trainee) => trainee.user)
   userId: number;
+
+  @OneToMany<Payment>('Payment', (payment) => payment.trainee)
+  payments: Payment[];
 }
