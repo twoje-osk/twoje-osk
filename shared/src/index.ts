@@ -6,6 +6,7 @@ export * from './dto/vehicle/vehicle.dto';
 export * from './dto/organization/organization.dto';
 export * from './dto/availability/availability.dto';
 export * from './dto/lesson/lesson.dto';
+export * from './dto/announcement/announcement.dto';
 export * from './authContext/jwtPayload';
 export * from './dto/driversLicenseCategory/driversLicenseCategory.dto';
 export * from './types/user.types';

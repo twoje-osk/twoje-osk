@@ -12,6 +12,7 @@ import { DriversLicenseCategoriesModule } from 'driversLicenseCategory/driversLi
 import { CustomConfigService } from 'config/config.service';
 import { RequestContextModule } from 'nestjs-request-context';
 import { PaymentsModule } from 'payments/payments.module';
+import { AnnouncementsModule } from 'announcements/announcement.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { OrganizationsModule } from './organizations/organizations.module';
@@ -50,6 +51,7 @@ import { ResetPasswordModule } from './reset-password/reset-password.module';
       rootPath: join(__dirname, '../..', 'client'),
     }),
     AuthModule,
+    AnnouncementsModule,
     UsersModule,
     TraineesModule,
     InstructorsModule,
