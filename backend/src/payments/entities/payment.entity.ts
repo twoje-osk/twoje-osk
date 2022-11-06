@@ -1,11 +1,9 @@
-// import { Exclude } from 'class-transformer';
 import {
   Column,
   Entity,
   ManyToOne,
   PrimaryGeneratedColumn,
   RelationId,
-  // RelationId,
 } from 'typeorm';
 import type { Trainee } from 'trainees/entities/trainee.entity';
 import { Exclude } from 'class-transformer';

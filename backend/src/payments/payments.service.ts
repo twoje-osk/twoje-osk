@@ -196,8 +196,4 @@ export class PaymentsService {
 
     return getSuccess(undefined);
   }
-
-  // EDITPAYMENT
-
-  // REMOVEPAYMENT
 }
