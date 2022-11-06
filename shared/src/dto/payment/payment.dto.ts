@@ -53,7 +53,6 @@ export class PaymentFindAllResponseDto {
     isArray: true,
     type: DtoPayment,
   })
-  @Type(() => DtoPayment)
   payments: DtoPayment[];
 }
 
@@ -61,7 +60,6 @@ export class PaymentFindOneResponseDto {
   @ApiProperty({
     type: DtoPayment,
   })
-  @Type(() => DtoPayment)
   payment: DtoPayment;
 }
 
