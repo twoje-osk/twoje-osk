@@ -43,7 +43,7 @@ const menuItemsForRole: Record<UserRole, MenuItem[]> = {
   ],
   [UserRole.Trainee]: [
     { text: 'Moje Jazdy', icon: 'toys', link: '/moje-jazdy' },
-    { text: 'Ogłoszenia', icon: 'campaign', link: '/' },
+    { text: 'Ogłoszenia', icon: 'campaign', link: '/ogloszenia' },
     { text: 'Płatności', icon: 'attach_money', link: '/' },
     { text: 'E-learning', icon: 'school', link: '/' },
   ],

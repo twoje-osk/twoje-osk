@@ -1,43 +1,93 @@
 import {
-  Avatar,
   Button,
-  Card,
-  CardContent,
-  CardHeader,
   Icon,
   IconButton,
-  ListItemIcon,
-  ListItemText,
-  Menu,
-  MenuItem,
   Stack,
   Toolbar,
   Tooltip,
   Typography,
 } from '@mui/material';
-import { blue } from '@mui/material/colors';
-import { AnnouncementFindAllResponseDto, DtoAnnouncement } from '@osk/shared';
+import {
+  AnnouncementDeleteResponseDto,
+  AnnouncementFindAllResponseDto,
+  DtoAnnouncement,
+} from '@osk/shared';
 import { Box, Flex } from 'reflexbox';
 import useSWR from 'swr';
+import { UserRole } from '@osk/shared/src/types/user.types';
 import { useState } from 'react';
 import { FullPageLoading } from '../../components/FullPageLoading/FullPageLoading';
 import { GeneralAPIError } from '../../components/GeneralAPIError/GeneralAPIError';
 import { useActionModal } from '../../hooks/useActionModal/useActionModal';
-import { formatLong } from '../../utils/date';
+import { AnnouncementCard } from './AnnouncementCard/AnnouncementCard';
+import { useAuth } from '../../hooks/useAuth/useAuth';
+import { ActionModal } from '../../components/ActionModal/ActionModal';
+import { useCommonSnackbars } from '../../hooks/useCommonSnackbars/useCommonSnackbars';
+import { useMakeRequestWithAuth } from '../../hooks/useMakeRequestWithAuth/useMakeRequestWithAuth';
+import { AnnouncementFormModal } from './AnnouncementFormModal/AnnouncementFormModal';
 
 export const AnnouncementsList = () => {
-  const { data: announcementsData, error: announcementsError } =
-    useSWR<AnnouncementFindAllResponseDto>('/api/announcements');
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl);
-  const pageTitle = 'Ogłoszenia';
   const {
-    // setLoading: setCreateModalLoading,
-    // isLoading: isCreateModalLoading,
-    // isOpen: isCreateModalOpen,
-    openModal: openCreateModal,
-    // closeModal: closeCreateModal,
+    data: announcementsData,
+    error: announcementsError,
+    mutate,
+  } = useSWR<AnnouncementFindAllResponseDto>('/api/announcements');
+  const pageTitle = 'Ogłoszenia';
+  const { role } = useAuth();
+  const { showErrorSnackbar, showSuccessSnackbar } = useCommonSnackbars();
+  const makeRequest = useMakeRequestWithAuth();
+  const {
+    setLoading: setDeleteModalLoading,
+    isLoading: isDeleteModalLoading,
+    isOpen: isDeleteModalOpen,
+    openModal: openDeleteModal,
+    closeModal: closeDeleteModal,
   } = useActionModal();
+
+  const [announcementToBeDeleted, setAnnouncementToBeDeleted] =
+    useState<number>();
+  const [announcementToBeEdited, setAnnouncementToBeEdited] =
+    useState<DtoAnnouncement>();
+  const [isCreateAnnouncementModalOpen, setIsCreateAnnouncementModalOpen] =
+    useState(false);
+  const [isEditAnnouncementModalOpen, setIsEditAnnouncementModalOpen] =
+    useState(false);
+
+  const handleDelete = (id: number) => {
+    openDeleteModal();
+    setAnnouncementToBeDeleted(id);
+  };
+
+  const deleteAnnouncement = async () => {
+    setDeleteModalLoading(true);
+    const announcementsApiUrl = `/api/announcements/${announcementToBeDeleted}`;
+    const response = await makeRequest<AnnouncementDeleteResponseDto>(
+      announcementsApiUrl,
+      'DELETE',
+    );
+    setDeleteModalLoading(false);
+    if (!response.ok) {
+      showErrorSnackbar();
+      return;
+    }
+    setDeleteModalLoading(false);
+    closeDeleteModal();
+    await mutate();
+    showSuccessSnackbar('Ogłoszenie zostało pomyślnie usunięte');
+  };
+
+  const handleCreate = () => {
+    setIsCreateAnnouncementModalOpen(true);
+  };
+
+  const createAnnouncement = () => {};
+
+  const handleEdit = (announcement: DtoAnnouncement) => {
+    setAnnouncementToBeEdited(announcement);
+    setIsEditAnnouncementModalOpen(true);
+  };
+
+  const editAnnouncement = () => {};
 
   if (announcementsError) {
     return <GeneralAPIError />;
@@ -48,12 +98,6 @@ export const AnnouncementsList = () => {
   }
 
   const { announcements } = announcementsData;
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
 
   return (
     <Flex flexDirection="column" height="100%">
@@ -68,13 +112,15 @@ export const AnnouncementsList = () => {
           {pageTitle}
         </Typography>
         <Stack direction="row" alignItems="center" spacing={1}>
-          <Button
-            startIcon={<Icon>add</Icon>}
-            variant="contained"
-            onClick={openCreateModal}
-          >
-            Dodaj Nowe Ogłoszenie
-          </Button>
+          {role === UserRole.Admin && (
+            <Button
+              startIcon={<Icon>add</Icon>}
+              variant="contained"
+              onClick={handleCreate}
+            >
+              Dodaj Nowe Ogłoszenie
+            </Button>
+          )}
           <Tooltip title="Filtruj listę">
             <IconButton>
               <Icon>filter_list</Icon>
@@ -86,73 +132,39 @@ export const AnnouncementsList = () => {
         <Stack direction="column">
           {announcements.map((announcement: DtoAnnouncement) => {
             return (
-              <Card
-                key={announcement.id}
-                sx={{
-                  minWidth: '60%',
-                  maxWidth: '60%',
-                  margin: 'auto',
-                  mb: '3rem',
-                  bgColor: '#fafafa',
-                }}
-              >
-                <CardHeader
-                  avatar={
-                    <Avatar sx={{ bgcolor: blue[100] }}>
-                      {`${announcement.createdBy.firstName.charAt(
-                        0,
-                      )}${announcement.createdBy.lastName.charAt(0)}`}
-                    </Avatar>
-                  }
-                  action={
-                    <IconButton aria-label="settings" onClick={handleClick}>
-                      <Icon fontSize="small" color="disabled">
-                        menu
-                      </Icon>
-                    </IconButton>
-                  }
-                  title={
-                    <Typography variant="h6">{announcement.subject}</Typography>
-                  }
-                  subheader={`${formatLong(
-                    new Date(announcement.createdAt),
-                  )}, ${announcement.createdBy.firstName} ${
-                    announcement.createdBy.lastName
-                  }`}
-                />
-                <CardContent>
-                  <Typography
-                    variant="body2"
-                    sx={{ mx: 'auto', maxWidth: '95%' }}
-                  >
-                    {announcement.body}
-                  </Typography>
-                </CardContent>
-              </Card>
+              <AnnouncementCard
+                announcement={announcement}
+                handleEdit={() => handleEdit(announcement)}
+                handleDelete={() => handleDelete(announcement.id)}
+              />
             );
           })}
-          <Menu
-            id="basic-menu"
-            anchorEl={anchorEl}
-            open={open}
-            onClose={handleClose}
-            transitionDuration={85}
-          >
-            <MenuItem onClick={handleClose}>
-              <ListItemIcon>
-                <Icon>edit</Icon>
-              </ListItemIcon>
-              <ListItemText>Edytuj</ListItemText>
-            </MenuItem>
-            <MenuItem onClick={handleClose}>
-              <ListItemIcon>
-                <Icon>delete</Icon>
-              </ListItemIcon>
-              <ListItemText>Usuń</ListItemText>
-            </MenuItem>
-          </Menu>
         </Stack>
       </Box>
+
+      <ActionModal
+        id="activateModal"
+        isOpen={isDeleteModalOpen}
+        isLoading={isDeleteModalLoading}
+        onClose={closeDeleteModal}
+        onAction={deleteAnnouncement}
+        actionButtonText="Usuń"
+        title="Czy na pewno chcesz usunąć to ogłoszenie?"
+        subtitle="Użytkownicy przestaną widzieć to ogłoszenie w swojej zakładce 'Ogłoszenia'"
+      />
+      <AnnouncementFormModal
+        title="Nowe Ogłoszenie"
+        onSave={createAnnouncement}
+        onCancel={() => setIsCreateAnnouncementModalOpen(false)}
+        isOpen={isCreateAnnouncementModalOpen}
+      />
+      <AnnouncementFormModal
+        title="Edycja Ogłoszenia"
+        onSave={editAnnouncement}
+        onCancel={() => setIsEditAnnouncementModalOpen(false)}
+        isOpen={isEditAnnouncementModalOpen}
+        announcement={announcementToBeEdited}
+      />
     </Flex>
   );
 };
