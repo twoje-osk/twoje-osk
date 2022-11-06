@@ -3,6 +3,7 @@ import {
   Get,
   NotFoundException,
   Param,
+  ParseIntPipe,
   Patch,
 } from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
@@ -56,9 +57,13 @@ export class PaymentsController {
   })
   @Get('my/:id')
   async findOnePersonalPayment(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
   ): Promise<PaymentFindOneResponseDto> {
-    const payment = await this.paymentsService.findOnePersonalPayment(+id);
+    const loggedUser = this.currentUserService.getRequestCurrentUser();
+    const payment = await this.paymentsService.findOneById(
+      id,
+      loggedUser.userId,
+    );
 
     if (payment.ok) {
       return { payment: payment.data };
@@ -77,9 +82,9 @@ export class PaymentsController {
   })
   @Patch('edit/:id')
   async editPayment(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
   ): Promise<PaymentUpdateResponseDto> {
-    const payment = await this.paymentsService.findOneById(+id);
+    const payment = await this.paymentsService.findOneById(id);
 
     if (payment.ok) {
       return { payment: payment.data };
@@ -97,8 +102,10 @@ export class PaymentsController {
     type: PaymentFindOneResponseDto,
   })
   @Get(':id')
-  async findOne(@Param('id') id: string): Promise<PaymentFindOneResponseDto> {
-    const payment = await this.paymentsService.findOneById(+id);
+  async findOne(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<PaymentFindOneResponseDto> {
+    const payment = await this.paymentsService.findOneById(id);
 
     if (payment.ok) {
       return { payment: payment.data };
