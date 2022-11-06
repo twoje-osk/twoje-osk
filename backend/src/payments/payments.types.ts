@@ -4,4 +4,5 @@ export interface PaymentArguments {
   idTrainee: number;
 }
 
-export interface PaymentArgumentsUpdate extends PaymentArguments {}
+export interface PaymentArgumentsUpdate
+  extends Partial<Omit<PaymentArguments, 'idTrainee'>> {}

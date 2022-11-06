@@ -156,7 +156,6 @@ export class PaymentsService {
       {
         amount: payment.amount,
         date: payment.date,
-        traineeId: payment.idTrainee,
       },
     );
 
