@@ -7,11 +7,10 @@ import {
   IsNotEmpty,
   IsNumber,
   IsOptional,
-  Validate,
 } from 'class-validator';
 import { addHours, startOfHour } from 'date-fns';
 import { LessonStatus } from '../../types/lesson.types';
-import { IsToGreaterThenFrom } from '../../validators/isGreaterThenFrom';
+import { IsDateAfter } from '../../validators/IsDateAfter';
 import { DtoInstructor } from '../instructor/instructor.dto';
 import { DtoTrainee } from '../trainee/trainee.dto';
 
@@ -88,7 +87,7 @@ export class CreateLessonForInstructorRequestDTO {
   })
   @Type(() => Date)
   @IsDate()
-  @Validate(IsToGreaterThenFrom, ['from'])
+  @IsDateAfter('from')
   to: ApiDate;
 }
 
@@ -114,7 +113,7 @@ export class UpdateLessonForInstructorRequestDTO {
   })
   @Type(() => Date)
   @IsDate()
-  @Validate(IsToGreaterThenFrom, ['from'])
+  @IsDateAfter('from')
   to: ApiDate;
 }
 
@@ -139,7 +138,7 @@ export class UpdateLessonRequestDTO {
   })
   @Type(() => Date)
   @IsDate()
-  @Validate(IsToGreaterThenFrom, ['from'])
+  @IsDateAfter('from')
   to: ApiDate;
 
   @ApiProperty({
@@ -168,7 +167,7 @@ export class CreateLessonRequestDTO {
   })
   @Type(() => Date)
   @IsDate()
-  @Validate(IsToGreaterThenFrom, ['from'])
+  @IsDateAfter('from')
   to: ApiDate;
 
   @ApiProperty({

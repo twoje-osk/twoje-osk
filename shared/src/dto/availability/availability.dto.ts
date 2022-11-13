@@ -1,8 +1,8 @@
 import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsDate, IsOptional, Validate, ValidateNested } from 'class-validator';
+import { IsDate, IsOptional, ValidateNested } from 'class-validator';
 import { setHours, startOfHour } from 'date-fns';
-import { IsToGreaterThenFrom } from '../../validators/isGreaterThenFrom';
+import { IsDateAfter } from '../../validators/IsDateAfter';
 import { DtoInstructor } from '../instructor/instructor.dto';
 
 export class DtoAvailability {
@@ -17,9 +17,6 @@ export class DtoAvailability {
 
   @ApiProperty()
   instructor: DtoInstructor;
-
-  @ApiProperty()
-  userDefined: boolean;
 }
 
 export class DtoCreateAvailability {
@@ -39,7 +36,7 @@ export class DtoCreateAvailability {
   })
   @Type(() => Date)
   @IsDate()
-  @Validate(IsToGreaterThenFrom, ['from'])
+  @IsDateAfter('from')
   to: ApiDate;
 }
 
