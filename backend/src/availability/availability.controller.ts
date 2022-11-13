@@ -1,7 +1,11 @@
 import {
+  Body,
+  ConflictException,
   Controller,
   Get,
+  NotFoundException,
   Param,
+  Post,
   Query,
   UsePipes,
   ValidationPipe,
@@ -9,6 +13,8 @@ import {
 import { ApiResponse } from '@nestjs/swagger';
 import {
   InstructorAvailabilityResponseDTO,
+  InstructorCreateAvailabilityRequestDTO,
+  InstructorCreateAvailabilityResponseDTO,
   InstructorPublicAvailabilityQueryDTO,
   InstructorPublicAvailabilityResponseDTO,
   UserRole,
@@ -16,6 +22,7 @@ import {
 import { Roles } from 'common/guards/roles.decorator';
 import { CurrentUserService } from 'current-user/current-user.service';
 import { endOfWeek, startOfWeek } from 'date-fns';
+import { assertNever } from 'utils/assertNever';
 import { AvailabilityService } from './availability.service';
 
 @Controller('availability')
@@ -69,4 +76,41 @@ export class AvailabilityController {
 
     return { availabilities };
   }
+
+  @ApiResponse({
+    type: InstructorCreateAvailabilityResponseDTO,
+  })
+  @Post()
+  @Roles(UserRole.Instructor)
+  @UsePipes(new ValidationPipe({ transform: true }))
+  async createAvailability(
+    @Body() body: InstructorCreateAvailabilityRequestDTO,
+  ): Promise<InstructorCreateAvailabilityResponseDTO> {
+    const { from, to } = body.availability;
+
+    const newAvailability = await this.availabilityService.createAvailability(
+      from,
+      to,
+    );
+
+    if (newAvailability.ok) {
+      return { createdAvailabilityId: newAvailability.data };
+    }
+
+    if (newAvailability.error === 'INSTRUCTOR_NOT_FOUND') {
+      throw new NotFoundException(
+        "Instructor for the current user doesn't exist",
+      );
+    }
+
+    if (newAvailability.error === 'COLLIDING_AVAILABILITY') {
+      throw new ConflictException(
+        'There is availability already in that time slot',
+      );
+    }
+
+    return assertNever(newAvailability.error);
+  }
+
+  // TODO: editAvailability
 }

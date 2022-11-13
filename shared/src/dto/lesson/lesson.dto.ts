@@ -11,9 +11,9 @@ import {
 } from 'class-validator';
 import { addHours, startOfHour } from 'date-fns';
 import { LessonStatus } from '../../types/lesson.types';
+import { IsToGreaterThenFrom } from '../../validators/isGreaterThenFrom';
 import { DtoInstructor } from '../instructor/instructor.dto';
 import { DtoTrainee } from '../trainee/trainee.dto';
-import { IsToGreaterThenFrom } from './lesson.validators';
 
 export class LessonsDTO {
   @ApiProperty()

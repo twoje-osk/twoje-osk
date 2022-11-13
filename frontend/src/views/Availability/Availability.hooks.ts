@@ -1,5 +1,10 @@
+import {
+  InstructorCreateAvailabilityRequestDTO,
+  InstructorCreateAvailabilityResponseDTO,
+} from '@osk/shared';
 import { useState } from 'react';
 import { useCommonSnackbars } from '../../hooks/useCommonSnackbars/useCommonSnackbars';
+import { useMakeRequestWithAuth } from '../../hooks/useMakeRequestWithAuth/useMakeRequestWithAuth';
 import { sleep } from '../../utils/sleep';
 import { AvailabilityEvent } from './AvailabilityCalendar/AvailabilityCalendar.types';
 
@@ -13,10 +18,9 @@ export const useEditEvent = ({ mutate }: Arguments) => {
     null,
   );
   const { showSuccessSnackbar } = useCommonSnackbars();
+  const makeRequest = useMakeRequestWithAuth();
 
   const onEventUpdate = async (newEvent: AvailabilityEvent) => {
-    console.log(newEvent);
-
     setEditedEvent({
       id: newEvent.id,
       start: newEvent.start,
@@ -31,15 +35,21 @@ export const useEditEvent = ({ mutate }: Arguments) => {
   };
 
   const onEventCreate = async (newEvent: Omit<AvailabilityEvent, 'id'>) => {
-    console.log(newEvent);
-
     setAddedEvent({
       id: -1,
       start: newEvent.start,
       end: newEvent.end,
     });
 
-    await sleep(1500);
+    await makeRequest<
+      InstructorCreateAvailabilityResponseDTO,
+      InstructorCreateAvailabilityRequestDTO
+    >(`/api/availability`, 'POST', {
+      availability: {
+        from: newEvent.start.toISOString(),
+        to: newEvent.end.toISOString(),
+      },
+    });
 
     await mutate();
     setAddedEvent(null);
