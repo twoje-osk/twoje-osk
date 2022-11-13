@@ -7,6 +7,7 @@ import { seedVehicles } from './seed.vehicles';
 import { seedInstructors } from './seed.instructors';
 import { seedAvailabilities } from './seed.availabilities';
 import { seedLessons } from './seed.lessons';
+import { seedPayments } from './seed.payments';
 import { Factory } from './seed.utils';
 import { seedDriversLicenseCategories } from './seed.driversLicenseCategories';
 import { seedAnnouncements } from './seed.announcement';
@@ -48,6 +49,7 @@ const run = async () => {
     seedAvailabilities();
     seedLessons();
     seedAnnouncements();
+    seedPayments();
 
     await saveAll(trx);
   });
