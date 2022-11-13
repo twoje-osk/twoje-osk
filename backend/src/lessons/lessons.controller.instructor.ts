@@ -103,10 +103,14 @@ export class InstructorLessonsController {
       status,
     );
 
-    if (!result.ok && result.error === 'LESSON_NOT_FOUND') {
+    if (result.ok) {
+      return {};
+    }
+
+    if (result.error === 'LESSON_NOT_FOUND') {
       throw new NotFoundException("Lesson with provided id doesn't exist");
     }
 
-    return {};
+    return assertNever(result.error);
   }
 }

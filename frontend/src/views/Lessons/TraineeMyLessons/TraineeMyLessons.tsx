@@ -103,14 +103,19 @@ export const TraineeMyLessons = () => {
         <Box width={320}>
           <FormControl fullWidth>
             <InputLabel id="instructor-label">Instruktor</InputLabel>
-            <Select
+            <Select<number | null>
               labelId="instructor-label"
               id="instructor"
               value={selectedInstructorId}
               label="Instruktor"
-              onChange={(e) =>
-                setSelectedInstructorId(e.target.value as number)
-              }
+              onChange={(e) => {
+                const { value } = e.target;
+                if (typeof value === 'string') {
+                  return;
+                }
+
+                setSelectedInstructorId(value);
+              }}
             >
               {instructorsData.instructors.map(({ id, user }) => (
                 <MenuItem value={id} key={id}>

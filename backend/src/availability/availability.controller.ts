@@ -47,8 +47,8 @@ export class AvailabilityController {
     @Query() query: InstructorPublicAvailabilityQueryDTO,
     @Param('id', ParseIntPipe) instructorId: number,
   ): Promise<InstructorPublicAvailabilityResponseDTO> {
-    const from = query.from ?? startOfWeek(new Date());
-    const to = query.to ?? endOfWeek(new Date());
+    const from = query.from ?? startOfWeek(new Date(), { weekStartsOn: 1 });
+    const to = query.to ?? endOfWeek(new Date(), { weekStartsOn: 1 });
 
     const batches =
       await this.availabilityService.getPublicInstructorAvailability(

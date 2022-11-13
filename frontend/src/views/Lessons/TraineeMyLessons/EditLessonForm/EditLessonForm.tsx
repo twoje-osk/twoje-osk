@@ -61,23 +61,25 @@ export const EditLessonForm = ({
     !isTrainee ? '/api/trainees' : null,
   );
 
+  const onInternalSubmit = (
+    values: LessonFormData,
+    formikHelpers: FormikHelpers<LessonFormData>,
+  ) => {
+    const submitData: LessonSubmitData = {
+      start: combineDateWithTime(values.date, values.startTime),
+      end: combineDateWithTime(values.date, values.endTime),
+      status: values.status,
+      instructorId: values.instructorId,
+      traineeId: values.traineeId,
+    };
+
+    return onSubmit(submitData, formikHelpers);
+  };
+
   return (
     <Formik<LessonFormData>
       validationSchema={lessonFormSchema}
-      onSubmit={(
-        values: LessonFormData,
-        formikHelpers: FormikHelpers<LessonFormData>,
-      ) => {
-        const submitData: LessonSubmitData = {
-          start: combineDateWithTime(values.date, values.startTime),
-          end: combineDateWithTime(values.date, values.endTime),
-          status: values.status,
-          instructorId: values.instructorId,
-          traineeId: values.traineeId,
-        };
-
-        return onSubmit(submitData, formikHelpers);
-      }}
+      onSubmit={onInternalSubmit}
       initialValues={initialValues ?? defaultValues}
       enableReinitialize
     >

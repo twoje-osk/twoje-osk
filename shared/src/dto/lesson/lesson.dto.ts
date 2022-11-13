@@ -51,7 +51,7 @@ export class GetMyLessonsQueryDTO {
   @IsOptional()
   @Type(() => Date)
   @IsDate()
-  readonly from?: ApiDate;
+  from?: ApiDate;
 
   @ApiPropertyOptional({
     format: 'yyyy-MM-ddTHH:mm:ssZ',
@@ -60,7 +60,7 @@ export class GetMyLessonsQueryDTO {
   @IsOptional()
   @Type(() => Date)
   @IsDate()
-  readonly to?: ApiDate;
+  to?: ApiDate;
 }
 
 export class GetMyLessonsResponseDTO {
@@ -79,7 +79,7 @@ export class CreateLessonForInstructorRequestDTO {
   })
   @Type(() => Date)
   @IsDate()
-  readonly from: ApiDate;
+  from: ApiDate;
 
   @ApiProperty({
     format: 'yyyy-MM-ddTHH:mm:ssZ',
@@ -89,7 +89,7 @@ export class CreateLessonForInstructorRequestDTO {
   @Type(() => Date)
   @IsDate()
   @Validate(IsToGreaterThenFrom, ['from'])
-  readonly to: ApiDate;
+  to: ApiDate;
 }
 
 export class CreateLessonForInstructorResponseDTO {
@@ -105,7 +105,7 @@ export class UpdateLessonForInstructorRequestDTO {
   })
   @Type(() => Date)
   @IsDate()
-  readonly from: ApiDate;
+  from: ApiDate;
 
   @ApiProperty({
     format: 'yyyy-MM-ddTHH:mm:ssZ',
@@ -115,7 +115,7 @@ export class UpdateLessonForInstructorRequestDTO {
   @Type(() => Date)
   @IsDate()
   @Validate(IsToGreaterThenFrom, ['from'])
-  readonly to: ApiDate;
+  to: ApiDate;
 }
 
 export class UpdateLessonForInstructorResponseDTO {}
@@ -130,7 +130,7 @@ export class UpdateLessonRequestDTO {
   })
   @Type(() => Date)
   @IsDate()
-  readonly from: ApiDate;
+  from: ApiDate;
 
   @ApiProperty({
     format: 'yyyy-MM-ddTHH:mm:ssZ',
@@ -140,7 +140,7 @@ export class UpdateLessonRequestDTO {
   @Type(() => Date)
   @IsDate()
   @Validate(IsToGreaterThenFrom, ['from'])
-  readonly to: ApiDate;
+  to: ApiDate;
 
   @ApiProperty({
     enum: LessonStatus,
@@ -159,7 +159,7 @@ export class CreateLessonRequestDTO {
   })
   @Type(() => Date)
   @IsDate()
-  readonly from: ApiDate;
+  from: ApiDate;
 
   @ApiProperty({
     format: 'yyyy-MM-ddTHH:mm:ssZ',
@@ -169,7 +169,7 @@ export class CreateLessonRequestDTO {
   @Type(() => Date)
   @IsDate()
   @Validate(IsToGreaterThenFrom, ['from'])
-  readonly to: ApiDate;
+  to: ApiDate;
 
   @ApiProperty({
     enum: LessonStatus,
