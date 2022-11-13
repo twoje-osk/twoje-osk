@@ -17,6 +17,7 @@ const baseConfig: DataSourceOptions = {
   migrations: ['./src/migrations/*.ts'],
   subscribers: [],
   logging: true,
+  migrationsRun: true,
 };
 
 export const dataSource = new DataSource(baseConfig);
