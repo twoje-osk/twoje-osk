@@ -70,7 +70,7 @@ export const AnnouncementCard = ({
               onClick={() => setIsMenuOpen(true)}
             >
               <Icon fontSize="small" color="disabled">
-                menu
+                more_vert
               </Icon>
             </IconButton>
           )

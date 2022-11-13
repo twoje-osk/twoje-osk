@@ -14,7 +14,7 @@ interface AnnouncementFormModalProps {
   announcement?: DtoAnnouncement;
   isOpen: boolean;
   onCancel: () => void;
-  onSave: () => void;
+  onSave: (values: AnnouncementFormSchema) => Promise<void>;
 }
 
 export const AnnouncementFormModal = ({
@@ -26,9 +26,9 @@ export const AnnouncementFormModal = ({
 }: AnnouncementFormModalProps) => {
   const defaultValues = { subject: '', body: '' };
   const [isLoading, setIsLoading] = useState(false);
-  const handleSubmit = () => {
+  const handleSubmit = async (values: AnnouncementFormSchema) => {
     setIsLoading(true);
-    onSave();
+    await onSave(values);
     setIsLoading(false);
   };
   return (
@@ -57,10 +57,17 @@ export const AnnouncementFormModal = ({
           initialValues={announcement ?? defaultValues}
           validationSchema={announcementsValidationSchema}
         >
-          <Form>
+          <Form noValidate>
             <Stack spacing={2} style={{ flex: 1 }} justifyContent="flex-start">
               <FTextField required id="subject" name="subject" label="Tytuł" />
-              <FTextField required id="body" name="body" label="Treść" />
+              <FTextField
+                required
+                id="body"
+                name="body"
+                label="Treść"
+                multiline
+                rows={5}
+              />
             </Stack>
             <Stack direction="row" spacing={1} sx={{ mt: '2rem' }}>
               <LoadingButton

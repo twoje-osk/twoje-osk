@@ -8,8 +8,12 @@ import {
   Typography,
 } from '@mui/material';
 import {
+  AnnouncementCreateRequestDto,
+  AnnouncementCreateResponseDto,
   AnnouncementDeleteResponseDto,
   AnnouncementFindAllResponseDto,
+  AnnouncementUpdateRequestDto,
+  AnnouncementUpdateResponseDto,
   DtoAnnouncement,
 } from '@osk/shared';
 import { Box, Flex } from 'reflexbox';
@@ -25,6 +29,7 @@ import { ActionModal } from '../../components/ActionModal/ActionModal';
 import { useCommonSnackbars } from '../../hooks/useCommonSnackbars/useCommonSnackbars';
 import { useMakeRequestWithAuth } from '../../hooks/useMakeRequestWithAuth/useMakeRequestWithAuth';
 import { AnnouncementFormModal } from './AnnouncementFormModal/AnnouncementFormModal';
+import { AnnouncementFormSchema } from './AnnouncementFormModal/AnnouncementFormModal.schema';
 
 export const AnnouncementsList = () => {
   const {
@@ -80,14 +85,52 @@ export const AnnouncementsList = () => {
     setIsCreateAnnouncementModalOpen(true);
   };
 
-  const createAnnouncement = () => {};
+  const createAnnouncement = async (values: AnnouncementFormSchema) => {
+    const { subject, body } = values;
+    const announcement: AnnouncementCreateRequestDto = {
+      announcement: {
+        subject,
+        body,
+      },
+    };
+    const announcementApiUrl = '/api/announcements';
+    const response = await makeRequest<
+      AnnouncementCreateResponseDto,
+      AnnouncementCreateRequestDto
+    >(announcementApiUrl, 'POST', announcement);
+    if (!response.ok) {
+      showErrorSnackbar();
+    }
+    showSuccessSnackbar('Ogłoszenie zostało utworzone');
+    setIsCreateAnnouncementModalOpen(false);
+    await mutate();
+  };
 
   const handleEdit = (announcement: DtoAnnouncement) => {
     setAnnouncementToBeEdited(announcement);
     setIsEditAnnouncementModalOpen(true);
   };
 
-  const editAnnouncement = () => {};
+  const editAnnouncement = async (values: AnnouncementFormSchema) => {
+    const { subject, body } = values;
+    const announcement: AnnouncementUpdateRequestDto = {
+      announcement: {
+        subject,
+        body,
+      },
+    };
+    const announcementApiUrl = `/api/announcements/${announcementToBeEdited?.id}`;
+    const response = await makeRequest<
+      AnnouncementUpdateResponseDto,
+      AnnouncementUpdateRequestDto
+    >(announcementApiUrl, 'PATCH', announcement);
+    if (!response.ok) {
+      showErrorSnackbar();
+    }
+    showSuccessSnackbar('Ogłoszenie zostało zapisane');
+    setIsEditAnnouncementModalOpen(false);
+    await mutate();
+  };
 
   if (announcementsError) {
     return <GeneralAPIError />;
