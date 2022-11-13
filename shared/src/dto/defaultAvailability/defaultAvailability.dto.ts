@@ -74,6 +74,10 @@ export class DefaultAvailabilityDTO {
     default: new Time(17, 0, 0),
   })
   to: ApiTime;
+
+  @ApiProperty({ type: 'number' })
+  @IsNumber()
+  dayOfWeek: number;
 }
 export class InstructorDefaultAvailabilityResponseDTO {
   @ApiProperty({

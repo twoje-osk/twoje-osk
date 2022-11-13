@@ -13,12 +13,9 @@ export class Time implements ApiTime {
     return new Time(hoursAsNumber, minutesAsNumber, secondsAsNumber);
   }
 
-  static fromApiTimeString(apiTime: ApiTime) {
-    return new Time(apiTime.hours, apiTime.minutes, apiTime.seconds);
-  }
-
-  fromString(value: string) {
-    return Time.fromString(value);
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  static fromDate(date: Date) {
+    return new Time(date.getHours(), date.getMinutes(), date.getSeconds());
   }
 
   toString() {

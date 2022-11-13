@@ -1,7 +1,9 @@
 import styled from '@emotion/styled';
-import { green } from '@mui/material/colors';
+import type { green } from '@mui/material/colors';
 
-export const StylingWrapper = styled.div`
+export type EventColor = Record<keyof typeof green, string>;
+
+export const StylingWrapper = styled.div<{ eventColor: EventColor }>`
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -31,8 +33,8 @@ export const StylingWrapper = styled.div`
   }
 
   .rbc-event {
-    background: ${green[500]};
-    border-color: ${green[600]};
+    background: ${({ eventColor }) => eventColor[500]};
+    border-color: ${({ eventColor }) => eventColor[600]};
     cursor: grab;
   }
 

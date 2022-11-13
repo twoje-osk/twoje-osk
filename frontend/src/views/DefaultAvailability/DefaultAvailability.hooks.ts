@@ -1,14 +1,16 @@
 import {
-  InstructorCreateAvailabilityRequestDTO,
-  InstructorCreateAvailabilityResponseDTO,
-  InstructorDeleteAvailabilityResponseDTO,
-  InstructorUpdateAvailabilityRequestDTO,
-  InstructorUpdateAvailabilityResponseDTO,
+  InstructorCreateDefaultAvailabilityRequestDTO,
+  InstructorCreateDefaultAvailabilityResponseDTO,
+  InstructorDeleteDefaultAvailabilityResponseDTO,
+  InstructorUpdateDefaultAvailabilityRequestDTO,
+  InstructorUpdateDefaultAvailabilityResponseDTO,
 } from '@osk/shared';
+import { Time } from '@osk/shared/src/types/Time';
 import { useState } from 'react';
 import { useActionModal } from '../../hooks/useActionModal/useActionModal';
 import { useCommonSnackbars } from '../../hooks/useCommonSnackbars/useCommonSnackbars';
 import { useMakeRequestWithAuth } from '../../hooks/useMakeRequestWithAuth/useMakeRequestWithAuth';
+import { getDayOfWeek } from '../../utils/getDayOfWeek';
 import { AvailabilityEvent } from '../../components/AvailabilityCalendar/AvailabilityCalendar.types';
 
 interface UseEditEventArguments {
@@ -30,12 +32,13 @@ export const useEditEvent = ({ mutate }: UseEditEventArguments) => {
     });
 
     const response = await makeRequest<
-      InstructorUpdateAvailabilityResponseDTO,
-      InstructorUpdateAvailabilityRequestDTO
-    >(`/api/availability/${newEvent.id}`, 'PATCH', {
+      InstructorUpdateDefaultAvailabilityResponseDTO,
+      InstructorUpdateDefaultAvailabilityRequestDTO
+    >(`/api/default-availability/${newEvent.id}`, 'PATCH', {
       availability: {
-        from: newEvent.start.toISOString(),
-        to: newEvent.end.toISOString(),
+        from: Time.fromDate(newEvent.start),
+        to: Time.fromDate(newEvent.end),
+        dayOfWeek: getDayOfWeek(newEvent.start),
       },
     });
 
@@ -73,12 +76,13 @@ export const useCreateEvent = ({ mutate }: UseCreateEventArguments) => {
     });
 
     const response = await makeRequest<
-      InstructorCreateAvailabilityResponseDTO,
-      InstructorCreateAvailabilityRequestDTO
-    >(`/api/availability`, 'POST', {
+      InstructorCreateDefaultAvailabilityResponseDTO,
+      InstructorCreateDefaultAvailabilityRequestDTO
+    >(`/api/default-availability`, 'POST', {
       availability: {
-        from: newEvent.start.toISOString(),
-        to: newEvent.end.toISOString(),
+        from: Time.fromDate(newEvent.start),
+        to: Time.fromDate(newEvent.end),
+        dayOfWeek: getDayOfWeek(newEvent.start),
       },
     });
 
@@ -129,10 +133,11 @@ export const useDeleteEvent = ({ mutate }: UseDeleteEventArguments) => {
     }
 
     setDeleteModalLoading(true);
-    const response = await makeRequest<InstructorDeleteAvailabilityResponseDTO>(
-      `/api/availability/${deletedEvent.id}`,
-      'DELETE',
-    );
+    const response =
+      await makeRequest<InstructorDeleteDefaultAvailabilityResponseDTO>(
+        `/api/default-availability/${deletedEvent.id}`,
+        'DELETE',
+      );
 
     if (!response.ok) {
       showErrorSnackbar();

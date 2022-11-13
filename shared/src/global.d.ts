@@ -5,6 +5,4 @@ interface ApiTime {
   hours: number;
   minutes: number;
   seconds: number;
-  static fromString(value: string): ApiTime;
-  toString(): string;
 }
