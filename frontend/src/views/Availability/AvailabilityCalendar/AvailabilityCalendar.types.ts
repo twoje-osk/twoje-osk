@@ -12,4 +12,5 @@ export interface AvailabilityCalendarProps {
   onEventUpdate: (event: AvailabilityEvent) => void;
   onEventCreate: (event: Omit<AvailabilityEvent, 'id'>) => void;
   canCreateEvent: (slotInfo: SlotInfo) => boolean;
+  onDelete: (event: AvailabilityEvent) => void;
 }

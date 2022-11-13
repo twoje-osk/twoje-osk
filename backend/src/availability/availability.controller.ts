@@ -2,6 +2,7 @@ import {
   Body,
   ConflictException,
   Controller,
+  Delete,
   Get,
   NotFoundException,
   Param,
@@ -21,6 +22,7 @@ import {
   InstructorPublicAvailabilityResponseDTO,
   InstructorUpdateAvailabilityRequestDTO,
   InstructorUpdateAvailabilityResponseDTO,
+  InstructorDeleteAvailabilityResponseDTO,
   UserRole,
 } from '@osk/shared';
 import { Roles } from 'common/guards/roles.decorator';
@@ -152,6 +154,36 @@ export class AvailabilityController {
       throw new ConflictException(
         'There is availability already in that time slot',
       );
+    }
+
+    return assertNever(newAvailability.error);
+  }
+
+  @ApiResponse({
+    type: InstructorDeleteAvailabilityResponseDTO,
+  })
+  @Delete(':id')
+  @Roles(UserRole.Instructor)
+  @UsePipes(new ValidationPipe({ transform: true }))
+  async deleteAvailability(
+    @Param('id', ParseIntPipe) instructorId: number,
+  ): Promise<InstructorDeleteAvailabilityResponseDTO> {
+    const newAvailability = await this.availabilityService.deleteAvailability(
+      instructorId,
+    );
+
+    if (newAvailability.ok) {
+      return {};
+    }
+
+    if (newAvailability.error === 'INSTRUCTOR_NOT_FOUND') {
+      throw new NotFoundException(
+        "Instructor for the current user doesn't exist",
+      );
+    }
+
+    if (newAvailability.error === 'AVAILABILITY_NOT_FOUND') {
+      throw new NotFoundException('Specified availability was not found');
     }
 
     return assertNever(newAvailability.error);

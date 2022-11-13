@@ -1,9 +1,13 @@
+import { Button, Icon } from '@mui/material';
 import { getHours, setHours, startOfDay } from 'date-fns';
 import { useMemo } from 'react';
-import { Calendar, SlotInfo, Views } from 'react-big-calendar';
+import { Calendar, Components, SlotInfo, Views } from 'react-big-calendar';
 import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop';
 import { useCommonSnackbars } from '../../../hooks/useCommonSnackbars/useCommonSnackbars';
-import { StylingWrapper } from './AvailabilityCalendar.styled';
+import {
+  StylingWrapper,
+  WhiteButtonWrapper,
+} from './AvailabilityCalendar.styled';
 import {
   AvailabilityCalendarProps,
   AvailabilityEvent,
@@ -26,11 +30,16 @@ export const AvailabilityCalendar = ({
   onEventUpdate,
   onEventCreate,
   canCreateEvent,
+  onDelete,
 }: AvailabilityCalendarProps) => {
   const { showInfoSnackbar } = useCommonSnackbars();
 
-  const minimumAvailabilityStartTime = useMemo(() => {
-    return Math.min(...events.map(({ start }) => getHours(start)));
+  const scrollToTime = useMemo(() => {
+    const minimumAvailabilityStartTime = Math.min(
+      ...events.map(({ start }) => getHours(start)),
+    );
+
+    return setHours(startOfDay(new Date()), minimumAvailabilityStartTime - 1);
   }, [events]);
 
   const onUpdate = ({ event, start, end }: OnUpdateData) => {
@@ -61,6 +70,26 @@ export const AvailabilityCalendar = ({
     onCreate(slotInfo);
   };
 
+  const components: Components<AvailabilityEvent, object> = useMemo(
+    () => ({
+      // eslint-disable-next-line react/no-unstable-nested-components
+      event: (props) => (
+        <WhiteButtonWrapper>
+          <Button
+            onClick={() => onDelete(props.event)}
+            variant="outlined"
+            startIcon={<Icon>delete</Icon>}
+            color="error"
+            fullWidth
+          >
+            Usuń
+          </Button>
+        </WhiteButtonWrapper>
+      ),
+    }),
+    [onDelete],
+  );
+
   return (
     <StylingWrapper>
       <DnDCalendar
@@ -74,19 +103,14 @@ export const AvailabilityCalendar = ({
         onEventDrop={onUpdate}
         onEventResize={onUpdate}
         onSelectSlot={onSelectSlot}
-        scrollToTime={setHours(
-          startOfDay(new Date()),
-          minimumAvailabilityStartTime - 1,
-        )}
+        scrollToTime={scrollToTime}
         style={{
           flex: '1 1',
           height: 'auto',
           minHeight: ' 0',
         }}
         culture="pl"
-        // onSelectEvent={(event) => {
-        //   onLessonClick(event);
-        // }}
+        components={components}
       />
     </StylingWrapper>
   );

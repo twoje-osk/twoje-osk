@@ -1,12 +1,18 @@
 import { ButtonGroup, Icon, Button, CircularProgress } from '@mui/material';
 import { InstructorAvailabilityResponseDTO } from '@osk/shared';
+import { endOfWeek, formatISO } from 'date-fns';
 import { useMemo } from 'react';
 import { Flex } from 'reflexbox';
 import useSWR from 'swr';
+import { ActionModal } from '../../components/ActionModal/ActionModal';
 import { GeneralAPIError } from '../../components/GeneralAPIError/GeneralAPIError';
 import { useSelectedDate } from '../../hooks/useSelectedDate/useSelectedDate';
 import { LoaderOverlay } from '../Lessons/MyLessons/MyLessons.styled';
-import { useEditEvent } from './Availability.hooks';
+import {
+  useCreateEvent,
+  useDeleteEvent,
+  useEditEvent,
+} from './Availability.hooks';
 import {
   CalendarWrapper,
   FullPageRelativeWrapper,
@@ -17,13 +23,29 @@ import { AvailabilityCalendar } from './AvailabilityCalendar/AvailabilityCalenda
 import { AvailabilityEvent } from './AvailabilityCalendar/AvailabilityCalendar.types';
 
 export const Availability = () => {
-  const { data, error, mutate } =
-    useSWR<InstructorAvailabilityResponseDTO>('/api/availability');
   const { selectedDate, onPrevWeekClick, onTodayClick, onNextWeekClick } =
     useSelectedDate();
+  const currentlySelectedDateQueryParams = useMemo(() => {
+    const params = new URLSearchParams();
+    params.set('from', formatISO(selectedDate));
+    params.set('to', formatISO(endOfWeek(selectedDate, { weekStartsOn: 1 })));
 
-  const { onEventUpdate, onEventCreate, addedEvent, editedEvent } =
-    useEditEvent({ mutate });
+    return params;
+  }, [selectedDate]);
+
+  const { data, error, mutate } = useSWR<InstructorAvailabilityResponseDTO>(
+    `/api/availability?${currentlySelectedDateQueryParams}`,
+  );
+
+  const { onEventUpdate, editedEvent } = useEditEvent({ mutate });
+  const { onEventCreate, addedEvent } = useCreateEvent({ mutate });
+  const {
+    onEventDelete,
+    onDeleteClick,
+    isDeleteModalLoading,
+    isDeleteModalOpen,
+    closeDeleteModal,
+  } = useDeleteEvent({ mutate });
 
   const events = useMemo((): AvailabilityEvent[] => {
     if (data === undefined) {
@@ -52,38 +74,52 @@ export const Availability = () => {
   }
 
   return (
-    <FullPageRelativeWrapper>
-      <Flex
-        marginBottom={24}
-        alignItems="center"
-        justifyContent="space-between"
-      >
-        <ButtonGroup disableElevation variant="outlined">
-          <GroupedIconButton onClick={onPrevWeekClick}>
-            <Icon>arrow_back</Icon>
-          </GroupedIconButton>
-          <Button variant="contained" onClick={onTodayClick}>
-            Dzisiaj
-          </Button>
-          <GroupedIconButton onClick={onNextWeekClick}>
-            <Icon>arrow_forward</Icon>
-          </GroupedIconButton>
-        </ButtonGroup>
-      </Flex>
-      <CalendarWrapper>
-        <AvailabilityCalendar
-          selectedDate={selectedDate}
-          events={events}
-          onEventUpdate={onEventUpdate}
-          onEventCreate={onEventCreate}
-          canCreateEvent={(slotInfo) => isRangeAvailable(slotInfo, events)}
-        />
-        {(data === undefined || isUpdatingData) && (
-          <LoaderOverlay>
-            <CircularProgress />
-          </LoaderOverlay>
-        )}
-      </CalendarWrapper>
-    </FullPageRelativeWrapper>
+    <>
+      <FullPageRelativeWrapper>
+        <Flex
+          marginBottom={24}
+          alignItems="center"
+          justifyContent="space-between"
+        >
+          <ButtonGroup disableElevation variant="outlined">
+            <GroupedIconButton onClick={onPrevWeekClick}>
+              <Icon>arrow_back</Icon>
+            </GroupedIconButton>
+            <Button variant="contained" onClick={onTodayClick}>
+              Dzisiaj
+            </Button>
+            <GroupedIconButton onClick={onNextWeekClick}>
+              <Icon>arrow_forward</Icon>
+            </GroupedIconButton>
+          </ButtonGroup>
+        </Flex>
+        <CalendarWrapper>
+          <AvailabilityCalendar
+            selectedDate={selectedDate}
+            events={events}
+            onEventUpdate={onEventUpdate}
+            onEventCreate={onEventCreate}
+            canCreateEvent={(slotInfo) => isRangeAvailable(slotInfo, events)}
+            onDelete={onDeleteClick}
+          />
+          {(data === undefined || isUpdatingData) && (
+            <LoaderOverlay>
+              <CircularProgress />
+            </LoaderOverlay>
+          )}
+        </CalendarWrapper>
+      </FullPageRelativeWrapper>
+      <ActionModal
+        id="deleteModal"
+        actionButtonColor="error"
+        actionButtonIcon="delete"
+        isOpen={isDeleteModalOpen}
+        isLoading={isDeleteModalLoading}
+        onClose={closeDeleteModal}
+        onAction={onEventDelete}
+        actionButtonText="Usuń"
+        title="Czy na pewno chcesz usunąć tę dostępność?"
+      />
+    </>
   );
 };

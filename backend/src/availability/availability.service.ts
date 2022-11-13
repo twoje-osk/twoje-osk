@@ -204,4 +204,32 @@ export class AvailabilityService {
 
     return getSuccess(undefined);
   }
+
+  async deleteAvailability(
+    availabilityId: number,
+  ): Promise<
+    Try<undefined, 'INSTRUCTOR_NOT_FOUND' | 'AVAILABILITY_NOT_FOUND'>
+  > {
+    const { userId } = this.currentUserService.getRequestCurrentUser();
+    const instructor = await this.instructorsService.findOneByUserId(userId);
+
+    if (instructor === null) {
+      return getFailure('INSTRUCTOR_NOT_FOUND');
+    }
+
+    const result = await this.availabilityRepository.delete({
+      id: availabilityId,
+      instructor: {
+        id: instructor.id,
+      },
+    });
+
+    const deletedCount = result.affected ?? 0;
+
+    if (deletedCount === 0) {
+      return getFailure('AVAILABILITY_NOT_FOUND');
+    }
+
+    return getSuccess(undefined);
+  }
 }

@@ -131,3 +131,5 @@ export class InstructorUpdateAvailabilityRequestDTO {
 }
 
 export class InstructorUpdateAvailabilityResponseDTO {}
+
+export class InstructorDeleteAvailabilityResponseDTO {}
