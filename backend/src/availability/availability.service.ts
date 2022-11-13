@@ -4,7 +4,14 @@ import { CurrentUserService } from 'current-user/current-user.service';
 import { InstructorsService } from 'instructors/instructors.service';
 import { LessonsService } from 'lessons/lessons.service';
 import { OrganizationDomainService } from 'organization-domain/organization-domain.service';
-import { LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
+import {
+  LessThan,
+  LessThanOrEqual,
+  MoreThan,
+  MoreThanOrEqual,
+  Not,
+  Repository,
+} from 'typeorm';
 import { getFailure, getSuccess, Try } from 'types/Try';
 import { subtractLessonsFromAvailabilities } from './availability.utils';
 import { Availability } from './entities/availability.entity';
@@ -121,8 +128,8 @@ export class AvailabilityService {
 
     const countOfAvailabilityInSlot = await this.availabilityRepository.count({
       where: {
-        from: MoreThanOrEqual(from),
-        to: LessThanOrEqual(to),
+        from: LessThan(to),
+        to: MoreThan(from),
       },
     });
 
@@ -139,5 +146,62 @@ export class AvailabilityService {
     const createdAvailabilityId: number = insertAvailability.identifiers[0]?.id;
 
     return getSuccess(createdAvailabilityId);
+  }
+
+  async updateAvailability(
+    availabilityId: number,
+    from?: Date,
+    to?: Date,
+  ): Promise<
+    Try<
+      undefined,
+      | 'INSTRUCTOR_NOT_FOUND'
+      | 'COLLIDING_AVAILABILITY'
+      | 'AVAILABILITY_NOT_FOUND'
+    >
+  > {
+    const { userId } = this.currentUserService.getRequestCurrentUser();
+    const instructor = await this.instructorsService.findOneByUserId(userId);
+
+    if (instructor === null) {
+      return getFailure('INSTRUCTOR_NOT_FOUND');
+    }
+
+    const availabilityToBeUpdated = await this.availabilityRepository.findOne({
+      where: {
+        id: availabilityId,
+        instructor: {
+          id: instructor.id,
+        },
+      },
+    });
+
+    if (availabilityToBeUpdated === null) {
+      return getFailure('AVAILABILITY_NOT_FOUND');
+    }
+
+    const updatedAvailability = this.availabilityRepository.merge(
+      availabilityToBeUpdated,
+      {
+        from,
+        to,
+      },
+    );
+
+    const countOfAvailabilityInSlot = await this.availabilityRepository.count({
+      where: {
+        from: LessThan(updatedAvailability.to),
+        to: MoreThan(updatedAvailability.from),
+        id: Not(availabilityToBeUpdated.id),
+      },
+    });
+
+    if (countOfAvailabilityInSlot > 0) {
+      return getFailure('COLLIDING_AVAILABILITY');
+    }
+
+    await this.availabilityRepository.save(updatedAvailability);
+
+    return getSuccess(undefined);
   }
 }

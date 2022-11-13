@@ -1,7 +1,8 @@
 import { getHours, setHours, startOfDay } from 'date-fns';
 import { useMemo } from 'react';
-import { Calendar, Views } from 'react-big-calendar';
+import { Calendar, SlotInfo, Views } from 'react-big-calendar';
 import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop';
+import { useCommonSnackbars } from '../../../hooks/useCommonSnackbars/useCommonSnackbars';
 import { StylingWrapper } from './AvailabilityCalendar.styled';
 import {
   AvailabilityCalendarProps,
@@ -24,7 +25,10 @@ export const AvailabilityCalendar = ({
   selectedDate,
   onEventUpdate,
   onEventCreate,
+  canCreateEvent,
 }: AvailabilityCalendarProps) => {
+  const { showInfoSnackbar } = useCommonSnackbars();
+
   const minimumAvailabilityStartTime = useMemo(() => {
     return Math.min(...events.map(({ start }) => getHours(start)));
   }, [events]);
@@ -44,6 +48,19 @@ export const AvailabilityCalendar = ({
     });
   };
 
+  const onSelectSlot = (slotInfo: SlotInfo) => {
+    if (slotInfo.action !== 'select') {
+      return;
+    }
+
+    if (!canCreateEvent(slotInfo)) {
+      showInfoSnackbar('Dostępność została już zadeklarowana w tym terminie.');
+      return;
+    }
+
+    onCreate(slotInfo);
+  };
+
   return (
     <StylingWrapper>
       <DnDCalendar
@@ -56,12 +73,7 @@ export const AvailabilityCalendar = ({
         selectable
         onEventDrop={onUpdate}
         onEventResize={onUpdate}
-        // onSelectSlot={onSelectSlot}
-        onSelectSlot={(event) => {
-          onCreate(event);
-
-          return true;
-        }}
+        onSelectSlot={onSelectSlot}
         scrollToTime={setHours(
           startOfDay(new Date()),
           minimumAvailabilityStartTime - 1,

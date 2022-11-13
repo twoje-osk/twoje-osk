@@ -122,3 +122,12 @@ export class InstructorCreateAvailabilityResponseDTO {
   @ApiProperty()
   createdAvailabilityId: number;
 }
+
+export class InstructorUpdateAvailabilityRequestDTO {
+  @ApiProperty()
+  @ValidateNested()
+  @Type(() => DtoUpdateAvailability)
+  availability: DtoUpdateAvailability;
+}
+
+export class InstructorUpdateAvailabilityResponseDTO {}

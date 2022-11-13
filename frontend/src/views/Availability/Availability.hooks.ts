@@ -1,11 +1,12 @@
 import {
   InstructorCreateAvailabilityRequestDTO,
   InstructorCreateAvailabilityResponseDTO,
+  InstructorUpdateAvailabilityRequestDTO,
+  InstructorUpdateAvailabilityResponseDTO,
 } from '@osk/shared';
 import { useState } from 'react';
 import { useCommonSnackbars } from '../../hooks/useCommonSnackbars/useCommonSnackbars';
 import { useMakeRequestWithAuth } from '../../hooks/useMakeRequestWithAuth/useMakeRequestWithAuth';
-import { sleep } from '../../utils/sleep';
 import { AvailabilityEvent } from './AvailabilityCalendar/AvailabilityCalendar.types';
 
 interface Arguments {
@@ -17,7 +18,7 @@ export const useEditEvent = ({ mutate }: Arguments) => {
   const [editedEvent, setEditedEvent] = useState<AvailabilityEvent | null>(
     null,
   );
-  const { showSuccessSnackbar } = useCommonSnackbars();
+  const { showSuccessSnackbar, showErrorSnackbar } = useCommonSnackbars();
   const makeRequest = useMakeRequestWithAuth();
 
   const onEventUpdate = async (newEvent: AvailabilityEvent) => {
@@ -27,7 +28,21 @@ export const useEditEvent = ({ mutate }: Arguments) => {
       end: newEvent.end,
     });
 
-    await sleep(1500);
+    const response = await makeRequest<
+      InstructorUpdateAvailabilityResponseDTO,
+      InstructorUpdateAvailabilityRequestDTO
+    >(`/api/availability/${newEvent.id}`, 'PATCH', {
+      availability: {
+        from: newEvent.start.toISOString(),
+        to: newEvent.end.toISOString(),
+      },
+    });
+
+    if (!response.ok) {
+      showErrorSnackbar();
+      setEditedEvent(null);
+      return;
+    }
 
     await mutate();
     setEditedEvent(null);
@@ -41,7 +56,7 @@ export const useEditEvent = ({ mutate }: Arguments) => {
       end: newEvent.end,
     });
 
-    await makeRequest<
+    const response = await makeRequest<
       InstructorCreateAvailabilityResponseDTO,
       InstructorCreateAvailabilityRequestDTO
     >(`/api/availability`, 'POST', {
@@ -50,6 +65,12 @@ export const useEditEvent = ({ mutate }: Arguments) => {
         to: newEvent.end.toISOString(),
       },
     });
+
+    if (!response.ok) {
+      showErrorSnackbar();
+      setAddedEvent(null);
+      return;
+    }
 
     await mutate();
     setAddedEvent(null);

@@ -5,6 +5,8 @@ import {
   Get,
   NotFoundException,
   Param,
+  ParseIntPipe,
+  Patch,
   Post,
   Query,
   UsePipes,
@@ -17,6 +19,8 @@ import {
   InstructorCreateAvailabilityResponseDTO,
   InstructorPublicAvailabilityQueryDTO,
   InstructorPublicAvailabilityResponseDTO,
+  InstructorUpdateAvailabilityRequestDTO,
+  InstructorUpdateAvailabilityResponseDTO,
   UserRole,
 } from '@osk/shared';
 import { Roles } from 'common/guards/roles.decorator';
@@ -39,7 +43,7 @@ export class AvailabilityController {
   @UsePipes(new ValidationPipe({ transform: true }))
   async getInstructorAvailability(
     @Query() query: InstructorPublicAvailabilityQueryDTO,
-    @Param('id') instructorId: number,
+    @Param('id', ParseIntPipe) instructorId: number,
   ): Promise<InstructorPublicAvailabilityResponseDTO> {
     const from = query.from ?? startOfWeek(new Date());
     const to = query.to ?? endOfWeek(new Date());
@@ -112,5 +116,44 @@ export class AvailabilityController {
     return assertNever(newAvailability.error);
   }
 
-  // TODO: editAvailability
+  @ApiResponse({
+    type: InstructorUpdateAvailabilityResponseDTO,
+  })
+  @Patch(':id')
+  @Roles(UserRole.Instructor)
+  @UsePipes(new ValidationPipe({ transform: true }))
+  async updateAvailability(
+    @Body() body: InstructorUpdateAvailabilityRequestDTO,
+    @Param('id', ParseIntPipe) instructorId: number,
+  ): Promise<InstructorUpdateAvailabilityResponseDTO> {
+    const { from, to } = body.availability;
+
+    const newAvailability = await this.availabilityService.updateAvailability(
+      instructorId,
+      from,
+      to,
+    );
+
+    if (newAvailability.ok) {
+      return {};
+    }
+
+    if (newAvailability.error === 'INSTRUCTOR_NOT_FOUND') {
+      throw new NotFoundException(
+        "Instructor for the current user doesn't exist",
+      );
+    }
+
+    if (newAvailability.error === 'AVAILABILITY_NOT_FOUND') {
+      throw new NotFoundException('Specified availability was not found');
+    }
+
+    if (newAvailability.error === 'COLLIDING_AVAILABILITY') {
+      throw new ConflictException(
+        'There is availability already in that time slot',
+      );
+    }
+
+    return assertNever(newAvailability.error);
+  }
 }

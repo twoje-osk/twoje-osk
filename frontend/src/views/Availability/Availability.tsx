@@ -12,6 +12,7 @@ import {
   FullPageRelativeWrapper,
   GroupedIconButton,
 } from './Availability.styled';
+import { isRangeAvailable } from './Availability.utils';
 import { AvailabilityCalendar } from './AvailabilityCalendar/AvailabilityCalendar';
 import { AvailabilityEvent } from './AvailabilityCalendar/AvailabilityCalendar.types';
 
@@ -75,6 +76,7 @@ export const Availability = () => {
           events={events}
           onEventUpdate={onEventUpdate}
           onEventCreate={onEventCreate}
+          canCreateEvent={(slotInfo) => isRangeAvailable(slotInfo, events)}
         />
         {(data === undefined || isUpdatingData) && (
           <LoaderOverlay>
