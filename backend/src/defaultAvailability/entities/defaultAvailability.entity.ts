@@ -9,6 +9,9 @@ import {
 } from 'typeorm';
 import { Instructor } from '../../instructors/entities/instructor.entity';
 
+/**
+ * @see https://github.com/typeorm/typeorm/issues/2390
+ */
 const transformFromTimeToDatabaseType = (value: Time | FindOperator<any>) => {
   if (value instanceof FindOperator) {
     const oldOperator = value as unknown as { _value: Time };

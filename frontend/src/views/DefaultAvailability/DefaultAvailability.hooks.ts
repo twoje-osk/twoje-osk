@@ -50,7 +50,7 @@ export const useEditEvent = ({ mutate }: UseEditEventArguments) => {
 
     await mutate();
     setEditedEvent(null);
-    showSuccessSnackbar('Dostępność została zmieniona');
+    showSuccessSnackbar('Domyślna dostępność została zmieniona');
   };
 
   return {
@@ -94,7 +94,7 @@ export const useCreateEvent = ({ mutate }: UseCreateEventArguments) => {
 
     await mutate();
     setAddedEvent(null);
-    showSuccessSnackbar('Dostępność została dodana');
+    showSuccessSnackbar('Domyślna dostępność została dodana');
   };
 
   return {
@@ -148,7 +148,7 @@ export const useDeleteEvent = ({ mutate }: UseDeleteEventArguments) => {
     await mutate();
     setDeletedEvent(null);
     setDeleteModalLoading(false);
-    showSuccessSnackbar('Dostępność została usunięta');
+    showSuccessSnackbar('Domyślna dostępność została usunięta');
     closeDeleteModal();
   };
 

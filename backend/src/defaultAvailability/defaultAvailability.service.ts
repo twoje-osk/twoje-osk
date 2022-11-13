@@ -18,7 +18,7 @@ export class DefaultAvailabilityService {
     private instructorsService: InstructorsService,
   ) {}
 
-  async getAvailabilitiesByInstructorUserId(userId: number) {
+  async getDefaultAvailabilitiesByInstructorUserId(userId: number) {
     const organizationId =
       this.organizationDomainService.getRequestOrganization().id;
 
@@ -36,7 +36,7 @@ export class DefaultAvailabilityService {
     return availabilities;
   }
 
-  async createAvailability(
+  async createDefaultAvailability(
     from: Time,
     to: Time,
     dayOfWeek: number,
@@ -73,7 +73,7 @@ export class DefaultAvailabilityService {
     return getSuccess(createdAvailabilityId);
   }
 
-  async updateAvailability(
+  async updateDefaultAvailability(
     availabilityId: number,
     from?: Date,
     to?: Date,
@@ -135,7 +135,7 @@ export class DefaultAvailabilityService {
     return getSuccess(undefined);
   }
 
-  async deleteAvailability(
+  async deleteDefaultAvailability(
     availabilityId: number,
   ): Promise<
     Try<undefined, 'INSTRUCTOR_NOT_FOUND' | 'AVAILABILITY_NOT_FOUND'>

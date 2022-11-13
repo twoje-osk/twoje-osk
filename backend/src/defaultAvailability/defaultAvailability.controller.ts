@@ -31,7 +31,7 @@ import { DefaultAvailabilityService } from './defaultAvailability.service';
 @Roles(UserRole.Instructor)
 export class DefaultAvailabilityController {
   constructor(
-    private readonly availabilityService: DefaultAvailabilityService,
+    private readonly defaultAvailabilityService: DefaultAvailabilityService,
     private readonly currentUserService: CurrentUserService,
   ) {}
 
@@ -40,11 +40,11 @@ export class DefaultAvailabilityController {
   })
   @Get()
   @UsePipes(new ValidationPipe({ transform: true }))
-  async getMyAvailability(): Promise<InstructorDefaultAvailabilityResponseDTO> {
+  async getMyDefaultAvailability(): Promise<InstructorDefaultAvailabilityResponseDTO> {
     const user = this.currentUserService.getRequestCurrentUser();
 
     const availabilities =
-      await this.availabilityService.getAvailabilitiesByInstructorUserId(
+      await this.defaultAvailabilityService.getDefaultAvailabilitiesByInstructorUserId(
         user.userId,
       );
 
@@ -56,16 +56,17 @@ export class DefaultAvailabilityController {
   })
   @Post()
   @UsePipes(new ValidationPipe({ transform: true }))
-  async createAvailability(
+  async createDefaultAvailability(
     @Body() body: InstructorCreateDefaultAvailabilityRequestDTO,
   ): Promise<InstructorCreateDefaultAvailabilityResponseDTO> {
     const { from, to, dayOfWeek } = body.availability;
 
-    const newAvailability = await this.availabilityService.createAvailability(
-      from,
-      to,
-      dayOfWeek,
-    );
+    const newAvailability =
+      await this.defaultAvailabilityService.createDefaultAvailability(
+        from,
+        to,
+        dayOfWeek,
+      );
 
     if (newAvailability.ok) {
       return { createdAvailabilityId: newAvailability.data };
@@ -91,18 +92,19 @@ export class DefaultAvailabilityController {
   })
   @Patch(':id')
   @UsePipes(new ValidationPipe({ transform: true }))
-  async updateAvailability(
+  async updateDefaultAvailability(
     @Body() body: InstructorUpdateDefaultAvailabilityRequestDTO,
     @Param('id', ParseIntPipe) instructorId: number,
   ): Promise<InstructorUpdateDefaultAvailabilityResponseDTO> {
     const { from, to, dayOfWeek } = body.availability;
 
-    const newAvailability = await this.availabilityService.updateAvailability(
-      instructorId,
-      from,
-      to,
-      dayOfWeek,
-    );
+    const newAvailability =
+      await this.defaultAvailabilityService.updateDefaultAvailability(
+        instructorId,
+        from,
+        to,
+        dayOfWeek,
+      );
 
     if (newAvailability.ok) {
       return {};
@@ -132,12 +134,13 @@ export class DefaultAvailabilityController {
   })
   @Delete(':id')
   @UsePipes(new ValidationPipe({ transform: true }))
-  async deleteAvailability(
+  async deleteDefaultAvailability(
     @Param('id', ParseIntPipe) instructorId: number,
   ): Promise<InstructorDeleteDefaultAvailabilityResponseDTO> {
-    const newAvailability = await this.availabilityService.deleteAvailability(
-      instructorId,
-    );
+    const newAvailability =
+      await this.defaultAvailabilityService.deleteDefaultAvailability(
+        instructorId,
+      );
 
     if (newAvailability.ok) {
       return {};
