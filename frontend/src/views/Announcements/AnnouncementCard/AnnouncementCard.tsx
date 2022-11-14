@@ -32,6 +32,12 @@ export const AnnouncementCard = ({
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { role } = useAuth();
+  const userInitials = `${announcement.createdBy.firstName.charAt(
+    0,
+  )}${announcement.createdBy.lastName.charAt(0)}`;
+  const subheader = `${formatLong(new Date(announcement.createdAt))}, ${
+    announcement.createdBy.firstName
+  } ${announcement.createdBy.lastName}`;
 
   const onDelete = () => {
     setIsMenuOpen(false);
@@ -45,23 +51,14 @@ export const AnnouncementCard = ({
 
   return (
     <Card
-      key={announcement.id}
       sx={{
-        minWidth: '60%',
-        maxWidth: '60%',
-        margin: 'auto',
-        mb: '3rem',
+        mx: '15rem',
+        my: '2rem',
         bgColor: '#fafafa',
       }}
     >
       <CardHeader
-        avatar={
-          <Avatar sx={{ bgcolor: blue[100] }}>
-            {`${announcement.createdBy.firstName.charAt(
-              0,
-            )}${announcement.createdBy.lastName.charAt(0)}`}
-          </Avatar>
-        }
+        avatar={<Avatar sx={{ bgcolor: blue[100] }}>{userInitials}</Avatar>}
         action={
           role === UserRole.Admin && (
             <IconButton
@@ -76,13 +73,11 @@ export const AnnouncementCard = ({
           )
         }
         title={<Typography variant="h6">{announcement.subject}</Typography>}
-        subheader={`${formatLong(new Date(announcement.createdAt))}, ${
-          announcement.createdBy.firstName
-        } ${announcement.createdBy.lastName}`}
+        subheader={subheader}
         id={announcement.id}
       />
       <CardContent>
-        <Typography variant="body2" sx={{ mx: 'auto', maxWidth: '95%' }}>
+        <Typography variant="body2" sx={{ mx: '16px' }}>
           {announcement.body}
         </Typography>
       </CardContent>

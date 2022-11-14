@@ -49,7 +49,7 @@ export const AnnouncementsList = () => {
     closeModal: closeDeleteModal,
   } = useActionModal();
 
-  const [announcementToBeDeleted, setAnnouncementToBeDeleted] =
+  const [announcementIdToBeDeleted, setAnnouncementIdToBeDeleted] =
     useState<number>();
   const [announcementToBeEdited, setAnnouncementToBeEdited] =
     useState<DtoAnnouncement>();
@@ -60,24 +60,23 @@ export const AnnouncementsList = () => {
 
   const handleDelete = (id: number) => {
     openDeleteModal();
-    setAnnouncementToBeDeleted(id);
+    setAnnouncementIdToBeDeleted(id);
   };
 
   const deleteAnnouncement = async () => {
     setDeleteModalLoading(true);
-    const announcementsApiUrl = `/api/announcements/${announcementToBeDeleted}`;
+    const announcementsApiUrl = `/api/announcements/${announcementIdToBeDeleted}`;
     const response = await makeRequest<AnnouncementDeleteResponseDto>(
       announcementsApiUrl,
       'DELETE',
     );
-    setDeleteModalLoading(false);
     if (!response.ok) {
       showErrorSnackbar();
       return;
     }
+    await mutate();
     setDeleteModalLoading(false);
     closeDeleteModal();
-    await mutate();
     showSuccessSnackbar('Ogłoszenie zostało pomyślnie usunięte');
   };
 
@@ -100,10 +99,11 @@ export const AnnouncementsList = () => {
     >(announcementApiUrl, 'POST', announcement);
     if (!response.ok) {
       showErrorSnackbar();
+      return;
     }
+    await mutate();
     showSuccessSnackbar('Ogłoszenie zostało utworzone');
     setIsCreateAnnouncementModalOpen(false);
-    await mutate();
   };
 
   const handleEdit = (announcement: DtoAnnouncement) => {
@@ -126,10 +126,11 @@ export const AnnouncementsList = () => {
     >(announcementApiUrl, 'PATCH', announcement);
     if (!response.ok) {
       showErrorSnackbar();
+      return;
     }
+    await mutate();
     showSuccessSnackbar('Ogłoszenie zostało zapisane');
     setIsEditAnnouncementModalOpen(false);
-    await mutate();
   };
 
   if (announcementsError) {
@@ -148,10 +149,10 @@ export const AnnouncementsList = () => {
         sx={{
           pl: { sm: 2 },
           pr: { xs: 1, sm: 1 },
-          mb: '2rem',
+          justifyContent: 'space-between',
         }}
       >
-        <Typography sx={{ flex: '1 1 30%' }} variant="h6" component="h1">
+        <Typography variant="h6" component="h1">
           {pageTitle}
         </Typography>
         <Stack direction="row" alignItems="center" spacing={1}>
@@ -173,15 +174,14 @@ export const AnnouncementsList = () => {
       </Toolbar>
       <Box style={{ overflow: 'auto' }}>
         <Stack direction="column">
-          {announcements.map((announcement: DtoAnnouncement) => {
-            return (
-              <AnnouncementCard
-                announcement={announcement}
-                handleEdit={() => handleEdit(announcement)}
-                handleDelete={() => handleDelete(announcement.id)}
-              />
-            );
-          })}
+          {announcements.map((announcement) => (
+            <AnnouncementCard
+              key={announcement.id}
+              announcement={announcement}
+              handleEdit={() => handleEdit(announcement)}
+              handleDelete={() => handleDelete(announcement.id)}
+            />
+          ))}
         </Stack>
       </Box>
 
