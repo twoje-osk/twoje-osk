@@ -1,4 +1,5 @@
-import { SlotInfo } from 'react-big-calendar';
+import { SlotInfo, CalendarProps } from 'react-big-calendar';
+import { EventColor } from './AvailabilityCalendar.styled';
 
 export interface AvailabilityEvent {
   id: number;
@@ -13,4 +14,6 @@ export interface AvailabilityCalendarProps {
   onEventCreate: (event: Omit<AvailabilityEvent, 'id'>) => void;
   canCreateEvent: (slotInfo: SlotInfo) => boolean;
   onDelete: (event: AvailabilityEvent) => void;
+  eventColor: EventColor;
+  formats?: CalendarProps['formats'];
 }

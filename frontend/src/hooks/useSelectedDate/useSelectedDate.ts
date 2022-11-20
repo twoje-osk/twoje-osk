@@ -1,6 +1,6 @@
 import { addDays, startOfWeek } from 'date-fns';
 import { useState } from 'react';
-import { getTodayWeek } from './useSelectedDate.utils';
+import { getTodayWeek } from '../../utils/getTodayWeek';
 
 export const useSelectedDate = () => {
   const [selectedDate, setSelectedDate] = useState(getTodayWeek());
