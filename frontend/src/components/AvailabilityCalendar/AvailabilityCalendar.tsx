@@ -3,7 +3,7 @@ import { getHours, setHours, startOfDay } from 'date-fns';
 import { useMemo } from 'react';
 import { Calendar, Components, SlotInfo, Views } from 'react-big-calendar';
 import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop';
-import { useCommonSnackbars } from '../../../hooks/useCommonSnackbars/useCommonSnackbars';
+import { useCommonSnackbars } from '../../hooks/useCommonSnackbars/useCommonSnackbars';
 import {
   StylingWrapper,
   WhiteButtonWrapper,
@@ -26,18 +26,21 @@ interface OnUpdateData extends OnCreateData {
 }
 export const AvailabilityCalendar = ({
   events,
+  eventColor,
   selectedDate,
   onEventUpdate,
   onEventCreate,
   canCreateEvent,
   onDelete,
+  formats,
 }: AvailabilityCalendarProps) => {
   const { showInfoSnackbar } = useCommonSnackbars();
 
   const scrollToTime = useMemo(() => {
-    const minimumAvailabilityStartTime = Math.min(
-      ...events.map(({ start }) => getHours(start)),
-    );
+    const minimumAvailabilityStartTime =
+      events.length === 0
+        ? 9
+        : Math.min(...events.map(({ start }) => getHours(start)));
 
     return setHours(startOfDay(new Date()), minimumAvailabilityStartTime - 1);
   }, [events]);
@@ -91,7 +94,7 @@ export const AvailabilityCalendar = ({
   );
 
   return (
-    <StylingWrapper>
+    <StylingWrapper eventColor={eventColor}>
       <DnDCalendar
         view={Views.WEEK}
         onView={() => undefined}
@@ -111,6 +114,7 @@ export const AvailabilityCalendar = ({
         }}
         culture="pl"
         components={components}
+        formats={formats}
       />
     </StylingWrapper>
   );
