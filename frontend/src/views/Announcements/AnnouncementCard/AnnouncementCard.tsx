@@ -77,7 +77,7 @@ export const AnnouncementCard = ({
         id={announcement.id}
       />
       <CardContent>
-        <Typography variant="body2" sx={{ mx: '16px' }}>
+        <Typography variant="body2" sx={{ mx: '16px', whiteSpace: 'pre-wrap' }}>
           {announcement.body}
         </Typography>
       </CardContent>

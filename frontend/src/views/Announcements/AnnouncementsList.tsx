@@ -7,29 +7,21 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import {
-  AnnouncementCreateRequestDto,
-  AnnouncementCreateResponseDto,
-  AnnouncementDeleteResponseDto,
-  AnnouncementFindAllResponseDto,
-  AnnouncementUpdateRequestDto,
-  AnnouncementUpdateResponseDto,
-  DtoAnnouncement,
-} from '@osk/shared';
+import { AnnouncementFindAllResponseDto } from '@osk/shared';
 import { Box, Flex } from 'reflexbox';
 import useSWR from 'swr';
 import { UserRole } from '@osk/shared/src/types/user.types';
-import { useState } from 'react';
 import { FullPageLoading } from '../../components/FullPageLoading/FullPageLoading';
 import { GeneralAPIError } from '../../components/GeneralAPIError/GeneralAPIError';
-import { useActionModal } from '../../hooks/useActionModal/useActionModal';
 import { AnnouncementCard } from './AnnouncementCard/AnnouncementCard';
 import { useAuth } from '../../hooks/useAuth/useAuth';
 import { ActionModal } from '../../components/ActionModal/ActionModal';
-import { useCommonSnackbars } from '../../hooks/useCommonSnackbars/useCommonSnackbars';
-import { useMakeRequestWithAuth } from '../../hooks/useMakeRequestWithAuth/useMakeRequestWithAuth';
 import { AnnouncementFormModal } from './AnnouncementFormModal/AnnouncementFormModal';
-import { AnnouncementFormSchema } from './AnnouncementFormModal/AnnouncementFormModal.schema';
+import {
+  useCreateAnouncement,
+  useDeleteAnnouncement,
+  useEditAnnouncement,
+} from './AnnouncementList.hooks';
 
 export const AnnouncementsList = () => {
   const {
@@ -39,99 +31,29 @@ export const AnnouncementsList = () => {
   } = useSWR<AnnouncementFindAllResponseDto>('/api/announcements');
   const pageTitle = 'Ogłoszenia';
   const { role } = useAuth();
-  const { showErrorSnackbar, showSuccessSnackbar } = useCommonSnackbars();
-  const makeRequest = useMakeRequestWithAuth();
+
   const {
-    setLoading: setDeleteModalLoading,
-    isLoading: isDeleteModalLoading,
-    isOpen: isDeleteModalOpen,
-    openModal: openDeleteModal,
-    closeModal: closeDeleteModal,
-  } = useActionModal();
+    openCreateModal,
+    closeCreateModal,
+    isCreateModalOpen,
+    createAnnouncement,
+  } = useCreateAnouncement({ mutate });
 
-  const [announcementIdToBeDeleted, setAnnouncementIdToBeDeleted] =
-    useState<number>();
-  const [announcementToBeEdited, setAnnouncementToBeEdited] =
-    useState<DtoAnnouncement>();
-  const [isCreateAnnouncementModalOpen, setIsCreateAnnouncementModalOpen] =
-    useState(false);
-  const [isEditAnnouncementModalOpen, setIsEditAnnouncementModalOpen] =
-    useState(false);
+  const {
+    openEditModal,
+    closeEditModal,
+    isEditModalOpen,
+    editAnnouncement,
+    announcementToBeEdited,
+  } = useEditAnnouncement({ mutate });
 
-  const handleDelete = (id: number) => {
-    openDeleteModal();
-    setAnnouncementIdToBeDeleted(id);
-  };
-
-  const deleteAnnouncement = async () => {
-    setDeleteModalLoading(true);
-    const announcementsApiUrl = `/api/announcements/${announcementIdToBeDeleted}`;
-    const response = await makeRequest<AnnouncementDeleteResponseDto>(
-      announcementsApiUrl,
-      'DELETE',
-    );
-    if (!response.ok) {
-      showErrorSnackbar();
-      return;
-    }
-    await mutate();
-    setDeleteModalLoading(false);
-    closeDeleteModal();
-    showSuccessSnackbar('Ogłoszenie zostało pomyślnie usunięte');
-  };
-
-  const handleCreate = () => {
-    setIsCreateAnnouncementModalOpen(true);
-  };
-
-  const createAnnouncement = async (values: AnnouncementFormSchema) => {
-    const { subject, body } = values;
-    const announcement: AnnouncementCreateRequestDto = {
-      announcement: {
-        subject,
-        body,
-      },
-    };
-    const announcementApiUrl = '/api/announcements';
-    const response = await makeRequest<
-      AnnouncementCreateResponseDto,
-      AnnouncementCreateRequestDto
-    >(announcementApiUrl, 'POST', announcement);
-    if (!response.ok) {
-      showErrorSnackbar();
-      return;
-    }
-    await mutate();
-    showSuccessSnackbar('Ogłoszenie zostało utworzone');
-    setIsCreateAnnouncementModalOpen(false);
-  };
-
-  const handleEdit = (announcement: DtoAnnouncement) => {
-    setAnnouncementToBeEdited(announcement);
-    setIsEditAnnouncementModalOpen(true);
-  };
-
-  const editAnnouncement = async (values: AnnouncementFormSchema) => {
-    const { subject, body } = values;
-    const announcement: AnnouncementUpdateRequestDto = {
-      announcement: {
-        subject,
-        body,
-      },
-    };
-    const announcementApiUrl = `/api/announcements/${announcementToBeEdited?.id}`;
-    const response = await makeRequest<
-      AnnouncementUpdateResponseDto,
-      AnnouncementUpdateRequestDto
-    >(announcementApiUrl, 'PATCH', announcement);
-    if (!response.ok) {
-      showErrorSnackbar();
-      return;
-    }
-    await mutate();
-    showSuccessSnackbar('Ogłoszenie zostało zapisane');
-    setIsEditAnnouncementModalOpen(false);
-  };
+  const {
+    handleDelete,
+    closeDeleteModal,
+    isDeleteModalOpen,
+    isDeleteModalLoading,
+    deleteAnnouncement,
+  } = useDeleteAnnouncement({ mutate });
 
   if (announcementsError) {
     return <GeneralAPIError />;
@@ -160,7 +82,7 @@ export const AnnouncementsList = () => {
             <Button
               startIcon={<Icon>add</Icon>}
               variant="contained"
-              onClick={handleCreate}
+              onClick={openCreateModal}
             >
               Dodaj Nowe Ogłoszenie
             </Button>
@@ -178,7 +100,7 @@ export const AnnouncementsList = () => {
             <AnnouncementCard
               key={announcement.id}
               announcement={announcement}
-              handleEdit={() => handleEdit(announcement)}
+              handleEdit={() => openEditModal(announcement)}
               handleDelete={() => handleDelete(announcement.id)}
             />
           ))}
@@ -198,14 +120,14 @@ export const AnnouncementsList = () => {
       <AnnouncementFormModal
         title="Nowe Ogłoszenie"
         onSave={createAnnouncement}
-        onCancel={() => setIsCreateAnnouncementModalOpen(false)}
-        isOpen={isCreateAnnouncementModalOpen}
+        onCancel={closeCreateModal}
+        isOpen={isCreateModalOpen}
       />
       <AnnouncementFormModal
         title="Edycja Ogłoszenia"
         onSave={editAnnouncement}
-        onCancel={() => setIsEditAnnouncementModalOpen(false)}
-        isOpen={isEditAnnouncementModalOpen}
+        onCancel={closeEditModal}
+        isOpen={isEditModalOpen}
         announcement={announcementToBeEdited}
       />
     </Flex>
