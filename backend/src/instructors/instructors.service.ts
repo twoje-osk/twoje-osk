@@ -168,4 +168,21 @@ export class InstructorsService {
 
     return getSuccess(updatedInstructor.id);
   }
+
+  async findOneByUserId(userId: number) {
+    const { id: organizationId } =
+      this.organizationDomainService.getRequestOrganization();
+
+    return this.instructorsRepository.findOne({
+      where: {
+        user: {
+          id: userId,
+          organizationId,
+        },
+      },
+      relations: {
+        user: true,
+      },
+    });
+  }
 }

@@ -31,6 +31,7 @@ import { InstructorsService } from './instructors.service';
 export class InstructorsController {
   constructor(private readonly instructorsService: InstructorsService) {}
 
+  @Roles(UserRole.Admin, UserRole.Trainee, UserRole.Instructor)
   @ApiResponse({
     type: InstructorFindAllResponseDto,
   })

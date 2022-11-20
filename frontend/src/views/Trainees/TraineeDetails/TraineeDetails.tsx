@@ -203,7 +203,7 @@ export const TraineeDetails = () => {
                 startIcon={<Icon>delete</Icon>}
                 onClick={openDeactivateModal}
               >
-                Deaktywuj
+                Dezaktywuj
               </Button>
             )}
           </Stack>
@@ -215,13 +215,13 @@ export const TraineeDetails = () => {
         onClose={closeDeactivateModal}
         onAction={onDeactivate}
         id="deactivate-trainee-modal"
-        title="Czy na pewno chcesz deaktywować tego kursanta?"
+        title="Czy na pewno chcesz dezaktywować tego kursanta?"
         subtitle={
           <span>
-            Po deaktywowaniu kursant <strong>straci</strong> dostęp do systemu.
+            Po dezaktywowaniu kursant <strong>straci</strong> dostęp do systemu.
           </span>
         }
-        actionButtonText="Deaktywuj"
+        actionButtonText="Dezaktywuj"
       />
       <ActionModal
         isOpen={isActivateModalOpen}

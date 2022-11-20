@@ -22,6 +22,6 @@ export class IsToGreaterThenFrom implements ValidatorConstraintInterface {
   defaultMessage(args: ValidationArguments) {
     const comparedToProperty = args.constraints[0];
 
-    return `Property $property has to be earlier then ${comparedToProperty}`;
+    return `${args.property} has to be earlier then ${comparedToProperty}`;
   }
 }

@@ -29,8 +29,9 @@ import { endOfWeek, startOfWeek } from 'date-fns';
 import { assertNever } from 'utils/assertNever';
 import { LessonsService } from './lessons.service';
 
-@Controller('lessons')
-export class LessonsController {
+@Roles(UserRole.Trainee)
+@Controller('trainee/lessons')
+export class TraineeLessonsController {
   constructor(
     private readonly lessonsService: LessonsService,
     private readonly currentUserService: CurrentUserService,
@@ -40,7 +41,6 @@ export class LessonsController {
   @ApiResponse({
     type: GetMyLessonsResponseDTO,
   })
-  @Roles(UserRole.Trainee)
   async getMyLessons(
     @Query() query: GetMyLessonsQueryDTO,
   ): Promise<GetMyLessonsResponseDTO> {
@@ -49,7 +49,7 @@ export class LessonsController {
 
     const currentUser = this.currentUserService.getRequestCurrentUser();
 
-    const lessonsData = await this.lessonsService.findAllByTrainee(
+    const lessonsData = await this.lessonsService.findAllByTraineeUserId(
       currentUser.userId,
       from,
       to,
@@ -72,7 +72,6 @@ export class LessonsController {
   @ApiResponse({
     type: CreateLessonForInstructorResponseDTO,
   })
-  @Roles(UserRole.Trainee)
   async createLessonForInstructor(
     @Param('instructorId', ParseIntPipe) instructorId: number,
     @Body() body: CreateLessonForInstructorRequestDTO,
@@ -119,7 +118,6 @@ export class LessonsController {
   @ApiResponse({
     type: UpdateLessonForInstructorResponseDTO,
   })
-  @Roles(UserRole.Trainee)
   async updateLessonForInstructor(
     @Param('lessonId', ParseIntPipe) lessonId: number,
     @Body() body: UpdateLessonForInstructorRequestDTO,
@@ -169,7 +167,6 @@ export class LessonsController {
   @ApiResponse({
     type: CancelLessonForInstructorResponseDTO,
   })
-  @Roles(UserRole.Trainee)
   async cancelLessonForInstructor(
     @Param('lessonId', ParseIntPipe) lessonId: number,
   ): Promise<CancelLessonForInstructorResponseDTO> {
