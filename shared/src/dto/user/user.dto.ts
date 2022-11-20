@@ -3,6 +3,8 @@ import { Type } from 'class-transformer';
 import { IsBoolean, IsEmail, IsNotEmpty, IsString } from 'class-validator';
 import { DtoOrganization } from '../organization/organization.dto';
 import { UserRole } from '../../types/user.types';
+import type { DtoTrainee } from '../trainee/trainee.dto';
+import type { DtoInstructor } from '../instructor/instructor.dto';
 
 export class DtoUser {
   @ApiProperty()
@@ -42,6 +44,12 @@ export class DtoUser {
 
   @ApiProperty({ enum: UserRole })
   role: UserRole;
+
+  @ApiProperty()
+  trainee: DtoTrainee | null;
+
+  @ApiProperty()
+  instructor: DtoInstructor | null;
 }
 export class DtoCreateUser {
   @ApiProperty()

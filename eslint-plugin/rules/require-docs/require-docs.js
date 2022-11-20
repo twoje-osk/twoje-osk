@@ -1,5 +1,6 @@
 const {
   RESPONSE_DECORATOR_NAMES,
+  REQUEST_INDICATOR_DECORATOR_NAMES,
   DEFAULT_DECORATOR,
 } = require('../../constants/apiResponseDecorators');
 
@@ -27,6 +28,14 @@ module.exports = {
         const decoratorNames = (node.decorators ?? []).map(
           (decorator) => decorator.expression.callee.name,
         );
+
+        const isRequestMethod = decoratorNames.some((name) =>
+          REQUEST_INDICATOR_DECORATOR_NAMES.includes(name),
+        );
+
+        if (!isRequestMethod) {
+          return;
+        }
 
         const hasRequiredDecorator = decoratorNames.some((name) =>
           RESPONSE_DECORATOR_NAMES.includes(name),

@@ -4,11 +4,12 @@ import { InstructorsModule } from 'instructors/instructors.module';
 import { AvailabilityModule } from 'availability/availability.module';
 import { TraineesModule } from 'trainees/trainees.module';
 import { LessonsService } from './lessons.service';
-import { LessonsController } from './lessons.controller';
+import { InstructorLessonsController } from './lessons.controller.instructor';
+import { TraineeLessonsController } from './lessons.controller.trainee';
 import { Lesson } from './entities/lesson.entity';
 
 @Module({
-  controllers: [LessonsController],
+  controllers: [InstructorLessonsController, TraineeLessonsController],
   providers: [LessonsService],
   exports: [LessonsService],
   imports: [

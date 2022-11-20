@@ -32,7 +32,13 @@ export function FSelect<T>(props: FSelectProps<T>) {
   return (
     <FormControl>
       {label && <InputLabel id={labelId}>{label}</InputLabel>}
-      <Select<T> {...props} {...field} error={hasError} labelId={labelId} />
+      <Select<T>
+        {...props}
+        {...field}
+        value={field.value ?? ''}
+        error={hasError}
+        labelId={labelId}
+      />
       {helperText && (
         <FormHelperText error={hasError}>{helperText}</FormHelperText>
       )}
