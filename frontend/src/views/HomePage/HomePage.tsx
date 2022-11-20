@@ -5,8 +5,12 @@ import { useAuth } from '../../hooks/useAuth/useAuth';
 export const HomePage = () => {
   const { role } = useAuth();
 
-  if (role === UserRole.Admin || role === UserRole.Instructor) {
+  if (role === UserRole.Admin) {
     return <Navigate to="/kursanci" replace />;
+  }
+
+  if (role === UserRole.Instructor) {
+    return <Navigate to="/moje-jazdy" replace />;
   }
 
   if (role === UserRole.Trainee) {

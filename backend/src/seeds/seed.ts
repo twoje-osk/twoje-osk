@@ -10,6 +10,7 @@ import { seedLessons } from './seed.lessons';
 import { seedPayments } from './seed.payments';
 import { Factory } from './seed.utils';
 import { seedDriversLicenseCategories } from './seed.driversLicenseCategories';
+import { seedDefaultAvailabilities } from './seed.defaultAvailabilities';
 
 const clearSequences = async (trx: EntityManager) => {
   await trx.query(`
@@ -45,6 +46,7 @@ const run = async () => {
     seedInstructors();
     seedUsers();
     seedVehicles();
+    seedDefaultAvailabilities();
     seedAvailabilities();
     seedLessons();
     seedPayments();
