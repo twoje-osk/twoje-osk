@@ -54,9 +54,10 @@ export const InstructorsList = () => {
         sx={{
           pl: { sm: 2 },
           pr: { xs: 1, sm: 1 },
+          justifyContent: 'space-between',
         }}
       >
-        <Typography sx={{ flex: '1 1 30%' }} variant="h6" component="h1">
+        <Typography variant="h6" component="h1">
           {pageTitle}
         </Typography>
         <Stack direction="row" alignItems="center" spacing={1}>

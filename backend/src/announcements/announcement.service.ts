@@ -29,6 +29,9 @@ export class AnnouncementsService {
       relations: {
         createdBy: true,
       },
+      order: {
+        createdAt: { direction: 'desc' },
+      },
     });
     return announcements;
   }
