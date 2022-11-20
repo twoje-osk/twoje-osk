@@ -141,7 +141,6 @@ yarn migrate
 Reference: [Running and reverting migrations](https://typeorm.io/migrations#running-and-reverting-migrations)
 
 #### Seed Database
-> **Note** This command needs to be executed after the migrations have been run. Check [Run Migrations](#run-migrations)
 ```bash
 yarn seed
 ```

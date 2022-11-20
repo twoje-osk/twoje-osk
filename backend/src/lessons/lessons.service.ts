@@ -35,18 +35,45 @@ export class LessonsService {
     private traineesService: TraineesService,
   ) {}
 
-  async findAllByTrainee(traineeId: number, from?: Date, to?: Date) {
+  async findAllByTraineeUserId(traineeUserId: number, from?: Date, to?: Date) {
     const organizationId =
       this.organizationDomainService.getRequestOrganization().id;
 
     return this.lessonRepository.find({
       where: {
         trainee: {
-          user: { id: traineeId, organizationId },
+          user: { id: traineeUserId, organizationId },
         },
         from: from ? MoreThanOrEqual(from) : undefined,
         to: to ? LessThanOrEqual(to) : undefined,
         status: Not(LessonStatus.Canceled),
+      },
+      relations: {
+        instructor: true,
+        trainee: true,
+      },
+    });
+  }
+
+  async findAllByInstructorUserId(
+    instructorUserId: number,
+    from?: Date,
+    to?: Date,
+  ) {
+    const organizationId =
+      this.organizationDomainService.getRequestOrganization().id;
+
+    return this.lessonRepository.find({
+      where: {
+        instructor: {
+          user: { id: instructorUserId, organizationId },
+        },
+        from: from ? MoreThanOrEqual(from) : undefined,
+        to: to ? LessThanOrEqual(to) : undefined,
+      },
+      relations: {
+        instructor: true,
+        trainee: true,
       },
     });
   }
@@ -264,6 +291,74 @@ export class LessonsService {
         status: LessonStatus.Canceled,
       },
     );
+
+    return getSuccess(undefined);
+  }
+
+  @Transactional()
+  async createLesson(
+    traineeId: number,
+    from: Date,
+    to: Date,
+    status: LessonStatus,
+  ): Promise<
+    Try<number, 'INSTRUCTOR_DOES_NOT_EXIST' | 'TRAINEE_DOES_NOT_EXIST'>
+  > {
+    const { userId } = this.currentUserService.getRequestCurrentUser();
+    const instructor = await this.instructorsService.findOneByUserId(userId);
+
+    if (instructor === null) {
+      return getFailure('INSTRUCTOR_DOES_NOT_EXIST');
+    }
+
+    const trainee = await this.traineesService.findOneById(traineeId);
+
+    if (trainee === null) {
+      return getFailure('TRAINEE_DOES_NOT_EXIST');
+    }
+
+    const insertResult = await this.lessonRepository.insert({
+      from,
+      to,
+      status,
+      instructor,
+      trainee,
+    });
+
+    const createdLessonId: number = insertResult.identifiers[0]?.id;
+
+    return getSuccess(createdLessonId);
+  }
+
+  @Transactional()
+  async updateLesson(
+    lessonId: number,
+    from: Date,
+    to: Date,
+    status: LessonStatus,
+  ): Promise<Try<undefined, 'LESSON_NOT_FOUND'>> {
+    const { userId } = this.currentUserService.getRequestCurrentUser();
+    const organizationId =
+      this.organizationDomainService.getRequestOrganization().id;
+
+    const lesson = await this.lessonRepository.findOne({
+      where: {
+        id: lessonId,
+        instructor: {
+          user: { id: userId, organizationId },
+        },
+      },
+    });
+
+    if (lesson == null) {
+      return getFailure('LESSON_NOT_FOUND');
+    }
+
+    await this.lessonRepository.update(lessonId, {
+      from,
+      to,
+      status,
+    });
 
     return getSuccess(undefined);
   }

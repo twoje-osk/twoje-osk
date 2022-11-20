@@ -22,6 +22,10 @@ export class AuthService {
   ) {
     const user = await this.usersRepository.findOne({
       where: { email, organization, isActive: true },
+      relations: {
+        trainee: true,
+        instructor: true,
+      },
     });
 
     if (!user || user.password === null) {

@@ -8,12 +8,16 @@ export interface LessonFormData {
   startTime: Date;
   endTime: Date;
   status: LessonStatus;
+  instructorId: number | null;
+  traineeId: number | null;
 }
 
 export interface LessonSubmitData {
   start: Date;
   end: Date;
   status: LessonStatus;
+  instructorId: number | null;
+  traineeId: number | null;
 }
 
 setupYupLocale();
@@ -41,4 +45,6 @@ export const lessonFormSchema: Yup.SchemaOf<LessonFormData> =
     status: Yup.mixed<LessonStatus>()
       .oneOf(Object.values(LessonStatus))
       .required(),
+    instructorId: Yup.number().required(),
+    traineeId: Yup.number().required(),
   });
