@@ -12,6 +12,7 @@ import { Factory } from './seed.utils';
 import { seedDriversLicenseCategories } from './seed.driversLicenseCategories';
 import { seedAnnouncements } from './seed.announcement';
 import { seedDefaultAvailabilities } from './seed.defaultAvailabilities';
+import { seedMockExamQuestionTypes } from './seed.mockExamQuestionType';
 
 const clearSequences = async (trx: EntityManager) => {
   await trx.query(`
@@ -41,6 +42,7 @@ const run = async () => {
     await clearSequences(trx);
     await truncateAll(trx);
 
+    seedMockExamQuestionTypes();
     seedDriversLicenseCategories();
     seedOrganizations();
     seedTrainees();
