@@ -6,7 +6,6 @@ import {
   PrimaryGeneratedColumn,
   RelationId,
 } from 'typeorm';
-// eslint-disable-next-line import/no-cycle
 import { MockExamQuestion } from '../../mockExamQuestion/entities/mockExamQuestion.entity';
 
 @Entity()
@@ -28,4 +27,7 @@ export class MockExamQuestionAnswer {
     (question) => question.correctAnswer,
   )
   isCorrectAnswerOf: MockExamQuestion;
+
+  @RelationId((answer: MockExamQuestionAnswer) => answer.isCorrectAnswerOf)
+  isCorrectAnswerOfId: number;
 }

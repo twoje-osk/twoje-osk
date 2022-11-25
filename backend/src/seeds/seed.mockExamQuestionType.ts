@@ -1,4 +1,4 @@
-import { MockExamQuestionType } from 'mockExamQuestion/entities/mockExamQuestionType.entity';
+import { MockExamQuestionType } from '../mockExamQuestion/entities/mockExamQuestionType.entity';
 import { Factory } from './seed.utils';
 
 class MockExamQuestionTypeFactory extends Factory<MockExamQuestionType> {
