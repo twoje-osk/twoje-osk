@@ -47,10 +47,42 @@ export abstract class Factory<T> {
 
   public getAll = () => this.entities;
 
-  public truncate(trx: EntityManager) {
+  public async truncate(trx: EntityManager) {
+    await this.clearSequences(trx);
+    await this.truncateData(trx);
+  }
+
+  private truncateData(trx: EntityManager) {
     const { tableName } = trx.getRepository(this.entityType).metadata;
 
     return trx.query(`TRUNCATE "${tableName}" CASCADE`);
+  }
+
+  private async clearSequences(trx: EntityManager) {
+    if (trx.queryRunner === undefined) {
+      throw new Error('Query runner not defined');
+    }
+
+    const { metadata } = trx.getRepository(this.entityType);
+    const { tableName, generatedColumns } = metadata;
+
+    for (const column of generatedColumns) {
+      const columnName = column.databaseName;
+
+      // Casting to any to access a protected method
+      const sequence = (trx.queryRunner as any).buildSequenceName(
+        tableName,
+        columnName,
+      );
+
+      // eslint-disable-next-line no-await-in-loop
+      await trx.query(`
+        SELECT SETVAL(c.oid, s.start_value, false) FROM pg_class c
+          JOIN pg_namespace pn on c.relnamespace = pn.oid
+          JOIN pg_sequences s on s.sequencename = c.relname
+        WHERE c.relkind = 'S' AND c.relname = '${sequence}';
+      `);
+    }
   }
 
   public save(trx: EntityManager) {

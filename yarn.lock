@@ -3017,6 +3017,7 @@ __metadata:
     bcrypt: ^5.0.1
     class-transformer: ^0.5.1
     class-validator: ^0.13.2
+    csv-parse: ^5.3.2
     date-fns: ^2.28.0
     dotenv: ^16.0.0
     esbuild: ^0.14.36
@@ -5976,6 +5977,13 @@ __metadata:
   version: 3.0.11
   resolution: "csstype@npm:3.0.11"
   checksum: 95e56abfe9ca219ae065acb4e43f61771a03170eed919127f558dfa168240867aba7629c8d98a201a0dd06d9a5ce82686f0570031c928516c61816adbc7c877f
+  languageName: node
+  linkType: hard
+
+"csv-parse@npm:^5.3.2":
+  version: 5.3.2
+  resolution: "csv-parse@npm:5.3.2"
+  checksum: d555d2c4d1b4417382eddf1ab199bdff130a3156acc805dbd708e491f9e7543856d5d9ad7bca619c1958b9a9c6297ad407055e7dec07bbd06053405d26aea629
   languageName: node
   linkType: hard
 

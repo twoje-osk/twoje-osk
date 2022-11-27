@@ -34,6 +34,7 @@ export class MockExamQuestion {
   @OneToOne<MockExamQuestionAnswer>(
     'MockExamQuestionAnswer',
     (answer) => answer.isCorrectAnswerOf,
+    { nullable: false },
   )
   @JoinColumn()
   correctAnswer: MockExamQuestionAnswer;
@@ -42,7 +43,7 @@ export class MockExamQuestion {
   @RelationId((question: MockExamQuestion) => question.correctAnswer)
   correctAnswerId: number;
 
-  @ManyToOne(() => MockExamQuestionType)
+  @ManyToOne(() => MockExamQuestionType, { nullable: false })
   @JoinColumn({ name: 'typeId' })
   type: MockExamQuestionType;
 
