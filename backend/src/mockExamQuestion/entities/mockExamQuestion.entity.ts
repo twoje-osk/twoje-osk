@@ -33,8 +33,9 @@ export class MockExamQuestion {
 
   @OneToOne<MockExamQuestionAnswer>(
     'MockExamQuestionAnswer',
-    (answer) => answer.questionId,
+    (answer) => answer.isCorrectAnswerOf,
   )
+  @JoinColumn()
   correctAnswer: MockExamQuestionAnswer;
 
   @Exclude()
