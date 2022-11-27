@@ -78,6 +78,23 @@ export class DtoCreateUser {
   phoneNumber: string;
 }
 
+export class DtoCreateUserSignup {
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsEmail()
+  email: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsBoolean()
+  isActive: boolean;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  phoneNumber: string;
+}
+
 export class DtoUpdateUser extends PartialType(DtoCreateUser) {}
 
 export class UserAddNewResponseDto {
