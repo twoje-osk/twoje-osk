@@ -20,6 +20,7 @@ import { VehicleEdit } from './views/Vehicles/VehiclesEdit/VehiclesEdit';
 import { VehiclesList } from './views/Vehicles/VehiclesList/VehiclesList';
 import { VehicleNew } from './views/Vehicles/VehiclesNew/VehiclesNew';
 import { InstructorsNew } from './views/Instructors/InstructorsNew/InstructorsNew';
+import { AnnouncementsList } from './views/Announcements/AnnouncementsList';
 import { Availability } from './views/Availability/Availability';
 import { DefaultAvailability } from './views/DefaultAvailability/DefaultAvailability';
 
@@ -73,6 +74,16 @@ export const App = () => {
           <Route path="nowy" element={<VehicleNew />} />
           <Route path=":vehicleId/edytuj" element={<VehicleEdit />} />
           <Route path=":vehicleId" element={<VehicleDetails />} />
+        </Route>
+        <Route
+          path="/ogloszenia"
+          element={
+            <RequireRole
+              roles={[UserRole.Admin, UserRole.Instructor, UserRole.Trainee]}
+            />
+          }
+        >
+          <Route index element={<AnnouncementsList />} />
         </Route>
         <Route
           path="/moje-jazdy"

@@ -26,7 +26,7 @@ export class DtoPayment {
   trainee: DtoTrainee;
 }
 
-export class CreatePaymentDto {
+export class PaymentCreateRequestDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsNumber()
@@ -44,9 +44,10 @@ export class CreatePaymentDto {
   traineeId: number;
 }
 
-export class UpdatePaymentDto extends OmitType(PartialType(CreatePaymentDto), [
-  'traineeId',
-]) {}
+export class PaymentUpdateRequestDto extends OmitType(
+  PartialType(PaymentCreateRequestDto),
+  ['traineeId'],
+) {}
 
 export class PaymentFindAllResponseDto {
   @ApiProperty({

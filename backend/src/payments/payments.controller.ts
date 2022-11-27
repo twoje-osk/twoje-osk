@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Get,
   NotFoundException,
@@ -11,6 +12,7 @@ import {
   PaymentFindAllResponseDto,
   PaymentFindOneResponseDto,
   PaymentUpdateResponseDto,
+  PaymentUpdateRequestDto,
   UserRole,
 } from '@osk/shared';
 import { Roles } from 'common/guards/roles.decorator';
@@ -80,21 +82,22 @@ export class PaymentsController {
   @ApiResponse({
     type: PaymentUpdateResponseDto,
   })
-  @Patch('edit/:id')
+  @Patch(':id')
   async editPayment(
     @Param('id', ParseIntPipe) id: number,
+    @Body() body: PaymentUpdateRequestDto,
   ): Promise<PaymentUpdateResponseDto> {
-    const payment = await this.paymentsService.findOneById(id);
+    const updateResult = await this.paymentsService.update(id, body);
 
-    if (payment.ok) {
-      return { payment: payment.data };
+    if (updateResult.ok) {
+      return { payment: updateResult.data };
     }
 
-    if (payment.error === 'PAYMENT_NOT_FOUND') {
+    if (updateResult.error === 'PAYMENT_NOT_FOUND') {
       throw new NotFoundException('Payment with this ID does not exist.');
     }
 
-    return assertNever(payment.error);
+    return assertNever(updateResult.error);
   }
 
   @Roles(UserRole.Admin)
