@@ -15,6 +15,7 @@ import { Box } from 'reflexbox';
 import { useCommonSnackbars } from '../../../hooks/useCommonSnackbars/useCommonSnackbars';
 import { useMakeRequestWithAuth } from '../../../hooks/useMakeRequestWithAuth/useMakeRequestWithAuth';
 import { theme } from '../../../theme';
+import { formatApi } from '../../../utils/date';
 import { TraineeForm } from '../TraineeForm/TraineeForm';
 import { TraineeFormData } from '../TraineeForm/TraineeForm.schema';
 
@@ -29,9 +30,10 @@ export const TraineeNew = () => {
 
     const body: TraineeAddNewRequestDto = {
       trainee: {
-        pesel: newTrainee.pesel,
+        pesel: newTrainee.pesel || null,
         pkk: newTrainee.pkk,
         driversLicenseNumber: newTrainee.driversLicenseNumber || null,
+        dateOfBirth: formatApi(newTrainee.dateOfBirth),
         user: {
           email: newTrainee.email,
           firstName: newTrainee.firstName,

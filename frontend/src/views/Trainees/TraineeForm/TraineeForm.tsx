@@ -22,6 +22,7 @@ const defaultValues: TraineeFormData = {
   email: '',
   phoneNumber: '',
   pesel: '',
+  dateOfBirth: new Date(),
   pkk: '',
   driversLicenseNumber: '',
   createdAt: new Date(),

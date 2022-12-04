@@ -22,7 +22,7 @@ export class DtoTrainee {
   @ApiProperty()
   user: DtoUser;
 
-  @ApiProperty()
+  @ApiProperty({ nullable: true })
   pesel: string | null;
 
   @ApiProperty()
@@ -43,6 +43,7 @@ export class DtoCreateTrainee {
   user: DtoCreateUser;
 
   @ApiProperty()
+  @IsOptional()
   @IsNumberString({ no_symbols: true })
   @Length(11, 11)
   pesel: string | null;
