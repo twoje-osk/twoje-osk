@@ -4,51 +4,55 @@ import {
   Button,
   Container,
   Icon,
-  Link,
   Paper,
+  Stack,
   Typography,
 } from '@mui/material';
-import { Link as RouterLink, Navigate, useLocation } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { Form, Formik } from 'formik';
 import { useState } from 'react';
 import { Box, Flex } from 'reflexbox';
 import { FTextField } from '../../components/FTextField/FTextField';
 import { FullPageLoading } from '../../components/FullPageLoading/FullPageLoading';
 import { GeneralAPIError } from '../../components/GeneralAPIError/GeneralAPIError';
-import { RequireAuthLocationState } from '../../components/RequireAuth/RequireAuth';
-import { useAuth } from '../../hooks/useAuth/useAuth';
 import { useUnauthorizedOrganizationData } from '../../hooks/useUnauthorizedOrganizationData/useUnauthorizedOrganizationData';
-import { LoginForm, LoginFormSchema } from './Login.schema';
-import { authenticate } from './Login.utils';
+import { SignUpForm, SignUpFormSchema } from './SignUp.schema';
 import {
   UnauthenticatedViewHiddenWrapper,
   UnauthenticatedViewLoaderWrapper,
 } from '../../components/UnauthenticatedView/UnauthenticatedView.styled';
+import { submitSignUp } from './SignUp.utils';
+import { useCommonSnackbars } from '../../hooks/useCommonSnackbars/useCommonSnackbars';
 
-export const Login = () => {
+export const SignUp = () => {
   const { oskName, error } = useUnauthorizedOrganizationData();
   const [formError, setFormError] = useState<string | undefined>(undefined);
-  const { accessToken, logIn } = useAuth();
-  const location = useLocation();
-  const locationState = location.state as RequireAuthLocationState | undefined;
-  const navigatedFrom = locationState?.from.pathname ?? '/';
+  const { showSuccessSnackbar } = useCommonSnackbars();
+  const navigate = useNavigate();
 
-  const onSubmit = async (values: LoginForm) => {
+  const onSubmit = async (values: SignUpForm) => {
     setFormError(undefined);
-    const result = await authenticate(values.email, values.password);
+    const result = await submitSignUp(values);
 
-    if (!result.ok) {
-      return setFormError(result.error);
+    if (result.ok) {
+      showSuccessSnackbar('Pomyślnie założono konto.');
+      return navigate('/');
     }
 
-    logIn(result.data.accessToken);
+    if (result.error === 'EMAIL_CONFLICT') {
+      return setFormError('Użytkownik z podanym adresem email już istnieje.');
+    }
 
-    return undefined;
+    if (result.error === 'CEPIK_ERROR') {
+      return setFormError(
+        'Podana data urodzenia nie odpowiada danym przypisanym do podanego numeru PKK.',
+      );
+    }
+
+    return setFormError(
+      'Podczas tworzenia konta, wystąpił błąd. Spróbuj ponownie później.',
+    );
   };
-
-  if (accessToken) {
-    return <Navigate to={navigatedFrom} replace />;
-  }
 
   if (error) {
     return (
@@ -87,61 +91,83 @@ export const Login = () => {
                   {oskName}
                 </Typography>
               </Flex>
-              <Formik<LoginForm>
+              <Formik<SignUpForm>
                 initialValues={{
                   email: '',
                   password: '',
+                  phoneNumber: '',
+                  dateOfBirth: null,
+                  pkk: '',
                 }}
-                validationSchema={LoginFormSchema}
+                validationSchema={SignUpFormSchema}
                 onSubmit={onSubmit}
               >
                 {({ isSubmitting }) => (
                   <Form noValidate>
-                    <Flex flexDirection="column" mt="0.25rem">
-                      <FTextField
-                        name="email"
-                        label="Email"
-                        margin="normal"
-                        required
-                        disabled={isLoading}
-                      />
-                      <FTextField
-                        name="password"
-                        label="Hasło"
-                        type="password"
-                        margin="normal"
-                        required
-                        disabled={isLoading}
-                      />
-                      <Link
-                        component={RouterLink}
-                        to="/account/zapomnialem-haslo"
-                        marginBottom="0.5rem"
+                    <Flex flexDirection="column" mt="2rem">
+                      <Stack
+                        spacing={2}
+                        style={{ flex: 1 }}
+                        justifyContent="flex-start"
                       >
-                        Nie pamiętasz hasła?
-                      </Link>
+                        <FTextField
+                          name="email"
+                          label="Email"
+                          required
+                          disabled={isLoading}
+                        />
+                        <FTextField
+                          name="password"
+                          label="Hasło"
+                          type="password"
+                          required
+                          disabled={isLoading}
+                        />
+                        <FTextField
+                          required
+                          id="phoneNumber"
+                          name="phoneNumber"
+                          label="Numer Telefonu"
+                          disabled={isLoading}
+                        />
+                        <FTextField
+                          required
+                          id="dateOfBirth"
+                          name="dateOfBirth"
+                          label="Data Urodzenia"
+                          type="date"
+                          disabled={isLoading}
+                        />
+                        <FTextField
+                          required
+                          id="pkk"
+                          name="pkk"
+                          label="Numer PKK"
+                          disabled={isLoading}
+                        />
+                      </Stack>
                       {formError && (
                         <Box my="0.5rem">
                           <Alert severity="error">{formError}</Alert>
                         </Box>
                       )}
-                      <Flex justifyContent="space-between" mt="0.5rem">
+                      <Flex justifyContent="space-between" mt="1rem">
                         <LoadingButton
                           variant="contained"
                           type="submit"
                           loading={isSubmitting}
                           disabled={isLoading}
                         >
-                          Zaloguj Się
+                          Zapisz Się na Kurs
                         </LoadingButton>
                         <Button
                           variant="outlined"
                           type="button"
                           disabled={isLoading}
                           component={RouterLink}
-                          to="/zapisz-sie"
+                          to="/"
                         >
-                          Zapisz Się na Kurs
+                          Zaloguj Się
                         </Button>
                       </Flex>
                     </Flex>

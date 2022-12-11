@@ -1,6 +1,6 @@
 import styled from '@emotion/styled';
 
-export const LoginHiddenWrapper = styled.div`
+export const UnauthenticatedViewHiddenWrapper = styled.div`
   opacity: 1;
   transition: opacity 0.2s ease-in-out;
 
@@ -10,7 +10,9 @@ export const LoginHiddenWrapper = styled.div`
   }
 `;
 
-export const LoginLoaderWrapper = styled(LoginHiddenWrapper)`
+export const UnauthenticatedViewLoaderWrapper = styled(
+  UnauthenticatedViewHiddenWrapper,
+)`
   position: absolute;
   top: 0;
   left: 0;
