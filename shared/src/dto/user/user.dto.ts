@@ -98,11 +98,6 @@ export class DtoCreateUserSignup {
 
   @ApiProperty()
   @IsNotEmpty()
-  @IsBoolean()
-  isActive: boolean;
-
-  @ApiProperty()
-  @IsNotEmpty()
   @IsString()
   phoneNumber: string;
 }

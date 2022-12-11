@@ -86,6 +86,7 @@ export class TraineesController {
       ...trainee,
       user: {
         ...trainee.user,
+        isActive: true,
         firstName: cepikData.data.firstName,
         lastName: cepikData.data.lastName,
       },
