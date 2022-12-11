@@ -21,7 +21,8 @@
     "typeorm": "typeorm-ts-node-esm -d src/data-source.ts",
     "create-migration": "typeorm-ts-node-esm migration:generate -d src/data-source.ts",
     "create-empty-migration": "typeorm-ts-node-esm migration:create",
-    "seed": "ts-node ./src/seeds/seed.ts"
+    "seed": "ts-node ./src/seeds/_seed.ts",
+    "seed:prod": "ts-node ./src/seeds/_seed.production.ts"
   },
   "dependencies": {
     "@adminjs/express": "^5.0.0",
