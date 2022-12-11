@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
+  IsDate,
   IsNotEmpty,
   IsNumberString,
   IsOptional,
@@ -61,6 +62,7 @@ export class DtoCreateTrainee {
   })
   @IsNotEmpty()
   @Type(() => Date)
+  @IsDate()
   dateOfBirth: ApiDate;
 
   @ApiProperty({ nullable: true })
@@ -86,6 +88,7 @@ export class DtoCreateTraineeSignup {
   })
   @IsNotEmpty()
   @Type(() => Date)
+  @IsDate()
   dateOfBirth: ApiDate;
 
   @ApiProperty({ nullable: true })
@@ -117,6 +120,7 @@ export class DtoUpdateTrainee {
   })
   @IsNotEmpty()
   @Type(() => Date)
+  @IsDate()
   dateOfBirth?: ApiDate;
 
   @ApiProperty({ nullable: true })
