@@ -28,7 +28,10 @@ export class DtoTrainee {
   @ApiProperty()
   pkk: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    type: 'string',
+    format: 'YYYY-mm-DDTHH:mm:ss.SZ',
+  })
   dateOfBirth: ApiDate;
 
   @ApiProperty({ nullable: true })
@@ -52,7 +55,10 @@ export class DtoCreateTrainee {
   @IsNotEmpty()
   pkk: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    type: 'string',
+    format: 'YYYY-mm-DDTHH:mm:ss.SZ',
+  })
   @IsNotEmpty()
   @Type(() => Date)
   dateOfBirth: ApiDate;
@@ -74,7 +80,10 @@ export class DtoCreateTraineeSignup {
   @IsNotEmpty()
   pkk: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    type: 'string',
+    format: 'YYYY-mm-DDTHH:mm:ss.SZ',
+  })
   @IsNotEmpty()
   @Type(() => Date)
   dateOfBirth: ApiDate;
@@ -102,7 +111,10 @@ export class DtoUpdateTrainee {
   @IsOptional()
   pkk?: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    type: 'string',
+    format: 'YYYY-mm-DDTHH:mm:ss.SZ',
+  })
   @IsNotEmpty()
   @Type(() => Date)
   dateOfBirth?: ApiDate;
