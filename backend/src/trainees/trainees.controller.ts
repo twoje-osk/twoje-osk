@@ -28,8 +28,10 @@ import { Roles } from 'common/guards/roles.decorator';
 import { assertNever } from 'utils/assertNever';
 import { ResetPasswordService } from 'reset-password/reset-password.service';
 import { CepikService } from 'cepik/cepik.service';
+import { SkipAuth } from 'auth/passport/skip-auth.guard';
 import { TraineesService } from './trainees.service';
 
+@Roles(UserRole.Admin, UserRole.Instructor)
 @Controller('trainees')
 export class TraineesController {
   constructor(
@@ -38,7 +40,6 @@ export class TraineesController {
     private readonly cepikService: CepikService,
   ) {}
 
-  @Roles(UserRole.Admin, UserRole.Instructor)
   @ApiResponse({
     type: TraineeFindAllResponseDto,
   })
@@ -49,7 +50,6 @@ export class TraineesController {
     return { trainees };
   }
 
-  @Roles(UserRole.Admin, UserRole.Instructor)
   @ApiResponse({
     type: TraineeFindOneResponseDto,
   })
@@ -64,6 +64,7 @@ export class TraineesController {
     return { trainee };
   }
 
+  @SkipAuth()
   @ApiResponse({
     type: TraineeAddNewResponseDto,
   })
@@ -112,7 +113,6 @@ export class TraineesController {
     return assertNever(error);
   }
 
-  @Roles(UserRole.Admin, UserRole.Instructor)
   @ApiResponse({
     type: TraineeAddNewResponseDto,
   })
@@ -156,7 +156,6 @@ export class TraineesController {
     return { trainee: createTraineeCall.data };
   }
 
-  @Roles(UserRole.Admin, UserRole.Instructor)
   @ApiResponse({
     type: TraineeUpdateResponseDto,
   })
@@ -180,7 +179,6 @@ export class TraineesController {
     return assertNever(error);
   }
 
-  @Roles(UserRole.Admin, UserRole.Instructor)
   @ApiResponse({
     type: TraineeDisableResponseDto,
   })
