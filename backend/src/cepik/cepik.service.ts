@@ -1,4 +1,4 @@
-import faker from '@faker-js/faker';
+import * as faker from '@faker-js/faker/locale/pl';
 import { Injectable } from '@nestjs/common';
 import { getFailure, getSuccess, Try } from 'types/Try';
 
