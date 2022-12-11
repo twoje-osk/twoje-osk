@@ -96,6 +96,7 @@ export class DtoCreateUserSignup {
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
+  @Length(8, 64)
   password: string | null;
 
   @ApiProperty()
