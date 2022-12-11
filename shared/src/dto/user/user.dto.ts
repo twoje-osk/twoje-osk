@@ -38,9 +38,6 @@ export class DtoUser {
   @IsNotEmpty()
   phoneNumber: string;
 
-  @ApiProperty()
-  password: string | null;
-
   @ApiProperty({
     type: 'string',
     format: 'YYYY-mm-DDTHH:mm:ss.SZ',
@@ -95,6 +92,11 @@ export class DtoCreateUserSignup {
   @IsNotEmpty()
   @IsEmail()
   email: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  password: string | null;
 
   @ApiProperty()
   @IsNotEmpty()
