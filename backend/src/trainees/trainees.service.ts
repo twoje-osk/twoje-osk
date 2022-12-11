@@ -33,6 +33,11 @@ export class TraineesService {
           organizationId,
         },
       },
+      order: {
+        user: {
+          createdAt: 'DESC',
+        },
+      },
       relations: {
         user: true,
       },

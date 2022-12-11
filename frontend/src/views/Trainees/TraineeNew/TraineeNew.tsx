@@ -33,7 +33,7 @@ export const TraineeNew = () => {
         pesel: newTrainee.pesel || null,
         pkk: newTrainee.pkk,
         driversLicenseNumber: newTrainee.driversLicenseNumber || null,
-        dateOfBirth: formatApi(newTrainee.dateOfBirth),
+        dateOfBirth: formatApi(newTrainee.dateOfBirth!),
         user: {
           email: newTrainee.email,
           firstName: newTrainee.firstName,

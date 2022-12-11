@@ -6,7 +6,7 @@ export interface TraineeFormData {
   lastName: string;
   email: string;
   phoneNumber: string;
-  dateOfBirth: Date;
+  dateOfBirth?: Date;
   pesel?: string;
   pkk: string;
   driversLicenseNumber?: string;
