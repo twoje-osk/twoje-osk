@@ -52,9 +52,9 @@ export class DtoUser {
   @ApiProperty({ enum: UserRole })
   role: UserRole;
 
-  @ApiProperty()
+  @ApiProperty({ nullable: true })
+  @IsOptional()
   @Length(8, 64)
-  @IsNotEmpty()
   trainee: DtoTrainee | null;
 
   @ApiProperty()
