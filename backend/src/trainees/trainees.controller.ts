@@ -104,7 +104,7 @@ export class TraineesController {
 
     if (error === 'TRAINEE_OR_USER_FOUND') {
       throw new ConflictException(
-        'There is already a trainee which has the same pesel or an user with the same email',
+        'There is already a trainee which has the same pesel or a user with the same email',
       );
     }
     return assertNever(error);
@@ -127,7 +127,7 @@ export class TraineesController {
 
       if (error === 'TRAINEE_OR_USER_FOUND') {
         throw new ConflictException(
-          'There is already a trainee which has the same pesel or an user with the same email',
+          'There is already a trainee which has the same pesel or a user with the same email',
         );
       }
 
