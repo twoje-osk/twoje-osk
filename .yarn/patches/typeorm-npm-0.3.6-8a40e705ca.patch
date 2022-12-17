@@ -1,0 +1,17 @@
+diff --git a/persistence/SubjectTopoligicalSorter.js b/persistence/SubjectTopoligicalSorter.js
+index 65f9bb69ac0c9c639c0cbffbf5c9bc0cd3904163..4eb941c03574ac493c15ee074dd28e2fad9cab18 100644
+--- a/persistence/SubjectTopoligicalSorter.js
++++ b/persistence/SubjectTopoligicalSorter.js
+@@ -142,9 +142,9 @@ class SubjectTopoligicalSorter {
+                 visit(nodes[i], i, []);
+         }
+         function visit(node, i, predecessors) {
+-            if (predecessors.indexOf(node) >= 0) {
+-                throw new error_1.TypeORMError("Cyclic dependency: " + JSON.stringify(node)); // todo: better error
+-            }
++            // if (predecessors.indexOf(node) >= 0) {
++            //     throw new error_1.TypeORMError("Cyclic dependency: " + JSON.stringify(node)); // todo: better error
++            // }
+             if (!~nodes.indexOf(node)) {
+                 throw new error_1.TypeORMError("Found unknown node. Make sure to provided all involved nodes. Unknown node: " +
+                     JSON.stringify(node));
