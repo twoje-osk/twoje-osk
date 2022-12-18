@@ -49,7 +49,7 @@ export class CreateAnnouncementDto {
   body: string;
 }
 
-export class DtoUpdateAnnouncement extends PartialType(CreateAnnouncementDto) {}
+export class UpdateAnnouncementDto extends PartialType(CreateAnnouncementDto) {}
 
 export class AnnouncementFindAllResponseDto {
   @ApiProperty({
@@ -70,8 +70,8 @@ export class AnnouncementUpdateRequestDto {
   @ApiProperty()
   @ValidateNested()
   @IsNotEmpty()
-  @Type(() => DtoUpdateAnnouncement)
-  announcement: DtoUpdateAnnouncement;
+  @Type(() => UpdateAnnouncementDto)
+  announcement: UpdateAnnouncementDto;
 }
 
 export class AnnouncementUpdateResponseDto {
