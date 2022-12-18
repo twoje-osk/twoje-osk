@@ -25,7 +25,6 @@ BEGIN
        SELECT u.email, i.id as instructorId, u.id as userId FROM "instructor" i
             JOIN "user" u on i.id = u."instructorId"
             WHERE u."isActive" = true
-            LIMIT 5
     LOOP
         SELECT count(*) INTO AVAILABILITY_COUNT FROM availability
             WHERE "instructorId" = INSTRUCTOR_ROW.instructorId
