@@ -3,9 +3,9 @@ import { Type } from 'class-transformer';
 import { IsDate, IsOptional, ValidateNested } from 'class-validator';
 import { setHours, startOfHour } from 'date-fns';
 import { IsDateAfter } from '../../validators/IsDateAfter';
-import { DtoInstructor } from '../instructor/instructor.dto';
+import { InstructorDto } from '../instructor/instructor.dto';
 
-export class DtoAvailability {
+export class AvailabilityDto {
   @ApiProperty()
   id: number;
 
@@ -16,7 +16,7 @@ export class DtoAvailability {
   to: ApiDate;
 
   @ApiProperty()
-  instructor: DtoInstructor;
+  instructor: InstructorDto;
 }
 
 export class DtoCreateAvailability {

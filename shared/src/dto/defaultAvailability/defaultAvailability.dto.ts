@@ -4,9 +4,9 @@ import { IsNumber, ValidateNested } from 'class-validator';
 import { Time } from '../../types/Time';
 import { IsTime } from '../../validators/IsTime';
 import { IsTimeAfter } from '../../validators/IsTimeAfter';
-import { DtoInstructor } from '../instructor/instructor.dto';
+import { InstructorDto } from '../instructor/instructor.dto';
 
-export class DtoDefaultAvailability {
+export class DefaultAvailabilityDto {
   @ApiProperty()
   id: number;
 
@@ -17,7 +17,7 @@ export class DtoDefaultAvailability {
   to: string;
 
   @ApiProperty()
-  instructor: DtoInstructor;
+  instructor: InstructorDto;
 }
 
 export class DtoCreateDefaultAvailability {

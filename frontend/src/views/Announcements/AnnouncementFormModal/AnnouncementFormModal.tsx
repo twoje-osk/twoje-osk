@@ -1,6 +1,6 @@
 import { LoadingButton } from '@mui/lab';
 import { Button, Icon, Modal, Paper, Stack, Typography } from '@mui/material';
-import { DtoAnnouncement } from '@osk/shared';
+import { AnnouncementDto } from '@osk/shared';
 import { Form, Formik } from 'formik';
 import { useState } from 'react';
 import { FTextField } from '../../../components/FTextField/FTextField';
@@ -11,7 +11,7 @@ import {
 
 interface AnnouncementFormModalProps {
   title: string;
-  announcement?: DtoAnnouncement;
+  announcement?: AnnouncementDto;
   isOpen: boolean;
   onCancel: () => void;
   onSave: (values: AnnouncementFormSchema) => Promise<void>;

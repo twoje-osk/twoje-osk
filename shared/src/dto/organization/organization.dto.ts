@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class DtoOrganization {
+export class OrganizationDto {
   @ApiProperty()
   id: number;
 
@@ -13,7 +13,7 @@ export class DtoOrganization {
 
 export class OrganizationGetPublicInfoResponseDto {
   @ApiProperty({
-    type: DtoOrganization,
+    type: OrganizationDto,
   })
-  organization: DtoOrganization;
+  organization: OrganizationDto;
 }

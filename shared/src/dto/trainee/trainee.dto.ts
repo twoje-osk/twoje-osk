@@ -10,18 +10,18 @@ import {
   ValidateNested,
 } from 'class-validator';
 import {
-  DtoCreateUser,
-  DtoCreateUserSignup,
-  DtoUpdateUser,
-  DtoUser,
+  CreateUserDto,
+  CreateUserSignupDto,
+  UpdateUserDto,
+  UserDto,
 } from '../user/user.dto';
 
-export class DtoTrainee {
+export class TraineeDto {
   @ApiProperty()
   id: number;
 
   @ApiProperty()
-  user: DtoUser;
+  user: UserDto;
 
   @ApiProperty({ nullable: true })
   pesel: string | null;
@@ -43,8 +43,8 @@ export class DtoCreateTrainee {
   @ApiProperty()
   @IsNotEmpty()
   @ValidateNested()
-  @Type(() => DtoCreateUser)
-  user: DtoCreateUser;
+  @Type(() => CreateUserDto)
+  user: CreateUserDto;
 
   @ApiProperty()
   @IsOptional()
@@ -75,8 +75,8 @@ export class DtoCreateTraineeSignup {
   @ApiProperty()
   @IsNotEmpty()
   @ValidateNested()
-  @Type(() => DtoCreateUserSignup)
-  user: DtoCreateUserSignup;
+  @Type(() => CreateUserSignupDto)
+  user: CreateUserSignupDto;
 
   @ApiProperty()
   @IsNotEmpty()
@@ -101,8 +101,8 @@ export class DtoUpdateTrainee {
   @ApiProperty()
   @IsOptional()
   @ValidateNested()
-  @Type(() => DtoUpdateUser)
-  user?: Partial<DtoUpdateUser>;
+  @Type(() => UpdateUserDto)
+  user?: Partial<UpdateUserDto>;
 
   @ApiProperty()
   @IsOptional()
@@ -132,14 +132,14 @@ export class DtoUpdateTrainee {
 export class TraineeFindAllResponseDto {
   @ApiProperty({
     isArray: true,
-    type: DtoTrainee,
+    type: TraineeDto,
   })
-  trainees: DtoTrainee[];
+  trainees: TraineeDto[];
 }
 
 export class TraineeFindOneResponseDto {
   @ApiProperty()
-  trainee: DtoTrainee;
+  trainee: TraineeDto;
 }
 
 export class TraineeUpdateResponseDto {}
@@ -169,7 +169,7 @@ export class TraineeAddNewRequestSignupDto {
 export class TraineeAddNewResponseDto {
   @ApiProperty()
   @IsNotEmpty()
-  trainee: DtoTrainee;
+  trainee: TraineeDto;
 }
 
 export class TraineeDisableResponseDto {}
