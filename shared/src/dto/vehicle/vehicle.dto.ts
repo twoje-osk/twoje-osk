@@ -10,7 +10,7 @@ import {
 } from 'class-validator';
 import { Transform, Type } from 'class-transformer';
 
-export class DtoVehicle {
+export class VehicleDto {
   @ApiProperty()
   id: number;
 
@@ -95,19 +95,19 @@ export class DtoUpdateVehicle extends PartialType(DtoCreateVehicle) {}
 export class VehicleGetAllResponseDto {
   @ApiProperty({
     isArray: true,
-    type: DtoVehicle,
+    type: VehicleDto,
   })
-  vehicles: DtoVehicle[];
+  vehicles: VehicleDto[];
 }
 
 export class VehicleFindOneResponseDto {
   @ApiProperty()
-  vehicle: DtoVehicle;
+  vehicle: VehicleDto;
 }
 
 export class VehicleAddNewResponseDto {
   @ApiProperty()
-  vehicle: DtoVehicle;
+  vehicle: VehicleDto;
 }
 
 export class VehicleAddNewRequestDto {

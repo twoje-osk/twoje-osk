@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DtoCreateAnnouncement, DtoUpdateAnnouncement } from '@osk/shared';
+import { CreateAnnouncementDto, UpdateAnnouncementDto } from '@osk/shared';
 import { CurrentUserService } from 'current-user/current-user.service';
 import { OrganizationDomainService } from 'organization-domain/organization-domain.service';
 import { Repository } from 'typeorm';
@@ -55,7 +55,7 @@ export class AnnouncementsService {
   }
 
   @Transactional()
-  async create(announcement: DtoCreateAnnouncement): Promise<number> {
+  async create(announcement: CreateAnnouncementDto): Promise<number> {
     const author = this.currentUserService.getRequestCurrentUser();
     const newAnnouncement = await this.announcementsRepository.save({
       subject: announcement.subject,
@@ -68,7 +68,7 @@ export class AnnouncementsService {
 
   @Transactional()
   async update(
-    announcement: DtoUpdateAnnouncement,
+    announcement: UpdateAnnouncementDto,
     announcementId: number,
   ): Promise<Try<number, 'NO_SUCH_ANNOUNCEMENT'>> {
     const { id: organizationId } =

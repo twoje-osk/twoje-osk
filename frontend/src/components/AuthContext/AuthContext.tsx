@@ -1,5 +1,5 @@
 import {
-  DtoUser,
+  UserDto,
   JwtPayload,
   UserMyProfileResponseDto,
   UserRole,
@@ -20,7 +20,7 @@ interface AuthContextType {
   accessToken: string | null;
   logIn: (accessToken: string) => void;
   logOut: () => void;
-  user: DtoUser | undefined;
+  user: UserDto | undefined;
   role: UserRole | null;
 }
 

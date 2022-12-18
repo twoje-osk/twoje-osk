@@ -12,14 +12,14 @@ import {
   ListItemText,
 } from '@mui/material';
 import { blue } from '@mui/material/colors';
-import { DtoAnnouncement } from '@osk/shared';
+import { AnnouncementDto } from '@osk/shared';
 import { UserRole } from '@osk/shared/src/types/user.types';
 import { useRef, useState } from 'react';
 import { useAuth } from '../../../hooks/useAuth/useAuth';
 import { formatLong } from '../../../utils/date';
 
 interface AnnouncementCardProps {
-  announcement: DtoAnnouncement;
+  announcement: AnnouncementDto;
   handleDelete: () => void;
   handleEdit: () => void;
 }

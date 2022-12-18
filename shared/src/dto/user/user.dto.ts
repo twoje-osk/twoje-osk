@@ -8,12 +8,12 @@ import {
   IsString,
   Length,
 } from 'class-validator';
-import { DtoOrganization } from '../organization/organization.dto';
+import { OrganizationDto } from '../organization/organization.dto';
 import { UserRole } from '../../types/user.types';
-import type { DtoTrainee } from '../trainee/trainee.dto';
-import type { DtoInstructor } from '../instructor/instructor.dto';
+import type { TraineeDto } from '../trainee/trainee.dto';
+import type { InstructorDto } from '../instructor/instructor.dto';
 
-export class DtoUser {
+export class UserDto {
   @ApiProperty()
   @IsNotEmpty()
   id: number;
@@ -48,7 +48,7 @@ export class DtoUser {
 
   @ApiProperty()
   @IsNotEmpty()
-  organization: DtoOrganization;
+  organization: OrganizationDto;
 
   @ApiProperty({ enum: UserRole })
   @IsNotEmpty()
@@ -56,13 +56,13 @@ export class DtoUser {
 
   @ApiProperty({ nullable: true })
   @IsOptional()
-  trainee: DtoTrainee | null;
+  trainee: TraineeDto | null;
 
   @ApiProperty({ nullable: true })
   @IsOptional()
-  instructor: DtoInstructor | null;
+  instructor: InstructorDto | null;
 }
-export class DtoCreateUser {
+export class CreateUserDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsEmail()
@@ -89,7 +89,7 @@ export class DtoCreateUser {
   phoneNumber: string;
 }
 
-export class DtoCreateUserSignup {
+export class CreateUserSignupDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsEmail()
@@ -107,23 +107,23 @@ export class DtoCreateUserSignup {
   phoneNumber: string;
 }
 
-export class DtoUpdateUser extends PartialType(DtoCreateUser) {}
+export class UpdateUserDto extends PartialType(CreateUserDto) {}
 
 export class UserAddNewResponseDto {
   @ApiProperty()
-  @Type(() => DtoCreateUser)
-  user: DtoUser;
+  @Type(() => CreateUserDto)
+  user: UserDto;
 }
 
 export class UserAddNewRequestDto {
   @ApiProperty()
   @IsNotEmpty()
-  user: DtoCreateUser;
+  user: CreateUserDto;
 }
 
 export class UserFindOneResponseDto {
   @ApiProperty()
-  user: DtoUser;
+  user: UserDto;
 }
 
 export class UserUpdateResponseDto {}
@@ -131,7 +131,7 @@ export class UserUpdateResponseDto {}
 export class UserUpdateRequestDto {
   @ApiProperty()
   @IsNotEmpty()
-  user: DtoUpdateUser;
+  user: UpdateUserDto;
 }
 
 export class UserDisableResponseDto {}
@@ -139,5 +139,5 @@ export class UserDisableResponseDto {}
 export class UserDisableRequestDto {}
 export class UserMyProfileResponseDto {
   @ApiProperty()
-  user: DtoUser;
+  user: UserDto;
 }

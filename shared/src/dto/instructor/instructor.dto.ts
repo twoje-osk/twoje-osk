@@ -12,9 +12,9 @@ import {
   IsString,
   ValidateNested,
 } from 'class-validator';
-import { DtoCreateUser, DtoUpdateUser, DtoUser } from '../user/user.dto';
+import { CreateUserDto, UpdateUserDto, UserDto } from '../user/user.dto';
 
-export class DtoInstructor {
+export class InstructorDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsNumber()
@@ -23,8 +23,8 @@ export class DtoInstructor {
   @ApiProperty()
   @IsNotEmpty()
   @ValidateNested()
-  @Type(() => DtoUser)
-  user: DtoUser;
+  @Type(() => UserDto)
+  user: UserDto;
 
   @ApiProperty()
   @IsNotEmpty()
@@ -51,8 +51,8 @@ export class DtoInstructor {
 export class DtoCreateInstructor {
   @ApiProperty()
   @ValidateNested()
-  @Type(() => DtoCreateUser)
-  user: DtoCreateUser;
+  @Type(() => CreateUserDto)
+  user: CreateUserDto;
 
   @ApiProperty()
   @IsString()
@@ -83,24 +83,24 @@ export class DtoUpdateInstructor extends OmitType(
   @ApiProperty()
   @IsOptional()
   @ValidateNested()
-  @Type(() => DtoUpdateUser)
-  user: DtoUpdateUser;
+  @Type(() => UpdateUserDto)
+  user: UpdateUserDto;
 }
 
 export class InstructorFindAllResponseDto {
   @ApiProperty({
     isArray: true,
-    type: DtoInstructor,
+    type: InstructorDto,
   })
   @ValidateNested()
-  @Type(() => DtoInstructor)
-  instructors: DtoInstructor[];
+  @Type(() => InstructorDto)
+  instructors: InstructorDto[];
 }
 
 export class InstructorFindOneResponseDto {
   @ValidateNested()
   @ApiProperty()
-  instructor: DtoInstructor;
+  instructor: InstructorDto;
 }
 
 export class InstructorUpdateRequestDto {

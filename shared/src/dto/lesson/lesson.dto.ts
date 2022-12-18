@@ -11,8 +11,8 @@ import {
 import { addHours, startOfHour } from 'date-fns';
 import { LessonStatus } from '../../types/lesson.types';
 import { IsDateAfter } from '../../validators/IsDateAfter';
-import { DtoInstructor } from '../instructor/instructor.dto';
-import { DtoTrainee } from '../trainee/trainee.dto';
+import { InstructorDto } from '../instructor/instructor.dto';
+import { TraineeDto } from '../trainee/trainee.dto';
 
 export class LessonsDTO {
   @ApiProperty()
@@ -32,14 +32,14 @@ export class LessonsDTO {
   status: LessonStatus;
 
   @ApiProperty({
-    type: DtoInstructor,
+    type: InstructorDto,
   })
-  instructor: DtoInstructor;
+  instructor: InstructorDto;
 
   @ApiProperty({
-    type: DtoTrainee,
+    type: TraineeDto,
   })
-  trainee: DtoTrainee;
+  trainee: TraineeDto;
 }
 
 export class GetMyLessonsQueryDTO {
