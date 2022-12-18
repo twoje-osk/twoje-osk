@@ -15,15 +15,15 @@ import { Box, Flex } from 'reflexbox';
 import { FTextField } from '../../components/FTextField/FTextField';
 import { FullPageLoading } from '../../components/FullPageLoading/FullPageLoading';
 import { GeneralAPIError } from '../../components/GeneralAPIError/GeneralAPIError';
+import {
+  UnauthenticatedViewHiddenWrapper,
+  UnauthenticatedViewLoaderWrapper,
+} from '../../components/UnauthenticatedView/UnauthenticatedView.styled';
 import { useUnauthorizedOrganizationData } from '../../hooks/useUnauthorizedOrganizationData/useUnauthorizedOrganizationData';
 import {
   ForgotPasswordForm,
   ForgotPasswordFormSchema,
 } from './ForgotPassword.schema';
-import {
-  ForgotPasswordHiddenWrapper,
-  ForgotPasswordLoaderWrapper,
-} from './ForgotPassword.styled';
 import { sendResetRequest } from './ForgotPassword.utils';
 
 export const ForgotPassword = () => {
@@ -95,13 +95,13 @@ export const ForgotPassword = () => {
     <Container component="main" maxWidth="sm">
       <Flex width="100%" height="100vh" alignItems="center">
         <Paper sx={{ width: '100%', position: 'relative' }} elevation={2}>
-          <ForgotPasswordLoaderWrapper
+          <UnauthenticatedViewLoaderWrapper
             aria-hidden={!isLoading}
             className={!isLoading ? 'hidden' : undefined}
           >
             <FullPageLoading />
-          </ForgotPasswordLoaderWrapper>
-          <ForgotPasswordHiddenWrapper
+          </UnauthenticatedViewLoaderWrapper>
+          <UnauthenticatedViewHiddenWrapper
             aria-hidden={isLoading}
             className={isLoading ? 'hidden' : undefined}
           >
@@ -155,7 +155,7 @@ export const ForgotPassword = () => {
                 )}
               </Formik>
             </Box>
-          </ForgotPasswordHiddenWrapper>
+          </UnauthenticatedViewHiddenWrapper>
         </Paper>
       </Flex>
     </Container>
