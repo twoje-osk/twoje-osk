@@ -4,6 +4,7 @@ import {
   IsBoolean,
   IsEmail,
   IsNotEmpty,
+  IsOptional,
   IsString,
   Length,
 } from 'class-validator';
@@ -50,14 +51,15 @@ export class DtoUser {
   organization: DtoOrganization;
 
   @ApiProperty({ enum: UserRole })
+  @IsNotEmpty()
   role: UserRole;
 
   @ApiProperty({ nullable: true })
   @IsOptional()
-  @Length(8, 64)
   trainee: DtoTrainee | null;
 
-  @ApiProperty()
+  @ApiProperty({ nullable: true })
+  @IsOptional()
   instructor: DtoInstructor | null;
 }
 export class DtoCreateUser {
@@ -94,9 +96,9 @@ export class DtoCreateUserSignup {
   email: string;
 
   @ApiProperty()
-  @IsNotEmpty()
   @IsString()
   @Length(8, 64)
+  @IsOptional()
   password: string | null;
 
   @ApiProperty()
