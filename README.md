@@ -178,7 +178,7 @@ Distributed under the GPLv3 License. See [`LICENSE.md`](./LICENSE.md) for more i
 
 **Romeo Morcia**
   * GitHub: [@maonat](https://github.com/maonat)
-  * LinkedIn: [romeo-morcia-5256b491](https://www.linkedin.com/in/romeo-morcia-5256b491/)
+  * LinkedIn: [romeo-morcia](https://www.linkedin.com/in/romeo-morcia/)
 
 Project Link: https://github.com/twoje-osk/twoje-osk
 
