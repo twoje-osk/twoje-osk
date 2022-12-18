@@ -15,14 +15,17 @@ export class Trainee {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  pesel: string;
+  @Column({ nullable: true, type: 'text' })
+  pesel: string | null;
 
   @Column({ nullable: true, type: 'text' })
   driversLicenseNumber: string | null;
 
   @Column()
   pkk: string;
+
+  @Column()
+  dateOfBirth: Date;
 
   @OneToOne<User>('User', (user) => user.trainee)
   user: User;

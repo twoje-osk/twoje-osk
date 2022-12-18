@@ -1,6 +1,13 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsBoolean, IsEmail, IsNotEmpty, IsString } from 'class-validator';
+import {
+  IsBoolean,
+  IsEmail,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  Length,
+} from 'class-validator';
 import { DtoOrganization } from '../organization/organization.dto';
 import { UserRole } from '../../types/user.types';
 import type { DtoTrainee } from '../trainee/trainee.dto';
@@ -34,6 +41,7 @@ export class DtoUser {
 
   @ApiProperty({
     type: 'string',
+    format: 'YYYY-mm-DDTHH:mm:ss.SZ',
   })
   @IsNotEmpty()
   createdAt: ApiDate;
@@ -43,12 +51,15 @@ export class DtoUser {
   organization: DtoOrganization;
 
   @ApiProperty({ enum: UserRole })
+  @IsNotEmpty()
   role: UserRole;
 
-  @ApiProperty()
+  @ApiProperty({ nullable: true })
+  @IsOptional()
   trainee: DtoTrainee | null;
 
-  @ApiProperty()
+  @ApiProperty({ nullable: true })
+  @IsOptional()
   instructor: DtoInstructor | null;
 }
 export class DtoCreateUser {
@@ -71,6 +82,24 @@ export class DtoCreateUser {
   @IsNotEmpty()
   @IsBoolean()
   isActive: boolean;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  phoneNumber: string;
+}
+
+export class DtoCreateUserSignup {
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsEmail()
+  email: string;
+
+  @ApiProperty()
+  @IsString()
+  @Length(8, 64)
+  @IsOptional()
+  password: string | undefined;
 
   @ApiProperty()
   @IsNotEmpty()

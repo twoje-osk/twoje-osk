@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { OrganizationDomainService } from 'organization-domain/organization-domain.service';
-import { Repository } from 'typeorm';
+import { FindOptionsWhere, Repository } from 'typeorm';
 import { User } from 'users/entities/user.entity';
 import { UsersService } from 'users/users.service';
 import { Transactional } from 'typeorm-transactional-cls-hooked';
@@ -10,7 +10,6 @@ import {
   TraineeArgumentsUpdate,
 } from 'trainees/trainees.types';
 import { getFailure, getSuccess, Try } from 'types/Try';
-import { ResetPasswordService } from 'reset-password/reset-password.service';
 import { Trainee } from './entities/trainee.entity';
 
 @Injectable()
@@ -22,7 +21,6 @@ export class TraineesService {
     @InjectRepository(User)
     private usersRepository: Repository<User>,
     private usersService: UsersService,
-    private resetPasswordService: ResetPasswordService,
   ) {}
 
   async findAll() {
@@ -33,6 +31,11 @@ export class TraineesService {
       where: {
         user: {
           organizationId,
+        },
+      },
+      order: {
+        user: {
+          createdAt: 'DESC',
         },
       },
       relations: {
@@ -80,27 +83,33 @@ export class TraineesService {
   @Transactional()
   async create(
     trainee: TraineeArguments,
-    isHttps: boolean,
   ): Promise<Try<Trainee, 'TRAINEE_OR_USER_FOUND'>> {
     const { id: organizationId } =
       this.organizationDomainService.getRequestOrganization();
 
+    const emailCondition: FindOptionsWhere<Trainee> = {
+      user: {
+        email: trainee.user.email,
+        organizationId,
+      },
+    };
+
+    const findTraineeCondition: FindOptionsWhere<Trainee>[] =
+      trainee.pesel === null
+        ? [emailCondition]
+        : [
+            emailCondition,
+            {
+              pesel: trainee.pesel,
+              user: {
+                organizationId,
+              },
+            },
+          ];
+
     const doesUserOrTraineeExistWithEmailOrPesel =
       await this.traineesRepository.findOne({
-        where: [
-          {
-            user: {
-              email: trainee.user.email,
-              organizationId,
-            },
-          },
-          {
-            pesel: trainee.pesel,
-            user: {
-              organizationId,
-            },
-          },
-        ],
+        where: findTraineeCondition,
       });
 
     if (doesUserOrTraineeExistWithEmailOrPesel !== null) {
@@ -113,6 +122,7 @@ export class TraineesService {
       user: createdUser,
       pesel: trainee.pesel,
       driversLicenseNumber: trainee.driversLicenseNumber,
+      dateOfBirth: trainee.dateOfBirth,
       pkk: trainee.pkk,
     });
 
@@ -120,17 +130,6 @@ export class TraineesService {
     await this.usersRepository.save(createdUser);
 
     await this.traineesRepository.save(createdTrainee);
-
-    const tokenResult = await this.resetPasswordService.createToken(
-      createdUser.id,
-    );
-    if (tokenResult.ok) {
-      this.resetPasswordService.sendResetEmail(
-        createdUser.email,
-        tokenResult.data,
-        isHttps,
-      );
-    }
 
     return getSuccess(createdTrainee);
   }

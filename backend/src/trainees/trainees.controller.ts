@@ -22,15 +22,23 @@ import {
   TraineeAddNewResponseDto,
   TraineeAddNewRequestDto,
   TraineeDisableResponseDto,
+  TraineeAddNewRequestSignupDto,
 } from '@osk/shared';
 import { Roles } from 'common/guards/roles.decorator';
 import { assertNever } from 'utils/assertNever';
+import { ResetPasswordService } from 'reset-password/reset-password.service';
+import { CepikService } from 'cepik/cepik.service';
+import { SkipAuth } from 'auth/passport/skip-auth.guard';
 import { TraineesService } from './trainees.service';
 
 @Roles(UserRole.Admin, UserRole.Instructor)
 @Controller('trainees')
 export class TraineesController {
-  constructor(private readonly traineesService: TraineesService) {}
+  constructor(
+    private readonly traineesService: TraineesService,
+    private readonly resetPasswordService: ResetPasswordService,
+    private readonly cepikService: CepikService,
+  ) {}
 
   @ApiResponse({
     type: TraineeFindAllResponseDto,
@@ -56,19 +64,39 @@ export class TraineesController {
     return { trainee };
   }
 
+  @SkipAuth()
   @ApiResponse({
     type: TraineeAddNewResponseDto,
   })
-  @ApiBody({ type: TraineeAddNewRequestDto })
-  @Post()
-  async create(
-    @Body() { trainee }: TraineeAddNewRequestDto,
-    @Request() req: ExpressRequest,
+  @ApiBody({ type: TraineeAddNewRequestSignupDto })
+  @Post('/signup')
+  async signUp(
+    @Body() { trainee }: TraineeAddNewRequestSignupDto,
   ): Promise<TraineeAddNewResponseDto> {
-    const isHttps = req.protocol === 'https';
+    const cepikData = await this.cepikService.registerUser(
+      trainee.pkk,
+      trainee.dateOfBirth,
+    );
+
+    if (!cepikData.ok) {
+      throw new UnprocessableEntityException(
+        'User with specified PKK and date of birth does not exist',
+      );
+    }
+
+    const traineeWithCepikData = {
+      ...trainee,
+      user: {
+        ...trainee.user,
+        isActive: true,
+        firstName: cepikData.data.firstName,
+        lastName: cepikData.data.lastName,
+      },
+      pesel: cepikData.data.pesel,
+    };
+
     const createTraineeCall = await this.traineesService.create(
-      trainee,
-      isHttps,
+      traineeWithCepikData,
     );
 
     if (createTraineeCall.ok) {
@@ -79,10 +107,53 @@ export class TraineesController {
 
     if (error === 'TRAINEE_OR_USER_FOUND') {
       throw new ConflictException(
-        'There is already a trainee which has the same pesel or an user with the same email',
+        'There is already a trainee which has the same pesel or a user with the same email',
       );
     }
     return assertNever(error);
+  }
+
+  @ApiResponse({
+    type: TraineeAddNewResponseDto,
+  })
+  @ApiBody({ type: TraineeAddNewRequestDto })
+  @Post()
+  async create(
+    @Body() { trainee }: TraineeAddNewRequestDto,
+    @Request() req: ExpressRequest,
+  ): Promise<TraineeAddNewResponseDto> {
+    const isHttps = req.protocol === 'https';
+    const createTraineeCall = await this.traineesService.create(trainee);
+
+    if (!createTraineeCall.ok) {
+      const { error } = createTraineeCall;
+
+      if (error === 'TRAINEE_OR_USER_FOUND') {
+        throw new ConflictException(
+          'There is already a trainee which has the same pesel or a user with the same email',
+        );
+      }
+
+      if (error === 'CEPIK_ERROR') {
+        throw new UnprocessableEntityException(
+          'User with specified PKK and date of birth does not exist',
+        );
+      }
+      return assertNever(error);
+    }
+
+    const tokenResult = await this.resetPasswordService.createToken(
+      createTraineeCall.data.userId,
+    );
+    if (tokenResult.ok) {
+      this.resetPasswordService.sendResetEmail(
+        createTraineeCall.data.user.email,
+        tokenResult.data,
+        isHttps,
+      );
+    }
+
+    return { trainee: createTraineeCall.data };
   }
 
   @ApiResponse({

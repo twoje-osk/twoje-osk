@@ -9,8 +9,11 @@ class TraineesFactory extends Factory<Trainee> {
   public generate() {
     const trainee = new Trainee();
 
-    trainee.pesel = this.faker.random.numeric(11);
-    trainee.pkk = this.faker.random.numeric(11);
+    trainee.pesel = this.faker.datatype.boolean()
+      ? this.faker.random.numeric(11)
+      : null;
+    trainee.pkk = this.faker.random.numeric(20);
+    trainee.dateOfBirth = this.faker.date.past();
 
     this.entities.push(trainee);
     return trainee;

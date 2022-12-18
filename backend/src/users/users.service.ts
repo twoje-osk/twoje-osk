@@ -3,15 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { OrganizationDomainService } from 'organization-domain/organization-domain.service';
 import { Repository } from 'typeorm';
+import { UserArguments } from 'types/UserArguments';
 import { User } from './entities/user.entity';
 
-export interface UserArguments {
-  email?: string;
-  firstName?: string;
-  lastName?: string;
-  isActive?: boolean;
-  phoneNumber?: string;
-}
 @Injectable()
 export class UsersService {
   constructor(
@@ -61,6 +55,7 @@ export class UsersService {
     lastName: string,
     isActive: boolean,
     phoneNumber: string,
+    password?: string,
   ) {
     const newUser = this.createUserWithoutSave({
       email,
@@ -68,6 +63,7 @@ export class UsersService {
       isActive,
       lastName,
       phoneNumber,
+      password,
     });
 
     await this.usersRepository.save(newUser);
@@ -90,7 +86,7 @@ export class UsersService {
   }
 
   async changePassword(userId: number, password: string) {
-    const hashedPassword = bcrypt.hashSync(password, 10);
+    const hashedPassword = this.getHashedPassword(password);
 
     const updatedUser = this.usersRepository.update(
       {
@@ -122,14 +118,22 @@ export class UsersService {
   createUserWithoutSave(user: UserArguments) {
     const { id: organizationId } =
       this.organizationDomainService.getRequestOrganization();
+    const hashedPassword =
+      user.password !== undefined
+        ? this.getHashedPassword(user.password)
+        : undefined;
 
     const userToCreate = {
       ...user,
-      password: undefined,
+      password: hashedPassword,
       createdAt: new Date(),
       organization: { id: organizationId },
     };
 
     return this.usersRepository.create(userToCreate);
+  }
+
+  getHashedPassword(password: string) {
+    return bcrypt.hashSync(password, 10);
   }
 }

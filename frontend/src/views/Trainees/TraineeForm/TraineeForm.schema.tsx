@@ -6,7 +6,8 @@ export interface TraineeFormData {
   lastName: string;
   email: string;
   phoneNumber: string;
-  pesel: string;
+  dateOfBirth?: Date;
+  pesel?: string;
   pkk: string;
   driversLicenseNumber?: string;
   createdAt: Date;
@@ -19,7 +20,10 @@ export const traineeFormSchema: Yup.SchemaOf<TraineeFormData> =
     lastName: Yup.string().required(),
     email: Yup.string().required().email(),
     phoneNumber: Yup.string().required(),
-    pesel: Yup.string().required(),
+    dateOfBirth: Yup.date().required(),
+    pesel: Yup.string()
+      .optional()
+      .transform((value) => (value === '' ? undefined : value)),
     pkk: Yup.string().required(),
     driversLicenseNumber: Yup.string()
       .optional()
