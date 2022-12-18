@@ -4,6 +4,7 @@ export interface UserArguments {
   lastName: string;
   isActive: boolean;
   phoneNumber: string;
+  password?: string;
 }
 
 export interface UserTraineeArguments extends UserArguments {

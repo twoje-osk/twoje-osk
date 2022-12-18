@@ -3,16 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { OrganizationDomainService } from 'organization-domain/organization-domain.service';
 import { Repository } from 'typeorm';
+import { UserArguments } from 'types/UserArguments';
 import { User } from './entities/user.entity';
 
-export interface UserArguments {
-  email?: string;
-  firstName?: string;
-  lastName?: string;
-  isActive?: boolean;
-  phoneNumber?: string;
-  password?: string;
-}
 @Injectable()
 export class UsersService {
   constructor(

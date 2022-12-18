@@ -99,7 +99,7 @@ export class DtoCreateUserSignup {
   @IsString()
   @Length(8, 64)
   @IsOptional()
-  password: string | null;
+  password: string | undefined;
 
   @ApiProperty()
   @IsNotEmpty()
