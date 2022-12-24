@@ -21,7 +21,7 @@ import { JwtAuthGuard } from './auth/passport/jwt-auth.guard';
 import { RolesGuard } from './common/guards/roles.guard';
 import { CustomConfigService } from './config/config.service';
 import { DefaultAvailabilityModule } from './defaultAvailability/defaultAvailability.module';
-import { DriversLicenseCategoriesModule } from './driversLicenseCategory/driversLicenseCategory.module';
+import { DriversLicenseCategoriesModule } from './drivers-license-category/drivers-license-category.module';
 import { InstructorsModule } from './instructors/instructors.module';
 import { OrganizationDomainMiddleware } from './organization-domain/organization-domain.middleware';
 import { OrganizationDomainModule } from './organization-domain/organization-domain.module';

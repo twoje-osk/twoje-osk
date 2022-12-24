@@ -5,7 +5,7 @@ import { Transactional } from 'typeorm-transactional-cls-hooked';
 import { Instructor } from './entities/instructor.entity';
 import { User } from '../users/entities/user.entity';
 import { InstructorFields, InstructorUpdateFields } from './instructors.types';
-import { DriversLicenseCategoriesService } from '../driversLicenseCategory/driversLicenseCategory.service';
+import { DriversLicenseCategoriesService } from '../drivers-license-category/drivers-license-category.service';
 import { OrganizationDomainService } from '../organization-domain/organization-domain.service';
 import { Try, getFailure, getSuccess } from '../types/Try';
 import { UsersService } from '../users/users.service';

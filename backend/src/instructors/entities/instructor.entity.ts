@@ -8,7 +8,7 @@ import {
   RelationId,
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
-import { DriversLicenseCategory } from '../../driversLicenseCategory/entities/driversLicenseCategory.entity';
+import { DriversLicenseCategory } from '../../drivers-license-category/entities/drivers-license-category.entity';
 import type { User } from '../../users/entities/user.entity';
 
 @Entity()

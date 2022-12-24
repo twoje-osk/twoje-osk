@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, In } from 'typeorm';
-import { DriversLicenseCategory } from './entities/driversLicenseCategory.entity';
+import { DriversLicenseCategory } from './entities/drivers-license-category.entity';
 
 @Injectable()
 export class DriversLicenseCategoriesService {

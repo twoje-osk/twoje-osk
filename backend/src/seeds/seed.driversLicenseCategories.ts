@@ -1,4 +1,4 @@
-import { DriversLicenseCategory } from '../driversLicenseCategory/entities/driversLicenseCategory.entity';
+import { DriversLicenseCategory } from '../drivers-license-category/entities/drivers-license-category.entity';
 import { Factory } from './seed.utils';
 
 class DriversLicenseCategoryFactory extends Factory<DriversLicenseCategory> {

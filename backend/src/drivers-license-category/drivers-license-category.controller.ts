@@ -5,7 +5,7 @@ import {
   UserRole,
 } from '@osk/shared';
 import { Roles } from '../common/guards/roles.decorator';
-import { DriversLicenseCategoriesService } from './driversLicenseCategory.service';
+import { DriversLicenseCategoriesService } from './drivers-license-category.service';
 
 @Controller('drivers-license-categories')
 @Roles(UserRole.Admin)
