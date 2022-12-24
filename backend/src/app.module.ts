@@ -29,6 +29,10 @@ import { PaymentsModule } from './payments/payments.module';
 import { MockExamAttemptModule } from './mockExamAttempt/mockExamAttempt.module';
 import { MockExamQuestionAttemptModule } from './mockExamQuestionAttempt/mockExamQuestionAttempt.module';
 import { MockExamQuestionModule } from './mockExamQuestion/mockExamQuestion.module';
+import { ReportsModule } from './reports/reports.module';
+import { ReportEntriesModule } from './report-entries/report-entries.module';
+import { CourseReportsModule } from './course-reports/course-reports.module';
+import { ReportEntryToCourseReportModule } from './report-entry-to-course-report/report-entry-to-course-report.module';
 
 @Module({
   imports: [
@@ -77,6 +81,10 @@ import { MockExamQuestionModule } from './mockExamQuestion/mockExamQuestion.modu
     MockExamAttemptModule,
     MockExamQuestionAttemptModule,
     MockExamQuestionModule,
+    ReportsModule,
+    ReportEntriesModule,
+    CourseReportsModule,
+    ReportEntryToCourseReportModule,
   ],
   providers: [
     {

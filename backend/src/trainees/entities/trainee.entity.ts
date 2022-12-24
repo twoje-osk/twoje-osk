@@ -7,6 +7,7 @@ import {
   PrimaryGeneratedColumn,
   RelationId,
 } from 'typeorm';
+import { CourseReport } from '../../course-reports/entities/course-report.entity';
 import type { Payment } from '../../payments/entities/payment.entity';
 import type { User } from '../../users/entities/user.entity';
 
@@ -36,4 +37,10 @@ export class Trainee {
 
   @OneToMany<Payment>('Payment', (payment) => payment.trainee)
   payments: Payment[];
+
+  @OneToMany<CourseReport>(
+    'CourseReport',
+    (courseReport) => courseReport.trainee,
+  )
+  courseReports: CourseReport[];
 }

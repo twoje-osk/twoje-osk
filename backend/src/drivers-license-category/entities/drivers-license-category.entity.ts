@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Report } from 'reports/entities/report.entity';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 
 @Entity()
 export class DriversLicenseCategory {
@@ -7,4 +8,7 @@ export class DriversLicenseCategory {
 
   @Column({ type: 'text', unique: true })
   name: string;
+
+  @OneToMany<Report>('Report', (report) => report.driversLicenseCategory)
+  reports: Report[];
 }
