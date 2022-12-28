@@ -12,6 +12,10 @@ import { Factory } from './seed.utils';
 import { seedDriversLicenseCategories } from './seed.driversLicenseCategories';
 import { seedAnnouncements } from './seed.announcement';
 import { seedDefaultAvailabilities } from './seed.defaultAvailabilities';
+import { seedCourseReports } from './seed.courseReports';
+import { seedReportEntries } from './seed.reportEntries';
+import { seedReports } from './seed.reports';
+import { seedReportEntryToCourseReport } from './seed.ReportEntryToCourseReports';
 
 const clearSequences = async (trx: EntityManager) => {
   await trx.query(`
@@ -52,6 +56,10 @@ const run = async () => {
     seedLessons();
     seedAnnouncements();
     seedPayments();
+    seedReports();
+    seedReportEntries();
+    seedCourseReports();
+    seedReportEntryToCourseReport();
 
     await saveAll(trx);
   });
