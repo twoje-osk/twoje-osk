@@ -1,8 +1,9 @@
-import { CourseReport } from 'course-reports/entities/course-report.entity';
-import { DriversLicenseCategory } from 'drivers-license-category/entities/drivers-license-category.entity';
-import { ReportEntry } from 'report-entries/entities/report-entry.entity';
-import { ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { DriversLicenseCategory } from '../../drivers-license-category/entities/drivers-license-category.entity';
+import { ReportEntry } from '../../report-entries/entities/report-entry.entity';
+import { CourseReport } from '../../course-reports/entities/course-report.entity';
 
+@Entity()
 export class Report {
   @PrimaryGeneratedColumn()
   id: number;
@@ -20,7 +21,7 @@ export class Report {
   reportEntries: ReportEntry[];
 
   @OneToMany<CourseReport>(
-    'CourseReports',
+    'CourseReport',
     (courseReport) => courseReport.report,
   )
   courseReports: CourseReport[];

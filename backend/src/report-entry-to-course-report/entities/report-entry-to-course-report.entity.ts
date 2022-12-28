@@ -1,7 +1,8 @@
-import { CourseReport } from 'course-reports/entities/course-report.entity';
-import { ReportEntry } from 'report-entries/entities/report-entry.entity';
-import { PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import { PrimaryGeneratedColumn, Column, ManyToOne, Entity } from 'typeorm';
+import type { CourseReport } from '../../course-reports/entities/course-report.entity';
+import { ReportEntry } from '../../report-entries/entities/report-entry.entity';
 
+@Entity()
 export class ReportEntryToCourseReport {
   @PrimaryGeneratedColumn()
   id: number;

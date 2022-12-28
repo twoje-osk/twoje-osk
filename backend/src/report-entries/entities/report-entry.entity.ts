@@ -1,8 +1,15 @@
 import { MaxLength } from 'class-validator';
-import { ReportEntryToCourseReport } from 'report-entry-to-course-report/entities/report-entry-to-course-report.entity';
-import { Report } from 'reports/entities/report.entity';
-import { PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from 'typeorm';
+import {
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  OneToMany,
+  Entity,
+} from 'typeorm';
+import type { ReportEntryToCourseReport } from '../../report-entry-to-course-report/entities/report-entry-to-course-report.entity';
+import type { Report } from '../../reports/entities/report.entity';
 
+@Entity()
 export class ReportEntry {
   @PrimaryGeneratedColumn()
   id: number;
