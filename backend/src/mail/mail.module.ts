@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MailgunModule } from '@nextnm/nestjs-mailgun';
-import { CustomConfigService } from 'config/config.service';
+import { CustomConfigService } from '../config/config.service';
 import { MailService } from './mail.service';
 
 @Module({

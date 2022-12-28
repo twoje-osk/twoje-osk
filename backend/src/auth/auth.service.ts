@@ -3,9 +3,9 @@ import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JwtPayload } from '@osk/shared';
 import * as bcrypt from 'bcrypt';
-import { Organization } from 'organizations/entities/organization.entity';
 import { Repository } from 'typeorm';
-import { User } from 'users/entities/user.entity';
+import { Organization } from '../organizations/entities/organization.entity';
+import { User } from '../users/entities/user.entity';
 
 @Injectable()
 export class AuthService {

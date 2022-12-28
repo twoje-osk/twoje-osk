@@ -1,5 +1,4 @@
 import { Exclude } from 'class-transformer';
-import { Payment } from 'payments/entities/payment.entity';
 import {
   Column,
   Entity,
@@ -8,6 +7,7 @@ import {
   PrimaryGeneratedColumn,
   RelationId,
 } from 'typeorm';
+import type { Payment } from '../../payments/entities/payment.entity';
 import type { User } from '../../users/entities/user.entity';
 
 @Entity()

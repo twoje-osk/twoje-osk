@@ -1,6 +1,6 @@
 import * as faker from '@faker-js/faker/locale/pl';
 import { Injectable } from '@nestjs/common';
-import { getFailure, getSuccess, Try } from 'types/Try';
+import { Try, getFailure, getSuccess } from '../types/Try';
 
 interface CepikResponseData {
   firstName: string;
