@@ -12,7 +12,7 @@ import {
   UserAddNewResponseDto,
   UserAddNewRequestDto,
 } from '@osk/shared';
-import { CurrentUserService } from 'current-user/current-user.service';
+import { CurrentUserService } from '../current-user/current-user.service';
 import { UsersService } from './users.service';
 
 @Controller('users')

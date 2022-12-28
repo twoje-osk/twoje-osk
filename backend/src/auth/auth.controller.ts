@@ -1,7 +1,7 @@
 import { Controller, Post, Request, UseGuards } from '@nestjs/common';
 import { ApiBody, ApiResponse } from '@nestjs/swagger';
 import { LoginAuthRequestDto, LoginAuthResponseDto } from '@osk/shared';
-import { User } from 'users/entities/user.entity';
+import { User } from '../users/entities/user.entity';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './passport/local-auth.guard';
 import { SkipAuth } from './passport/skip-auth.guard';

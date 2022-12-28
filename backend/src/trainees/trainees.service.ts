@@ -1,16 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { OrganizationDomainService } from 'organization-domain/organization-domain.service';
 import { FindOptionsWhere, Repository } from 'typeorm';
-import { User } from 'users/entities/user.entity';
-import { UsersService } from 'users/users.service';
 import { Transactional } from 'typeorm-transactional-cls-hooked';
-import {
-  TraineeArguments,
-  TraineeArgumentsUpdate,
-} from 'trainees/trainees.types';
-import { getFailure, getSuccess, Try } from 'types/Try';
+import { OrganizationDomainService } from '../organization-domain/organization-domain.service';
+import { Try, getFailure, getSuccess } from '../types/Try';
+import { User } from '../users/entities/user.entity';
+import { UsersService } from '../users/users.service';
 import { Trainee } from './entities/trainee.entity';
+import { TraineeArguments, TraineeArgumentsUpdate } from './trainees.types';
 
 @Injectable()
 export class TraineesService {

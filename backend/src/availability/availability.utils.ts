@@ -1,5 +1,5 @@
 import { isAfter, isBefore, isEqual } from 'date-fns';
-import { Lesson } from 'lessons/entities/lesson.entity';
+import { Lesson } from '../lessons/entities/lesson.entity';
 import { Availability } from './entities/availability.entity';
 
 export interface SimpleAvailabilityBatch {

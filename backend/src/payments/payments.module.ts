@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { TraineesModule } from 'trainees/trainees.module';
 import { PaymentsService } from './payments.service';
 import { PaymentsController } from './payments.controller';
 import { Payment } from './entities/payment.entity';
+import { TraineesModule } from '../trainees/trainees.module';
 
 @Module({
   controllers: [PaymentsController],

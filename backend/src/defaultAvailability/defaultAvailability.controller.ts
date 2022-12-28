@@ -22,9 +22,9 @@ import {
   InstructorDeleteDefaultAvailabilityResponseDTO,
   UserRole,
 } from '@osk/shared';
-import { Roles } from 'common/guards/roles.decorator';
-import { CurrentUserService } from 'current-user/current-user.service';
-import { assertNever } from 'utils/assertNever';
+import { Roles } from '../common/guards/roles.decorator';
+import { CurrentUserService } from '../current-user/current-user.service';
+import { assertNever } from '../utils/assertNever';
 import { DefaultAvailabilityService } from './defaultAvailability.service';
 
 @Controller('default-availability')

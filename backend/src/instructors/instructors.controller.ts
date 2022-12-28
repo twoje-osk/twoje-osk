@@ -20,9 +20,9 @@ import {
   InstructorCreateResponseDto,
   UserRole,
 } from '@osk/shared';
-import { AuthRequest } from 'auth/auth.types';
-import { assertNever } from 'utils/assertNever';
-import { Roles } from 'common/guards/roles.decorator';
+import { AuthRequest } from '../auth/auth.types';
+import { Roles } from '../common/guards/roles.decorator';
+import { assertNever } from '../utils/assertNever';
 
 import { InstructorsService } from './instructors.service';
 

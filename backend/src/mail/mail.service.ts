@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { EmailOptions, MailgunService } from '@nextnm/nestjs-mailgun';
-import { CustomConfigService } from 'config/config.service';
+import { CustomConfigService } from '../config/config.service';
 import { EmailContents } from './mail.types';
 
 @Injectable()

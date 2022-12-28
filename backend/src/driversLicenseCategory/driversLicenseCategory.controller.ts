@@ -4,7 +4,7 @@ import {
   DriversLicenseCategoryFindAllResponseDto,
   UserRole,
 } from '@osk/shared';
-import { Roles } from 'common/guards/roles.decorator';
+import { Roles } from '../common/guards/roles.decorator';
 import { DriversLicenseCategoriesService } from './driversLicenseCategory.service';
 
 @Controller('drivers-license-categories')

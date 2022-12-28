@@ -1,8 +1,8 @@
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { UserRole } from '@osk/shared';
-import { AuthRequest } from 'auth/auth.types';
-import { SHOULD_SKIP_AUTH_KEY } from 'auth/passport/skip-auth.guard';
+import { AuthRequest } from '../../auth/auth.types';
+import { SHOULD_SKIP_AUTH_KEY } from '../../auth/passport/skip-auth.guard';
 
 @Injectable()
 export class RolesGuard implements CanActivate {

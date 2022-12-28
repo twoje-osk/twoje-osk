@@ -2,18 +2,8 @@ import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
-import { InstructorsModule } from 'instructors/instructors.module';
-import { OrganizationDomainMiddleware } from 'organization-domain/organization-domain.middleware';
-import { OrganizationDomainModule } from 'organization-domain/organization-domain.module';
 import { APP_GUARD } from '@nestjs/core';
-import { RolesGuard } from 'common/guards/roles.guard';
-import { JwtAuthGuard } from 'auth/passport/jwt-auth.guard';
-import { DriversLicenseCategoriesModule } from 'driversLicenseCategory/driversLicenseCategory.module';
-import { CustomConfigService } from 'config/config.service';
 import { RequestContextModule } from 'nestjs-request-context';
-import { PaymentsModule } from 'payments/payments.module';
-import { AnnouncementsModule } from 'announcements/announcement.module';
-import { DefaultAvailabilityModule } from 'defaultAvailability/defaultAvailability.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { OrganizationsModule } from './organizations/organizations.module';
@@ -26,6 +16,16 @@ import { LessonsModule } from './lessons/lessons.module';
 import { MailModule } from './mail/mail.module';
 import { CustomConfigModule } from './config/config.module';
 import { ResetPasswordModule } from './reset-password/reset-password.module';
+import { AnnouncementsModule } from './announcements/announcement.module';
+import { JwtAuthGuard } from './auth/passport/jwt-auth.guard';
+import { RolesGuard } from './common/guards/roles.guard';
+import { CustomConfigService } from './config/config.service';
+import { DefaultAvailabilityModule } from './defaultAvailability/defaultAvailability.module';
+import { DriversLicenseCategoriesModule } from './driversLicenseCategory/driversLicenseCategory.module';
+import { InstructorsModule } from './instructors/instructors.module';
+import { OrganizationDomainMiddleware } from './organization-domain/organization-domain.middleware';
+import { OrganizationDomainModule } from './organization-domain/organization-domain.module';
+import { PaymentsModule } from './payments/payments.module';
 
 @Module({
   imports: [

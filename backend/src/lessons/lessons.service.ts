@@ -1,11 +1,6 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LessonStatus } from '@osk/shared';
-import { AvailabilityService } from 'availability/availability.service';
-import { CurrentUserService } from 'current-user/current-user.service';
-import { InstructorsService } from 'instructors/instructors.service';
-import { OrganizationDomainService } from 'organization-domain/organization-domain.service';
-import { TraineesService } from 'trainees/trainees.service';
 import {
   LessThan,
   LessThanOrEqual,
@@ -19,7 +14,13 @@ import {
   Propagation,
   Transactional,
 } from 'typeorm-transactional-cls-hooked';
-import { getFailure, getSuccess, Try } from 'types/Try';
+// eslint-disable-next-line import/no-cycle
+import { AvailabilityService } from '../availability/availability.service';
+import { CurrentUserService } from '../current-user/current-user.service';
+import { InstructorsService } from '../instructors/instructors.service';
+import { OrganizationDomainService } from '../organization-domain/organization-domain.service';
+import { TraineesService } from '../trainees/trainees.service';
+import { Try, getFailure, getSuccess } from '../types/Try';
 import { Lesson } from './entities/lesson.entity';
 
 @Injectable()

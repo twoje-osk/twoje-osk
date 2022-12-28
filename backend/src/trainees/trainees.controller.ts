@@ -24,12 +24,12 @@ import {
   TraineeDisableResponseDto,
   TraineeAddNewRequestSignupDto,
 } from '@osk/shared';
-import { Roles } from 'common/guards/roles.decorator';
-import { assertNever } from 'utils/assertNever';
-import { ResetPasswordService } from 'reset-password/reset-password.service';
-import { CepikService } from 'cepik/cepik.service';
-import { SkipAuth } from 'auth/passport/skip-auth.guard';
 import { TraineesService } from './trainees.service';
+import { SkipAuth } from '../auth/passport/skip-auth.guard';
+import { CepikService } from '../cepik/cepik.service';
+import { Roles } from '../common/guards/roles.decorator';
+import { ResetPasswordService } from '../reset-password/reset-password.service';
+import { assertNever } from '../utils/assertNever';
 
 @Roles(UserRole.Admin, UserRole.Instructor)
 @Controller('trainees')

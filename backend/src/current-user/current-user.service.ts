@@ -1,5 +1,5 @@
 import { RequestContext } from 'nestjs-request-context';
-import { AuthRequest, RequestUser } from 'auth/auth.types';
+import { RequestUser, AuthRequest } from '../auth/auth.types';
 
 export class CurrentUserService {
   getRequestCurrentUser(): RequestUser {

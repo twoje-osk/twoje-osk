@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
-import { OrganizationDomainService } from 'organization-domain/organization-domain.service';
 import { Repository } from 'typeorm';
-import { UserArguments } from 'types/UserArguments';
+import { OrganizationDomainService } from '../organization-domain/organization-domain.service';
+import { UserArguments } from '../types/UserArguments';
 import { User } from './entities/user.entity';
 
 @Injectable()

@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MoreThanOrEqual, Repository } from 'typeorm';
-import { UsersService } from 'users/users.service';
-import { Try, getFailure, getSuccess } from 'types/Try';
 import { add } from 'date-fns';
-import { OrganizationDomainService } from 'organization-domain/organization-domain.service';
 import { Transactional } from 'typeorm-transactional-cls-hooked';
-import { CustomConfigService } from 'config/config.service';
-import { MailService } from 'mail/mail.service';
 import { ResetPasswordToken } from './entities/reset-password-token.entity';
 import { getToken, hashToken } from './reset-password.utils';
+import { CustomConfigService } from '../config/config.service';
+import { MailService } from '../mail/mail.service';
+import { OrganizationDomainService } from '../organization-domain/organization-domain.service';
+import { Try, getSuccess, getFailure } from '../types/Try';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class ResetPasswordService {
