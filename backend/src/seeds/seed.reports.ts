@@ -14,6 +14,8 @@ class ReportFactory extends Factory<Report> {
       driversLicenseCategoriesFactory.getAll(),
     );
 
+    report.createdAt = new Date();
+
     this.entities.push(report);
     return report;
   }

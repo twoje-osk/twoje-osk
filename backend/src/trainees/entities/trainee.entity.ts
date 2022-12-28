@@ -38,9 +38,10 @@ export class Trainee {
   @OneToMany<Payment>('Payment', (payment) => payment.trainee)
   payments: Payment[];
 
-  @OneToMany<CourseReport>(
+  @OneToOne<CourseReport>(
     'CourseReport',
     (courseReport) => courseReport.trainee,
+    { nullable: true },
   )
-  courseReports: CourseReport[];
+  courseReport: CourseReport | null;
 }

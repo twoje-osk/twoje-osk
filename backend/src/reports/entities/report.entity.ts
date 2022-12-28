@@ -1,4 +1,10 @@
-import { Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { DriversLicenseCategory } from '../../drivers-license-category/entities/drivers-license-category.entity';
 import { ReportEntry } from '../../report-entries/entities/report-entry.entity';
 import { CourseReport } from '../../course-reports/entities/course-report.entity';
@@ -25,4 +31,7 @@ export class Report {
     (courseReport) => courseReport.report,
   )
   courseReports: CourseReport[];
+
+  @Column()
+  createdAt: Date;
 }
