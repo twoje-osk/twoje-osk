@@ -8,7 +8,13 @@ import {
   Request,
 } from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
-import { UserRole } from '@osk/shared';
+import {
+  UserRole,
+  MockExamAttemptFindAllResponseDto,
+  MockExamAttemptFindOneResponseDto,
+  MockExamAttemptSubmitResponseDto,
+  MockExamAttemptSubmitRequestDto,
+} from '@osk/shared';
 import { AuthRequest } from 'auth/auth.types';
 import { Roles } from 'common/guards/roles.decorator';
 
@@ -64,7 +70,7 @@ export class MockExamAttemptController {
   async submit(
     @Body() { attempt }: MockExamAttemptSubmitRequestDto,
   ): Promise<MockExamAttemptSubmitResponseDto> {
-    const examAttempt = await this.mockExamAttemptsService.create(attempt);
-    return { examAttempt };
+    const examAttemptId = await this.mockExamAttemptsService.create(attempt);
+    return { id: examAttemptId };
   }
 }

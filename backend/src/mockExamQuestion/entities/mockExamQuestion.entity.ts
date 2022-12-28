@@ -6,6 +6,7 @@ import {
   JoinTable,
   ManyToMany,
   ManyToOne,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   RelationId,
@@ -57,4 +58,14 @@ export class MockExamQuestion {
 
   @RelationId((question: MockExamQuestion) => question.categories)
   categoriesIds: number[];
+
+  @OneToMany<MockExamQuestionAnswer>(
+    'MockExamQuestionAnswer',
+    (answer) => answer.question,
+  )
+  answers: MockExamQuestionAnswer[];
+
+  @Exclude()
+  @RelationId((question: MockExamQuestion) => question.answers)
+  answersIds: number[];
 }

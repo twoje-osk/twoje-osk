@@ -29,4 +29,8 @@ export class MockExamAttempt {
     (questionAttempt) => questionAttempt.question,
   )
   questions: MockExamQuestionAttempt[];
+
+  @Column()
+  @RelationId((attempt: MockExamAttempt) => attempt.questions)
+  questionsIds: number[];
 }
