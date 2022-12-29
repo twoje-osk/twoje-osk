@@ -9,9 +9,9 @@ export class CourseReportsController {
   @ApiResponse({ type: '' })
   @Get(':id')
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  async getAllTraineeReports(@Param('id', ParseIntPipe) id: number) {
-    const traineeReports =
+  async getTraineeReport(@Param('id', ParseIntPipe) id: number) {
+    const traineeReport =
       await this.courseReportsService.getCourseReportsByTrainee(id);
-    return { traineeReports };
+    return { traineeReport };
   }
 }

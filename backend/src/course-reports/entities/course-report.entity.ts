@@ -1,5 +1,6 @@
 import {
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToMany,
   OneToOne,
@@ -17,6 +18,7 @@ export class CourseReport {
   @OneToOne<Trainee>('Trainee', (trainee) => trainee.courseReport, {
     nullable: false,
   })
+  @JoinColumn()
   trainee: Trainee;
 
   @ManyToOne<Report>('Report', (report) => report.courseReports, {

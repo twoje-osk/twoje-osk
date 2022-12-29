@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { TraineesService } from '../trainees/trainees.service';
+import { ReportEntriesService } from '../report-entries/report-entries.service';
 import { CourseReport } from './entities/course-report.entity';
 
 @Injectable()
@@ -9,11 +9,11 @@ export class CourseReportsService {
   constructor(
     @InjectRepository(CourseReport)
     private courseReportsRepository: Repository<CourseReport>,
-    private traineesService: TraineesService,
+    private reportEntriesService: ReportEntriesService,
   ) {}
 
   async getCourseReportsByTrainee(traineeId: number) {
-    const reports = await this.courseReportsRepository.find({
+    const reports = await this.courseReportsRepository.findOne({
       where: {
         trainee: { id: traineeId },
       },
@@ -25,4 +25,9 @@ export class CourseReportsService {
 
     return reports;
   }
+
+  // async generateCourseReport(mockReportId: number) {
+  //   const reportEntries = await this.
+  //   const report = await this.courseReportsRepository.create();
+  // }
 }
