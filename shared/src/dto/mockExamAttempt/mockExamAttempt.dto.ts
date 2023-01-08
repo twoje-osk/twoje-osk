@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsNotEmpty, IsNumber, ValidateNested } from 'class-validator';
-import { DtoCreateMockExamQuestionAttempt } from '../mockExamQuestionAttempt/mockExamQuestionAttempt.dto';
-import { DtoTrainee } from '../trainee/trainee.dto';
+import { CreateMockExamQuestionAttemptRequestDto } from '../mockExamQuestionAttempt/mockExamQuestionAttempt.dto';
+import { TraineeDto } from '../trainee/trainee.dto';
 
 export class DtoMockExamAttempt {
   @ApiProperty()
@@ -13,8 +13,8 @@ export class DtoMockExamAttempt {
   @ApiProperty()
   @IsNotEmpty()
   @ValidateNested()
-  @Type(() => DtoTrainee)
-  trainee: DtoTrainee;
+  @Type(() => TraineeDto)
+  trainee: TraineeDto;
 
   @ApiProperty({
     type: 'string',
@@ -27,15 +27,15 @@ export class DtoMockExamAttempt {
   questionsIds: number[];
 }
 
-export class DtoSubmitMockExamAttempt {
+export class SubmitMockExamAttemptDto {
   @ApiProperty()
   @IsNumber()
   traineeId: number;
 
   @ApiProperty({ isArray: true })
   @ValidateNested()
-  @Type(() => DtoCreateMockExamQuestionAttempt)
-  questions: DtoCreateMockExamQuestionAttempt[];
+  @Type(() => CreateMockExamQuestionAttemptRequestDto)
+  questions: CreateMockExamQuestionAttemptRequestDto[];
 }
 
 export class MockExamAttemptFindAllResponseDto {
@@ -58,6 +58,6 @@ export class MockExamAttemptSubmitRequestDto {
   @ApiProperty()
   @IsNotEmpty()
   @ValidateNested()
-  @Type(() => DtoSubmitMockExamAttempt)
-  instructor: DtoSubmitMockExamAttempt;
+  @Type(() => SubmitMockExamAttemptDto)
+  mockExam: SubmitMockExamAttemptDto;
 }

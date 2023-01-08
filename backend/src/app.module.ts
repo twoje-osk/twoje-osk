@@ -26,6 +26,8 @@ import { InstructorsModule } from './instructors/instructors.module';
 import { OrganizationDomainMiddleware } from './organization-domain/organization-domain.middleware';
 import { OrganizationDomainModule } from './organization-domain/organization-domain.module';
 import { PaymentsModule } from './payments/payments.module';
+import { MockExamAttemptModule } from './mockExamAttempt/mockExamAttempt.module';
+import { MockExamQuestionAttemptModule } from './mockExamQuestionAttempt/mockExamQuestionAttempt.module';
 
 @Module({
   imports: [
@@ -70,6 +72,8 @@ import { PaymentsModule } from './payments/payments.module';
     ResetPasswordModule,
     RequestContextModule,
     PaymentsModule,
+    MockExamAttemptModule,
+    MockExamQuestionAttemptModule,
   ],
   providers: [
     {

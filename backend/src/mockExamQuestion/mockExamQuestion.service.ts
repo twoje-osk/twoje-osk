@@ -1,9 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MockExamQuestionsGenerateResponseDto } from '@osk/shared';
-import { MockExamQuestionsAmount } from 'mockExamQuestionsAmount/entities/mockExamQuestionsAmount.entity';
+
 import { Repository } from 'typeorm';
-import { getFailure, getSuccess, Try } from 'types/Try';
+import { MockExamQuestionsAmount } from '../mockExamQuestionsAmount/entities/mockExamQuestionsAmount.entity';
+import { getFailure, getSuccess, Try } from '../types/Try';
+
 import { MockExamQuestion } from './entities/mockExamQuestion.entity';
 import { MockExamQuestionType } from './entities/mockExamQuestionType.entity';
 import {

@@ -23,14 +23,12 @@ export class MockExamAttempt {
   @Column()
   attemptDate: Date;
 
-  @Column()
   @OneToMany<MockExamQuestionAttempt>(
-    'MockExamAttemptQuestion',
+    'MockExamQuestionAttempt',
     (questionAttempt) => questionAttempt.question,
   )
   questions: MockExamQuestionAttempt[];
 
-  @Column()
   @RelationId((attempt: MockExamAttempt) => attempt.questions)
   questionsIds: number[];
 }

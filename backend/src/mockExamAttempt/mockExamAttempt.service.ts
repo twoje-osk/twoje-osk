@@ -1,13 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { TraineesService } from 'trainees/trainees.service';
+import { MockExamAttemptSubmitRequestDto } from '@osk/shared';
 import { Repository } from 'typeorm';
 import { Transactional } from 'typeorm-transactional-cls-hooked';
-import { getFailure, getSuccess, Try } from 'types/Try';
+import { REQUIRED_AMOUNT_OF_QUESTIONS } from '../mockExamQuestion/mockExamQuestion.constants';
+import { MockExamQuestionAttemptService } from '../mockExamQuestionAttempt/mockExamQuestionAttempt.service';
+import { TraineesService } from '../trainees/trainees.service';
+import { Try, getFailure, getSuccess } from '../types/Try';
 import { MockExamAttempt } from './entities/mockExamAttempt.entity';
 
 @Injectable()
-export class MockExamAttemptsService {
+export class MockExamAttemptService {
   constructor(
     @InjectRepository(MockExamAttempt)
     private mockExamAttemptRepository: Repository<MockExamAttempt>,
@@ -52,7 +55,44 @@ export class MockExamAttemptsService {
   }
 
   @Transactional()
-  async create(
-    attempt: DtoCreateMockExamAttempt,
-  ): Promise<MockExamAttemptFindOneResponseDto> {}
+  async submit(
+    attempt: MockExamAttemptSubmitRequestDto,
+  ): Promise<
+    Try<
+      number,
+      | 'USER_NOT_FOUND'
+      | 'QUESTIONS_NOT_UNIQUE'
+      | 'INCORRECT_AMOUNT_OF_QUESTIONS'
+      | 'ANSWER_NOT_FOUND'
+    >
+  > {
+    const { questions, traineeId } = attempt.mockExam;
+    const trainee = this.traineeService.findOneById(traineeId);
+    if (!trainee) {
+      return getFailure('USER_NOT_FOUND');
+    }
+    if (questions.length !== REQUIRED_AMOUNT_OF_QUESTIONS) {
+      return getFailure('INCORRECT_AMOUNT_OF_QUESTIONS');
+    }
+
+    const newAttempt = this.mockExamAttemptRepository.create({
+      traineeId,
+      attemptDate: new Date(),
+      questions: [],
+    });
+    const questionsWithAttemptId = questions.map((question) => ({
+      ...question,
+      attemptId: newAttempt.id,
+    }));
+    const result = await this.mockExamQuestionAttemptService.createMany(
+      questionsWithAttemptId,
+    );
+
+    if (!result.ok) {
+      return getFailure(result.error);
+    }
+
+    newAttempt.questions = result.data;
+    return getSuccess(newAttempt.id);
+  }
 }

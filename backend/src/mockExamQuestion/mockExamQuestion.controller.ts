@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
 import { MockExamQuestionsGenerateResponseDto } from '@osk/shared';
-import { assertNever } from 'utils/assertNever';
+import { assertNever } from '../utils/assertNever';
 import { MockExamQuestionService } from './mockExamQuestion.service';
 
 @Controller('questions')
