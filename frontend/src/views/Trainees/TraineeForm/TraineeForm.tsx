@@ -22,6 +22,7 @@ const defaultValues: TraineeFormData = {
   email: '',
   phoneNumber: '',
   pesel: '',
+  dateOfBirth: undefined,
   pkk: '',
   driversLicenseNumber: '',
   createdAt: new Date(),
@@ -74,6 +75,13 @@ export const TraineeForm = ({
             />
             <FTextField
               required
+              id="dateOfBirth"
+              name="dateOfBirth"
+              label="Data Urodzenia"
+              type="date"
+              disabled={disabled}
+            />
+            <FTextField
               id="pesel"
               name="pesel"
               label="PESEL"

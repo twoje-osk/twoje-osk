@@ -23,11 +23,13 @@ import { InstructorsNew } from './views/Instructors/InstructorsNew/InstructorsNe
 import { AnnouncementsList } from './views/Announcements/AnnouncementsList';
 import { Availability } from './views/Availability/Availability';
 import { DefaultAvailability } from './views/DefaultAvailability/DefaultAvailability';
+import { SignUp } from './views/SignUp/SignUp';
 
 export const App = () => {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
+      <Route path="/zapisz-sie" element={<SignUp />} />
       <Route path="/account/zapomnialem-haslo" element={<ForgotPassword />} />
       <Route path="/account/reset">
         <Route index element={<Navigate to="/account/zapomnialem-haslo" />} />

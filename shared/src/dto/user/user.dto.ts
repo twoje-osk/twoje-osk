@@ -1,12 +1,19 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsBoolean, IsEmail, IsNotEmpty, IsString } from 'class-validator';
-import { DtoOrganization } from '../organization/organization.dto';
+import {
+  IsBoolean,
+  IsEmail,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  Length,
+} from 'class-validator';
+import { OrganizationDto } from '../organization/organization.dto';
 import { UserRole } from '../../types/user.types';
-import type { DtoTrainee } from '../trainee/trainee.dto';
-import type { DtoInstructor } from '../instructor/instructor.dto';
+import type { TraineeDto } from '../trainee/trainee.dto';
+import type { InstructorDto } from '../instructor/instructor.dto';
 
-export class DtoUser {
+export class UserDto {
   @ApiProperty()
   @IsNotEmpty()
   id: number;
@@ -34,24 +41,28 @@ export class DtoUser {
 
   @ApiProperty({
     type: 'string',
+    format: 'YYYY-mm-DDTHH:mm:ss.SZ',
   })
   @IsNotEmpty()
   createdAt: ApiDate;
 
   @ApiProperty()
   @IsNotEmpty()
-  organization: DtoOrganization;
+  organization: OrganizationDto;
 
   @ApiProperty({ enum: UserRole })
+  @IsNotEmpty()
   role: UserRole;
 
-  @ApiProperty()
-  trainee: DtoTrainee | null;
+  @ApiProperty({ nullable: true })
+  @IsOptional()
+  trainee: TraineeDto | null;
 
-  @ApiProperty()
-  instructor: DtoInstructor | null;
+  @ApiProperty({ nullable: true })
+  @IsOptional()
+  instructor: InstructorDto | null;
 }
-export class DtoCreateUser {
+export class CreateUserDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsEmail()
@@ -78,23 +89,41 @@ export class DtoCreateUser {
   phoneNumber: string;
 }
 
-export class DtoUpdateUser extends PartialType(DtoCreateUser) {}
+export class CreateUserSignupDto {
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsEmail()
+  email: string;
+
+  @ApiProperty()
+  @IsString()
+  @Length(8, 64)
+  @IsOptional()
+  password: string | undefined;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  phoneNumber: string;
+}
+
+export class UpdateUserDto extends PartialType(CreateUserDto) {}
 
 export class UserAddNewResponseDto {
   @ApiProperty()
-  @Type(() => DtoCreateUser)
-  user: DtoUser;
+  @Type(() => CreateUserDto)
+  user: UserDto;
 }
 
 export class UserAddNewRequestDto {
   @ApiProperty()
   @IsNotEmpty()
-  user: DtoCreateUser;
+  user: CreateUserDto;
 }
 
 export class UserFindOneResponseDto {
   @ApiProperty()
-  user: DtoUser;
+  user: UserDto;
 }
 
 export class UserUpdateResponseDto {}
@@ -102,7 +131,7 @@ export class UserUpdateResponseDto {}
 export class UserUpdateRequestDto {
   @ApiProperty()
   @IsNotEmpty()
-  user: DtoUpdateUser;
+  user: UpdateUserDto;
 }
 
 export class UserDisableResponseDto {}
@@ -110,5 +139,5 @@ export class UserDisableResponseDto {}
 export class UserDisableRequestDto {}
 export class UserMyProfileResponseDto {
   @ApiProperty()
-  user: DtoUser;
+  user: UserDto;
 }

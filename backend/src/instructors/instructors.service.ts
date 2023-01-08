@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { OrganizationDomainService } from 'organization-domain/organization-domain.service';
 import { Repository } from 'typeorm';
 import { Transactional } from 'typeorm-transactional-cls-hooked';
-import { UsersService } from 'users/users.service';
-import { getFailure, getSuccess, Try } from 'types/Try';
-import { DriversLicenseCategoriesService } from 'driversLicenseCategory/driversLicenseCategory.service';
 import { Instructor } from './entities/instructor.entity';
 import { User } from '../users/entities/user.entity';
 import { InstructorFields, InstructorUpdateFields } from './instructors.types';
+import { DriversLicenseCategoriesService } from '../driversLicenseCategory/driversLicenseCategory.service';
+import { OrganizationDomainService } from '../organization-domain/organization-domain.service';
+import { Try, getFailure, getSuccess } from '../types/Try';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class InstructorsService {

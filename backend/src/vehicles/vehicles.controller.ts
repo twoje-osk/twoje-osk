@@ -21,8 +21,8 @@ import {
   VehicleDeleteResponseDto,
   UserRole,
 } from '@osk/shared';
-import { Roles } from 'common/guards/roles.decorator';
-import { assertNever } from 'utils/assertNever';
+import { Roles } from '../common/guards/roles.decorator';
+import { assertNever } from '../utils/assertNever';
 import { VehicleService } from './vehicles.service';
 
 @Controller('vehicles')

@@ -15,9 +15,9 @@ import {
   PaymentUpdateRequestDto,
   UserRole,
 } from '@osk/shared';
-import { Roles } from 'common/guards/roles.decorator';
-import { CurrentUserService } from 'current-user/current-user.service';
-import { assertNever } from 'utils/assertNever';
+import { Roles } from '../common/guards/roles.decorator';
+import { CurrentUserService } from '../current-user/current-user.service';
+import { assertNever } from '../utils/assertNever';
 import { PaymentsService } from './payments.service';
 
 @Controller('payments')

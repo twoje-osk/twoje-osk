@@ -19,10 +19,10 @@ import {
   UpdateLessonResponseDTO,
   UserRole,
 } from '@osk/shared';
-import { Roles } from 'common/guards/roles.decorator';
-import { CurrentUserService } from 'current-user/current-user.service';
 import { endOfWeek, startOfWeek } from 'date-fns';
-import { assertNever } from 'utils/assertNever';
+import { Roles } from '../common/guards/roles.decorator';
+import { CurrentUserService } from '../current-user/current-user.service';
+import { assertNever } from '../utils/assertNever';
 import { LessonsService } from './lessons.service';
 
 @Roles(UserRole.Instructor)

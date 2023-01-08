@@ -16,15 +16,15 @@ import { Box, Flex } from 'reflexbox';
 import { FTextField } from '../../components/FTextField/FTextField';
 import { FullPageLoading } from '../../components/FullPageLoading/FullPageLoading';
 import { GeneralAPIError } from '../../components/GeneralAPIError/GeneralAPIError';
+import {
+  UnauthenticatedViewHiddenWrapper,
+  UnauthenticatedViewLoaderWrapper,
+} from '../../components/UnauthenticatedView/UnauthenticatedView.styled';
 import { useUnauthorizedOrganizationData } from '../../hooks/useUnauthorizedOrganizationData/useUnauthorizedOrganizationData';
 import {
   ResetPasswordForm,
   ResetPasswordFormSchema,
 } from './ResetPassword.schema';
-import {
-  ResetPasswordHiddenWrapper,
-  ResetPasswordLoaderWrapper,
-} from './ResetPassword.styled';
 import { sendChangePasswordRequest } from './ResetPassword.utils';
 
 export const ResetPassword = () => {
@@ -136,13 +136,13 @@ export const ResetPassword = () => {
     <Container component="main" maxWidth="sm">
       <Flex width="100%" height="100vh" alignItems="center">
         <Paper sx={{ width: '100%', position: 'relative' }} elevation={2}>
-          <ResetPasswordLoaderWrapper
+          <UnauthenticatedViewLoaderWrapper
             aria-hidden={!isLoading}
             className={!isLoading ? 'hidden' : undefined}
           >
             <FullPageLoading />
-          </ResetPasswordLoaderWrapper>
-          <ResetPasswordHiddenWrapper
+          </UnauthenticatedViewLoaderWrapper>
+          <UnauthenticatedViewHiddenWrapper
             aria-hidden={isLoading}
             className={isLoading ? 'hidden' : undefined}
           >
@@ -197,7 +197,7 @@ export const ResetPassword = () => {
                 )}
               </Formik>
             </Box>
-          </ResetPasswordHiddenWrapper>
+          </UnauthenticatedViewHiddenWrapper>
         </Paper>
       </Flex>
     </Container>

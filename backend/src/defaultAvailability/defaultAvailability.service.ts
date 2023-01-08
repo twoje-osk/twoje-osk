@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Time } from '@osk/shared';
-import { CurrentUserService } from 'current-user/current-user.service';
-import { InstructorsService } from 'instructors/instructors.service';
-import { OrganizationDomainService } from 'organization-domain/organization-domain.service';
 import { LessThan, MoreThan, Not, Repository } from 'typeorm';
-import { getFailure, getSuccess, Try } from 'types/Try';
+import { CurrentUserService } from '../current-user/current-user.service';
+import { InstructorsService } from '../instructors/instructors.service';
+import { OrganizationDomainService } from '../organization-domain/organization-domain.service';
+import { Try, getFailure, getSuccess } from '../types/Try';
 import { DefaultAvailability } from './entities/defaultAvailability.entity';
 
 @Injectable()

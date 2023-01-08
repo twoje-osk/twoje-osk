@@ -13,8 +13,8 @@ import {
   ResetPasswordRequestDto,
   ResetPasswordResponseDto,
 } from '@osk/shared';
-import { SkipAuth } from 'auth/passport/skip-auth.guard';
 import { ResetPasswordService } from './reset-password.service';
+import { SkipAuth } from '../auth/passport/skip-auth.guard';
 
 @Controller('reset-password')
 export class ResetPasswordController {

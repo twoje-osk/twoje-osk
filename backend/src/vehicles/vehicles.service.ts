@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { OrganizationDomainService } from 'organization-domain/organization-domain.service';
 import { Repository, Not } from 'typeorm';
-import { Try, getFailure, getSuccess } from 'types/Try';
+import { OrganizationDomainService } from '../organization-domain/organization-domain.service';
+import { Try, getFailure, getSuccess } from '../types/Try';
 import { Vehicle } from './entities/vehicle.entity';
 
 interface VehicleArguments {

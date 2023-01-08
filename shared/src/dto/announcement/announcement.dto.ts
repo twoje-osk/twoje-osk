@@ -6,9 +6,9 @@ import {
   IsString,
   ValidateNested,
 } from 'class-validator';
-import { DtoUser } from '../user/user.dto';
+import { UserDto } from '../user/user.dto';
 
-export class DtoAnnouncement {
+export class AnnouncementDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsNumber()
@@ -17,8 +17,8 @@ export class DtoAnnouncement {
   @ApiProperty()
   @IsNotEmpty()
   @ValidateNested()
-  @Type(() => DtoUser)
-  createdBy: DtoUser;
+  @Type(() => UserDto)
+  createdBy: UserDto;
 
   @ApiProperty({
     type: 'string',
@@ -37,7 +37,7 @@ export class DtoAnnouncement {
   body: string;
 }
 
-export class DtoCreateAnnouncement {
+export class CreateAnnouncementDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
@@ -49,29 +49,29 @@ export class DtoCreateAnnouncement {
   body: string;
 }
 
-export class DtoUpdateAnnouncement extends PartialType(DtoCreateAnnouncement) {}
+export class UpdateAnnouncementDto extends PartialType(CreateAnnouncementDto) {}
 
 export class AnnouncementFindAllResponseDto {
   @ApiProperty({
     isArray: true,
-    type: DtoAnnouncement,
+    type: AnnouncementDto,
   })
   @ValidateNested()
-  @Type(() => DtoAnnouncement)
-  announcements: DtoAnnouncement[];
+  @Type(() => AnnouncementDto)
+  announcements: AnnouncementDto[];
 }
 
 export class AnnouncementFindOneResponseDto {
   @ValidateNested()
   @ApiProperty()
-  announcement: DtoAnnouncement;
+  announcement: AnnouncementDto;
 }
 export class AnnouncementUpdateRequestDto {
   @ApiProperty()
   @ValidateNested()
   @IsNotEmpty()
-  @Type(() => DtoUpdateAnnouncement)
-  announcement: DtoUpdateAnnouncement;
+  @Type(() => UpdateAnnouncementDto)
+  announcement: UpdateAnnouncementDto;
 }
 
 export class AnnouncementUpdateResponseDto {
@@ -84,8 +84,8 @@ export class AnnouncementCreateRequestDto {
   @ApiProperty()
   @IsNotEmpty()
   @ValidateNested()
-  @Type(() => DtoCreateAnnouncement)
-  announcement: DtoCreateAnnouncement;
+  @Type(() => CreateAnnouncementDto)
+  announcement: CreateAnnouncementDto;
 }
 
 export class AnnouncementCreateResponseDto {

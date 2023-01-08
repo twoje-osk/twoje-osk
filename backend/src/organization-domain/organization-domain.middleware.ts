@@ -1,7 +1,7 @@
 import { Injectable, NestMiddleware, NotFoundException } from '@nestjs/common';
-import { AuthRequest } from 'auth/auth.types';
 import { Response, NextFunction } from 'express';
-import { OrganizationsService } from 'organizations/organizations.service';
+import { AuthRequest } from '../auth/auth.types';
+import { OrganizationsService } from '../organizations/organizations.service';
 
 @Injectable()
 export class OrganizationDomainMiddleware implements NestMiddleware {

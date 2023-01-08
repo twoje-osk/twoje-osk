@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CurrentUserService } from 'current-user/current-user.service';
-import { OrganizationDomainService } from 'organization-domain/organization-domain.service';
-import { TraineesService } from 'trainees/trainees.service';
 import { Repository } from 'typeorm';
 import { Transactional } from 'typeorm-transactional-cls-hooked';
-import { getFailure, getSuccess, Try } from 'types/Try';
+import { CurrentUserService } from '../current-user/current-user.service';
+import { OrganizationDomainService } from '../organization-domain/organization-domain.service';
+import { TraineesService } from '../trainees/trainees.service';
+import { Try, getFailure, getSuccess } from '../types/Try';
 import { Payment } from './entities/payment.entity';
 import { PaymentArguments, PaymentArgumentsUpdate } from './payments.types';
 

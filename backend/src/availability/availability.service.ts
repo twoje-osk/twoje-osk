@@ -1,9 +1,5 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CurrentUserService } from 'current-user/current-user.service';
-import { InstructorsService } from 'instructors/instructors.service';
-import { LessonsService } from 'lessons/lessons.service';
-import { OrganizationDomainService } from 'organization-domain/organization-domain.service';
 import {
   LessThan,
   LessThanOrEqual,
@@ -12,7 +8,12 @@ import {
   Not,
   Repository,
 } from 'typeorm';
-import { getFailure, getSuccess, Try } from 'types/Try';
+import { CurrentUserService } from '../current-user/current-user.service';
+import { InstructorsService } from '../instructors/instructors.service';
+// eslint-disable-next-line import/no-cycle
+import { LessonsService } from '../lessons/lessons.service';
+import { OrganizationDomainService } from '../organization-domain/organization-domain.service';
+import { Try, getFailure, getSuccess } from '../types/Try';
 import { subtractLessonsFromAvailabilities } from './availability.utils';
 import { Availability } from './entities/availability.entity';
 

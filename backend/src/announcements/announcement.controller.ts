@@ -20,8 +20,8 @@ import {
   AnnouncementUpdateResponseDto,
   UserRole,
 } from '@osk/shared';
-import { Roles } from 'common/guards/roles.decorator';
-import { assertNever } from 'utils/assertNever';
+import { Roles } from '../common/guards/roles.decorator';
+import { assertNever } from '../utils/assertNever';
 import { AnnouncementsService } from './announcement.service';
 
 @Roles(UserRole.Admin)

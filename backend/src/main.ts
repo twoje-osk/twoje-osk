@@ -5,12 +5,12 @@ import {
 } from '@nestjs/common';
 import { NestFactory, Reflector } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { CustomConfigService } from 'config/config.service';
 import {
   initializeTransactionalContext,
   patchTypeORMRepositoryWithBaseRepository,
 } from 'typeorm-transactional-cls-hooked';
 import { AppModule } from './app.module';
+import { CustomConfigService } from './config/config.service';
 
 async function bootstrap() {
   initializeTransactionalContext();

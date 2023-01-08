@@ -4,7 +4,7 @@ import {
   AnnouncementDeleteResponseDto,
   AnnouncementUpdateRequestDto,
   AnnouncementUpdateResponseDto,
-  DtoAnnouncement,
+  AnnouncementDto,
 } from '@osk/shared';
 import { useState } from 'react';
 import { useActionModal } from '../../hooks/useActionModal/useActionModal';
@@ -63,13 +63,13 @@ export const useCreateAnouncement = ({
 
 export const useEditAnnouncement = ({ mutate }: AnnouncementHooksArguments) => {
   const [announcementToBeEdited, setAnnouncementToBeEdited] =
-    useState<DtoAnnouncement>();
+    useState<AnnouncementDto>();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const { showErrorSnackbar, showSuccessSnackbar } = useCommonSnackbars();
   const makeRequest = useMakeRequestWithAuth();
 
-  const openEditModal = (announcement: DtoAnnouncement) => {
+  const openEditModal = (announcement: AnnouncementDto) => {
     setAnnouncementToBeEdited(announcement);
     setIsEditModalOpen(true);
   };

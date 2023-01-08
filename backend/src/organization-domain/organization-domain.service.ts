@@ -1,5 +1,5 @@
-import { AuthRequest, RequestOrganization } from 'auth/auth.types';
 import { RequestContext } from 'nestjs-request-context';
+import { RequestOrganization, AuthRequest } from '../auth/auth.types';
 
 export class OrganizationDomainService {
   getRequestOrganization(): RequestOrganization {
