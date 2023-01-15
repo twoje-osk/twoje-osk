@@ -103,7 +103,7 @@ export const EditLessonModal = ({
     const cancelButton = (
       <Button
         variant="contained"
-        onClick={() => updateStatus(LessonStatus.Canceled)}
+        onClick={onLessonCancel}
         color="error"
         startIcon={<Icon>close</Icon>}
       >
@@ -160,7 +160,7 @@ export const EditLessonModal = ({
     }
 
     return assertNever(event.status);
-  }, [event, formikHelpers, navigate, onSubmit]);
+  }, [event, formikHelpers, navigate, onLessonCancel, onSubmit]);
 
   const formValue = useMemo(() => mapEventToFormValues(event), [event]);
   const trainee = useMemo(() => {
@@ -185,7 +185,11 @@ export const EditLessonModal = ({
         )}
         {!isCreating && (
           <Breadcrumbs separator={<Icon fontSize="small">navigate_next</Icon>}>
-            <Typography variant="h6" color={theme.palette.text.primary}>
+            <Typography
+              variant="h6"
+              color={theme.palette.text.primary}
+              id="edit-lesson-modal-title"
+            >
               Edytuj nową lekcję
             </Typography>
             <MUILink

@@ -25,6 +25,7 @@ import { GeneralAPIError } from '../../../components/GeneralAPIError/GeneralAPIE
 import { EditLessonModal } from '../TraineeMyLessons/EditLessonModal/EditLessonModal';
 import { useAuth } from '../../../hooks/useAuth/useAuth';
 import { useSelectedDate } from '../../../hooks/useSelectedDate/useSelectedDate';
+import { CancelLessonModal } from './CancelLessonModal/CancelLessonModal';
 
 export const InstructorMyLessons = () => {
   const { user } = useAuth();
@@ -64,7 +65,9 @@ export const InstructorMyLessons = () => {
     state: modalState,
     openCreateModal,
     onSubmit,
-    onLessonCancel,
+    onInstructorLessonCancel,
+    onInstructorLessonCancelModalDone,
+    onInstructorLessonCancelModalAbort,
   } = useMyLessonsModal({
     instructorId,
     mutate,
@@ -129,8 +132,17 @@ export const InstructorMyLessons = () => {
         isCreating={modalState.isModalOpen ? modalState.isCreating : false}
         onSubmit={onSubmit}
         isLoading={modalState.isModalOpen ? modalState.isLoading : false}
-        onLessonCancel={onLessonCancel}
+        onLessonCancel={onInstructorLessonCancel}
         isCanceling={modalState.isModalOpen ? modalState.isCanceling : false}
+      />
+      <CancelLessonModal
+        isOpen={modalState.isModalOpen ? modalState.isCanceling : false}
+        traineeId={
+          modalState.isModalOpen ? modalState.event.traineeId : undefined
+        }
+        lesson={modalState.isModalOpen ? modalState.event : undefined}
+        onClose={onInstructorLessonCancelModalAbort}
+        onLessonCancelFinished={onInstructorLessonCancelModalDone}
       />
     </FullPageRelativeWrapper>
   );
