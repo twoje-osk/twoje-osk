@@ -25,6 +25,7 @@ import { Availability } from './views/Availability/Availability';
 import { DefaultAvailability } from './views/DefaultAvailability/DefaultAvailability';
 import { SignUp } from './views/SignUp/SignUp';
 import { ErrorBoundary } from './components/ErrorBoundary/ErrorBoundary';
+import { TraineeReport } from './views/Trainees/TraineeReport/TraineeReport';
 
 export const App = () => {
   return (
@@ -56,6 +57,7 @@ export const App = () => {
             <Route path="nowy" element={<TraineeNew />} />
             <Route path=":traineeId" element={<TraineeDetails />} />
             <Route path=":traineeId/edytuj" element={<TraineeEdit />} />
+            <Route path=":traineeId/raport" element={<TraineeReport />} />
           </Route>
           <Route
             path="/instruktorzy"

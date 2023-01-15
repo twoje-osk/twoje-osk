@@ -179,7 +179,9 @@ export const TraineeDetails = () => {
       <Box as="main" p="16px" pt="0">
         <TraineeForm initialValues={initialValues} disabled>
           <Stack direction="row" spacing={1}>
-            <Button variant="contained">Zobacz Raport Postępów</Button>
+            <Button variant="contained" component={Link} to="raport">
+              Zobacz Raport Postępów
+            </Button>
             <Button
               variant="outlined"
               startIcon={<Icon>edit</Icon>}

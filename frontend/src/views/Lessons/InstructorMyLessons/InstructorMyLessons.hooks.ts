@@ -7,7 +7,8 @@ import {
 } from '@osk/shared';
 import { LessonStatus } from '@osk/shared/src/types/lesson.types';
 import { formatISO } from 'date-fns';
-import { Reducer, useReducer } from 'react';
+import { Reducer, useEffect, useReducer } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useCommonSnackbars } from '../../../hooks/useCommonSnackbars/useCommonSnackbars';
 import { useMakeRequestWithAuth } from '../../../hooks/useMakeRequestWithAuth/useMakeRequestWithAuth';
 import { LessonEvent } from '../TraineeMyLessons/LessonsCalendar/LessonsCalendar.types';
@@ -45,11 +46,13 @@ type MyLessonsModalAction =
 interface MyLessonsModalArguments {
   mutate: () => Promise<unknown>;
   instructorId: number | null;
+  userEvents: LessonEvent[];
 }
 
 export const useMyLessonsModal = ({
   mutate,
   instructorId,
+  userEvents,
 }: MyLessonsModalArguments) => {
   const makeRequestWithAuth = useMakeRequestWithAuth();
   const { showErrorSnackbar, showSuccessSnackbar } = useCommonSnackbars();
@@ -100,11 +103,39 @@ export const useMyLessonsModal = ({
     },
   );
 
+  const navigate = useNavigate();
+  const { lessonId: selectedEventIdFromUrl } = useParams();
+  useEffect(
+    function openModalOnLoad() {
+      if (selectedEventIdFromUrl === undefined || userEvents.length === 0) {
+        dispatch({
+          type: 'close',
+        });
+        return;
+      }
+
+      const selectedEventIdFromUrlAsNumber = safeParseInt(
+        selectedEventIdFromUrl,
+      );
+      const selectedEventFromUrl = userEvents.find(
+        ({ id }) => id === selectedEventIdFromUrlAsNumber,
+      );
+
+      if (selectedEventFromUrl === undefined) {
+        navigate('/moje-jazdy');
+        return;
+      }
+
+      dispatch({
+        type: 'edit',
+        event: selectedEventFromUrl,
+      });
+    },
+    [userEvents, selectedEventIdFromUrl, navigate],
+  );
+
   const openEditModal = (eventToEdit: LessonEvent) => {
-    dispatch({
-      type: 'edit',
-      event: eventToEdit,
-    });
+    navigate(`/moje-jazdy/${eventToEdit.id}`);
   };
 
   const openCreateModal = (
@@ -122,9 +153,8 @@ export const useMyLessonsModal = ({
   };
 
   const closeEditModal = () => {
-    dispatch({
-      type: 'close',
-    });
+    dispatch({ type: 'close' });
+    navigate(`/moje-jazdy`);
   };
 
   const onCreateSubmit = async (event: LessonEvent) => {
@@ -191,7 +221,7 @@ export const useMyLessonsModal = ({
     await mutate();
 
     showSuccessSnackbar('Lekcja została zmodyfikowana');
-    dispatch({ type: 'close' });
+    navigate(`/moje-jazdy`);
   };
 
   const onSubmit = (event: LessonEvent) => {
@@ -244,4 +274,12 @@ export const useMyLessonsModal = ({
     onSubmit,
     state: store,
   };
+};
+
+const safeParseInt = (value: string | undefined) => {
+  if (value === undefined) {
+    return NaN;
+  }
+
+  return Number.parseInt(value, 10);
 };

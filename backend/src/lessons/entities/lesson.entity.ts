@@ -44,11 +44,11 @@ export class Lesson {
   @Column()
   traineeId: number;
 
+  @Exclude()
   @ManyToOne(() => Vehicle, { nullable: true })
   @JoinColumn({ name: 'vehicleId' })
   vehicle: Vehicle | null;
 
-  @Exclude()
   @Column({ nullable: true })
   vehicleId: number | null;
 }
