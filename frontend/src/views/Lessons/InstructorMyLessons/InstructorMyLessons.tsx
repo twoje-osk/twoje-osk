@@ -66,8 +66,9 @@ export const InstructorMyLessons = () => {
     onSubmit,
     onLessonCancel,
   } = useMyLessonsModal({
-    mutate,
     instructorId,
+    mutate,
+    userEvents,
   });
 
   if (errorData) {

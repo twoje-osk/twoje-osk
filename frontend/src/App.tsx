@@ -24,6 +24,8 @@ import { AnnouncementsList } from './views/Announcements/AnnouncementsList';
 import { Availability } from './views/Availability/Availability';
 import { DefaultAvailability } from './views/DefaultAvailability/DefaultAvailability';
 import { SignUp } from './views/SignUp/SignUp';
+import { TraineeReport } from './views/Trainees/TraineeReport/TraineeReport';
+import { InstructorFinishLesson } from './views/Lessons/InstructorMyLessons/InstructorFinishLesson/InstructorFinishLesson';
 
 export const App = () => {
   return (
@@ -54,6 +56,7 @@ export const App = () => {
           <Route path="nowy" element={<TraineeNew />} />
           <Route path=":traineeId" element={<TraineeDetails />} />
           <Route path=":traineeId/edytuj" element={<TraineeEdit />} />
+          <Route path=":traineeId/raport" element={<TraineeReport />} />
         </Route>
         <Route
           path="/instruktorzy"
@@ -94,6 +97,11 @@ export const App = () => {
           }
         >
           <Route index element={<MyLessons />} />
+          <Route
+            path=":lessonId/zakoncz"
+            element={<InstructorFinishLesson />}
+          />
+          <Route path=":lessonId" element={<MyLessons />} />
         </Route>
         <Route
           path="/moja-dostepnosc"
