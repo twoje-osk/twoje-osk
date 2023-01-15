@@ -22,6 +22,9 @@ interface DeleteModalProps {
     | 'warning';
   actionButtonIcon?: string;
   cancelButtonText?: ReactNode;
+  actionButtonDisabled?: boolean;
+  cancelButtonDisabled?: boolean;
+  width?: number;
 }
 
 const style = {
@@ -46,6 +49,9 @@ export const ActionModal = ({
   actionButtonColor = 'error',
   actionButtonIcon = 'delete',
   cancelButtonText = 'Anuluj',
+  actionButtonDisabled = false,
+  cancelButtonDisabled = false,
+  width = 600,
 }: DeleteModalProps) => {
   return (
     <Modal
@@ -54,7 +60,7 @@ export const ActionModal = ({
       aria-labelledby={`${id}-title`}
       aria-describedby={`${id}-description`}
     >
-      <Paper sx={style} elevation={24}>
+      <Paper sx={{ ...style, width }} elevation={24}>
         <Typography id="modal-modal-title" variant="h6" component="h2">
           {title}
         </Typography>
@@ -69,7 +75,7 @@ export const ActionModal = ({
             onClick={onDelete}
             fullWidth
             loading={isLoading}
-            disabled={isLoading}
+            disabled={isLoading || actionButtonDisabled}
           >
             {actionButtonText}
           </LoadingButton>
@@ -77,7 +83,7 @@ export const ActionModal = ({
             variant="outlined"
             onClick={onCancel}
             fullWidth
-            disabled={isLoading}
+            disabled={isLoading || cancelButtonDisabled}
           >
             {cancelButtonText}
           </Button>

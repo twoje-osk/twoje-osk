@@ -1,5 +1,4 @@
 import {
-  CancelLessonForInstructorResponseDTO,
   UpdateLessonResponseDTO,
   UpdateLessonRequestDTO,
   CreateLessonRequestDTO,
@@ -35,6 +34,12 @@ type MyLessonsModalAction =
     }
   | {
       type: 'cancelStart';
+    }
+  | {
+      type: 'instructorCancelStart';
+    }
+  | {
+      type: 'instructorCancelAbort';
     }
   | {
       type: 'submit';
@@ -83,6 +88,22 @@ export const useMyLessonsModal = ({
       }
 
       if (action.type === 'error') {
+        return {
+          ...prevStore,
+          isCanceling: false,
+          isLoading: false,
+        };
+      }
+
+      if (action.type === 'instructorCancelStart') {
+        return {
+          ...prevStore,
+          isCanceling: true,
+          isLoading: false,
+        };
+      }
+
+      if (action.type === 'instructorCancelAbort') {
         return {
           ...prevStore,
           isCanceling: false,
@@ -237,7 +258,7 @@ export const useMyLessonsModal = ({
     onEditSubmit(event);
   };
 
-  const onLessonCancel = async () => {
+  const onInstructorLessonCancel = async () => {
     if (!store.isModalOpen) {
       return;
     }
@@ -246,31 +267,33 @@ export const useMyLessonsModal = ({
       return;
     }
 
-    dispatch({ type: 'cancelStart' });
+    dispatch({ type: 'instructorCancelStart' });
+  };
 
-    const response =
-      await makeRequestWithAuth<CancelLessonForInstructorResponseDTO>(
-        `/api/trainee/lessons/${store.event.id}/cancel`,
-        'PATCH',
-      );
+  const onInstructorLessonCancelModalAbort = async () => {
+    if (!store.isModalOpen) {
+      return;
+    }
 
-    if (!response.ok) {
-      dispatch({ type: 'error' });
-      showErrorSnackbar();
+    dispatch({ type: 'instructorCancelAbort' });
+  };
+
+  const onInstructorLessonCancelModalDone = async () => {
+    if (!store.isModalOpen) {
       return;
     }
 
     await mutate();
-    showSuccessSnackbar('Lekcja została anulowana');
-
-    dispatch({ type: 'close' });
+    closeEditModal();
   };
 
   return {
     openEditModal,
     closeEditModal,
     openCreateModal,
-    onLessonCancel,
+    onInstructorLessonCancel,
+    onInstructorLessonCancelModalAbort,
+    onInstructorLessonCancelModalDone,
     onSubmit,
     state: store,
   };
