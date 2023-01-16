@@ -24,7 +24,7 @@ export function IsDateAfter(
       options: validationOptions,
       validator: {
         validate(to: Date, args: ValidationArguments) {
-          const [comparedToProperty] = args.constraints[0];
+          const [comparedToProperty] = args.constraints;
           const comparedTo = getProperty<ApiDate>(
             args.object,
             comparedToProperty,

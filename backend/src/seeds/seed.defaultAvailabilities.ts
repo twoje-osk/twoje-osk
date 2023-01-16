@@ -16,12 +16,15 @@ class DefaultAvailabilitiesFactory extends Factory<DefaultAvailability> {
 }
 export const availabilitiesFactory = new DefaultAvailabilitiesFactory();
 
-export const seedDefaultAvailabilities = () =>
-  Array.from({ length: 5 }).map((_, dayOfWeek) =>
-    availabilitiesFactory.generateFromData({
-      from: new Time(10, 0, 0),
-      to: new Time(18, 0, 0),
-      instructor: instructorsFactory.getAll()[0],
-      dayOfWeek,
-    }),
-  );
+export const seedDefaultAvailabilities = () => {
+  instructorsFactory.getAll().forEach((instructor) => {
+    Array.from({ length: 5 }).forEach((_, dayOfWeek) =>
+      availabilitiesFactory.generateFromData({
+        from: new Time(10, 0, 0),
+        to: new Time(18, 0, 0),
+        instructor,
+        dayOfWeek,
+      }),
+    );
+  });
+};

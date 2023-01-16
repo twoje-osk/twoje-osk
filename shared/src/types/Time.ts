@@ -15,7 +15,11 @@ export class Time implements ApiTime {
 
   // eslint-disable-next-line @typescript-eslint/ban-types
   static fromDate(date: Date) {
-    return new Time(date.getHours(), date.getMinutes(), date.getSeconds());
+    return new Time(
+      date.getUTCHours(),
+      date.getUTCMinutes(),
+      date.getUTCSeconds(),
+    );
   }
 
   toString() {
