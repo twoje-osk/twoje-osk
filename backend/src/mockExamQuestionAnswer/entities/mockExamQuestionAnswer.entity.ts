@@ -16,7 +16,7 @@ export class MockExamQuestionAnswer {
   @Column()
   answerContent: string;
 
-  @ManyToOne(() => MockExamQuestion)
+  @ManyToOne(() => MockExamQuestion, { onDelete: 'CASCADE' })
   question: MockExamQuestion;
 
   @RelationId((answer: MockExamQuestionAnswer) => answer.question)
@@ -25,6 +25,7 @@ export class MockExamQuestionAnswer {
   @OneToOne<MockExamQuestion>(
     'MockExamQuestion',
     (question) => question.correctAnswer,
+    { onDelete: 'CASCADE' },
   )
   isCorrectAnswerOf: MockExamQuestion;
 

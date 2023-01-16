@@ -44,7 +44,10 @@ export class MockExamQuestion {
   @RelationId((question: MockExamQuestion) => question.correctAnswer)
   correctAnswerId: number;
 
-  @ManyToOne(() => MockExamQuestionType, { nullable: false })
+  @ManyToOne(() => MockExamQuestionType, {
+    nullable: false,
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'typeId' })
   type: MockExamQuestionType;
 
@@ -52,7 +55,7 @@ export class MockExamQuestion {
   @RelationId((question: MockExamQuestion) => question.type)
   typeId: number;
 
-  @ManyToMany(() => DriversLicenseCategory)
+  @ManyToMany(() => DriversLicenseCategory, { onDelete: 'CASCADE' })
   @JoinTable()
   categories: DriversLicenseCategory[];
 

@@ -28,6 +28,7 @@ import { OrganizationDomainModule } from './organization-domain/organization-dom
 import { PaymentsModule } from './payments/payments.module';
 import { MockExamAttemptModule } from './mockExamAttempt/mockExamAttempt.module';
 import { MockExamQuestionAttemptModule } from './mockExamQuestionAttempt/mockExamQuestionAttempt.module';
+import { MockExamQuestionModule } from './mockExamQuestion/mockExamQuestion.module';
 
 @Module({
   imports: [
@@ -74,6 +75,7 @@ import { MockExamQuestionAttemptModule } from './mockExamQuestionAttempt/mockExa
     PaymentsModule,
     MockExamAttemptModule,
     MockExamQuestionAttemptModule,
+    MockExamQuestionModule,
   ],
   providers: [
     {

@@ -6,11 +6,13 @@ import {
   ParseIntPipe,
 } from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
-import { MockExamQuestionsGenerateResponseDto } from '@osk/shared';
+import { MockExamQuestionsGenerateResponseDto, UserRole } from '@osk/shared';
+import { Roles } from '../common/guards/roles.decorator';
 import { assertNever } from '../utils/assertNever';
 import { MockExamQuestionService } from './mockExamQuestion.service';
 
 @Controller('questions')
+@Roles(UserRole.Trainee)
 export class MockExamQuestionsController {
   constructor(
     private readonly mockExamQuestionsService: MockExamQuestionService,

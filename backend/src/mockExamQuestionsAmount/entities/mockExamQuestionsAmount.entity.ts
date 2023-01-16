@@ -1,4 +1,4 @@
-import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { DriversLicenseCategory } from '../../driversLicenseCategory/entities/driversLicenseCategory.entity';
 import { MockExamQuestionType } from '../../mockExamQuestion/entities/mockExamQuestionType.entity';
 
@@ -10,13 +10,13 @@ export class MockExamQuestionsAmount {
   @Column()
   points: number;
 
-  @OneToOne<MockExamQuestionType>('MockExamQuestionType')
+  @ManyToOne<MockExamQuestionType>('MockExamQuestionType')
   type: MockExamQuestionType;
 
   @Column()
   typeId: number;
 
-  @OneToOne<DriversLicenseCategory>('DriversLicenseCategory')
+  @ManyToOne<DriversLicenseCategory>('DriversLicenseCategory')
   category: DriversLicenseCategory;
 
   @Column()
