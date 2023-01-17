@@ -37,22 +37,27 @@ export class MockExamsTriggersAndFunctions1673909700830 implements MigrationInte
         await queryRunner.query(
             `
             CREATE OR REPLACE FUNCTION update_amount_table_on_question_delete() RETURNS trigger AS $$
-                DECLARE
-                    question RECORD;
-                BEGIN
-                    FOR question IN
-                        SELECT "points", "typeId"
-                        FROM mock_exam_question
-                        WHERE Id = OLD."mockExamQuestionId"
-                    LOOP
+            DECLARE
+                category RECORD;
+                questions_amount integer;
+            BEGIN
+                FOR category IN
+                    SELECT "driversLicenseCategoryId"
+                    FROM mock_exam_question_categories_drivers_license_category
+                    WHERE "mockExamQuestionId" = OLD."id"
+                LOOP
+                    SELECT count(*) INTO questions_amount
+                    FROM mock_exam_question WHERE id = OLD.id;
+                    IF questions_amount > 0 THEN
                         UPDATE mock_exam_questions_amount
                             SET "amount" = "amount" - 1
-                            WHERE "points" = question."points"
-                            AND "typeId" = question."typeId"
-                            AND "categoryId" = OLD."driversLicenseCategoryId";
-                    END LOOP;
-                    RETURN NULL;
-                END
+                            WHERE "points" = OLD."points"
+                            AND "typeId" = OLD."typeId"
+                            AND "categoryId" = category."driversLicenseCategoryId";
+                    END IF;
+                END LOOP;
+                RETURN OLD;
+            END
             $$ LANGUAGE plpgsql;
             `
         );
@@ -101,9 +106,6 @@ export class MockExamsTriggersAndFunctions1673909700830 implements MigrationInte
                 DECLARE
                     category RECORD;
                 BEGIN
-                    IF NEW."points" = OLD."points" AND NEW."typeId" = OLD."typeId" THEN
-                        RETURN NULL;
-                    END IF;
                     FOR category IN
                         SELECT "driversLicenseCategoryId" FROM mock_exam_question_categories_drivers_license_category
                         WHERE "mockExamQuestionId" = OLD."id"
@@ -135,6 +137,7 @@ export class MockExamsTriggersAndFunctions1673909700830 implements MigrationInte
             AFTER UPDATE
             ON mock_exam_question
             FOR EACH ROW
+            WHEN (NEW."points" <> OLD."points" OR NEW."typeId" <> OLD."typeId")
             EXECUTE PROCEDURE update_amount_on_type_or_points_update();
             `
         );
@@ -150,8 +153,8 @@ export class MockExamsTriggersAndFunctions1673909700830 implements MigrationInte
         await queryRunner.query(
             `       
             CREATE TRIGGER on_question_delete
-            AFTER DELETE
-            ON mock_exam_question_categories_drivers_license_category
+            BEFORE DELETE
+            ON mock_exam_question
             FOR EACH ROW
             EXECUTE PROCEDURE update_amount_table_on_question_delete();
             `
