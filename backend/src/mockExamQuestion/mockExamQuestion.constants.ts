@@ -1,5 +1,5 @@
-export const ELEMENTARY_SCOPE = 'PODSTAWOWY';
-export const ADVANCED_SCOPE = 'SPECJALISTYCZNY';
+export const ELEMENTARY_SCOPE = 'Podstawowy';
+export const ADVANCED_SCOPE = 'Specjalistyczny';
 export const REQUIRED_AMOUNT_OF_ONE_POINT_QUESTIONS = 4;
 export const REQUIRED_AMOUNT_OF_TWO_POINT_QUESTIONS = 6;
 export const REQUIRED_AMOUNT_OF_THREE_POINT_QUESTIONS = 10;

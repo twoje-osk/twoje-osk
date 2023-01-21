@@ -128,7 +128,7 @@ export class MockExamQuestionService {
       threePointQuestionsAmount,
       threePointAdvancedQuestionsAmount,
     } = questionsDistribution;
-    const questions: MockExamQuestion[] = [];
+    let questions: MockExamQuestion[] = [];
     const elementaryQuestionType = await this.questionsTypeRepository.findOne({
       where: {
         scope: ELEMENTARY_SCOPE,
@@ -142,7 +142,7 @@ export class MockExamQuestionService {
     if (!elementaryQuestionType || !advancedQuestionType) {
       return getFailure('NO_QUESTION_TYPES_FOUND');
     }
-    questions.concat(
+    questions = questions.concat(
       await this.getRandomQuestionsForType(
         onePointQuestionsAmount,
         REQUIRED_AMOUNT_OF_ONE_POINT_QUESTIONS,
@@ -150,7 +150,7 @@ export class MockExamQuestionService {
         1,
       ),
     );
-    questions.concat(
+    questions = questions.concat(
       await this.getRandomQuestionsForType(
         twoPointQuestionsAmount,
         REQUIRED_AMOUNT_OF_TWO_POINT_QUESTIONS,
@@ -158,7 +158,7 @@ export class MockExamQuestionService {
         2,
       ),
     );
-    questions.concat(
+    questions = questions.concat(
       await this.getRandomQuestionsForType(
         threePointQuestionsAmount,
         REQUIRED_AMOUNT_OF_THREE_POINT_QUESTIONS,
@@ -166,7 +166,7 @@ export class MockExamQuestionService {
         3,
       ),
     );
-    questions.concat(
+    questions = questions.concat(
       await this.getRandomQuestionsForType(
         onePointAdvancedQuestionsAmount,
         REQUIRED_AMOUNT_OF_ONE_POINT_ADVANCED_QUESTIONS,
@@ -174,7 +174,7 @@ export class MockExamQuestionService {
         1,
       ),
     );
-    questions.concat(
+    questions = questions.concat(
       await this.getRandomQuestionsForType(
         twoPointAdvancedQuestionsAmount,
         REQUIRED_AMOUNT_OF_TWO_POINT_ADVANCED_QUESTIONS,
@@ -182,7 +182,7 @@ export class MockExamQuestionService {
         2,
       ),
     );
-    questions.concat(
+    questions = questions.concat(
       await this.getRandomQuestionsForType(
         threePointAdvancedQuestionsAmount,
         REQUIRED_AMOUNT_OF_THREE_POINT_ADVANCED_QUESTIONS,
@@ -200,20 +200,22 @@ export class MockExamQuestionService {
     points: number,
   ): Promise<MockExamQuestion[]> {
     const indexes = this.getRandomIndexes(totalAmount, requiredAmount);
-    const questions: MockExamQuestion[] = [];
-    indexes.forEach(async (index) => {
-      questions.concat(
-        await this.mockExamQuestionRepository.find({
+    const questionsPromises: Promise<MockExamQuestion[]>[] = indexes.map(
+      (index) => {
+        return this.mockExamQuestionRepository.find({
           where: {
             points,
-            typeId,
+            type: {
+              id: typeId,
+            },
           },
           skip: index,
           take: 1,
-        }),
-      );
-    });
-    return questions;
+        });
+      },
+    );
+    const questions = await Promise.all(questionsPromises);
+    return questions.flat();
   }
 
   getRandomIndexes(

@@ -51,7 +51,6 @@ export class MockExamQuestion {
   @JoinColumn({ name: 'typeId' })
   type: MockExamQuestionType;
 
-  @Exclude()
   @RelationId((question: MockExamQuestion) => question.type)
   typeId: number;
 
@@ -68,7 +67,6 @@ export class MockExamQuestion {
   )
   answers: MockExamQuestionAnswer[];
 
-  @Exclude()
   @RelationId((question: MockExamQuestion) => question.answers)
   answersIds: number[];
 }
