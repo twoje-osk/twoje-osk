@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 
 import { In, Repository } from 'typeorm';
 import { Transactional } from 'typeorm-transactional-cls-hooked';
+import { MockExamAttempt } from '../mockExamAttempt/entities/mockExamAttempt.entity';
 import { MockExamQuestion } from '../mockExamQuestion/entities/mockExamQuestion.entity';
 import { MockExamQuestionAnswer } from '../mockExamQuestionAnswer/entities/mockExamQuestionAnswer.entity';
 import { Try, getFailure, getSuccess } from '../types/Try';
@@ -10,6 +11,7 @@ import { Try, getFailure, getSuccess } from '../types/Try';
 import { MockExamQuestionAttempt } from './entities/mockExamQuestionAttempt.entity';
 
 interface MockExamQuestionsAttemptFields {
+  attempt: MockExamAttempt;
   questionId: number;
   answerId: number;
 }
