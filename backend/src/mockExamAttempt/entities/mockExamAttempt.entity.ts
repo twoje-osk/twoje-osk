@@ -26,6 +26,7 @@ export class MockExamAttempt {
   @OneToMany<MockExamQuestionAttempt>(
     'MockExamQuestionAttempt',
     (questionAttempt) => questionAttempt.question,
+    { cascade: true },
   )
   questions: MockExamQuestionAttempt[];
 

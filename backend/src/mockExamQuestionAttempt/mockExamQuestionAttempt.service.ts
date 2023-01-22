@@ -3,13 +3,13 @@ import { InjectRepository } from '@nestjs/typeorm';
 
 import { In, Repository } from 'typeorm';
 import { Transactional } from 'typeorm-transactional-cls-hooked';
+import { MockExamQuestion } from '../mockExamQuestion/entities/mockExamQuestion.entity';
 import { MockExamQuestionAnswer } from '../mockExamQuestionAnswer/entities/mockExamQuestionAnswer.entity';
 import { Try, getFailure, getSuccess } from '../types/Try';
 
 import { MockExamQuestionAttempt } from './entities/mockExamQuestionAttempt.entity';
 
 interface MockExamQuestionsAttemptFields {
-  attemptId: number;
   questionId: number;
   answerId: number;
 }
@@ -21,6 +21,8 @@ export class MockExamQuestionAttemptService {
     private mockExamQuestionAttemptRepository: Repository<MockExamQuestionAttempt>,
     @InjectRepository(MockExamQuestionAnswer)
     private mockExamQuestionAnswerRepository: Repository<MockExamQuestionAnswer>,
+    @InjectRepository(MockExamQuestion)
+    private mockExamQuestionRepository: Repository<MockExamQuestion>,
   ) {}
 
   @Transactional()
@@ -37,19 +39,30 @@ export class MockExamQuestionAttemptService {
       return getFailure('QUESTIONS_NOT_UNIQUE');
     }
     const answers = await this.mockExamQuestionAnswerRepository.find({
+      where: { id: In(questionAttempts.map((q) => q.answerId)) },
+    });
+    const questions = await this.mockExamQuestionRepository.find({
       where: { id: In(questionAttempts.map((q) => q.questionId)) },
     });
-    const answersMap = Object.fromEntries(
+    const answersIdToQuestionId = Object.fromEntries(
       answers.map((a) => [a.id, a.questionId]),
     );
+    const answersMap = Object.fromEntries(answers.map((a) => [a.id, a]));
+    const questionsMap = Object.fromEntries(questions.map((q) => [q.id, q]));
     const areAnswersValid = questionAttempts.every(
-      (q) => q.questionId === answersMap[q.answerId],
+      (q) => q.questionId === answersIdToQuestionId[q.answerId],
     );
     if (!areAnswersValid) {
       return getFailure('ANSWER_NOT_FOUND');
     }
     const savedQuestionAttempts =
-      await this.mockExamQuestionAttemptRepository.save(questionAttempts);
+      await this.mockExamQuestionAttemptRepository.save(
+        questionAttempts.map((q) => ({
+          ...q,
+          question: questionsMap[q.questionId],
+          answer: answersMap[q.answerId],
+        })),
+      );
     return getSuccess(savedQuestionAttempts);
   }
 }

@@ -170,7 +170,7 @@ export class MockExamQuestionService {
       await this.getRandomQuestionsForType(
         onePointAdvancedQuestionsAmount,
         REQUIRED_AMOUNT_OF_ONE_POINT_ADVANCED_QUESTIONS,
-        elementaryQuestionType.id,
+        advancedQuestionType.id,
         1,
       ),
     );
@@ -178,7 +178,7 @@ export class MockExamQuestionService {
       await this.getRandomQuestionsForType(
         twoPointAdvancedQuestionsAmount,
         REQUIRED_AMOUNT_OF_TWO_POINT_ADVANCED_QUESTIONS,
-        elementaryQuestionType.id,
+        advancedQuestionType.id,
         2,
       ),
     );
@@ -186,7 +186,7 @@ export class MockExamQuestionService {
       await this.getRandomQuestionsForType(
         threePointAdvancedQuestionsAmount,
         REQUIRED_AMOUNT_OF_THREE_POINT_ADVANCED_QUESTIONS,
-        elementaryQuestionType.id,
+        advancedQuestionType.id,
         3,
       ),
     );

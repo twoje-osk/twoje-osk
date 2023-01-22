@@ -67,7 +67,7 @@ export class MockExamAttemptService {
     >
   > {
     const { questions, traineeId } = attempt.mockExam;
-    const trainee = this.traineeService.findOneById(traineeId);
+    const trainee = await this.traineeService.findOneById(traineeId);
     if (!trainee) {
       return getFailure('USER_NOT_FOUND');
     }
@@ -75,24 +75,25 @@ export class MockExamAttemptService {
       return getFailure('INCORRECT_AMOUNT_OF_QUESTIONS');
     }
 
-    const newAttempt = this.mockExamAttemptRepository.create({
-      traineeId,
+    const newAttempt = await this.mockExamAttemptRepository.save({
+      trainee,
       attemptDate: new Date(),
       questions: [],
     });
-    const questionsWithAttemptId = questions.map((question) => ({
+
+    const questionsWithAttempt = questions.map((question) => ({
       ...question,
-      attemptId: newAttempt.id,
+      attempt: newAttempt,
     }));
+
     const result = await this.mockExamQuestionAttemptService.createMany(
-      questionsWithAttemptId,
+      questionsWithAttempt,
     );
 
     if (!result.ok) {
       return getFailure(result.error);
     }
 
-    newAttempt.questions = result.data;
     return getSuccess(newAttempt.id);
   }
 }
