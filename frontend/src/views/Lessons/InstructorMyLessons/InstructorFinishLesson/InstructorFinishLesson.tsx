@@ -7,6 +7,7 @@ import {
   FormHelperText,
   Icon,
   InputLabel,
+  ListItemIcon,
   MenuItem,
   Select,
   Stack,
@@ -46,7 +47,7 @@ export const InstructorFinishLesson = () => {
   const {
     vehicles,
     loadingState: vehiclesLoadingState,
-    selectedVehicle,
+    selectedVehicle: selectedVehicleId,
     hasSelectedVehicleSubmitError,
     setHasSelectedVehicleSubmitError,
     onVehicleChange,
@@ -56,7 +57,7 @@ export const InstructorFinishLesson = () => {
   const { isSubmitting, onSave, onRevertSave } = useFinishLessonApiRequest({
     lesson,
     mutateLesson,
-    selectedVehicle,
+    selectedVehicle: selectedVehicleId,
     setHasSelectedVehicleSubmitError,
   });
 
@@ -126,20 +127,35 @@ export const InstructorFinishLesson = () => {
         }}
       >
         <Box width={300}>
-          <FormControl fullWidth>
+          <FormControl fullWidth size="small">
             <InputLabel id="vehicle-label">Użyty Pojazd</InputLabel>
             <Select<number | string>
               labelId="vehicle-label"
               id="vehicle"
-              value={selectedVehicle ?? ''}
+              value={selectedVehicleId ?? ''}
               label="Użyty Pojazd"
               onChange={onVehicleChange}
               disabled={lesson.status === LessonStatus.Finished || isSubmitting}
               error={hasSelectedVehicleSubmitError}
               placeholder="Wybierz Pojazd"
+              renderValue={(value) => {
+                const selectedVehicle = vehicles.find((v) => v.id === value);
+
+                if (selectedVehicle === undefined) {
+                  return null;
+                }
+
+                return selectedVehicle.name;
+              }}
             >
               {vehicles.map((vehicle) => (
                 <MenuItem value={vehicle.id} key={vehicle.id}>
+                  {vehicle.isFavourite && (
+                    <ListItemIcon>
+                      <Icon>star</Icon>
+                    </ListItemIcon>
+                  )}
+
                   {vehicle.name}
                 </MenuItem>
               ))}
