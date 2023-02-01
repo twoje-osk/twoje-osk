@@ -46,6 +46,9 @@ export class InstructorDto {
   @IsString()
   @Transform(({ value }) => value ?? null)
   photo: string | null;
+
+  @ApiProperty()
+  favouriteVehiclesIds: number[];
 }
 
 export class DtoCreateInstructor {
