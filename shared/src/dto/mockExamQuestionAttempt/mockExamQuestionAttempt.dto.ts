@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber } from 'class-validator';
+import { IsNumber, IsOptional } from 'class-validator';
 
 export class MockExamQuestionAttemptDto {
   @ApiProperty()
@@ -8,7 +8,8 @@ export class MockExamQuestionAttemptDto {
 
   @ApiProperty()
   @IsNumber()
-  answerId: number;
+  @IsOptional()
+  answerId: number | undefined;
 
   @ApiProperty()
   @IsNumber()
@@ -20,6 +21,7 @@ export class CreateMockExamQuestionAttemptRequestDto {
   questionId: number;
 
   @ApiProperty()
+  @IsOptional()
   @IsNumber()
-  answerId: number;
+  answerId: number | undefined;
 }

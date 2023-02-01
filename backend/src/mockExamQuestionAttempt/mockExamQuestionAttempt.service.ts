@@ -8,12 +8,16 @@ import { MockExamQuestion } from '../mockExamQuestion/entities/mockExamQuestion.
 import { MockExamQuestionAnswer } from '../mockExamQuestionAnswer/entities/mockExamQuestionAnswer.entity';
 import { Try, getFailure, getSuccess } from '../types/Try';
 
-import { MockExamQuestionAttempt } from './entities/mockExamQuestionAttempt.entity';
+import {
+  MockExamQuestionAttempt,
+  QuestionStatus,
+} from './entities/mockExamQuestionAttempt.entity';
 
 interface MockExamQuestionsAttemptFields {
   attempt: MockExamAttempt;
   questionId: number;
-  answerId: number;
+  answerId?: number;
+  status?: QuestionStatus;
 }
 
 @Injectable()
@@ -51,9 +55,13 @@ export class MockExamQuestionAttemptService {
     );
     const answersMap = Object.fromEntries(answers.map((a) => [a.id, a]));
     const questionsMap = Object.fromEntries(questions.map((q) => [q.id, q]));
-    const areAnswersValid = questionAttempts.every(
-      (q) => q.questionId === answersIdToQuestionId[q.answerId],
-    );
+    this.checkIfAnswersAreCorrect(questionAttempts, answersMap);
+    const areAnswersValid = questionAttempts.every((q) => {
+      if (q.answerId !== undefined) {
+        return q.questionId === answersIdToQuestionId[q.answerId];
+      }
+      return true;
+    });
     if (!areAnswersValid) {
       return getFailure('ANSWER_NOT_FOUND');
     }
@@ -62,9 +70,30 @@ export class MockExamQuestionAttemptService {
         questionAttempts.map((q) => ({
           ...q,
           question: questionsMap[q.questionId],
-          answer: answersMap[q.answerId],
+          answer: q.answerId ? answersMap[q.answerId] : undefined,
         })),
       );
     return getSuccess(savedQuestionAttempts);
+  }
+
+  checkIfAnswersAreCorrect(
+    questionAttempts: MockExamQuestionsAttemptFields[],
+    answersMap: Record<number, MockExamQuestionAnswer>,
+  ) {
+    // eslint-disable-next-line no-plusplus
+    questionAttempts.forEach((attempt) => {
+      /* eslint-disable no-param-reassign */
+      if (attempt?.answerId === undefined) {
+        attempt.status = QuestionStatus.UNANSWERED;
+      } else if (
+        attempt?.questionId ===
+        answersMap[attempt.answerId]?.isCorrectAnswerOfId
+      ) {
+        attempt.status = QuestionStatus.CORRECT;
+      } else {
+        attempt.status = QuestionStatus.INCORRECT;
+      }
+      /* eslint-enable no-param-reassign */
+    });
   }
 }

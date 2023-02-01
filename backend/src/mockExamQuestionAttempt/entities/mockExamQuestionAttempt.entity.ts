@@ -1,7 +1,19 @@
-import { Entity, ManyToOne, PrimaryGeneratedColumn, RelationId } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  RelationId,
+} from 'typeorm';
 import { MockExamQuestionAnswer } from '../../mockExamQuestionAnswer/entities/mockExamQuestionAnswer.entity';
 import { MockExamAttempt } from '../../mockExamAttempt/entities/mockExamAttempt.entity';
 import { MockExamQuestion } from '../../mockExamQuestion/entities/mockExamQuestion.entity';
+
+export enum QuestionStatus {
+  CORRECT = 'correct',
+  INCORRECT = 'incorrect',
+  UNANSWERED = 'unanswered',
+}
 
 @Entity()
 export class MockExamQuestionAttempt {
@@ -31,4 +43,11 @@ export class MockExamQuestionAttempt {
     (questionAttempt: MockExamQuestionAttempt) => questionAttempt.answer,
   )
   answerId: number;
+
+  @Column({
+    type: 'enum',
+    enum: QuestionStatus,
+    default: 'unanswered',
+  })
+  status: QuestionStatus;
 }
