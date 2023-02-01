@@ -10,6 +10,7 @@ import {
 import { Exclude } from 'class-transformer';
 import { DriversLicenseCategory } from '../../driversLicenseCategory/entities/driversLicenseCategory.entity';
 import type { User } from '../../users/entities/user.entity';
+import { Vehicle } from '../../vehicles/entities/vehicle.entity';
 
 @Entity()
 export class Instructor {
@@ -38,4 +39,11 @@ export class Instructor {
 
   @Column({ nullable: true, type: 'text' })
   photo: string | null;
+
+  @ManyToMany<Vehicle>(() => Vehicle)
+  @JoinTable()
+  favouriteVehicles: Vehicle[];
+
+  @RelationId((instructor: Instructor) => instructor.favouriteVehicles)
+  favouriteVehiclesIds: number[];
 }

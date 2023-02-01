@@ -47,6 +47,7 @@ export class InstructorsController {
     return { instructors };
   }
 
+  @Roles(UserRole.Admin, UserRole.Instructor)
   @ApiResponse({
     type: InstructorFindOneResponseDto,
   })

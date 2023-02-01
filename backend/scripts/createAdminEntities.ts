@@ -42,7 +42,10 @@ async function run() {
 
       imports.push({
         classNames,
-        path: relative(join(__dirname, '../src'), outPath.replace(/\.ts$/, '')),
+        path: relative(
+          join(__dirname, '../src/admin'),
+          outPath.replace(/\.ts$/, ''),
+        ),
       });
 
       return writeFile(outPath, newValue);

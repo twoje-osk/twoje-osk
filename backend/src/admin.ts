@@ -8,7 +8,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 // Adding `@ts-ignore` so that it doesn't throw an error when the admin entities aren't built
 // @ts-ignore
-import { resources } from 'admin/admin.imports';
+import { resources } from './admin/admin.imports';
 import { LOGO, FAVICON } from './admin/admin.assets';
 import { RESOURCE_OVERRIDES } from './admin/admin.constants';
 import {
