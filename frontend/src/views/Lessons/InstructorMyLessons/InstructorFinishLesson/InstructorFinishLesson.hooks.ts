@@ -5,6 +5,7 @@ import {
   UpdateLessonRequestDTO,
   UpdateLessonResponseDTO,
   VehicleGetAllResponseDto,
+  VehicleGetMyFavouritesResponseDto,
 } from '@osk/shared';
 import { useEffect, useMemo, useState } from 'react';
 import { LessonStatus } from '@osk/shared/src/types/lesson.types';
@@ -12,12 +13,16 @@ import { useMakeRequestWithAuth } from '../../../../hooks/useMakeRequestWithAuth
 import { useCommonSnackbars } from '../../../../hooks/useCommonSnackbars/useCommonSnackbars';
 
 export const useSelectedVehicle = (vehicleIdFromLesson: number | null) => {
+  const favouritesIds = useFavouriteVehicles();
   const { data: vehiclesData, error: vehiclesError } =
     useSWR<VehicleGetAllResponseDto>('/api/vehicles');
   const [selectedVehicle, setSelectedVehicle] = useState<number | null>(null);
   const [hasSelectedVehicleSubmitError, setHasSelectedVehicleSubmitError] =
     useState(false);
-  const vehicles = vehiclesData?.vehicles ?? [];
+  const vehicles = useMemo(
+    () => vehiclesData?.vehicles ?? [],
+    [vehiclesData?.vehicles],
+  );
 
   useEffect(() => {
     setSelectedVehicle(vehicleIdFromLesson);
@@ -44,8 +49,38 @@ export const useSelectedVehicle = (vehicleIdFromLesson: number | null) => {
     return vehiclesData === undefined ? 'loading' : 'done';
   }, [vehiclesData, vehiclesError]);
 
+  const sortedVehicles = useMemo(() => {
+    return [...vehicles]
+      .map((v) => ({
+        ...v,
+        isFavourite: favouritesIds.includes(v.id),
+      }))
+      .sort((a, b) => {
+        const isAFavourite = a.isFavourite;
+        const isBFavourite = b.isFavourite;
+
+        if (!isAFavourite && !isBFavourite) {
+          return 0;
+        }
+
+        if (isAFavourite && isBFavourite) {
+          return 0;
+        }
+
+        if (isAFavourite) {
+          return -1;
+        }
+
+        if (isBFavourite) {
+          return 1;
+        }
+
+        return 0;
+      });
+  }, [favouritesIds, vehicles]);
+
   return {
-    vehicles,
+    vehicles: sortedVehicles,
     loadingState,
     selectedVehicle,
     hasSelectedVehicleSubmitError,
@@ -133,4 +168,22 @@ export const useFinishLessonApiRequest = ({
     onSave,
     onRevertSave,
   };
+};
+
+export const useFavouriteVehicles = () => {
+  const { showErrorSnackbar } = useCommonSnackbars();
+  const { data } = useSWR<VehicleGetMyFavouritesResponseDto>(
+    '/api/vehicles/favourites/my',
+    {
+      onError: () => {
+        showErrorSnackbar(
+          'Wystąpił błąd podczas wczytywania ulubionych pojazdów',
+        );
+      },
+    },
+  );
+
+  const favouriteVehiclesIds = data?.vehicles ?? [];
+
+  return favouriteVehiclesIds;
 };
