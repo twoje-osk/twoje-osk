@@ -3,7 +3,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { MockExamAttemptSubmitRequestDto } from '@osk/shared';
 import { Repository } from 'typeorm';
 import { Transactional } from 'typeorm-transactional-cls-hooked';
-import { REQUIRED_AMOUNT_OF_QUESTIONS } from '../mockExamQuestion/mockExamQuestion.constants';
+import {
+  MINIMAL_PASSING_SCORE,
+  REQUIRED_AMOUNT_OF_QUESTIONS,
+} from '../mockExamQuestion/mockExamQuestion.constants';
+import {
+  MockExamQuestionAttempt,
+  QuestionStatus,
+} from '../mockExamQuestionAttempt/entities/mockExamQuestionAttempt.entity';
 import { MockExamQuestionAttemptService } from '../mockExamQuestionAttempt/mockExamQuestionAttempt.service';
 import { TraineesService } from '../trainees/trainees.service';
 import { Try, getFailure, getSuccess } from '../types/Try';
@@ -79,6 +86,8 @@ export class MockExamAttemptService {
       trainee,
       attemptDate: new Date(),
       questions: [],
+      score: 0,
+      isPassed: false,
     });
 
     const questionsWithAttempt = questions.map((question) => ({
@@ -86,14 +95,36 @@ export class MockExamAttemptService {
       attempt: newAttempt,
     }));
 
-    const result = await this.mockExamQuestionAttemptService.createMany(
-      questionsWithAttempt,
-    );
+    const createQuestionsResult =
+      await this.mockExamQuestionAttemptService.createMany(
+        questionsWithAttempt,
+      );
 
-    if (!result.ok) {
-      return getFailure(result.error);
+    if (!createQuestionsResult.ok) {
+      return getFailure(createQuestionsResult.error);
     }
 
+    const createdQuestions = createQuestionsResult.data;
+
+    const score = this.calculateScore(createdQuestions);
+
+    const isPassed = score >= MINIMAL_PASSING_SCORE;
+
+    await this.mockExamAttemptRepository.update(
+      { id: newAttempt.id },
+      { score, isPassed },
+    );
+
     return getSuccess(newAttempt.id);
+  }
+
+  calculateScore(questions: MockExamQuestionAttempt[]) {
+    let score = 0;
+    questions.forEach((q) => {
+      if (q.status === QuestionStatus.CORRECT) {
+        score += q.question.points;
+      }
+    });
+    return score;
   }
 }

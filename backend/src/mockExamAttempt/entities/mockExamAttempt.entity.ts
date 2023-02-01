@@ -32,4 +32,10 @@ export class MockExamAttempt {
 
   @RelationId((attempt: MockExamAttempt) => attempt.questions)
   questionsIds: number[];
+
+  @Column()
+  score: number;
+
+  @Column()
+  isPassed: boolean;
 }

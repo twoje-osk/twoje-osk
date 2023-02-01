@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsOptional } from 'class-validator';
+import { IsBoolean, IsNumber, IsOptional } from 'class-validator';
 
 export class MockExamQuestionAttemptDto {
   @ApiProperty()
@@ -14,6 +14,14 @@ export class MockExamQuestionAttemptDto {
   @ApiProperty()
   @IsNumber()
   attemptId: number;
+
+  @ApiProperty()
+  @IsNumber()
+  score: number;
+
+  @ApiProperty()
+  @IsBoolean()
+  isPassed: boolean;
 }
 export class CreateMockExamQuestionAttemptRequestDto {
   @ApiProperty()
