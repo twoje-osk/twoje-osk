@@ -28,16 +28,21 @@ export class MockExamAttemptService {
   async findAllAttemptsOfUser(
     id: number,
   ): Promise<Try<MockExamAttempt[], 'TRAINEE_DOES_NOT_EXIST'>> {
-    const trainee = await this.traineeService.findOneById(id);
+    const trainee = await this.traineeService.findOneByUserId(id);
     if (trainee === null) {
       return getFailure('TRAINEE_DOES_NOT_EXIST');
     }
     const attempts = await this.mockExamAttemptRepository.find({
       where: {
-        traineeId: id,
+        trainee: {
+          id: trainee.id,
+        },
       },
       relations: {
         questions: true,
+      },
+      order: {
+        attemptDate: 'DESC',
       },
     });
 

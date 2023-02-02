@@ -1,6 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsNotEmpty, IsNumber, ValidateNested } from 'class-validator';
+import {
+  IsBoolean,
+  IsNotEmpty,
+  IsNumber,
+  ValidateNested,
+} from 'class-validator';
 import { CreateMockExamQuestionAttemptRequestDto } from '../mockExamQuestionAttempt/mockExamQuestionAttempt.dto';
 import { TraineeDto } from '../trainee/trainee.dto';
 
@@ -25,6 +30,14 @@ export class DtoMockExamAttempt {
   @IsNotEmpty()
   @IsNumber({}, { each: true })
   questionsIds: number[];
+
+  @ApiProperty()
+  @IsNumber()
+  score: number;
+
+  @ApiProperty()
+  @IsBoolean()
+  isPassed: boolean;
 }
 
 export class SubmitMockExamAttemptDto {
