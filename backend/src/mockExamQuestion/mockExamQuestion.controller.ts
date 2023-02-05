@@ -20,6 +20,8 @@ export class MockExamQuestionsController {
 
   @ApiResponse({
     type: MockExamQuestionsGenerateResponseDto,
+    description:
+      'Generates mock exam. Returns questions set for given category that',
   })
   @Get('exam/:categoryId')
   async generateExam(
