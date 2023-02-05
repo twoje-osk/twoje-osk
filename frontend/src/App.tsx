@@ -24,6 +24,7 @@ import { AnnouncementsList } from './views/Announcements/AnnouncementsList';
 import { Availability } from './views/Availability/Availability';
 import { DefaultAvailability } from './views/DefaultAvailability/DefaultAvailability';
 import { SignUp } from './views/SignUp/SignUp';
+import { MockExamsList } from './views/MockExams/MockExamsList';
 
 export const App = () => {
   return (
@@ -103,12 +104,10 @@ export const App = () => {
           <Route path="domyslna" element={<DefaultAvailability />} />
         </Route>
         <Route
-          path="/ogloszenia"
-          element={
-            <RequireRole roles={[UserRole.Trainee, UserRole.Instructor]} />
-          }
+          path="/e-learning"
+          element={<RequireRole roles={[UserRole.Trainee]} />}
         >
-          <Route index element={null} />
+          <Route index element={<MockExamsList />} />
         </Route>
       </Route>
     </Routes>
