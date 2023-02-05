@@ -54,6 +54,7 @@ export class DefaultAvailabilityService {
           from: LessThan(to),
           to: MoreThan(from),
           dayOfWeek,
+          instructor: { id: instructor.id },
         },
       });
 
@@ -123,6 +124,7 @@ export class DefaultAvailabilityService {
           to: MoreThan(updatedAvailability.from),
           id: Not(availabilityToBeUpdated.id),
           dayOfWeek,
+          instructor: { id: instructor.id },
         },
       });
 

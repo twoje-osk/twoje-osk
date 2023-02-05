@@ -129,6 +129,7 @@ export class AvailabilityService {
 
     const countOfAvailabilityInSlot = await this.availabilityRepository.count({
       where: {
+        instructor: { id: instructor.id },
         from: LessThan(to),
         to: MoreThan(from),
       },
@@ -186,6 +187,7 @@ export class AvailabilityService {
       {
         from,
         to,
+        userDefined: true,
       },
     );
 
@@ -194,6 +196,7 @@ export class AvailabilityService {
         from: LessThan(updatedAvailability.to),
         to: MoreThan(updatedAvailability.from),
         id: Not(availabilityToBeUpdated.id),
+        instructor: { id: instructor.id },
       },
     });
 

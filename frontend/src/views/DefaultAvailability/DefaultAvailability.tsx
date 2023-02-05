@@ -61,10 +61,20 @@ export const DefaultAvailability = () => {
       const baseDate = getTodayWeek();
       const date = addDays(baseDate, dayOfWeek);
 
+      const start = set(new Date(date), from);
+      start.setUTCHours(from.hours);
+      start.setUTCMinutes(from.minutes);
+      start.setUTCSeconds(from.seconds);
+
+      const end = set(new Date(date), to);
+      end.setUTCHours(to.hours);
+      end.setUTCMinutes(to.minutes);
+      end.setUTCSeconds(to.seconds);
+
       return {
         id,
-        start: set(date, from),
-        end: set(date, to),
+        start,
+        end,
       };
     });
 
