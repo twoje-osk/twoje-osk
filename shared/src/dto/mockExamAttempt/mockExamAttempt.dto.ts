@@ -41,11 +41,7 @@ export class DtoMockExamAttempt {
 }
 
 export class SubmitMockExamAttemptDto {
-  @ApiProperty()
-  @IsNumber()
-  traineeId: number;
-
-  @ApiProperty({ isArray: true })
+  @ApiProperty({ isArray: true, type: CreateMockExamQuestionAttemptRequestDto })
   @ValidateNested()
   @Type(() => CreateMockExamQuestionAttemptRequestDto)
   questions: CreateMockExamQuestionAttemptRequestDto[];

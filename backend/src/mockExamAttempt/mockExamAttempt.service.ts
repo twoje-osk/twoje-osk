@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { MockExamAttemptSubmitRequestDto } from '@osk/shared';
 import { Repository } from 'typeorm';
 import { Transactional } from 'typeorm-transactional-cls-hooked';
 import {
@@ -15,6 +14,15 @@ import { MockExamQuestionAttemptService } from '../mockExamQuestionAttempt/mockE
 import { TraineesService } from '../trainees/trainees.service';
 import { Try, getFailure, getSuccess } from '../types/Try';
 import { MockExamAttempt } from './entities/mockExamAttempt.entity';
+
+interface QuestionFields {
+  questionId: number;
+  answerId: number | undefined;
+}
+interface MockExamAttemptFields {
+  userId: number;
+  questions: QuestionFields[];
+}
 
 @Injectable()
 export class MockExamAttemptService {
@@ -68,7 +76,7 @@ export class MockExamAttemptService {
 
   @Transactional()
   async submit(
-    attempt: MockExamAttemptSubmitRequestDto,
+    attempt: MockExamAttemptFields,
   ): Promise<
     Try<
       number,
@@ -78,8 +86,8 @@ export class MockExamAttemptService {
       | 'ANSWER_NOT_FOUND'
     >
   > {
-    const { questions, traineeId } = attempt.mockExam;
-    const trainee = await this.traineeService.findOneById(traineeId);
+    const { questions, userId } = attempt;
+    const trainee = await this.traineeService.findOneByUserId(userId);
     if (!trainee) {
       return getFailure('USER_NOT_FOUND');
     }

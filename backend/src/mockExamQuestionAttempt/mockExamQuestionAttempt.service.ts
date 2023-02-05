@@ -13,7 +13,7 @@ import {
   QuestionStatus,
 } from './entities/mockExamQuestionAttempt.entity';
 
-interface MockExamQuestionsAttemptFields {
+export interface MockExamQuestionsAttemptFields {
   attempt: MockExamAttempt;
   questionId: number;
   answerId?: number;

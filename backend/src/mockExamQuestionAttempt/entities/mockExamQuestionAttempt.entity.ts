@@ -47,7 +47,7 @@ export class MockExamQuestionAttempt {
   @Column({
     type: 'enum',
     enum: QuestionStatus,
-    default: 'unanswered',
+    default: QuestionStatus.UNANSWERED,
   })
   status: QuestionStatus;
 }

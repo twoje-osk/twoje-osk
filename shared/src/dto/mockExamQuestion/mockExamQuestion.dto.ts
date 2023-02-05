@@ -8,7 +8,7 @@ export class MockExamQuestionDto {
   @IsString()
   question: string;
 
-  @ApiProperty({ nullable: true })
+  @ApiProperty({ type: 'string', nullable: true })
   @IsString()
   @IsOptional()
   mediaURL: string | null;

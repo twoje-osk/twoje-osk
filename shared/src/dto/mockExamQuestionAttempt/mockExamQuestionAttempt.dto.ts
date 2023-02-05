@@ -6,7 +6,7 @@ export class MockExamQuestionAttemptDto {
   @IsNumber()
   questionId: number;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'number' })
   @IsNumber()
   @IsOptional()
   answerId: number | undefined;
@@ -20,7 +20,7 @@ export class CreateMockExamQuestionAttemptRequestDto {
   @IsNumber()
   questionId: number;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'number' })
   @IsOptional()
   @IsNumber()
   answerId: number | undefined;

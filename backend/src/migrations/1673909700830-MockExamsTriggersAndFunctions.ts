@@ -39,16 +39,17 @@ export class MockExamsTriggersAndFunctions1673909700830 implements MigrationInte
             CREATE OR REPLACE FUNCTION update_amount_table_on_question_delete() RETURNS trigger AS $$
             DECLARE
                 category RECORD;
-                questions_amount integer;
+                to_be_updated integer;
             BEGIN
                 FOR category IN
                     SELECT "driversLicenseCategoryId"
                     FROM mock_exam_question_categories_drivers_license_category
                     WHERE "mockExamQuestionId" = OLD."id"
                 LOOP
-                    SELECT count(*) INTO questions_amount
-                    FROM mock_exam_question WHERE id = OLD.id;
-                    IF questions_amount > 0 THEN
+                    SELECT ID INTO to_be_updated
+                    FROM mock_exam_question WHERE id = OLD.id
+                    LIMIT 1;
+                    IF NOT FOUND THEN
                         UPDATE mock_exam_questions_amount
                             SET "amount" = "amount" - 1
                             WHERE "points" = OLD."points"
@@ -143,11 +144,11 @@ export class MockExamsTriggersAndFunctions1673909700830 implements MigrationInte
                     FROM mock_exam_question
                     WHERE "id" = OLD."mockExamQuestionId"
                 LOOP
-                    SELECT count(*) INTO category_amount
+                    SELECT Id INTO category_amount
                     FROM mock_exam_question_categories_drivers_license_category
                     WHERE "mockExamQuestionId" = OLD."mockExamQuestionId"
                     AND "driversLicenseCategoryId" = OLD."driversLicenseCategoryId";
-                    IF category_amount > 0 THEN
+                    IF FOUND THEN
                         UPDATE mock_exam_questions_amount
                             SET "amount" = "amount" - 1
                             WHERE "points" = question."points"
@@ -219,7 +220,7 @@ export class MockExamsTriggersAndFunctions1673909700830 implements MigrationInte
         await queryRunner.query('drop function update_amount_table_on_question_delete() cascade;')
         await queryRunner.query('drop function update_amount_table_on_questions_category_update() cascade;')
         await queryRunner.query('drop function update_amount_table_on_type_or_points_update() cascade;')
-        await queryRunner.query('drop function update_amount_table_on_category_change() cascade;')
+        await queryRunner.query('drop function update_amount_table_on_category_delete() cascade;')
         
     }
 

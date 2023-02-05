@@ -6,7 +6,6 @@ import {
   Param,
   ParseIntPipe,
   Post,
-  Request,
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
@@ -17,8 +16,8 @@ import {
   MockExamAttemptSubmitResponseDto,
   MockExamAttemptSubmitRequestDto,
 } from '@osk/shared';
-import { AuthRequest } from '../auth/auth.types';
 import { Roles } from '../common/guards/roles.decorator';
+import { CurrentUserService } from '../current-user/current-user.service';
 import { assertNever } from '../utils/assertNever';
 import { MockExamAttemptService } from './mockExamAttempt.service';
 
@@ -27,18 +26,20 @@ import { MockExamAttemptService } from './mockExamAttempt.service';
 export class MockExamAttemptController {
   constructor(
     private readonly mockExamAttemptService: MockExamAttemptService,
+    private readonly currentUserService: CurrentUserService,
   ) {}
 
-  @Roles(UserRole.Admin)
+  @Roles(UserRole.Admin, UserRole.Instructor)
   @ApiResponse({
     type: MockExamAttemptFindAllResponseDto,
+    description: 'Returns all mock exam attempts of given user',
   })
-  @Get('user/:id')
+  @Get('user/:userId')
   async findAllAttemptsOfUser(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('userId', ParseIntPipe) userId: number,
   ): Promise<MockExamAttemptFindAllResponseDto> {
     const examAttemptsResponse =
-      await this.mockExamAttemptService.findAllAttemptsOfUser(id);
+      await this.mockExamAttemptService.findAllAttemptsOfUser(userId);
     if (!examAttemptsResponse.ok) {
       throw new NotFoundException(examAttemptsResponse.error);
     }
@@ -47,12 +48,11 @@ export class MockExamAttemptController {
 
   @ApiResponse({
     type: MockExamAttemptFindAllResponseDto,
+    description: 'Returns all mock exam attempts of currently logged user',
   })
   @Get()
-  async findAllMyAttempts(
-    @Request() request: AuthRequest,
-  ): Promise<MockExamAttemptFindAllResponseDto> {
-    const { userId: id } = request.user;
+  async findAllMyAttempts(): Promise<MockExamAttemptFindAllResponseDto> {
+    const { userId: id } = this.currentUserService.getRequestCurrentUser();
     const examAttemptsResult =
       await this.mockExamAttemptService.findAllAttemptsOfUser(id);
     if (!examAttemptsResult.ok) {
@@ -63,6 +63,7 @@ export class MockExamAttemptController {
 
   @ApiResponse({
     type: MockExamAttemptFindOneResponseDto,
+    description: 'Returns mock exam attempt of given id',
   })
   @Get(':id')
   async findOne(
@@ -77,14 +78,17 @@ export class MockExamAttemptController {
 
   @ApiResponse({
     type: MockExamAttemptSubmitResponseDto,
+    description: 'Saves new attempt',
   })
   @Post()
   async submit(
     @Body() attempt: MockExamAttemptSubmitRequestDto,
   ): Promise<MockExamAttemptSubmitResponseDto> {
-    const examAttemptResponse = await this.mockExamAttemptService.submit(
-      attempt,
-    );
+    const { userId } = this.currentUserService.getRequestCurrentUser();
+    const examAttemptResponse = await this.mockExamAttemptService.submit({
+      questions: attempt.mockExam.questions,
+      userId,
+    });
     if (examAttemptResponse.ok) {
       return { id: examAttemptResponse.data };
     }
