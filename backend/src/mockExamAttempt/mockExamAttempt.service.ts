@@ -12,7 +12,8 @@ import {
 } from '../mockExamQuestionAttempt/entities/mockExamQuestionAttempt.entity';
 import { MockExamQuestionAttemptService } from '../mockExamQuestionAttempt/mockExamQuestionAttempt.service';
 import { TraineesService } from '../trainees/trainees.service';
-import { Try, getFailure, getSuccess } from '../types/Try';
+import { Try, getFailure, getSuccess, getFailureError } from '../types/Try';
+import { CatchFailure } from '../utils/CatchFailure';
 import { MockExamAttempt } from './entities/mockExamAttempt.entity';
 
 interface QuestionFields {
@@ -74,6 +75,7 @@ export class MockExamAttemptService {
     return getSuccess(attempt);
   }
 
+  @CatchFailure()
   @Transactional()
   async submit(
     attempt: MockExamAttemptFields,
@@ -91,6 +93,7 @@ export class MockExamAttemptService {
     if (!trainee) {
       return getFailure('USER_NOT_FOUND');
     }
+
     if (questions.length !== REQUIRED_AMOUNT_OF_QUESTIONS) {
       return getFailure('INCORRECT_AMOUNT_OF_QUESTIONS');
     }
@@ -114,7 +117,7 @@ export class MockExamAttemptService {
       );
 
     if (!createQuestionsResult.ok) {
-      return getFailure(createQuestionsResult.error);
+      throw getFailureError(createQuestionsResult.error);
     }
 
     const createdQuestions = createQuestionsResult.data;
