@@ -76,11 +76,10 @@ export class MockExamQuestionAttemptService {
     return getSuccess(savedQuestionAttempts);
   }
 
-  checkIfAnswersAreCorrect(
+  private checkIfAnswersAreCorrect(
     questionAttempts: MockExamQuestionsAttemptFields[],
     answersMap: Record<number, MockExamQuestionAnswer>,
   ) {
-    // eslint-disable-next-line no-plusplus
     questionAttempts.forEach((attempt) => {
       /* eslint-disable no-param-reassign */
       if (attempt?.answerId === undefined) {

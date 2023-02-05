@@ -134,7 +134,7 @@ export class MockExamAttemptService {
     return getSuccess(newAttempt.id);
   }
 
-  calculateScore(questions: MockExamQuestionAttempt[]) {
+  private calculateScore(questions: MockExamQuestionAttempt[]) {
     let score = 0;
     questions.forEach((q) => {
       if (q.status === QuestionStatus.CORRECT) {
