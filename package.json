@@ -17,5 +17,8 @@
   "devDependencies": {
     "husky": "^7.0.4"
   },
-  "packageManager": "yarn@3.2.0"
+  "packageManager": "yarn@3.3.0",
+  "resolutions": {
+    "typeorm@^0.3.6": "patch:typeorm@npm%3A0.3.6#./.yarn/patches/typeorm-npm-0.3.6-8a40e705ca.patch"
+  }
 }

@@ -73,7 +73,7 @@ services:
       - ./shared/src:/usr/src/app/shared/src
       - shared:/usr/src/app/shared/dist
     environment:
-      - PROXY_HOST=backend:8080
+      - VITE_PROXY_HOST=backend:8080
     ports:
       - 3000:3000
 

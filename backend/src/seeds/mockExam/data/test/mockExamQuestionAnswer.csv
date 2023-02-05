@@ -1,0 +1,235 @@
+answerId;questionId;answerContent
+1;1;Tak
+2;1;Nie
+3;2;Tak
+4;2;Nie
+5;3;Tak
+6;3;Nie
+7;4;Tak
+8;4;Nie
+9;5;Nie mniejszą niż 800 metrów.
+10;5;Nie mniejszą niż 500 metrów.
+11;5;Nie mniejszą niż 200 metrów.
+12;6;Prędkość pojazdów.
+13;6;Moc silnika.
+14;6;Szerokość pojazdów.
+15;7;Tak
+16;7;Nie
+17;8;Tak
+18;8;Nie
+19;9;Tak
+20;9;Nie
+21;10;Tak
+22;10;Nie
+23;11;Tak
+24;11;Nie
+25;12;Tak
+26;12;Nie
+27;13;Tak
+28;13;Nie
+29;14;Tak
+30;14;Nie
+31;15;Tak
+32;15;Nie
+33;16;Tak
+34;16;Nie
+35;17;Tak
+36;17;Nie
+37;18;Tak
+38;18;Nie
+39;19;Tak
+40;19;Nie
+41;20;Tak
+42;20;Nie
+43;21;Tak
+44;21;Nie
+45;22;Tak
+46;22;Nie
+47;23;Tak
+48;23;Nie
+49;24;Tak
+50;24;Nie
+65;32;Tak
+66;32;Nie
+67;33;Tak
+68;33;Nie
+69;34;Tak
+70;34;Nie
+71;35;Tak
+72;35;Nie
+73;36;Tak
+74;36;Nie
+75;37;Tak
+76;37;Nie
+77;38;Tak
+78;38;Nie
+79;39;Tak
+80;39;Nie
+81;40;Tak
+82;40;Nie
+83;41;Tak
+84;41;Nie
+95;47;Tak
+96;47;Nie
+97;48;Tak
+98;48;Nie
+99;49;Tak
+100;49;Nie
+101;50;Tak
+102;50;Nie
+103;51;Tak
+104;51;Nie
+105;52;Tak
+106;52;Nie
+107;53;Tak
+108;53;Nie
+109;54;Tak
+110;54;Nie
+111;55;Tak
+112;55;Nie
+113;56;Tak
+114;56;Nie
+115;57;Tak
+116;57;Nie
+117;58;Tak
+118;58;Nie
+119;59;Tak
+120;59;Nie
+121;60;Tak
+122;60;Nie
+123;61;Tak
+124;61;Nie
+125;62;Tak
+126;62;Nie
+127;63;Tak
+128;63;Nie
+129;64;Tak
+130;64;Nie
+131;65;Tak
+132;65;Nie
+179;89;Tak
+180;89;Nie
+181;90;Tak
+182;90;Nie
+183;91;Tak
+184;91;Nie
+185;92;Tak
+186;92;Nie
+187;93;Tak
+188;93;Nie
+189;94;Tak
+190;94;Nie
+191;95;Tak
+192;95;Nie
+193;96;Tak
+194;96;Nie
+195;97;Tak
+196;97;Nie
+521;260;B1.
+522;260;A.
+523;260;AM.
+524;261;Poddawanie pojazdu okresowym badaniom technicznym.
+525;261;Zawarcie umowy ubezpieczenia NW.
+526;261;Zawarcie umowy ubezpieczenia Autocasco.
+527;262;Bezpośrednio przed rozpoczęciem podróży.
+528;262;Po zakończeniu jazdy.
+529;262;Co najmniej dobę przed zaplanowaną podróżą.
+530;263;Ładunek może zasłaniać niektóre światła przyczepy.
+531;263;Ładunek nie może naruszać stateczności pojazdu.
+532;263;Ładunek nie musi być zabezpieczony przed zmianą położenia.
+533;264;Zabezpieczę go przed przemieszczaniem.
+534;264;Umieszczę ładunek luźno na przyczepie.
+535;264;Nie zabezpieczę ładunku przed przemieszczaniem, jeżeli będę jechał wolno.
+536;265;Niezasłonięty - umieszczony poniżej wysokości burt.
+537;265;Nie przekraczajac prędkości 30 km/h.
+538;265;Zasłonięty w szczelnej skrzyni ładunkowej.
+539;266;Tak, żeby mocowanie nie rozluźniło się.
+540;266;Może swobodnie zwisać z przyczepy.
+541;266;Nie musi być zabezpieczone przed spadnięciem podczas jazdy.
+542;267;Może nieznacznie zasłaniać tablice rejestracyjne.
+543;267;Może zasłaniać tylne światło przeciwmgłowe.
+544;267;Nie może ograniczać widoczności drogi.
+545;268;Najcięższe bagaże włożę najgłębiej i najniżej, w centralnej części bagażnika.
+546;268;W dowolny sposób.
+547;268;Najcięższe bagaże włożę w górnej części bagażnika, nad lżejszymi.
+548;269;Tak, aby nie zasłaniał świateł przyczepy.
+549;269;Umieszczę go po jednej stronie przyczepy.
+550;269;Umieszczę go zawsze w tylnej części przyczepy.
+551;270;Ciągnąć za pojazdem osoby na sankach.
+552;270;Korzystać z radia CB.
+553;270;Przewozić dziecka w foteliku ochronnym na przednim siedzeniu.
+558;273;Gaśnica umieszczona jest na tylnej półce.
+559;273;Gaśnica umieszczona jest luźno między siedzeniami.
+560;273;Gaśnica zamocowana pod fotelem pasażera.
+561;274;Przeciwdziałanie poślizgowi podczas hamowania silnikiem.
+562;274;Zapobieganie blokowaniu kół hamowanych.
+563;274;Przeciwdziałanie poślizgowi kół podczas ruszania.
+564;275;Przeciwdziałanie poślizgowi kół podczas hamowania silnikiem.
+565;275;Zapobieganie blokowaniu kół hamowanych.
+566;275;Stabilizowanie ruchu pojazdu podczas jazdy po łuku drogi.
+579;281;Wstrzymam się z opatrywaniem.
+580;281;Użyję do opatrunku odzieży poszkodowanego.
+581;281;Poczekam, aż ktoś użyczy swojej apteczki.
+585;283;W przypadku zmiażdżenia kończyny.
+586;283;W przypadku wycieku krwistej wydzieliny z ucha.
+587;283;W przypadku krwotoku.
+588;284;Do momentu przyjazdu zespołu ratownictwa medycznego.
+589;284;Przez 15 minut.
+590;284;Dopóki ciało poszkodowanego zachowuje właściwą ciepłotę.
+597;287;Aż zacznie nią poruszać.
+598;287;Do przejęcia stabilizacji przez członka zespołu ratownictwa medycznego.
+599;287;Do czasu stwierdzenia ruchomości jego nóg.
+793;383;Wyłączyć system kontroli trakcji.
+794;383;Jechać w koleinach.
+795;383;Zmniejszyć prędkość.
+796;384;Płynnie zmniejszyć prędkość.
+797;384;Zdecydowanie przyhamować.
+798;384;Zdecydowanie przyspieszyć.
+799;385;Hamowanie wyłącznie przy użyciu hamulca ręcznego.
+800;385;Stosowanie opon zimowych.
+801;385;Zdecydowane przyspieszanie.
+837;403;Gołoledź.
+838;403;Mżawka.
+839;403;Opad gradu.
+846;407;Tak.
+847;407;Nie, ponieważ taki dokument znajduje się tylko w zajezdni.
+848;407;Nie, ponieważ taki dokument nie dotyczy tramwaju.
+849;408;Policjant lub strażnik miejski.
+850;408;Funkcjonariusz dowolnej służby, ale tylko w obecności przedstawiciela nadzoru ruchu.
+851;408;Tylko policjant.
+900;433;Tak.
+901;433;Tak, o ile działa zasilanie z drugiego wagonu.
+902;433;Nie.
+1231;597;Zmniejszyć prędkość.
+1232;597;Włączyć światła drogowe w celu polepszenia widoczności.
+1233;597;Jechać bardzo blisko poprzedzającego pojazdu, aby widzieć jego światła pozycyjne.
+1296;629;Zdecydowanie przyśpieszyć.
+1297;629;Gwałtownie przyhamować.
+1298;629;Płynnie zmniejszyć prędkość jazdy.
+1299;630;Patrzeć prosto w reflektory pojazdu nadjeżdżającego z przeciwka.
+1300;630;Zmienić światła mijania na drogowe.
+1301;630;Patrzeć w prawo od źródła światła pojazdu nadjeżdżającego z przeciwka i wypatrywać tam ewentualnej przeszkody.
+1364;662;Nie podejmować działań, gdyż pomocy musi udzielić sprawca wypadku.
+1365;662;Wezwać pomoc drogową.
+1366;662;Zatrzymać się, wezwać pomoć medyczną i udzielić pierwszej pomocy poszkodowanemu.
+1371;665;70 km/h.
+1372;665;80 km/h.
+1373;665;140 km/h.
+1374;666;120 km/h.
+1375;666;130 km/h.
+1376;666;140 km/h.
+1377;667;70 km/h.
+1378;667;100 km/h.
+1379;667;90 km/h.
+1380;668;20 km/h.
+1381;668;30 km/h.
+1382;668;50 km/h.
+1512;727;1,6 milimetra.
+1513;727;2,6 milimetra.
+1514;727;3 milimetry.
+1515;728;Zanieczyszczony wkład filtra powietrza.
+1516;728;Przegrzewające się elektrody świec zapłonowych.
+1517;728;Przepalona żarówka tylnego lewego kierunkowskazu.
+1550;742;Zmniejszyć prędkość i czekać, aż lampka zgaśnie.
+1551;742;Zatrzymać pojazd i sprawdzić poziom płynu hamulcowego.
+1552;742;Kontynuować jazdę i zgłosić ten stan przy najbliższych badaniach okresowych pojazdu.
