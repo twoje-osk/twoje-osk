@@ -213,11 +213,17 @@ export class MockExamQuestionService {
     requiredAmountOfIndexes: number,
   ): number[] {
     const indexes: number[] = [];
+    let counter = 0;
     while (indexes.length < requiredAmountOfIndexes) {
+      if (counter === requiredAmountOfIndexes * 1000) {
+        throw new Error('Failed to generate random questions');
+      }
       const index = Math.floor(Math.random() * totalAmountOfIndexes);
       if (!indexes.includes(index)) {
         indexes.push(index);
       }
+      // eslint-disable-next-line no-plusplus
+      counter++;
     }
     return indexes;
   }
