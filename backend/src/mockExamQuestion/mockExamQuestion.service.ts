@@ -199,6 +199,7 @@ export class MockExamQuestionService {
               id: typeId,
             },
           },
+          join: { alias: 'MockExamQuestionsAnswer' },
           skip: index,
           take: 1,
         });

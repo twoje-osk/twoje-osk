@@ -15,7 +15,7 @@ export class MockExamQuestionDto {
 
   @ApiProperty()
   @IsArray()
-  @ValidateNested()
+  @ValidateNested({ each: true })
   answers: DtoMockExamQuestionAnswer[];
 
   @ApiProperty()

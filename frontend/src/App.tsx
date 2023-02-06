@@ -25,6 +25,7 @@ import { Availability } from './views/Availability/Availability';
 import { DefaultAvailability } from './views/DefaultAvailability/DefaultAvailability';
 import { SignUp } from './views/SignUp/SignUp';
 import { MockExamsList } from './views/MockExams/MockExamsList';
+import { MockExamsAttempt } from './views/MockExams/MockExamsAttempt';
 
 export const App = () => {
   return (
@@ -108,6 +109,12 @@ export const App = () => {
           element={<RequireRole roles={[UserRole.Trainee]} />}
         >
           <Route index element={<MockExamsList />} />
+          <Route
+            path="nowy"
+            element={<RequireRole roles={[UserRole.Trainee]} />}
+          >
+            <Route index element={<MockExamsAttempt />} />
+          </Route>
         </Route>
       </Route>
     </Routes>
