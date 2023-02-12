@@ -18,6 +18,11 @@ export class OrganizationDomainMiddleware implements NestMiddleware {
     const subdomains = domain?.split('.');
     const firstSubdomain = subdomains?.[0];
 
+    if (!req.baseUrl.startsWith('/api')) {
+      next();
+      return;
+    }
+
     if (!firstSubdomain) {
       throw new NotFoundException();
     }

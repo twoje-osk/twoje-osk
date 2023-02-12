@@ -53,6 +53,7 @@ import { MockExamQuestionModule } from './mockExamQuestion/mockExamQuestion.modu
     }),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '../..', 'client'),
+      exclude: ['/api*'],
     }),
     AuthModule,
     AnnouncementsModule,
