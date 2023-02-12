@@ -84,7 +84,7 @@ export const Login = () => {
                   <Icon sx={{ fontSize: 48 }}>car_rental</Icon>
                 </Flex>
                 <Typography variant="h3" component="h1">
-                  {oskName} #1
+                  {oskName}
                 </Typography>
               </Flex>
               <Formik<LoginForm>
