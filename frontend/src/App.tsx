@@ -24,93 +24,96 @@ import { AnnouncementsList } from './views/Announcements/AnnouncementsList';
 import { Availability } from './views/Availability/Availability';
 import { DefaultAvailability } from './views/DefaultAvailability/DefaultAvailability';
 import { SignUp } from './views/SignUp/SignUp';
+import { ErrorBoundary } from './components/ErrorBoundary/ErrorBoundary';
 
 export const App = () => {
   return (
-    <Routes>
-      <Route path="/login" element={<Login />} />
-      <Route path="/zapisz-sie" element={<SignUp />} />
-      <Route path="/account/zapomnialem-haslo" element={<ForgotPassword />} />
-      <Route path="/account/reset">
-        <Route index element={<Navigate to="/account/zapomnialem-haslo" />} />
-        <Route path=":token" element={<ResetPassword />} />
-      </Route>
-      <Route
-        path="/"
-        element={
-          <Layout>
-            <RequireAuth />
-          </Layout>
-        }
-      >
-        <Route index element={<HomePage />} />
+    <ErrorBoundary>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/zapisz-sie" element={<SignUp />} />
+        <Route path="/account/zapomnialem-haslo" element={<ForgotPassword />} />
+        <Route path="/account/reset">
+          <Route index element={<Navigate to="/account/zapomnialem-haslo" />} />
+          <Route path=":token" element={<ResetPassword />} />
+        </Route>
         <Route
-          path="/kursanci"
+          path="/"
           element={
-            <RequireRole roles={[UserRole.Admin, UserRole.Instructor]} />
+            <Layout>
+              <RequireAuth />
+            </Layout>
           }
         >
-          <Route index element={<TraineesList />} />
-          <Route path="nowy" element={<TraineeNew />} />
-          <Route path=":traineeId" element={<TraineeDetails />} />
-          <Route path=":traineeId/edytuj" element={<TraineeEdit />} />
+          <Route index element={<HomePage />} />
+          <Route
+            path="/kursanci"
+            element={
+              <RequireRole roles={[UserRole.Admin, UserRole.Instructor]} />
+            }
+          >
+            <Route index element={<TraineesList />} />
+            <Route path="nowy" element={<TraineeNew />} />
+            <Route path=":traineeId" element={<TraineeDetails />} />
+            <Route path=":traineeId/edytuj" element={<TraineeEdit />} />
+          </Route>
+          <Route
+            path="/instruktorzy"
+            element={
+              <RequireRole roles={[UserRole.Admin, UserRole.Instructor]} />
+            }
+          >
+            <Route index element={<InstructorsList />} />
+            <Route path="nowy" element={<InstructorsNew />} />
+            <Route path=":instructorId/edytuj" element={<InstructorsEdit />} />
+            <Route path=":instructorId" element={<InstructorsDetails />} />
+          </Route>
+          <Route
+            path="/pojazdy"
+            element={
+              <RequireRole roles={[UserRole.Admin, UserRole.Instructor]} />
+            }
+          >
+            <Route index element={<VehiclesList />} />
+            <Route path="nowy" element={<VehicleNew />} />
+            <Route path=":vehicleId/edytuj" element={<VehicleEdit />} />
+            <Route path=":vehicleId" element={<VehicleDetails />} />
+          </Route>
+          <Route
+            path="/ogloszenia"
+            element={
+              <RequireRole
+                roles={[UserRole.Admin, UserRole.Instructor, UserRole.Trainee]}
+              />
+            }
+          >
+            <Route index element={<AnnouncementsList />} />
+          </Route>
+          <Route
+            path="/moje-jazdy"
+            element={
+              <RequireRole roles={[UserRole.Trainee, UserRole.Instructor]} />
+            }
+          >
+            <Route index element={<MyLessons />} />
+          </Route>
+          <Route
+            path="/moja-dostepnosc"
+            element={<RequireRole role={UserRole.Instructor} />}
+          >
+            <Route index element={<Availability />} />
+            <Route path="domyslna" element={<DefaultAvailability />} />
+          </Route>
+          <Route
+            path="/ogloszenia"
+            element={
+              <RequireRole roles={[UserRole.Trainee, UserRole.Instructor]} />
+            }
+          >
+            <Route index element={null} />
+          </Route>
         </Route>
-        <Route
-          path="/instruktorzy"
-          element={
-            <RequireRole roles={[UserRole.Admin, UserRole.Instructor]} />
-          }
-        >
-          <Route index element={<InstructorsList />} />
-          <Route path="nowy" element={<InstructorsNew />} />
-          <Route path=":instructorId/edytuj" element={<InstructorsEdit />} />
-          <Route path=":instructorId" element={<InstructorsDetails />} />
-        </Route>
-        <Route
-          path="/pojazdy"
-          element={
-            <RequireRole roles={[UserRole.Admin, UserRole.Instructor]} />
-          }
-        >
-          <Route index element={<VehiclesList />} />
-          <Route path="nowy" element={<VehicleNew />} />
-          <Route path=":vehicleId/edytuj" element={<VehicleEdit />} />
-          <Route path=":vehicleId" element={<VehicleDetails />} />
-        </Route>
-        <Route
-          path="/ogloszenia"
-          element={
-            <RequireRole
-              roles={[UserRole.Admin, UserRole.Instructor, UserRole.Trainee]}
-            />
-          }
-        >
-          <Route index element={<AnnouncementsList />} />
-        </Route>
-        <Route
-          path="/moje-jazdy"
-          element={
-            <RequireRole roles={[UserRole.Trainee, UserRole.Instructor]} />
-          }
-        >
-          <Route index element={<MyLessons />} />
-        </Route>
-        <Route
-          path="/moja-dostepnosc"
-          element={<RequireRole role={UserRole.Instructor} />}
-        >
-          <Route index element={<Availability />} />
-          <Route path="domyslna" element={<DefaultAvailability />} />
-        </Route>
-        <Route
-          path="/ogloszenia"
-          element={
-            <RequireRole roles={[UserRole.Trainee, UserRole.Instructor]} />
-          }
-        >
-          <Route index element={null} />
-        </Route>
-      </Route>
-    </Routes>
+      </Routes>
+    </ErrorBoundary>
   );
 };
