@@ -33,6 +33,7 @@ export const TraineeNew = () => {
         pesel: newTrainee.pesel || null,
         pkk: newTrainee.pkk,
         driversLicenseNumber: newTrainee.driversLicenseNumber || null,
+        driversLicenseCategoryId: 6, // TODO Add this from function to load data from BE directly
         dateOfBirth: formatApi(newTrainee.dateOfBirth!),
         user: {
           email: newTrainee.email,

@@ -16,6 +16,7 @@ interface TraineeFormProps {
   hideCreatedAt?: boolean;
 }
 
+// TODO ADD HERE driversLicenseCategoryId
 const defaultValues: TraineeFormData = {
   firstName: '',
   lastName: '',
