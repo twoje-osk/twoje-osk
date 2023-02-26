@@ -4,8 +4,8 @@ import {
   Controller,
   Get,
   NotFoundException,
+  Patch,
   Post,
-  Put,
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { ApiBody, ApiCreatedResponse, ApiResponse } from '@nestjs/swagger';
@@ -45,7 +45,7 @@ export class UsersController {
     return { user };
   }
 
-  @Put('me')
+  @Patch('me')
   @ApiResponse({
     type: UpdateUserMyProfileResponseDto,
   })
@@ -60,7 +60,7 @@ export class UsersController {
     }
 
     const shouldUpdatePassword =
-      body.newPassword !== null && body.oldPassword !== null;
+      body.newPassword !== undefined && body.oldPassword !== undefined;
 
     if (shouldUpdatePassword) {
       const validatedUser = await this.authService.validateUserByEntity(
@@ -76,9 +76,7 @@ export class UsersController {
     const baseOptions: Partial<UserArguments> = {
       email: body.email,
       phoneNumber: body.phoneNumber,
-      password: shouldUpdatePassword
-        ? body.newPassword ?? undefined
-        : undefined,
+      password: shouldUpdatePassword ? body.newPassword : undefined,
     };
 
     const updateOptions =

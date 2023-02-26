@@ -21,8 +21,8 @@ import { MyProfileFormData } from './MyProfileForm/MyProfileForm.schema';
 
 export const MyProfile = () => {
   const { role } = useAuth();
-  const disabledFields =
-    role !== UserRole.Admin ? (['firstName', 'lastName'] as const) : [];
+  const isAdmin = role === UserRole.Admin;
+  const disabledFields = !isAdmin ? (['firstName', 'lastName'] as const) : [];
   const [isLoading, setIsLoading] = useState(false);
   const { showErrorSnackbar, showSuccessSnackbar } = useCommonSnackbars();
   const makeRequest = useMakeRequestWithAuth();
@@ -48,20 +48,26 @@ export const MyProfile = () => {
           }
         : {};
 
-    const body = {
-      ...passwordBody,
-      email: myProfileValues.email,
-      firstName: myProfileValues.firstName,
-      lastName: myProfileValues.lastName,
-      phoneNumber: myProfileValues.phoneNumber,
-    };
+    const body = isAdmin
+      ? {
+          ...passwordBody,
+          email: myProfileValues.email,
+          firstName: myProfileValues.firstName,
+          lastName: myProfileValues.lastName,
+          phoneNumber: myProfileValues.phoneNumber,
+        }
+      : {
+          ...passwordBody,
+          email: myProfileValues.email,
+          phoneNumber: myProfileValues.phoneNumber,
+        };
 
     setIsLoading(true);
     const updateApiUrl = `/api/users/me`;
     const response = await makeRequest<
       UpdateUserMyProfileResponseDto,
       UpdateUserMyProfileRequestDto
-    >(updateApiUrl, 'PUT', body);
+    >(updateApiUrl, 'PATCH', body);
 
     if (response.ok) {
       setIsLoading(false);

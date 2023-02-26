@@ -1,5 +1,5 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
-import { Transform, Type } from 'class-transformer';
+import { Type } from 'class-transformer';
 import {
   IsBoolean,
   IsEmail,
@@ -147,34 +147,36 @@ export class UpdateUserMyProfileRequestDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsEmail()
-  email: string;
+  @IsOptional()
+  email?: string;
 
   @ApiProperty()
+  @IsOptional()
   @IsNotEmpty()
-  firstName: string;
+  firstName?: string;
 
   @ApiProperty()
+  @IsOptional()
   @IsNotEmpty()
-  lastName: string;
+  lastName?: string;
 
   @ApiProperty()
+  @IsOptional()
   @IsNotEmpty()
-  phoneNumber: string;
+  phoneNumber?: string;
 
   @ValidateIf((o: UpdateUserMyProfileRequestDto) => Boolean(o.newPassword))
-  @ApiProperty({ type: 'string', required: false, default: null })
+  @ApiProperty({ type: 'string', required: false })
   @IsString()
   @IsNotEmpty()
-  @Transform(({ value }) => value ?? null)
-  oldPassword?: string | null;
+  oldPassword?: string;
 
-  @ApiProperty({ type: 'string', required: false, default: null })
+  @ApiProperty({ type: 'string', required: false })
   @IsString()
   @Length(8, 64)
   @IsOptional()
   @IsNotEmpty()
-  @Transform(({ value }) => value ?? null)
-  newPassword?: string | null;
+  newPassword?: string;
 }
 
 export class UpdateUserMyProfileResponseDto {}
