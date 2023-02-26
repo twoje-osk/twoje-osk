@@ -111,7 +111,7 @@ export const Layout = ({ children }: LayoutProps) => {
               <Divider />
             </Box>
             <Box mb="16px">
-              <ListItemButton>
+              <ListItemButton component={NavLinkForMUI} to="/profil">
                 <ListItemIcon>
                   <Icon>account_circle</Icon>
                 </ListItemIcon>

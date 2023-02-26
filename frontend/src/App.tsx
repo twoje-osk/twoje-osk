@@ -25,6 +25,7 @@ import { Availability } from './views/Availability/Availability';
 import { DefaultAvailability } from './views/DefaultAvailability/DefaultAvailability';
 import { SignUp } from './views/SignUp/SignUp';
 import { ErrorBoundary } from './components/ErrorBoundary/ErrorBoundary';
+import { MyProfile } from './views/MyProfile/MyProfile';
 
 export const App = () => {
   return (
@@ -111,6 +112,9 @@ export const App = () => {
             }
           >
             <Route index element={null} />
+          </Route>
+          <Route path="/profil">
+            <Route index element={<MyProfile />} />
           </Route>
         </Route>
       </Routes>
