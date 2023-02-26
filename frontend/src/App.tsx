@@ -7,7 +7,6 @@ import { HomePage } from './views/HomePage/HomePage';
 import { InstructorsList } from './views/Instructors/InstructorsList/InstructorsList';
 import { InstructorsDetails } from './views/Instructors/InstructorsDetails/InstructorsDetails';
 import { InstructorsEdit } from './views/Instructors/InstructorsEdit/InstructorsEdit';
-import { Layout } from './views/Layout/Layout';
 import { MyLessons } from './views/Lessons/MyLessons/MyLessons';
 import { Login } from './views/Login/Login';
 import { ResetPassword } from './views/ResetPassword/ResetPassword';
@@ -38,14 +37,7 @@ export const App = () => {
           <Route index element={<Navigate to="/account/zapomnialem-haslo" />} />
           <Route path=":token" element={<ResetPassword />} />
         </Route>
-        <Route
-          path="/"
-          element={
-            <Layout>
-              <RequireAuth />
-            </Layout>
-          }
-        >
+        <Route path="/" element={<RequireAuth />}>
           <Route index element={<HomePage />} />
           <Route
             path="/kursanci"
