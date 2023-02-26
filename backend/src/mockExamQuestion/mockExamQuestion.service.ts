@@ -202,6 +202,9 @@ export class MockExamQuestionService {
           join: { alias: 'MockExamQuestionsAnswer' },
           skip: index,
           take: 1,
+          relations: {
+            answers: true,
+          },
         });
       },
     );

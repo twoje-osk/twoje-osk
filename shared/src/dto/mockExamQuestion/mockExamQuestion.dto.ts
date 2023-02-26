@@ -1,9 +1,19 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsOptional, IsString, ValidateNested } from 'class-validator';
+import {
+  IsArray,
+  IsNumber,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
 import { DtoMockExamQuestionAnswer } from '../mockExamQuestionAnswer/mockExamQuestionAnswer.dto';
 import { DtoMockExamQuestionType } from '../mockExamQuestionType/mockExamQuestionType.dto';
 
 export class MockExamQuestionDto {
+  @ApiProperty()
+  @IsNumber()
+  id: number;
+
   @ApiProperty()
   @IsString()
   question: string;
