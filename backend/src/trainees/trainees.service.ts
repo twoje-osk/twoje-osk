@@ -2,7 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindOptionsWhere, Repository } from 'typeorm';
 import { Transactional } from 'typeorm-transactional-cls-hooked';
+// import { CourseReport } from '../course-reports/entities/course-report.entity';
 import { OrganizationDomainService } from '../organization-domain/organization-domain.service';
+// import { ReportEntriesService } from '../report-entries/report-entries.service';
 import { Try, getFailure, getSuccess } from '../types/Try';
 import { User } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
@@ -113,6 +115,15 @@ export class TraineesService {
       return getFailure('TRAINEE_OR_USER_FOUND');
     }
 
+    // const foundDriversLicenseCategory =
+    //   await this.driversLicenseCategoriesService.findByCategoryName(
+    //     'something',
+    //   );
+
+    // if (foundDriversLicenseCategory === null) {
+    //   return getFailure('DRIVER_LICENSE_CATEGORY_NOT_FOUND');
+    // }
+
     const createdUser = this.usersService.createUserWithoutSave(trainee.user);
 
     const createdTrainee = this.traineesRepository.create({
@@ -121,6 +132,8 @@ export class TraineesService {
       driversLicenseNumber: trainee.driversLicenseNumber,
       dateOfBirth: trainee.dateOfBirth,
       pkk: trainee.pkk,
+      driversLicenseCategoryId: trainee.driversLicenseCategoryId,
+      // courseReport: initializedReport,
     });
 
     createdUser.trainee = createdTrainee;
@@ -130,6 +143,8 @@ export class TraineesService {
 
     return getSuccess(createdTrainee);
   }
+
+  // TODO Should we be able to edit the courseReportId as admin or should it be something only superAdmins should do?
 
   @Transactional()
   async update(

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+// import { ReportEntry } from '../report-entries/entities/report-entry.entity';
 import { ReportEntryToCourseReport } from './entities/report-entry-to-course-report.entity';
 
 @Injectable()
@@ -13,4 +14,8 @@ export class ReportEntryToCourseReportService {
   // async generateTraineeReportEntries()
 
   // async editTraineeReportEntry(traineeReportId: number, )
+
+  // async generateTraineeEntriesByReportEntry(entries: ReportEntry[]){
+
+  // };
 }

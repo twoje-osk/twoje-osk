@@ -1,5 +1,5 @@
-import { Report } from 'reports/entities/report.entity';
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import type { Report } from '../../reports/entities/report.entity';
 
 @Entity()
 export class DriversLicenseCategory {

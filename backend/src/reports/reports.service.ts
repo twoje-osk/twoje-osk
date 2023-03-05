@@ -10,19 +10,25 @@ export class ReportsService {
     private reportsRepository: Repository<Report>,
   ) {}
 
-  async getReportByDriversLicenseCategoryId(driversLicenseCategoryId: number) {
-    const reports = await this.reportsRepository.find({
+  async findOneByDriversLicenseCategoryId(driversLicenseCategoryId: number) {
+    const report = await this.reportsRepository.findOne({
       where: {
         driversLicenseCategory: {
           id: driversLicenseCategoryId,
         },
       },
+      relations: {
+        courseReports: true,
+      },
+      order: {
+        createdAt: 'DESC',
+      },
     });
 
-    return reports; // .map((v)=> new Date(v.));
+    return report;
   }
 
-  async getReportsByDriversLicenseCategoryId(driversLicenseCategoryId: number) {
+  async findByDriversLicenseCategoryId(driversLicenseCategoryId: number) {
     const reports = await this.reportsRepository.find({
       where: {
         driversLicenseCategory: {

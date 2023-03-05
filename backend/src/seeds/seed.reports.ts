@@ -10,9 +10,9 @@ class ReportFactory extends Factory<Report> {
   public generate() {
     const report = new Report();
 
-    report.driversLicenseCategory = this.faker.helpers.arrayElement(
-      driversLicenseCategoriesFactory.getAll(),
-    );
+    report.driversLicenseCategory = driversLicenseCategoriesFactory
+      .getAll()
+      .find((category) => category.name === 'B')!;
 
     report.createdAt = new Date();
 

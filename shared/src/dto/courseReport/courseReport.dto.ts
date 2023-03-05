@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { ReportDto } from '../report/report.dto';
 import { TraineeDto } from '../trainee/trainee.dto';
 
 export class CourseReportDto {
@@ -8,6 +9,6 @@ export class CourseReportDto {
   @ApiProperty()
   trainee: TraineeDto;
 
-  // @ApiProperty()
-  // report: ReportDto;
+  @ApiProperty()
+  report: ReportDto;
 }

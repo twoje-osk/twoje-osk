@@ -10,10 +10,10 @@ export class ReportEntriesService {
     private reportEntriesRepository: Repository<ReportEntry>,
   ) {}
 
-  async getReportEntries(reportId: number) {
+  async getEntriesByReportId(reportEntryId: number) {
     const reportEntries = await this.reportEntriesRepository.find({
       where: {
-        report: { id: reportId },
+        report: { id: reportEntryId },
       },
     });
 

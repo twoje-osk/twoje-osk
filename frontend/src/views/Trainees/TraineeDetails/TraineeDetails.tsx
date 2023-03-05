@@ -142,7 +142,7 @@ export const TraineeDetails = () => {
 
   const { trainee } = data;
 
-  // TODO ADD HERE driversLicenseCategoryId
+  // TODO HERE UPDATE FE WITH driverLicenseCategoryId?
   const initialValues: TraineeFormData = {
     firstName: trainee.user.firstName,
     lastName: trainee.user.lastName,

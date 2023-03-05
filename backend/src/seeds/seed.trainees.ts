@@ -1,4 +1,5 @@
 import { Trainee } from '../trainees/entities/trainee.entity';
+import { driversLicenseCategoriesFactory } from './seed.driversLicenseCategories';
 import { Factory } from './seed.utils';
 
 class TraineesFactory extends Factory<Trainee> {
@@ -14,6 +15,10 @@ class TraineesFactory extends Factory<Trainee> {
       : null;
     trainee.pkk = this.faker.random.numeric(20);
     trainee.dateOfBirth = this.faker.date.past();
+
+    trainee.driversLicenseCategory = driversLicenseCategoriesFactory
+      .getAll()
+      .find((category) => category.name === 'B')!;
 
     this.entities.push(trainee);
     return trainee;

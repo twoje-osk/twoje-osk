@@ -11,7 +11,7 @@ import {
   PrimaryGeneratedColumn,
   RelationId,
 } from 'typeorm';
-import { DriversLicenseCategory } from '../../driversLicenseCategory/entities/driversLicenseCategory.entity';
+import { DriversLicenseCategory } from '../../drivers-license-category/entities/drivers-license-category.entity';
 import type { MockExamQuestionAnswer } from '../../mockExamQuestionAnswer/entities/mockExamQuestionAnswer.entity';
 import { MockExamQuestionType } from './mockExamQuestionType.entity';
 
