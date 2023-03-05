@@ -152,6 +152,7 @@ export const TraineeDetails = () => {
     pkk: trainee.pkk,
     driversLicenseNumber: trainee.driversLicenseNumber ?? 'Brak',
     createdAt: parseISO(trainee.user.createdAt),
+    driversLicenseCategory: trainee.driversLicenseCategoryId ?? undefined,
   };
 
   return (

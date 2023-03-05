@@ -22,6 +22,10 @@ export class DriversLicenseCategoriesService {
     return this.driversLicenseCategoryRepository.find();
   }
 
+  findOneCategoryById(id: number) {
+    return this.driversLicenseCategoryRepository.findOneBy({ id });
+  }
+
   findCategoriesById(ids: number[]) {
     return this.driversLicenseCategoryRepository.find({
       where: {
