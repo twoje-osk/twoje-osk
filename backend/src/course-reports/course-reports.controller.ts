@@ -2,48 +2,76 @@ import {
   Controller,
   Get,
   NotFoundException,
+  // NotFoundException,
   Param,
   ParseIntPipe,
-  Post,
+  // Post,
 } from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
+import { ReportEntriesService } from '../report-entries/report-entries.service';
+import { assertNever } from '../utils/assertNever';
 import { CourseReportsService } from './course-reports.service';
 
 @Controller('course-reports')
 export class CourseReportsController {
-  constructor(private readonly courseReportsService: CourseReportsService) {}
+  constructor(
+    private readonly courseReportsService: CourseReportsService,
+    private readonly reportEntriesService: ReportEntriesService,
+  ) {}
 
   @ApiResponse({ type: '' })
-  @Get(':id')
+  @Get(':traineeId')
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  async getTraineeReport(@Param('id', ParseIntPipe) id: number) {
+  async getTraineeReport(@Param('traineeId', ParseIntPipe) id: number) {
     const traineeReport = await this.courseReportsService.findOneByTraineeId(
       id,
     );
-    return { traineeReport };
-  }
 
-  @ApiResponse({ type: '' })
-  @Post(':traineeId')
-  async addTraineeReport(
-    @Param('traineeId', ParseIntPipe) traineeId: number,
-  ): Promise<{}> {
-    const newCourseReport = await this.courseReportsService.create(traineeId);
+    if (!traineeReport.ok) {
+      if (traineeReport.error === 'COURSE_REPORT_NOT_FOUND') {
+        throw new NotFoundException(
+          'Course report not found for this traineeId',
+        );
+      }
 
-    if (newCourseReport.ok === true) {
-      return { newCourseReport };
+      return assertNever(traineeReport.error);
     }
-    if (newCourseReport.error === 'TRAINEE_DOES_NOT_EXIST') {
-      throw new NotFoundException('Trainee with this ID does not exist');
-    }
-    if (newCourseReport.error === 'REPORT_NOT_FOUND_FROM_TRAINEE') {
-      throw new NotFoundException('Trainee found with a non existant report');
-    }
-    if (newCourseReport.error === 'REPORT_ALREADY_CREATED_FOR_TRAINEE') {
-      throw new NotFoundException(
-        'This Trainee already have the latest report version',
+
+    const entries = traineeReport.data.reportEntryToCourseReports.map(
+      (reportEntryToCourseReport) =>
+        [
+          reportEntryToCourseReport.reportEntry.id,
+          {
+            done: reportEntryToCourseReport.done,
+            mastered: reportEntryToCourseReport.mastered,
+          },
+        ] as const,
+    );
+
+    const reportEntryIdToReportEntryToCourseReportsMap =
+      Object.fromEntries(entries);
+
+    const allReportEntries =
+      await this.reportEntriesService.getEntriesByReportId(
+        traineeReport.data.report.id,
       );
-    }
-    return { newCourseReport };
+
+    const mergedReports = allReportEntries.map((reportEntry) => {
+      const traineeAnswers =
+        reportEntryIdToReportEntryToCourseReportsMap[reportEntry.id];
+      return {
+        ...reportEntry,
+        done: traineeAnswers?.done ?? false,
+        mastered: traineeAnswers?.mastered ?? false,
+      };
+    });
+
+    // const groupResponses to group responses and report
+
+    return {
+      courseReportId: traineeReport.data.report.id,
+      report: [{ groupDescription: 'Group', entries: mergedReports }],
+      // report: groupResponses
+    };
   }
 }

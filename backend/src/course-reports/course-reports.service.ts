@@ -18,11 +18,13 @@ export class CourseReportsService {
     private reportsService: ReportsService,
   ) {}
 
-  async findOneByTraineeId(traineeId: number) {
+  async findOneByTraineeId(
+    traineeId: number,
+  ): Promise<Try<CourseReport, 'COURSE_REPORT_NOT_FOUND'>> {
     const { id: organizationId } =
       this.organizationDomainService.getRequestOrganization();
 
-    const reports = await this.courseReportsRepository.findOne({
+    const report = await this.courseReportsRepository.findOne({
       where: {
         trainee: {
           id: traineeId,
@@ -37,7 +39,11 @@ export class CourseReportsService {
       },
     });
 
-    return reports;
+    if (report === null) {
+      return getFailure('COURSE_REPORT_NOT_FOUND');
+    }
+
+    return getSuccess(report);
   }
 
   @Transactional()
@@ -51,9 +57,6 @@ export class CourseReportsService {
       | 'REPORT_ALREADY_CREATED_FOR_TRAINEE'
     >
   > {
-    // const { id: organizationId } =
-    //   this.organizationDomainService.getRequestOrganization();
-
     const trainee = await this.traineesService.findOneById(traineeId);
 
     if (trainee === null) {
