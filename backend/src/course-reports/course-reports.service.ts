@@ -67,15 +67,11 @@ export class CourseReportsService {
       trainee.driversLicenseCategoryId,
     );
 
-    console.debug('CONTENT REPORT:', report);
-
     if (report === null) {
       return getFailure('REPORT_NOT_FOUND_FROM_TRAINEE');
     }
 
     const existAlready = await this.findOneByTraineeId(trainee.id);
-
-    console.debug('CONTENT existAlready:', existAlready);
 
     if (existAlready !== null) {
       return getFailure('REPORT_ALREADY_CREATED_FOR_TRAINEE');
@@ -91,22 +87,4 @@ export class CourseReportsService {
 
     return getSuccess(newTraineeReport.id);
   }
-
-  // async create(traineeId: number) {
-  //   const { id: organizationId } =
-  //     this.organizationDomainService.getRequestOrganization();
-
-  //   const trainee = await this.traineesRepository.findOne({
-  //     where: {
-  //       id: traineeId,
-  //       user: {
-  //         organizationId,
-  //       },
-  //     },
-  //   });
-
-  //   const courseReport = await this.courseReportsRepository.create({
-  //     trainee,
-  //   });
-  // }
 }
