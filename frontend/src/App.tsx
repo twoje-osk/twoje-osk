@@ -26,6 +26,7 @@ import { DefaultAvailability } from './views/DefaultAvailability/DefaultAvailabi
 import { SignUp } from './views/SignUp/SignUp';
 import { ErrorBoundary } from './components/ErrorBoundary/ErrorBoundary';
 import { TraineeReport } from './views/Trainees/TraineeReport/TraineeReport';
+import { InstructorFinishLesson } from './views/Lessons/InstructorMyLessons/InstructorFinishLesson/InstructorFinishLesson';
 
 export const App = () => {
   return (
@@ -98,6 +99,11 @@ export const App = () => {
             }
           >
             <Route index element={<MyLessons />} />
+            <Route
+              path=":lessonId/zakoncz"
+              element={<InstructorFinishLesson />}
+            />
+            <Route path=":lessonId" element={<MyLessons />} />
           </Route>
           <Route
             path="/moja-dostepnosc"

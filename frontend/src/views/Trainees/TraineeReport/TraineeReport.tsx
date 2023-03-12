@@ -4,54 +4,40 @@ import { Link, Navigate, useParams } from 'react-router-dom';
 import { Breadcrumbs, Icon, Typography } from '@mui/material';
 import useSWR from 'swr';
 import { TraineeFindOneResponseDto } from '@osk/shared';
+import { Flex } from 'reflexbox';
 import { theme } from '../../../theme';
 import { GeneralAPIError } from '../../../components/GeneralAPIError/GeneralAPIError';
 import { FullPageLoading } from '../../../components/FullPageLoading/FullPageLoading';
-import { Report, RowData } from '../../../components/Report/Report';
-
-function createData(action: string, done: boolean, mastered: boolean): RowData {
-  return { action, done, mastered };
-}
-
-export const REPORTS_ROWS = [
-  // prettier-ignore
-  createData('Przygotowanie do jazdy', false, false),
-  // prettier-ignore
-  createData('Ruszanie z miejsca oraz jazda pasem ruchu do przodu i do tyłu', false, false),
-  // prettier-ignore
-  createData('Parkowanie skośne (wjazd przodem - wyjazd tyłem)', false, false),
-  // prettier-ignore
-  createData('Parkowanie prostopadłe (wjazd przodem - wyjazd tyłem)', false, false),
-  // prettier-ignore
-  createData('Parkowanie prostopadłe (wjazd tyłem - wyjazd przodem)', false, false),
-  // prettier-ignore
-  createData('Parkowanie równoległe (wjazd tyłem - wyjazd przodem)', false, false),
-  // prettier-ignore
-  createData('Ruszanie z miejsca do przodu na wzniesieniu', false, false),
-];
+import { Report } from '../../../components/Report/Report';
+import { useCourseReportData } from '../../../hooks/useCourseReportData/useCourseReportData';
 
 export const TraineeReport = () => {
   const { traineeId } = useParams();
-  const { data, error } = useSWR<TraineeFindOneResponseDto>(
-    traineeId ? `/api/trainees/${traineeId}` : null,
+  const { data: traineeData, error: traineeError } =
+    useSWR<TraineeFindOneResponseDto>(
+      traineeId ? `/api/trainees/${traineeId}` : null,
+    );
+
+  const [courseReportData, updateRow] = useCourseReportData(
+    traineeId ? Number.parseInt(traineeId, 10) : null,
   );
 
   if (traineeId === undefined) {
     return <Navigate to="/" replace />;
   }
 
-  if (error) {
+  if (traineeError || courseReportData.type === 'error') {
     return <GeneralAPIError />;
   }
 
-  if (data === undefined) {
+  if (traineeData === undefined || courseReportData.type === 'loading') {
     return <FullPageLoading />;
   }
 
-  const { trainee } = data;
+  const { trainee } = traineeData;
 
   return (
-    <div>
+    <Flex height="100%" flexDirection="column">
       <Toolbar
         sx={{
           pl: { sm: 2 },
@@ -80,7 +66,7 @@ export const TraineeReport = () => {
           </Typography>
         </Breadcrumbs>
       </Toolbar>
-      <Report rows={REPORTS_ROWS} />
-    </div>
+      <Report groups={courseReportData.groups} onChange={updateRow} />
+    </Flex>
   );
 };

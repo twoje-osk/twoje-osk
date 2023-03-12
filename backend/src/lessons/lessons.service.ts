@@ -111,6 +111,10 @@ export class LessonsService {
           user: { id: traineeUserId, organizationId },
         },
       },
+      relations: {
+        trainee: true,
+        instructor: true,
+      },
     });
   }
 

@@ -1,6 +1,6 @@
 import Toolbar from '@mui/material/Toolbar';
 import MUILink from '@mui/material/Link';
-import { Link, useParams } from 'react-router-dom';
+import { Link, Navigate, useParams } from 'react-router-dom';
 import {
   Breadcrumbs,
   FormControl,
@@ -14,20 +14,19 @@ import {
 } from '@mui/material';
 import useSWR from 'swr';
 import { GetLessonByIdResponseDTO } from '@osk/shared';
-import { Box } from 'reflexbox';
+import { Box, Flex } from 'reflexbox';
 import { LessonStatus } from '@osk/shared/src/types/lesson.types';
 import { LoadingButton } from '@mui/lab';
 import { useMemo } from 'react';
-import { Report } from '../../../../components/Report/Report';
 import { theme } from '../../../../theme';
 import { FullPageLoading } from '../../../../components/FullPageLoading/FullPageLoading';
 import { GeneralAPIError } from '../../../../components/GeneralAPIError/GeneralAPIError';
 import { formatTime, formatVeryLongDate } from '../../../../utils/date';
-import { REPORTS_ROWS } from '../../../Trainees/TraineeReport/TraineeReport';
 import {
   useFinishLessonApiRequest,
   useSelectedVehicle,
 } from './InstructorFinishLesson.hooks';
+import { InstructorFinishLessonReport } from './InstructorFinishLessonReport/InstructorFinishLessonReport';
 
 export interface RowData {
   action: string;
@@ -85,8 +84,16 @@ export const InstructorFinishLesson = () => {
     return <FullPageLoading />;
   }
 
+  if (
+    lesson.status !== LessonStatus.Finished &&
+    lesson.status !== LessonStatus.Accepted
+  ) {
+    return <Navigate to={`/moje-jazdy/${lessonId}`} />;
+  }
+
+  const traineeId = lesson.trainee.id;
   return (
-    <div>
+    <Flex height="100%" flexDirection="column">
       <Toolbar
         sx={{
           pl: { sm: 2 },
@@ -163,7 +170,6 @@ export const InstructorFinishLesson = () => {
             </Icon>
           }
           disabled={isSubmitting}
-          // disabled={lesson.status === LessonStatus.Finished || isSubmitting}
           loading={isSubmitting}
         >
           {lesson.status === LessonStatus.Finished
@@ -171,7 +177,7 @@ export const InstructorFinishLesson = () => {
             : 'Zakończ Jazdę'}
         </LoadingButton>
       </Stack>
-      <Report rows={REPORTS_ROWS} />
-    </div>
+      <InstructorFinishLessonReport traineeId={traineeId} />
+    </Flex>
   );
 };
