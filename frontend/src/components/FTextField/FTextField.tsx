@@ -3,7 +3,7 @@ import { isValid, parse } from 'date-fns';
 import { useField, useFormikContext } from 'formik';
 import { formatInput, getFormatForInputType } from '../../utils/date';
 
-type FTextFieldProps = Omit<
+export type FTextFieldProps = Omit<
   Omit<Omit<TextFieldProps, 'onChange'>, 'onBlur'>,
   'value'
 > & {
