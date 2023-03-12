@@ -6,6 +6,7 @@ import {
   ParseIntPipe,
 } from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
+import { GetCourseReportResponseDto } from '@osk/shared';
 import { ReportEntriesService } from '../report-entries/report-entries.service';
 import { assertNever } from '../utils/assertNever';
 import { CourseReportsService } from './course-reports.service';
@@ -19,8 +20,9 @@ export class CourseReportsController {
 
   @ApiResponse({ type: '' })
   @Get(':traineeId')
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  async getTraineeReport(@Param('traineeId', ParseIntPipe) id: number) {
+  async getTraineeReport(
+    @Param('traineeId', ParseIntPipe) id: number,
+  ): Promise<GetCourseReportResponseDto> {
     const traineeReport = await this.courseReportsService.findOneByTraineeId(
       id,
     );

@@ -20,3 +20,4 @@ export * from './dto/mockExamQuestionAnswer/mockExamQuestionAnswer.dto';
 export * from './dto/mockExamQuestionType/mockExamQuestionType.dto';
 export * from './dto/reportEntry/reportEntry.dto';
 export * from './dto/reportEntryToCourseReport/reportEntryToCourseReport.dto';
+export * from './dto/courseReport/courseReport.dto';

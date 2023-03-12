@@ -12,3 +12,33 @@ export class CourseReportDto {
   @ApiProperty()
   report: ReportDto;
 }
+
+export class CourseReportEntry {
+  @ApiProperty()
+  id: number;
+
+  @ApiProperty()
+  description: string;
+
+  @ApiProperty()
+  done: boolean;
+
+  @ApiProperty()
+  mastered: boolean;
+}
+
+export class CourseReportGroup {
+  @ApiProperty()
+  groupDescription: string;
+
+  @ApiProperty()
+  entries: CourseReportEntry[];
+}
+
+export class GetCourseReportResponseDto {
+  @ApiProperty()
+  courseReportId: number;
+
+  @ApiProperty()
+  report: CourseReportGroup[];
+}
