@@ -23,6 +23,7 @@ import {
 } from '../../components/UnauthenticatedView/UnauthenticatedView.styled';
 import { submitSignUp } from './SignUp.utils';
 import { useCommonSnackbars } from '../../hooks/useCommonSnackbars/useCommonSnackbars';
+import { FPasswordTextField } from '../../components/FPasswordTextField/FPasswordTextField';
 
 export const SignUp = () => {
   const { oskName, error } = useUnauthorizedOrganizationData();
@@ -116,10 +117,9 @@ export const SignUp = () => {
                           required
                           disabled={isLoading}
                         />
-                        <FTextField
+                        <FPasswordTextField
                           name="password"
                           label="Hasło"
-                          type="password"
                           required
                           disabled={isLoading}
                         />

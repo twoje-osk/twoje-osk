@@ -28,7 +28,15 @@ export class AuthService {
       },
     });
 
-    if (!user || user.password === null) {
+    if (!user) {
+      return null;
+    }
+
+    return this.validateUserByEntity(user, password);
+  }
+
+  async validateUserByEntity(user: User, password: string) {
+    if (user.password === null) {
       return null;
     }
 

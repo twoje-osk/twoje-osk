@@ -24,6 +24,7 @@ import {
   UnauthenticatedViewHiddenWrapper,
   UnauthenticatedViewLoaderWrapper,
 } from '../../components/UnauthenticatedView/UnauthenticatedView.styled';
+import { FPasswordTextField } from '../../components/FPasswordTextField/FPasswordTextField';
 
 export const Login = () => {
   const { oskName, error } = useUnauthorizedOrganizationData();
@@ -105,10 +106,9 @@ export const Login = () => {
                         required
                         disabled={isLoading}
                       />
-                      <FTextField
+                      <FPasswordTextField
                         name="password"
                         label="Hasło"
-                        type="password"
                         margin="normal"
                         required
                         disabled={isLoading}

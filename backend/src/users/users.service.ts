@@ -71,15 +71,29 @@ export class UsersService {
     return newUser;
   }
 
-  async update(user: Partial<UserArguments>, userId: number) {
+  async update(
+    { password, ...baseUserProperties }: Partial<UserArguments>,
+    userId: number,
+  ) {
     const { id: organizationId } =
       this.organizationDomainService.getRequestOrganization();
+
+    const passwordUserProperties = password
+      ? {
+          password: this.getHashedPassword(password),
+        }
+      : {};
+    const userProperties = {
+      ...baseUserProperties,
+      ...passwordUserProperties,
+    };
+
     const updatedUser = this.usersRepository.update(
       {
         id: userId,
         organization: { id: organizationId },
       },
-      user,
+      userProperties,
     );
 
     return updatedUser;

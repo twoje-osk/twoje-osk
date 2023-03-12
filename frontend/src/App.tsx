@@ -7,7 +7,6 @@ import { HomePage } from './views/HomePage/HomePage';
 import { InstructorsList } from './views/Instructors/InstructorsList/InstructorsList';
 import { InstructorsDetails } from './views/Instructors/InstructorsDetails/InstructorsDetails';
 import { InstructorsEdit } from './views/Instructors/InstructorsEdit/InstructorsEdit';
-import { Layout } from './views/Layout/Layout';
 import { MyLessons } from './views/Lessons/MyLessons/MyLessons';
 import { Login } from './views/Login/Login';
 import { ResetPassword } from './views/ResetPassword/ResetPassword';
@@ -25,6 +24,7 @@ import { Availability } from './views/Availability/Availability';
 import { DefaultAvailability } from './views/DefaultAvailability/DefaultAvailability';
 import { SignUp } from './views/SignUp/SignUp';
 import { ErrorBoundary } from './components/ErrorBoundary/ErrorBoundary';
+import { MyProfile } from './views/MyProfile/MyProfile';
 
 export const App = () => {
   return (
@@ -37,14 +37,7 @@ export const App = () => {
           <Route index element={<Navigate to="/account/zapomnialem-haslo" />} />
           <Route path=":token" element={<ResetPassword />} />
         </Route>
-        <Route
-          path="/"
-          element={
-            <Layout>
-              <RequireAuth />
-            </Layout>
-          }
-        >
+        <Route path="/" element={<RequireAuth />}>
           <Route index element={<HomePage />} />
           <Route
             path="/kursanci"
@@ -111,6 +104,9 @@ export const App = () => {
             }
           >
             <Route index element={null} />
+          </Route>
+          <Route path="/profil">
+            <Route index element={<MyProfile />} />
           </Route>
         </Route>
       </Routes>
