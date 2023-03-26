@@ -20,6 +20,7 @@ export const PaymentEdit = () => {
     <PaymentEditLayout
       returnUrl={`/platnosci/${paymentId}`}
       breadcrumbs={breadcrumbs}
+      showTrainee
     />
   );
 };

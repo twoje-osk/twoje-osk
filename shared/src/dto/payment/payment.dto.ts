@@ -41,12 +41,12 @@ export class PaymentCreateRequestDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsNumber()
-  traineeId: number;
+  idTrainee: number;
 }
 
 export class PaymentUpdateRequestDto extends OmitType(
   PartialType(PaymentCreateRequestDto),
-  ['traineeId'],
+  ['idTrainee'],
 ) {}
 
 export class PaymentFindAllResponseDto {
@@ -66,6 +66,13 @@ export class PaymentFindAllByTraineeResponseDto {
 }
 
 export class PaymentFindOneResponseDto {
+  @ApiProperty({
+    type: PaymentWithTraineeDto,
+  })
+  payment: PaymentWithTraineeDto;
+}
+
+export class PaymentCreateResponseDto {
   @ApiProperty({
     type: PaymentWithTraineeDto,
   })

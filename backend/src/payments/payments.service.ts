@@ -140,7 +140,7 @@ export class PaymentsService {
   async create(
     payment: PaymentArguments,
   ): Promise<Try<Payment, 'TRAINEE_NOT_FOUND'>> {
-    const findTraineeCall = await this.traineesService.findOneByUserId(
+    const findTraineeCall = await this.traineesService.findOneById(
       payment.idTrainee,
     );
 

@@ -31,6 +31,8 @@ import { PaymentDetails } from './views/Payments/PaymentDetails/PaymentDetails';
 import { PaymentEdit } from './views/Payments/PaymentEdit/PaymentEdit';
 import { TraineePaymentDetails } from './views/Trainees/TraineePayments/TraineePaymentDetails/TraineePaymentDetails';
 import { TraineePaymentEdit } from './views/Trainees/TraineePayments/TraineePaymentEdit/TraineePaymentEdit';
+import { PaymentNew } from './views/Payments/PaymentNew/PaymentNew';
+import { TraineePaymentNew } from './views/Trainees/TraineePayments/TraineePaymentNew/TraineePaymentNew';
 
 export const App = () => {
   return (
@@ -60,6 +62,7 @@ export const App = () => {
               element={<RequireRole roles={[UserRole.Admin]} />}
             >
               <Route index element={<TraineePaymentsList />} />
+              <Route path="nowa" element={<TraineePaymentNew />} />
               <Route path=":paymentId" element={<TraineePaymentDetails />} />
               <Route
                 path=":paymentId/edytuj"
@@ -127,6 +130,7 @@ export const App = () => {
             element={<RequireRole roles={[UserRole.Admin]} />}
           >
             <Route index element={<PaymentsList />} />
+            <Route path="nowa" element={<PaymentNew />} />
             <Route path=":paymentId" element={<PaymentDetails />} />
             <Route path=":paymentId/edytuj" element={<PaymentEdit />} />
           </Route>

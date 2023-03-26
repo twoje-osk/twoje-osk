@@ -7,6 +7,7 @@ import {
   Param,
   ParseIntPipe,
   Patch,
+  Post,
 } from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
 import {
@@ -17,6 +18,8 @@ import {
   UserRole,
   PaymentFindAllByTraineeResponseDto,
   PaymentDeleteResponseDto,
+  PaymentCreateResponseDto,
+  PaymentCreateRequestDto,
 } from '@osk/shared';
 import { Roles } from '../common/guards/roles.decorator';
 import { CurrentUserService } from '../current-user/current-user.service';
@@ -92,6 +95,27 @@ export class PaymentsController {
     }
 
     return assertNever(payment.error);
+  }
+
+  @Roles(UserRole.Admin)
+  @ApiResponse({
+    type: PaymentCreateResponseDto,
+  })
+  @Post()
+  async createPayment(
+    @Body() body: PaymentCreateRequestDto,
+  ): Promise<PaymentCreateResponseDto> {
+    const createResult = await this.paymentsService.create(body);
+
+    if (createResult.ok) {
+      return { payment: createResult.data };
+    }
+
+    if (createResult.error === 'TRAINEE_NOT_FOUND') {
+      throw new NotFoundException('Trainee with this ID does not exist.');
+    }
+
+    return assertNever(createResult.error);
   }
 
   @Roles(UserRole.Admin)

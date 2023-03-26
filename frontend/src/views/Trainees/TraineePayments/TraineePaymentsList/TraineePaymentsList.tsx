@@ -109,7 +109,7 @@ export const TraineePaymentsList = () => {
                 sx={{ cursor: 'pointer' }}
               >
                 <TableCell>{formatLong(parseISO(row.date))}</TableCell>
-                <TableCell>{row.note}</TableCell>
+                <TableCell>{row.note.trim() || 'Brak'}</TableCell>
                 <AmountTableCell align="right">
                   {formatCurrency(row.amount)}
                 </AmountTableCell>
