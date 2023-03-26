@@ -39,7 +39,25 @@ export class PaymentsService {
     return payments;
   }
 
-  async findAllByTrainee(traineeId: number) {
+  async findAllByTraineeId(traineeId: number) {
+    const { id: organizationId } =
+      this.organizationDomainService.getRequestOrganization();
+
+    const payments = await this.paymentsRepository.find({
+      where: {
+        trainee: {
+          id: traineeId,
+          user: {
+            organizationId,
+          },
+        },
+      },
+    });
+
+    return payments;
+  }
+
+  async findAllByUserId(traineeId: number) {
     const { id: organizationId } =
       this.organizationDomainService.getRequestOrganization();
 
@@ -51,9 +69,6 @@ export class PaymentsService {
             id: traineeId,
           },
         },
-      },
-      relations: {
-        trainee: { user: true },
       },
     });
 

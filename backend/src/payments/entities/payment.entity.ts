@@ -16,6 +16,9 @@ export class Payment {
   @Column()
   amount: number;
 
+  @Column({ default: '' })
+  note: string;
+
   @Column()
   date: Date;
 

@@ -1,29 +1,19 @@
 import { ApiProperty, OmitType, PartialType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsDate, IsNotEmpty, IsNumber } from 'class-validator';
-import { TraineeDto } from '../trainee/trainee.dto';
 
 export class PaymentDto {
   @ApiProperty()
-  @IsNotEmpty()
-  @IsNumber()
   id: number;
 
   @ApiProperty()
-  @IsNotEmpty()
-  @IsNumber()
   amount: number;
 
   @ApiProperty()
-  @IsNotEmpty()
-  @Type(() => Date)
-  @IsDate()
-  date: ApiDate;
+  note: string;
 
   @ApiProperty()
-  @IsNotEmpty()
-  @Type(() => TraineeDto)
-  trainee: TraineeDto;
+  date: ApiDate;
 }
 
 export class PaymentCreateRequestDto {
@@ -50,6 +40,14 @@ export class PaymentUpdateRequestDto extends OmitType(
 ) {}
 
 export class PaymentFindAllResponseDto {
+  @ApiProperty({
+    isArray: true,
+    type: PaymentDto,
+  })
+  payments: PaymentDto[];
+}
+
+export class PaymentFindAllByTraineeResponseDto {
   @ApiProperty({
     isArray: true,
     type: PaymentDto,

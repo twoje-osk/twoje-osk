@@ -25,6 +25,7 @@ import { DefaultAvailability } from './views/DefaultAvailability/DefaultAvailabi
 import { SignUp } from './views/SignUp/SignUp';
 import { ErrorBoundary } from './components/ErrorBoundary/ErrorBoundary';
 import { MyProfile } from './views/MyProfile/MyProfile';
+import { TraineePayments } from './views/Trainees/TraineePayments/TraineePayments';
 
 export const App = () => {
   return (
@@ -49,6 +50,7 @@ export const App = () => {
             <Route path="nowy" element={<TraineeNew />} />
             <Route path=":traineeId" element={<TraineeDetails />} />
             <Route path=":traineeId/edytuj" element={<TraineeEdit />} />
+            <Route path=":traineeId/platnosci" element={<TraineePayments />} />
           </Route>
           <Route
             path="/instruktorzy"

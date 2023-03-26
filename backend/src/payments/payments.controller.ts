@@ -14,6 +14,7 @@ import {
   PaymentUpdateResponseDto,
   PaymentUpdateRequestDto,
   UserRole,
+  PaymentFindAllByTraineeResponseDto,
 } from '@osk/shared';
 import { Roles } from '../common/guards/roles.decorator';
 import { CurrentUserService } from '../current-user/current-user.service';
@@ -38,15 +39,28 @@ export class PaymentsController {
     return { payments };
   }
 
+  @Roles(UserRole.Admin)
+  @ApiResponse({
+    type: PaymentFindAllByTraineeResponseDto,
+  })
+  @Get('trainees/:traineeId')
+  async findAllByTraineeId(
+    @Param('traineeId', ParseIntPipe) traineeId: number,
+  ): Promise<PaymentFindAllByTraineeResponseDto> {
+    const payments = await this.paymentsService.findAllByTraineeId(traineeId);
+
+    return { payments };
+  }
+
   @Roles(UserRole.Trainee)
   @ApiResponse({
     type: PaymentFindAllResponseDto,
   })
   @Get('my')
-  async findAllByTrainee(): Promise<PaymentFindAllResponseDto> {
+  async findAllForCurrentUser(): Promise<PaymentFindAllResponseDto> {
     const loggedUser = this.currentUserService.getRequestCurrentUser();
 
-    const payments = await this.paymentsService.findAllByTrainee(
+    const payments = await this.paymentsService.findAllByUserId(
       loggedUser.userId,
     );
 
@@ -57,13 +71,13 @@ export class PaymentsController {
   @ApiResponse({
     type: PaymentFindOneResponseDto,
   })
-  @Get('my/:id')
+  @Get('my/:paymentId')
   async findOnePersonalPayment(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('paymentId', ParseIntPipe) paymentId: number,
   ): Promise<PaymentFindOneResponseDto> {
     const loggedUser = this.currentUserService.getRequestCurrentUser();
     const payment = await this.paymentsService.findOneById(
-      id,
+      paymentId,
       loggedUser.userId,
     );
 
@@ -82,12 +96,12 @@ export class PaymentsController {
   @ApiResponse({
     type: PaymentUpdateResponseDto,
   })
-  @Patch(':id')
+  @Patch(':paymentId')
   async editPayment(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('paymentId', ParseIntPipe) paymentId: number,
     @Body() body: PaymentUpdateRequestDto,
   ): Promise<PaymentUpdateResponseDto> {
-    const updateResult = await this.paymentsService.update(id, body);
+    const updateResult = await this.paymentsService.update(paymentId, body);
 
     if (updateResult.ok) {
       return { payment: updateResult.data };
@@ -104,11 +118,11 @@ export class PaymentsController {
   @ApiResponse({
     type: PaymentFindOneResponseDto,
   })
-  @Get(':id')
+  @Get(':paymentId')
   async findOne(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('paymentId', ParseIntPipe) paymentId: number,
   ): Promise<PaymentFindOneResponseDto> {
-    const payment = await this.paymentsService.findOneById(id);
+    const payment = await this.paymentsService.findOneById(paymentId);
 
     if (payment.ok) {
       return { payment: payment.data };
