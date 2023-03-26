@@ -57,12 +57,27 @@ export class PaymentFindAllResponseDto {
   payments: PaymentWithTraineeDto[];
 }
 
+export class PaymentMyFindAllResponseDto {
+  @ApiProperty({
+    isArray: true,
+    type: PaymentWithTraineeDto,
+  })
+  payments: PaymentDto[];
+}
+
 export class PaymentFindAllByTraineeResponseDto {
   @ApiProperty({
     isArray: true,
     type: PaymentDto,
   })
   payments: PaymentDto[];
+}
+
+export class PaymentMyFindOneResponseDto {
+  @ApiProperty({
+    type: PaymentDto,
+  })
+  payment: PaymentDto;
 }
 
 export class PaymentFindOneResponseDto {

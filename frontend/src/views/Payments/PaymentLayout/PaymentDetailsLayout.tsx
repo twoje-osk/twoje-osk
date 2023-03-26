@@ -1,10 +1,14 @@
 import { Button, Icon, Stack, Toolbar } from '@mui/material';
 import {
   PaymentDeleteResponseDto,
+  PaymentDto,
   PaymentFindOneResponseDto,
+  PaymentMyFindOneResponseDto,
+  PaymentWithTraineeDto,
 } from '@osk/shared';
+import { UserRole } from '@osk/shared/src/types/user.types';
 import { parseISO } from 'date-fns';
-import { ReactNode, useCallback } from 'react';
+import { ReactNode, useCallback, useMemo } from 'react';
 import { Navigate, useParams, Link, useNavigate } from 'react-router-dom';
 import { Box } from 'reflexbox';
 import useSWR from 'swr';
@@ -12,6 +16,7 @@ import { ActionModal } from '../../../components/ActionModal/ActionModal';
 import { FullPageLoading } from '../../../components/FullPageLoading/FullPageLoading';
 import { GeneralAPIError } from '../../../components/GeneralAPIError/GeneralAPIError';
 import { useActionModal } from '../../../hooks/useActionModal/useActionModal';
+import { useAuth } from '../../../hooks/useAuth/useAuth';
 import { useCommonSnackbars } from '../../../hooks/useCommonSnackbars/useCommonSnackbars';
 import { useMakeRequestWithAuth } from '../../../hooks/useMakeRequestWithAuth/useMakeRequestWithAuth';
 import { PaymentForm } from '../PaymentForm/PaymentForm';
@@ -34,9 +39,22 @@ export const PaymentDetailsLayout = ({
 }: PaymentDetailsLayoutProps) => {
   const { paymentId } = useParams();
   const navigate = useNavigate();
-  const { data, error } = useSWR<PaymentFindOneResponseDto>(
-    paymentId ? `/api/payments/${paymentId}` : null,
-  );
+  const { role } = useAuth();
+  const apiUrl = useMemo(() => {
+    if (paymentId === undefined) {
+      return null;
+    }
+
+    if (role === UserRole.Trainee) {
+      return `/api/payments/my/${paymentId}`;
+    }
+
+    return `/api/payments/${paymentId}`;
+  }, [paymentId, role]);
+
+  const { data, error } = useSWR<
+    PaymentFindOneResponseDto | PaymentMyFindOneResponseDto
+  >(apiUrl);
 
   const {
     isLoading: isDeleteModalLoading,
@@ -107,29 +125,33 @@ export const PaymentDetailsLayout = ({
       </Toolbar>
       <Box as="main" p="16px" pt="0">
         <PaymentForm initialValues={initialValues} disabled>
-          {showTrainee && <TraineeLabel trainee={payment.trainee} />}
-          <Stack
-            direction="row"
-            spacing={1}
-            marginTop={showTrainee ? '16px' : undefined}
-          >
-            <Button
-              variant="contained"
-              startIcon={<Icon>edit</Icon>}
-              component={Link}
-              to="edytuj"
+          {showTrainee && isResponseWithTrainee(payment) && (
+            <TraineeLabel trainee={payment.trainee} />
+          )}
+          {role !== UserRole.Trainee && (
+            <Stack
+              direction="row"
+              spacing={1}
+              marginTop={showTrainee ? '16px' : undefined}
             >
-              Edytuj
-            </Button>
-            <Button
-              color="error"
-              variant="outlined"
-              startIcon={<Icon>delete</Icon>}
-              onClick={openDeleteModal}
-            >
-              Usuń
-            </Button>
-          </Stack>
+              <Button
+                variant="contained"
+                startIcon={<Icon>edit</Icon>}
+                component={Link}
+                to="edytuj"
+              >
+                Edytuj
+              </Button>
+              <Button
+                color="error"
+                variant="outlined"
+                startIcon={<Icon>delete</Icon>}
+                onClick={openDeleteModal}
+              >
+                Usuń
+              </Button>
+            </Stack>
+          )}
         </PaymentForm>
       </Box>
       <ActionModal
@@ -142,4 +164,10 @@ export const PaymentDetailsLayout = ({
       />
     </div>
   );
+};
+
+const isResponseWithTrainee = (
+  data: PaymentWithTraineeDto | PaymentDto,
+): data is PaymentWithTraineeDto => {
+  return 'trainee' in data;
 };

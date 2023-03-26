@@ -20,6 +20,7 @@ import {
   PaymentDeleteResponseDto,
   PaymentCreateResponseDto,
   PaymentCreateRequestDto,
+  PaymentMyFindAllResponseDto,
 } from '@osk/shared';
 import { Roles } from '../common/guards/roles.decorator';
 import { CurrentUserService } from '../current-user/current-user.service';
@@ -59,10 +60,10 @@ export class PaymentsController {
 
   @Roles(UserRole.Trainee)
   @ApiResponse({
-    type: PaymentFindAllResponseDto,
+    type: PaymentMyFindAllResponseDto,
   })
   @Get('my')
-  async findAllForCurrentUser(): Promise<PaymentFindAllResponseDto> {
+  async findAllForCurrentUser(): Promise<PaymentMyFindAllResponseDto> {
     const loggedUser = this.currentUserService.getRequestCurrentUser();
 
     const payments = await this.paymentsService.findAllByUserId(
