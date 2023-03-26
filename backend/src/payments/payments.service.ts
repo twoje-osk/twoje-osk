@@ -34,6 +34,9 @@ export class PaymentsService {
       relations: {
         trainee: { user: true },
       },
+      order: {
+        date: 'DESC',
+      },
     });
 
     return payments;
@@ -51,6 +54,9 @@ export class PaymentsService {
             organizationId,
           },
         },
+      },
+      order: {
+        date: 'DESC',
       },
     });
 
@@ -70,6 +76,9 @@ export class PaymentsService {
           },
         },
       },
+      order: {
+        date: 'DESC',
+      },
     });
 
     return payments;
@@ -79,6 +88,7 @@ export class PaymentsService {
   async findOneById(
     paymentId: number,
     userId?: number,
+    includeTrainee = false,
   ): Promise<Try<Payment, 'PAYMENT_NOT_FOUND'>> {
     const { id: organizationId } =
       this.organizationDomainService.getRequestOrganization();
@@ -90,6 +100,11 @@ export class PaymentsService {
           user: { id: userId, organizationId },
         },
       },
+      relations: !includeTrainee
+        ? undefined
+        : {
+            trainee: { user: true },
+          },
     });
 
     if (payment === null) {
@@ -173,6 +188,32 @@ export class PaymentsService {
         date: payment.date,
       },
     );
+
+    return getSuccess(undefined);
+  }
+
+  @Transactional()
+  async delete(
+    paymentId: number,
+  ): Promise<Try<undefined, 'PAYMENT_NOT_FOUND'>> {
+    const { id: organizationId } =
+      this.organizationDomainService.getRequestOrganization();
+
+    const findPaymentCall = await this.paymentsRepository.findOne({
+      where: {
+        id: paymentId,
+        trainee: { user: { organizationId } },
+      },
+      relations: {
+        trainee: true,
+      },
+    });
+
+    if (findPaymentCall === null) {
+      return getFailure('PAYMENT_NOT_FOUND');
+    }
+
+    await this.paymentsRepository.delete({ id: paymentId });
 
     return getSuccess(undefined);
   }

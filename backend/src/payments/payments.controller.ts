@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   NotFoundException,
   Param,
@@ -15,6 +16,7 @@ import {
   PaymentUpdateRequestDto,
   UserRole,
   PaymentFindAllByTraineeResponseDto,
+  PaymentDeleteResponseDto,
 } from '@osk/shared';
 import { Roles } from '../common/guards/roles.decorator';
 import { CurrentUserService } from '../current-user/current-user.service';
@@ -122,7 +124,11 @@ export class PaymentsController {
   async findOne(
     @Param('paymentId', ParseIntPipe) paymentId: number,
   ): Promise<PaymentFindOneResponseDto> {
-    const payment = await this.paymentsService.findOneById(paymentId);
+    const payment = await this.paymentsService.findOneById(
+      paymentId,
+      undefined,
+      true,
+    );
 
     if (payment.ok) {
       return { payment: payment.data };
@@ -133,5 +139,26 @@ export class PaymentsController {
     }
 
     return assertNever(payment.error);
+  }
+
+  @Roles(UserRole.Admin)
+  @ApiResponse({
+    type: PaymentDeleteResponseDto,
+  })
+  @Delete(':paymentId')
+  async delete(
+    @Param('paymentId', ParseIntPipe) paymentId: number,
+  ): Promise<PaymentDeleteResponseDto> {
+    const result = await this.paymentsService.delete(paymentId);
+
+    if (result.ok) {
+      return {};
+    }
+
+    if (result.error === 'PAYMENT_NOT_FOUND') {
+      throw new NotFoundException('Payment with this ID does not exist.');
+    }
+
+    return assertNever(result.error);
   }
 }

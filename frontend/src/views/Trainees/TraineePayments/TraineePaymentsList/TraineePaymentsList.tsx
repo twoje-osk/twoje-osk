@@ -21,14 +21,14 @@ import { parseISO } from 'date-fns';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Flex } from 'reflexbox';
 import useSWR from 'swr';
-import { FullPageLoading } from '../../../components/FullPageLoading/FullPageLoading';
-import { GeneralAPIError } from '../../../components/GeneralAPIError/GeneralAPIError';
-import { formatCurrency } from '../../../utils/currency';
-import { formatLong } from '../../../utils/date';
-import { AmountTableCell } from './TraineePayments.styled';
-import { theme } from '../../../theme';
+import { FullPageLoading } from '../../../../components/FullPageLoading/FullPageLoading';
+import { GeneralAPIError } from '../../../../components/GeneralAPIError/GeneralAPIError';
+import { formatCurrency } from '../../../../utils/currency';
+import { formatLong } from '../../../../utils/date';
+import { theme } from '../../../../theme';
+import { AmountTableCell } from './TraineePaymentsList.styled';
 
-export const TraineePayments = () => {
+export const TraineePaymentsList = () => {
   const { traineeId } = useParams();
   const navigate = useNavigate();
   const { data, error } = useSWR<PaymentFindAllByTraineeResponseDto>(
@@ -92,12 +92,12 @@ export const TraineePayments = () => {
         </Stack>
       </Toolbar>
       <TableContainer sx={{ flex: '1 1', overflow: 'auto' }}>
-        <Table aria-label="Lista Kursantów" stickyHeader>
+        <Table aria-label="Lista Płatności Kursanta" stickyHeader>
           <TableHead>
             <TableRow>
               <TableCell>Data</TableCell>
-              <TableCell>Uwaga</TableCell>
-              <TableCell>Kwota</TableCell>
+              <TableCell>Uwagi</TableCell>
+              <TableCell align="right">Kwota</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
