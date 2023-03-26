@@ -35,7 +35,6 @@ export class PaymentCreateRequestDto {
   date: ApiDate;
 
   @ApiProperty()
-  @IsNotEmpty()
   @IsString()
   note: string;
 

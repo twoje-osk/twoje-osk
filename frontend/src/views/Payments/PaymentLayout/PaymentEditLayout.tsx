@@ -34,7 +34,7 @@ export const PaymentEditLayout = ({
 }: PaymentEditLayoutProps) => {
   const { paymentId } = useParams();
   const navigate = useNavigate();
-  const { data, error } = useSWR<PaymentFindOneResponseDto>(
+  const { data, error, mutate } = useSWR<PaymentFindOneResponseDto>(
     paymentId ? `/api/payments/${paymentId}` : null,
   );
 
@@ -62,6 +62,7 @@ export const PaymentEditLayout = ({
       return;
     }
 
+    mutate();
     navigate(returnUrl);
     showSuccessSnackbar(
       `Płatność nr ${data?.payment.id} została zmodyfikowana`,

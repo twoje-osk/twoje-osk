@@ -11,6 +11,6 @@ setupYupLocale();
 export const paymentFormSchema: Yup.SchemaOf<PaymentFormData> =
   Yup.object().shape({
     amount: Yup.number().required(),
-    note: Yup.string().required(),
+    note: Yup.string().default(''),
     date: Yup.date().required(),
   });

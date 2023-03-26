@@ -68,7 +68,6 @@ export const PaymentForm = ({
             </Grid>
 
             <FTextField
-              required
               id="note"
               name="note"
               label="Uwagi"

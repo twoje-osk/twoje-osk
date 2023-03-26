@@ -1,6 +1,7 @@
 export interface PaymentArguments {
   amount: number;
   date: Date;
+  note: string;
   idTrainee: number;
 }
 

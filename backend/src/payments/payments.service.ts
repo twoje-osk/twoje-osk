@@ -186,6 +186,7 @@ export class PaymentsService {
       {
         amount: payment.amount,
         date: payment.date,
+        note: payment.note,
       },
     );
 
