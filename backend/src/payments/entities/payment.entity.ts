@@ -7,14 +7,20 @@ import {
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
 import { Trainee } from '../../trainees/entities/trainee.entity';
+import { ColumnNumericTransformer } from '../../utils/ColumnNumericTransformer';
 
 @Entity()
 export class Payment {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column('numeric', {
+    transformer: new ColumnNumericTransformer(),
+  })
   amount: number;
+
+  @Column({ default: '' })
+  note: string;
 
   @Column()
   date: Date;

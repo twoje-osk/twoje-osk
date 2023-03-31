@@ -15,8 +15,20 @@ class PaymentsFactory extends Factory<Payment> {
       min: 100,
       precision: 5,
     });
-    payment.date = this.faker.date.past(100);
-    payment.trainee = this.faker.helpers.arrayElement(traineesFactory.getAll());
+    payment.date = this.faker.date.past(1);
+    // eslint-disable-next-line prefer-destructuring
+    payment.trainee = traineesFactory.getAll()[0]!;
+
+    if (this.faker.datatype.float({ min: 0, max: 1 }) < 0.8) {
+      payment.note = this.faker.lorem.sentence(
+        this.faker.datatype.number({
+          min: 3,
+          max: 5,
+          precision: 1,
+        }),
+      );
+    }
+
     this.entities.push(payment);
     return payment;
   }
@@ -24,4 +36,4 @@ class PaymentsFactory extends Factory<Payment> {
 export const paymentsFactory = new PaymentsFactory();
 
 export const seedPayments = () =>
-  Array.from({ length: 100 }).map(() => paymentsFactory.generate());
+  Array.from({ length: 10 }).map(() => paymentsFactory.generate());

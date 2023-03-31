@@ -18,7 +18,14 @@ type FSelectProps<T> = Omit<
 
 // eslint-disable-next-line react/function-component-definition
 export function FSelect<T>(props: FSelectProps<T>) {
-  const { name, type, helperText: externalHelperText, label, id } = props;
+  const {
+    name,
+    type,
+    helperText: externalHelperText,
+    label,
+    id,
+    required,
+  } = props;
 
   const [field, meta] = useField({
     name,
@@ -31,7 +38,11 @@ export function FSelect<T>(props: FSelectProps<T>) {
 
   return (
     <FormControl>
-      {label && <InputLabel id={labelId}>{label}</InputLabel>}
+      {label && (
+        <InputLabel id={labelId} required={required}>
+          {label}
+        </InputLabel>
+      )}
       <Select<T>
         {...props}
         {...field}

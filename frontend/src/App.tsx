@@ -25,6 +25,16 @@ import { DefaultAvailability } from './views/DefaultAvailability/DefaultAvailabi
 import { SignUp } from './views/SignUp/SignUp';
 import { ErrorBoundary } from './components/ErrorBoundary/ErrorBoundary';
 import { MyProfile } from './views/MyProfile/MyProfile';
+import { TraineePaymentsList } from './views/Trainees/TraineePayments/TraineePaymentsList/TraineePaymentsList';
+import { PaymentsList } from './views/Payments/PaymentsList/PaymentsList';
+import { PaymentDetails } from './views/Payments/PaymentDetails/PaymentDetails';
+import { PaymentEdit } from './views/Payments/PaymentEdit/PaymentEdit';
+import { TraineePaymentDetails } from './views/Trainees/TraineePayments/TraineePaymentDetails/TraineePaymentDetails';
+import { TraineePaymentEdit } from './views/Trainees/TraineePayments/TraineePaymentEdit/TraineePaymentEdit';
+import { PaymentNew } from './views/Payments/PaymentNew/PaymentNew';
+import { TraineePaymentNew } from './views/Trainees/TraineePayments/TraineePaymentNew/TraineePaymentNew';
+import { MyPaymentsList } from './views/MyPayments/MyPaymentsList/MyPaymentsList';
+import { MyPaymentDetails } from './views/MyPayments/MyPaymentsDetails/MyPaymentsDetails';
 
 export const App = () => {
   return (
@@ -49,6 +59,18 @@ export const App = () => {
             <Route path="nowy" element={<TraineeNew />} />
             <Route path=":traineeId" element={<TraineeDetails />} />
             <Route path=":traineeId/edytuj" element={<TraineeEdit />} />
+            <Route
+              path=":traineeId/platnosci"
+              element={<RequireRole roles={[UserRole.Admin]} />}
+            >
+              <Route index element={<TraineePaymentsList />} />
+              <Route path="nowa" element={<TraineePaymentNew />} />
+              <Route path=":paymentId" element={<TraineePaymentDetails />} />
+              <Route
+                path=":paymentId/edytuj"
+                element={<TraineePaymentEdit />}
+              />
+            </Route>
           </Route>
           <Route
             path="/instruktorzy"
@@ -104,6 +126,22 @@ export const App = () => {
             }
           >
             <Route index element={null} />
+          </Route>
+          <Route
+            path="/platnosci"
+            element={<RequireRole roles={[UserRole.Admin]} />}
+          >
+            <Route index element={<PaymentsList />} />
+            <Route path="nowa" element={<PaymentNew />} />
+            <Route path=":paymentId" element={<PaymentDetails />} />
+            <Route path=":paymentId/edytuj" element={<PaymentEdit />} />
+          </Route>
+          <Route
+            path="/moje-platnosci"
+            element={<RequireRole roles={[UserRole.Trainee]} />}
+          >
+            <Route index element={<MyPaymentsList />} />
+            <Route path=":paymentId" element={<MyPaymentDetails />} />
           </Route>
           <Route path="/profil">
             <Route index element={<MyProfile />} />
