@@ -34,6 +34,7 @@ const menuItemsForRole: Record<UserRole, MenuItem[]> = {
     { text: 'Instruktorzy', icon: 'class', link: '/instruktorzy' },
     { text: 'Pojazdy', icon: 'directions_car', link: '/pojazdy' },
     { text: 'Ogłoszenia', icon: 'campaign', link: '/ogloszenia' },
+    { text: 'Płatności', icon: 'attach_money', link: '/platnosci' },
   ],
   [UserRole.Instructor]: [
     { text: 'Moje Jazdy', icon: 'toys', link: '/moje-jazdy' },
@@ -52,6 +53,7 @@ const menuItemsForRole: Record<UserRole, MenuItem[]> = {
     { text: 'Ogłoszenia', icon: 'campaign', link: '/ogloszenia' },
     { text: 'Płatności', icon: 'attach_money', link: '/' },
     { text: 'E-learning', icon: 'school', link: '/' },
+    { text: 'Moje Płatności', icon: 'attach_money', link: '/moje-platnosci' },
   ],
 };
 

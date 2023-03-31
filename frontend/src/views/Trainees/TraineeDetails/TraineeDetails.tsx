@@ -182,6 +182,15 @@ export const TraineeDetails = () => {
             <Button variant="contained">Zobacz Raport Postępów</Button>
             <Button
               variant="outlined"
+              color="success"
+              startIcon={<Icon>attach_money</Icon>}
+              component={Link}
+              to="platnosci"
+            >
+              Płatności
+            </Button>
+            <Button
+              variant="outlined"
               startIcon={<Icon>edit</Icon>}
               component={Link}
               to="edytuj"
