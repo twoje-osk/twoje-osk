@@ -1,8 +1,17 @@
-import { PrimaryGeneratedColumn, Column, ManyToOne, Entity } from 'typeorm';
+import { Exclude } from 'class-transformer';
+import {
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  Entity,
+  RelationId,
+  Index,
+} from 'typeorm';
 import type { CourseReport } from '../../course-reports/entities/course-report.entity';
 import { ReportEntry } from '../../report-entries/entities/report-entry.entity';
 
 @Entity()
+@Index(['courseReport', 'reportEntry'], { unique: true })
 export class ReportEntryToCourseReport {
   @PrimaryGeneratedColumn()
   id: number;
@@ -22,6 +31,14 @@ export class ReportEntryToCourseReport {
   )
   courseReport: CourseReport;
 
+  @Exclude()
+  @Column()
+  @RelationId(
+    (reportEntryToCourseReports: ReportEntryToCourseReport) =>
+      reportEntryToCourseReports.courseReport,
+  )
+  courseReportId: number;
+
   @ManyToOne<ReportEntry>(
     'ReportEntry',
     (reportEntry) => reportEntry.reportEntryToCourseReports,
@@ -30,4 +47,12 @@ export class ReportEntryToCourseReport {
     },
   )
   reportEntry: ReportEntry;
+
+  @Exclude()
+  @Column()
+  @RelationId(
+    (reportEntryToCourseReports: ReportEntryToCourseReport) =>
+      reportEntryToCourseReports.reportEntry,
+  )
+  reportEntryId: number;
 }
