@@ -1,6 +1,42 @@
 import { wrapInTransaction } from 'typeorm-transactional-cls-hooked';
 import { Options } from 'typeorm-transactional-cls-hooked/dist/wrapInTransaction';
-import { FailureError, getFailure, getFailureError, isTry } from '../types/Try';
+import { getFailure, Try } from '../types/Try';
+
+class FailureError<T> extends Error {
+  constructor(public data: T) {
+    super('FailureError');
+  }
+}
+
+const hasProperty = <T extends string>(
+  value: object,
+  propertyName: T,
+): value is Record<T, unknown> => {
+  return Object.hasOwn(value, propertyName);
+};
+
+function isTry<Data = any, ErrorData = any>(
+  data: unknown,
+): data is Try<Data, ErrorData> {
+  if (typeof data !== 'object' || data == null) {
+    return false;
+  }
+
+  const hasOk = hasProperty(data, 'ok');
+  if (!hasOk) {
+    return false;
+  }
+
+  if (hasOk === true) {
+    return hasProperty(data, 'data');
+  }
+
+  if (hasOk === false) {
+    return hasProperty(data, 'error');
+  }
+
+  return false;
+}
 
 /**
  * Used to declare a Transaction operation. In order to use it, you must use {@link BaseRepository} custom repository in order to use the Transactional decorator
@@ -26,7 +62,7 @@ export function TransactionalWithTry(options?: Options): MethodDecorator {
         }
 
         if (!result.ok) {
-          throw getFailureError(result.error);
+          throw new FailureError(result.error);
         }
 
         return result;

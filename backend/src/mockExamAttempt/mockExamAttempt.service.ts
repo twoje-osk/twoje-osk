@@ -12,7 +12,6 @@ import {
 import { MockExamQuestionAttemptService } from '../mockExamQuestionAttempt/mockExamQuestionAttempt.service';
 import { TraineesService } from '../trainees/trainees.service';
 import { Try, getFailure, getSuccess } from '../types/Try';
-import { CatchFailure } from '../utils/CatchFailure';
 import { TransactionalWithTry } from '../utils/TransactionalWithTry';
 import { MockExamAttempt } from './entities/mockExamAttempt.entity';
 
@@ -75,7 +74,6 @@ export class MockExamAttemptService {
     return getSuccess(attempt);
   }
 
-  @CatchFailure()
   @TransactionalWithTry()
   async submit(
     attempt: MockExamAttemptFields,
