@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -63,8 +62,9 @@ export class AnnouncementsController {
     @Body() { announcement }: AnnouncementCreateRequestDto,
   ): Promise<AnnouncementCreateResponseDto> {
     const createdIdData = await this.announcementsService.create(announcement);
+
     if (!createdIdData.ok) {
-      throw new BadRequestException(createdIdData.error);
+      return assertNever(createdIdData.error);
     }
 
     return { id: createdIdData.data };

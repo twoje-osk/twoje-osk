@@ -57,7 +57,7 @@ export class AnnouncementsService {
   @TransactionalWithTry()
   async create(
     announcement: CreateAnnouncementDto,
-  ): Promise<Try<number, 'ERROR'>> {
+  ): Promise<Try<number, never>> {
     const author = this.currentUserService.getRequestCurrentUser();
     const newAnnouncement = await this.announcementsRepository.save({
       subject: announcement.subject,
