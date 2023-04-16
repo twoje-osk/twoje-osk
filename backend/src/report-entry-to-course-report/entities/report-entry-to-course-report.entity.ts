@@ -5,13 +5,13 @@ import {
   ManyToOne,
   Entity,
   RelationId,
-  Index,
+  Unique,
 } from 'typeorm';
 import type { CourseReport } from '../../course-reports/entities/course-report.entity';
 import { ReportEntry } from '../../report-entries/entities/report-entry.entity';
 
 @Entity()
-@Index(['courseReport', 'reportEntry'], { unique: true })
+@Unique('courseReportToReportEntry', ['courseReport', 'reportEntry'])
 export class ReportEntryToCourseReport {
   @PrimaryGeneratedColumn()
   id: number;
