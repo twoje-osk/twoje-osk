@@ -204,6 +204,7 @@ export class MockExamQuestionService {
           take: 1,
           relations: {
             answers: true,
+            type: true,
           },
         });
       },

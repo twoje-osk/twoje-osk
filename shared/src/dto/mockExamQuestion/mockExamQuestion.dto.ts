@@ -23,6 +23,11 @@ export class MockExamQuestionDto {
   @IsOptional()
   mediaURL: string | null;
 
+  @ApiProperty({ type: 'string', nullable: true })
+  @IsString()
+  @IsOptional()
+  mediaReference: string | null;
+
   @ApiProperty()
   @IsArray()
   @ValidateNested({ each: true })

@@ -6,4 +6,7 @@ export class DtoMockExamQuestionType {
 
   @ApiProperty()
   timeToAnswer: number;
+
+  @ApiProperty()
+  scope: string;
 }
