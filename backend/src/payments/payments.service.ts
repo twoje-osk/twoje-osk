@@ -193,7 +193,7 @@ export class PaymentsService {
     return getSuccess(undefined);
   }
 
-  @Transactional()
+  @TransactionalWithTry()
   async delete(
     paymentId: number,
   ): Promise<Try<undefined, 'PAYMENT_NOT_FOUND'>> {
