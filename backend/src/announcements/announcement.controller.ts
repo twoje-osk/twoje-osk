@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -61,8 +62,12 @@ export class AnnouncementsController {
   async create(
     @Body() { announcement }: AnnouncementCreateRequestDto,
   ): Promise<AnnouncementCreateResponseDto> {
-    const createdId = await this.announcementsService.create(announcement);
-    return { id: createdId };
+    const createdIdData = await this.announcementsService.create(announcement);
+    if (!createdIdData.ok) {
+      throw new BadRequestException(createdIdData.error);
+    }
+
+    return { id: createdIdData.data };
   }
 
   @ApiResponse({

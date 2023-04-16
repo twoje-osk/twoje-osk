@@ -55,7 +55,9 @@ export class AnnouncementsService {
   }
 
   @Transactional()
-  async create(announcement: CreateAnnouncementDto): Promise<number> {
+  async create(
+    announcement: CreateAnnouncementDto,
+  ): Promise<Try<number, 'ERROR'>> {
     const author = this.currentUserService.getRequestCurrentUser();
     const newAnnouncement = await this.announcementsRepository.save({
       subject: announcement.subject,
@@ -63,7 +65,8 @@ export class AnnouncementsService {
       createdAt: new Date(),
       createdById: author.userId,
     });
-    return newAnnouncement.id;
+
+    return getSuccess(newAnnouncement.id);
   }
 
   @Transactional()
