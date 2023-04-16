@@ -18,3 +18,5 @@ export * from './dto/mockExamAttempt/mockExamAttempt.dto';
 export * from './dto/mockExamQuestion/mockExamQuestion.dto';
 export * from './dto/mockExamQuestionAnswer/mockExamQuestionAnswer.dto';
 export * from './dto/mockExamQuestionType/mockExamQuestionType.dto';
+export * from './dto/reportEntry/reportEntry.dto';
+export * from './dto/reportEntryToCourseReport/reportEntryToCourseReport.dto';
