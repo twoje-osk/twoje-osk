@@ -46,6 +46,33 @@ export class CourseReportsService {
     return getSuccess(report);
   }
 
+  async findOneByCourseReportId(
+    courseReportId: number,
+  ): Promise<Try<CourseReport, 'COURSE_REPORT_NOT_FOUND'>> {
+    const { id: organizationId } =
+      this.organizationDomainService.getRequestOrganization();
+
+    const report = await this.courseReportsRepository.findOne({
+      where: {
+        id: courseReportId,
+        trainee: { user: { organizationId } },
+      },
+      relations: {
+        report: { driversLicenseCategory: true },
+        reportEntryToCourseReports: { reportEntry: true },
+        trainee: {
+          user: true,
+        },
+      },
+    });
+
+    if (report === null) {
+      return getFailure('COURSE_REPORT_NOT_FOUND');
+    }
+
+    return getSuccess(report);
+  }
+
   @Transactional()
   async create(
     traineeId: number,
