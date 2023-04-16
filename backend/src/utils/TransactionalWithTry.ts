@@ -1,6 +1,6 @@
 import { wrapInTransaction } from 'typeorm-transactional-cls-hooked';
 import { Options } from 'typeorm-transactional-cls-hooked/dist/wrapInTransaction';
-import { FailureError, getFailure, getFailureError } from '../types/Try';
+import { FailureError, getFailure, getFailureError, isTry } from '../types/Try';
 
 /**
  * Used to declare a Transaction operation. In order to use it, you must use {@link BaseRepository} custom repository in order to use the Transactional decorator
@@ -20,6 +20,10 @@ export function TransactionalWithTry(options?: Options): MethodDecorator {
       // eslint-disable-next-line func-names
       return async function (this: any, ...args: any[]) {
         const result = await fn.apply(this, args);
+
+        if (!isTry(result)) {
+          return result;
+        }
 
         if (!result.ok) {
           throw getFailureError(result.error);

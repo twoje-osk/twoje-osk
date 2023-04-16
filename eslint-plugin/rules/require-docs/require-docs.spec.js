@@ -46,11 +46,19 @@ ruleTester.run('require-docs', requireDocsRule, {
           }
         `,
     },
+    {
+      code: `
+          class Controller {
+            correct(): Dto {}
+          }
+    `,
+    },
   ],
   invalid: [
     {
       code: `
         class Controller {
+          @Get()
           incorrect(): Dto {}
         }
       `,
@@ -62,6 +70,12 @@ ruleTester.run('require-docs', requireDocsRule, {
           },
         },
       ],
+      output: `
+        class Controller {
+          @ApiResponse() \r\n @Get()
+          incorrect(): Dto {}
+        }
+      `,
     },
   ],
 });

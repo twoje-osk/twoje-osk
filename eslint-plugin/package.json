@@ -4,8 +4,8 @@
   "private": true,
   "main": "index.js",
   "scripts": {
-    "test": "node ./rules/**/*.spec.js",
-    "test:watch": "nodemon ./rules/*.spec.js"
+    "test": "node ./rules/use-transactional-with-try/use-transactional-with-try.spec.js",
+    "test:watch": "nodemon ./rules/use-transactional-with-try/use-transactional-with-try.spec.js"
   },
   "peerDependencies": {
     "@typescript-eslint/parser": "^5.0.0",

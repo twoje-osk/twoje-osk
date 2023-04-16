@@ -39,7 +39,8 @@
         },
         "extendDefaults": false
       }
-    ]
+    ],
+    "@osk/use-transactional-with-try": "error"
   },
   "overrides": [
     {
