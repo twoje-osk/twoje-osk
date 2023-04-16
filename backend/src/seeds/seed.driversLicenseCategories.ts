@@ -9,7 +9,6 @@ class DriversLicenseCategoryFactory extends Factory<DriversLicenseCategory> {
   public generate() {
     const category = new DriversLicenseCategory();
     category.name = this.faker.word.noun();
-    category.reports = [];
 
     this.entities.push(category);
     return category;
