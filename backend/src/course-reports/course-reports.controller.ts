@@ -2,10 +2,8 @@ import {
   Controller,
   Get,
   NotFoundException,
-  // NotFoundException,
   Param,
   ParseIntPipe,
-  // Post,
 } from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
 import { ReportEntriesService } from '../report-entries/report-entries.service';
@@ -56,22 +54,29 @@ export class CourseReportsController {
         traineeReport.data.report.id,
       );
 
-    const mergedReports = allReportEntries.map((reportEntry) => {
+    const mergedEntries = allReportEntries.map((reportEntry) => {
       const traineeAnswers =
         reportEntryIdToReportEntryToCourseReportsMap[reportEntry.id];
+      const { reportEntryGroup, ...entry } = reportEntry;
       return {
-        ...reportEntry,
+        ...entry,
+        groupDescription: reportEntryGroup.description,
         done: traineeAnswers?.done ?? false,
         mastered: traineeAnswers?.mastered ?? false,
       };
     });
 
-    // const groupResponses to group responses and report
+    const groupedEntries = mergedEntries.reduce((acc, e) => {
+      // eslint-disable-next-line no-param-reassign
+      acc[e.groupDescription] = acc[e.groupDescription] ?? [];
+      const { groupDescription, ...entry } = e;
+      acc[e.groupDescription].push(entry);
+      return acc;
+    }, Object.create(null));
 
     return {
       courseReportId: traineeReport.data.report.id,
-      report: [{ groupDescription: 'Group', entries: mergedReports }],
-      // report: groupResponses
+      report: [groupedEntries],
     };
   }
 }

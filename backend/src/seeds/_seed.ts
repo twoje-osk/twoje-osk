@@ -17,6 +17,7 @@ import { seedReports } from './seed.reports';
 import { seedCourseReports } from './seed.courseReports';
 import { seedReportEntries } from './seed.reportEntries';
 import { seedReportEntryToCourseReport } from './seed.ReportEntryToCourseReports';
+import { seedReportEntryGroups } from './seed.reportEntryGroups';
 
 runSeeds(async () => {
   const useProductionData = process.env.USE_EXAM_PRODUCTION_DATA === 'true';
@@ -34,6 +35,7 @@ runSeeds(async () => {
   seedAnnouncements();
   seedPayments();
   seedReports();
+  seedReportEntryGroups();
   seedReportEntries();
   seedCourseReports();
   seedReportEntryToCourseReport();

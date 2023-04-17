@@ -1,4 +1,5 @@
 import { ReportEntry } from '../report-entries/entities/report-entry.entity';
+import { reportEntryGroupFactory } from './seed.reportEntryGroups';
 import { reportFactory } from './seed.reports';
 import { Factory } from './seed.utils';
 
@@ -11,8 +12,10 @@ class ReportEntryFactory extends Factory<ReportEntry> {
     const reportEntry = new ReportEntry();
 
     reportEntry.report = reportFactory.getAll()[0]!;
-
     reportEntry.description = this.faker.lorem.sentence();
+    reportEntry.reportEntryGroup = this.faker.helpers.arrayElement(
+      reportEntryGroupFactory.getAll(),
+    );
 
     this.entities.push(reportEntry);
     return reportEntry;

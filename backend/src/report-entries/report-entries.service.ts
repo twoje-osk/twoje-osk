@@ -15,6 +15,9 @@ export class ReportEntriesService {
       where: {
         report: { id: reportEntryId },
       },
+      relations: {
+        reportEntryGroup: true,
+      },
     });
 
     return reportEntries;
