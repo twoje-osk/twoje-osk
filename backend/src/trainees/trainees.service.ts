@@ -144,8 +144,6 @@ export class TraineesService {
     return getSuccess(createdTrainee);
   }
 
-  // TODO Should we be able to edit the courseReportId as admin or should it be something only superAdmins should do?
-
   @Transactional()
   async update(
     trainee: TraineeArgumentsUpdate,

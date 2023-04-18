@@ -142,7 +142,6 @@ export const TraineeDetails = () => {
 
   const { trainee } = data;
 
-  // TODO HERE UPDATE FE WITH driverLicenseCategoryId?
   const initialValues: TraineeFormData = {
     firstName: trainee.user.firstName,
     lastName: trainee.user.lastName,
