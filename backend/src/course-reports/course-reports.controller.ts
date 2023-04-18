@@ -66,13 +66,18 @@ export class CourseReportsController {
       };
     });
 
-    const groupedEntries = mergedEntries.reduce((acc, e) => {
-      // eslint-disable-next-line no-param-reassign
-      acc[e.groupDescription] = acc[e.groupDescription] ?? [];
-      const { groupDescription, ...entry } = e;
-      acc[e.groupDescription].push(entry);
+    type MergedEntry = typeof mergedEntries[number];
+
+    const groupedEntries = mergedEntries.reduce<
+      Record<string, Omit<MergedEntry, 'groupDescription'>[]>
+    >((acc, { groupDescription, ...entry }) => {
+      const newValue = acc[groupDescription] ?? [];
+      newValue.push(entry);
+
+      acc[groupDescription] = newValue;
+
       return acc;
-    }, Object.create(null));
+    }, {});
 
     return {
       courseReportId: traineeReport.data.report.id,
