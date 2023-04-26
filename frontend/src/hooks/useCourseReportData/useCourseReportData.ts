@@ -136,9 +136,5 @@ export const useCourseReportData = (traineeId: number | null) => {
     dispatch({ type: 'startLoadingAction' });
   }, [reportData, reportError]);
 
-  const updateRow = (rowId: number, done: boolean, mastered: boolean) => {
-    dispatch({ type: 'updateRowAction', rowId, done, mastered });
-  };
-
-  return [data, updateRow] as const;
+  return data;
 };

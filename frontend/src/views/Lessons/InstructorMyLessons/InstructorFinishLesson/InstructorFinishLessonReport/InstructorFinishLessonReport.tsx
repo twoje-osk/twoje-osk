@@ -11,7 +11,7 @@ interface InstructorFinishLessonReportProps {
 export const InstructorFinishLessonReport = ({
   traineeId,
 }: InstructorFinishLessonReportProps) => {
-  const [data, updateRow] = useCourseReportData(traineeId ?? null);
+  const data = useCourseReportData(traineeId ?? null);
 
   if (data.type === 'error') {
     return (
@@ -28,5 +28,5 @@ export const InstructorFinishLessonReport = ({
     return <FullPageLoading />;
   }
 
-  return <Report groups={data.groups} onChange={updateRow} />;
+  return <Report groups={data.groups} courseReportId={data.courseReportId} />;
 };

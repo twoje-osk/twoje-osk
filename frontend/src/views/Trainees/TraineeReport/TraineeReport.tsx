@@ -18,7 +18,7 @@ export const TraineeReport = () => {
       traineeId ? `/api/trainees/${traineeId}` : null,
     );
 
-  const [courseReportData, updateRow] = useCourseReportData(
+  const courseReportData = useCourseReportData(
     traineeId ? Number.parseInt(traineeId, 10) : null,
   );
 
@@ -66,7 +66,10 @@ export const TraineeReport = () => {
           </Typography>
         </Breadcrumbs>
       </Toolbar>
-      <Report groups={courseReportData.groups} onChange={updateRow} />
+      <Report
+        groups={courseReportData.groups}
+        courseReportId={courseReportData.courseReportId}
+      />
     </Flex>
   );
 };

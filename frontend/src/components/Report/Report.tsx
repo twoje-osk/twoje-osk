@@ -6,6 +6,10 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { Checkbox, Typography } from '@mui/material';
 import { Box } from 'reflexbox';
+import { useEffect, useState } from 'react';
+import { ReportEntryToCourseReportCreateOrUpdateRequestDto } from '@osk/shared';
+import { useMakeRequestWithAuth } from '../../hooks/useMakeRequestWithAuth/useMakeRequestWithAuth';
+import { useCommonSnackbars } from '../../hooks/useCommonSnackbars/useCommonSnackbars';
 
 export interface RowData {
   id: number;
@@ -21,9 +25,9 @@ export interface ReportGroup {
 
 interface ReportProps {
   groups: ReportGroup[];
-  onChange: (rowId: number, done: boolean, mastered: boolean) => void;
+  courseReportId: number;
 }
-export const Report = ({ groups, onChange }: ReportProps) => {
+export const Report = ({ groups, courseReportId }: ReportProps) => {
   return (
     <TableContainer sx={{ flex: '1 1', overflow: 'auto' }}>
       {groups.map(({ description, rows }) => (
@@ -43,7 +47,11 @@ export const Report = ({ groups, onChange }: ReportProps) => {
             </TableHead>
             <TableBody>
               {rows.map((row) => (
-                <TraineeReportRow key={row.id} row={row} onChange={onChange} />
+                <TraineeReportRow
+                  key={row.id}
+                  row={row}
+                  courseReportId={courseReportId}
+                />
               ))}
             </TableBody>
           </Table>
@@ -55,28 +63,70 @@ export const Report = ({ groups, onChange }: ReportProps) => {
 
 interface TraineeReportRowProps {
   row: RowData;
-  onChange: (rowId: number, done: boolean, mastered: boolean) => void;
+  courseReportId: number;
 }
-const TraineeReportRow = ({ row, onChange }: TraineeReportRowProps) => {
-  const onDoneChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const newDone = event.target.checked;
-    onChange(row.id, newDone, row.mastered);
+const TraineeReportRow = ({ row, courseReportId }: TraineeReportRowProps) => {
+  const [rowData, setRowData] = useState(row);
+  const makeRequestWithAuth = useMakeRequestWithAuth();
+  const { showErrorSnackbar } = useCommonSnackbars();
+
+  useEffect(() => {
+    setRowData(row);
+  }, [row]);
+
+  const makeUpdateApiRequest = (done: boolean, mastered: boolean) => {
+    const body: ReportEntryToCourseReportCreateOrUpdateRequestDto = {
+      courseReportId,
+      reportEntryId: row.id,
+      done,
+      mastered,
+    };
+
+    // TODO: Add response type
+    return makeRequestWithAuth<
+      any,
+      ReportEntryToCourseReportCreateOrUpdateRequestDto
+    >('/api/report-entry-to-course-report', 'PUT', body);
   };
-  const onMasteredChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+
+  const onDoneChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const oldDone = rowData.done;
+    const newDone = event.target.checked;
+    setRowData({ ...rowData, done: newDone });
+
+    const response = await makeUpdateApiRequest(newDone, rowData.mastered);
+
+    if (!response.ok) {
+      setRowData((oldRowData) => ({ ...oldRowData, done: oldDone }));
+      showErrorSnackbar();
+    }
+  };
+
+  const onMasteredChange = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const oldMastered = rowData.mastered;
     const newMastered = event.target.checked;
-    onChange(row.id, row.done, newMastered);
+    setRowData({ ...rowData, mastered: newMastered });
+
+    const response = await makeUpdateApiRequest(rowData.done, newMastered);
+
+    if (!response.ok) {
+      setRowData((oldRowData) => ({ ...oldRowData, mastered: oldMastered }));
+      showErrorSnackbar();
+    }
   };
 
   return (
     <TableRow>
       <TableCell component="th" scope="row">
-        {row.action}
+        {rowData.action}
       </TableCell>
       <TableCell component="th" scope="row" align="center">
-        <Checkbox checked={row.done} onChange={onDoneChange} />
+        <Checkbox checked={rowData.done} onChange={onDoneChange} />
       </TableCell>
       <TableCell component="th" scope="row" align="center">
-        <Checkbox checked={row.mastered} onChange={onMasteredChange} />
+        <Checkbox checked={rowData.mastered} onChange={onMasteredChange} />
       </TableCell>
     </TableRow>
   );
