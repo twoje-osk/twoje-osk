@@ -24,19 +24,23 @@ runSeeds(async () => {
 
   seedDriversLicenseCategories();
   await seedMockExam({ useProductionData });
+
+  seedReports();
+  seedReportEntryGroups();
+  seedReportEntries();
+
   seedOrganizations();
   seedTrainees();
   seedInstructors();
   seedUsers();
+
+  seedCourseReports();
+  seedReportEntryToCourseReport();
+
   seedVehicles();
   seedDefaultAvailabilities();
   seedAvailabilities();
   seedLessons();
   seedAnnouncements();
   seedPayments();
-  seedReports();
-  seedReportEntryGroups();
-  seedReportEntries();
-  seedCourseReports();
-  seedReportEntryToCourseReport();
 });
