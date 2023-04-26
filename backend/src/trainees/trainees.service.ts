@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindOptionsWhere, Repository } from 'typeorm';
-import { Transactional } from 'typeorm-transactional-cls-hooked';
 import { OrganizationDomainService } from '../organization-domain/organization-domain.service';
 import { Try, getFailure, getSuccess } from '../types/Try';
 import { User } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
+import { TransactionalWithTry } from '../utils/TransactionalWithTry';
 import { Trainee } from './entities/trainee.entity';
 import { TraineeArguments, TraineeArgumentsUpdate } from './trainees.types';
 
@@ -77,7 +77,7 @@ export class TraineesService {
     });
   }
 
-  @Transactional()
+  @TransactionalWithTry()
   async create(
     trainee: TraineeArguments,
   ): Promise<Try<Trainee, 'TRAINEE_OR_USER_FOUND'>> {
@@ -132,7 +132,7 @@ export class TraineesService {
     return getSuccess(createdTrainee);
   }
 
-  @Transactional()
+  @TransactionalWithTry()
   async update(
     trainee: TraineeArgumentsUpdate,
     traineeId: number,
@@ -165,7 +165,7 @@ export class TraineesService {
     return getSuccess(undefined);
   }
 
-  @Transactional()
+  @TransactionalWithTry()
   async disable(
     traineeId: number,
   ): Promise<Try<undefined, 'TRAINEE_NOT_FOUND' | 'TRAINEE_ALREADY_DISABLED'>> {

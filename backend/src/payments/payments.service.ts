@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Transactional } from 'typeorm-transactional-cls-hooked';
 import { CurrentUserService } from '../current-user/current-user.service';
 import { OrganizationDomainService } from '../organization-domain/organization-domain.service';
 import { TraineesService } from '../trainees/trainees.service';
 import { Try, getFailure, getSuccess } from '../types/Try';
+import { TransactionalWithTry } from '../utils/TransactionalWithTry';
 import { Payment } from './entities/payment.entity';
 import { PaymentArguments, PaymentArgumentsUpdate } from './payments.types';
 
@@ -84,7 +84,7 @@ export class PaymentsService {
     return payments;
   }
 
-  @Transactional()
+  @TransactionalWithTry()
   async findOneById(
     paymentId: number,
     userId?: number,
@@ -113,7 +113,7 @@ export class PaymentsService {
     return getSuccess(payment);
   }
 
-  @Transactional()
+  @TransactionalWithTry()
   async findOnePersonalPayment(
     paymentId: number,
   ): Promise<Try<Payment, 'PAYMENT_NOT_FOUND'>> {
@@ -136,7 +136,7 @@ export class PaymentsService {
     return getSuccess(payment);
   }
 
-  @Transactional()
+  @TransactionalWithTry()
   async create(
     payment: PaymentArguments,
   ): Promise<Try<Payment, 'TRAINEE_NOT_FOUND'>> {
@@ -159,7 +159,7 @@ export class PaymentsService {
     return getSuccess(createPaymentCall);
   }
 
-  @Transactional()
+  @TransactionalWithTry()
   async update(
     paymentId: number,
     payment: PaymentArgumentsUpdate,
@@ -193,7 +193,7 @@ export class PaymentsService {
     return getSuccess(undefined);
   }
 
-  @Transactional()
+  @TransactionalWithTry()
   async delete(
     paymentId: number,
   ): Promise<Try<undefined, 'PAYMENT_NOT_FOUND'>> {
