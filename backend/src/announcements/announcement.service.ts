@@ -2,10 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateAnnouncementDto, UpdateAnnouncementDto } from '@osk/shared';
 import { Repository } from 'typeorm';
-import { Transactional } from 'typeorm-transactional-cls-hooked';
 import { CurrentUserService } from '../current-user/current-user.service';
 import { OrganizationDomainService } from '../organization-domain/organization-domain.service';
 import { Try, getFailure, getSuccess } from '../types/Try';
+import { TransactionalWithTry } from '../utils/TransactionalWithTry';
 import { Announcement } from './entities/announcement.entity';
 
 @Injectable()
@@ -54,8 +54,10 @@ export class AnnouncementsService {
     return announcement;
   }
 
-  @Transactional()
-  async create(announcement: CreateAnnouncementDto): Promise<number> {
+  @TransactionalWithTry()
+  async create(
+    announcement: CreateAnnouncementDto,
+  ): Promise<Try<number, never>> {
     const author = this.currentUserService.getRequestCurrentUser();
     const newAnnouncement = await this.announcementsRepository.save({
       subject: announcement.subject,
@@ -63,10 +65,11 @@ export class AnnouncementsService {
       createdAt: new Date(),
       createdById: author.userId,
     });
-    return newAnnouncement.id;
+
+    return getSuccess(newAnnouncement.id);
   }
 
-  @Transactional()
+  @TransactionalWithTry()
   async update(
     announcement: UpdateAnnouncementDto,
     announcementId: number,
@@ -96,7 +99,7 @@ export class AnnouncementsService {
     return getSuccess(updatedAnnouncement.id);
   }
 
-  @Transactional()
+  @TransactionalWithTry()
   async delete(
     announcementId: number,
   ): Promise<Try<undefined, 'ANNOUNCEMENT_NOT_FOUND'>> {

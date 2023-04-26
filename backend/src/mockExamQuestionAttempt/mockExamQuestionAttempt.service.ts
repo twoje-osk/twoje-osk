@@ -2,11 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { In, Repository } from 'typeorm';
-import { Transactional } from 'typeorm-transactional-cls-hooked';
 import { MockExamAttempt } from '../mockExamAttempt/entities/mockExamAttempt.entity';
 import { MockExamQuestion } from '../mockExamQuestion/entities/mockExamQuestion.entity';
 import { MockExamQuestionAnswer } from '../mockExamQuestionAnswer/entities/mockExamQuestionAnswer.entity';
 import { Try, getFailure, getSuccess } from '../types/Try';
+import { TransactionalWithTry } from '../utils/TransactionalWithTry';
 
 import {
   MockExamQuestionAttempt,
@@ -31,7 +31,7 @@ export class MockExamQuestionAttemptService {
     private mockExamQuestionRepository: Repository<MockExamQuestion>,
   ) {}
 
-  @Transactional()
+  @TransactionalWithTry()
   async createMany(
     questionAttempts: MockExamQuestionsAttemptFields[],
   ): Promise<
