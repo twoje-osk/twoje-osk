@@ -109,6 +109,10 @@ export const App = () => {
           element={<RequireRole roles={[UserRole.Trainee]} />}
         >
           <Route index element={<MockExamsList />} />
+          {/* <Route path="wynik" */}
+          {/*       element={<RequireRole roles={[UserRole.Trainee]}/>}> */}
+          {/*  <Route index element={<MockExamsScoreBoard}/>}/> */}
+          {/* </Route> */}
           <Route
             path="nowy"
             element={<RequireRole roles={[UserRole.Trainee]} />}

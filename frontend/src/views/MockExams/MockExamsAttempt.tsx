@@ -1,10 +1,17 @@
-import { MockExamQuestionsGenerateResponseDto } from '@osk/shared';
+import {
+  MockExamAttemptSubmitRequestDto,
+  MockExamAttemptSubmitResponseDto,
+  MockExamQuestionsGenerateResponseDto,
+} from '@osk/shared';
+import useSWR from 'swr';
 import { CreateMockExamQuestionAttemptRequestDto } from '@osk/shared/dist/dto/mockExamQuestionAttempt/mockExamQuestionAttempt.dto';
 import { useState } from 'react';
-import useSWR from 'swr';
+import { useNavigate } from 'react-router-dom';
 import { FullPageLoading } from '../../components/FullPageLoading/FullPageLoading';
 import { GeneralAPIError } from '../../components/GeneralAPIError/GeneralAPIError';
 import { MockExamsQuestion } from './MockExamsQuestion';
+import { useMakeRequestWithAuth } from '../../hooks/useMakeRequestWithAuth/useMakeRequestWithAuth';
+import { useCommonSnackbars } from '../../hooks/useCommonSnackbars/useCommonSnackbars';
 
 export const MockExamsAttempt = () => {
   const categoryId = 6;
@@ -15,50 +22,68 @@ export const MockExamsAttempt = () => {
   const [answeredQuestions, setAnsweredQuestions] = useState<
     CreateMockExamQuestionAttemptRequestDto[]
   >([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const makeRequest = useMakeRequestWithAuth();
+  const navigate = useNavigate();
+  const { showErrorSnackbar, showSuccessSnackbar } = useCommonSnackbars();
 
-  if (questionsError) {
+  if (questionsData === undefined || isLoading) {
+    return <FullPageLoading />;
+  }
+
+  const generatedQuestions = questionsData.questions;
+  const currentQuestion = generatedQuestions[answeredQuestions.length];
+  const isLastQuestion =
+    answeredQuestions.length === generatedQuestions.length - 1;
+
+  if (questionsError || currentQuestion === undefined) {
     return <GeneralAPIError />;
   }
 
-  if (questionsData === undefined) {
-    return <FullPageLoading />;
-  }
-  const generatedQuestions = questionsData.questions;
-
-  const handleQuestionSubmit = (questionId: number, answerId: number) => {
+  const handleQuestionSubmit = async (
+    questionId: number,
+    answerId: number | undefined,
+  ) => {
     const newAnsweredQuestions = [
       ...answeredQuestions,
       { questionId, answerId },
     ];
     setAnsweredQuestions(newAnsweredQuestions);
-    if (newAnsweredQuestions.length === generatedQuestions.length - 1) {
-      console.log(answeredQuestions);
-      submitExam(answeredQuestions);
+    if (newAnsweredQuestions.length === generatedQuestions.length) {
+      await submitExam(newAnsweredQuestions);
     }
   };
 
-  const submitExam = (
+  const submitExam = async (
     submitQuestionsData: CreateMockExamQuestionAttemptRequestDto[],
-  ) => {};
+  ) => {
+    const body: MockExamAttemptSubmitRequestDto = {
+      mockExam: {
+        questions: submitQuestionsData,
+      },
+    };
 
+    setIsLoading(true);
+    const examURL = `/api/exams`;
+    const response = await makeRequest<
+      MockExamAttemptSubmitResponseDto,
+      MockExamAttemptSubmitRequestDto
+    >(examURL, 'POST', body);
+
+    if (!response.ok) {
+      setIsLoading(false);
+      showErrorSnackbar();
+      return;
+    }
+
+    navigate(`/e-learning/score/${response.data.id}`);
+    showSuccessSnackbar(`Egzamin zakończony!`);
+  };
   return (
     <MockExamsQuestion
-      question={generatedQuestions[answeredQuestions.length]}
+      question={currentQuestion}
       onQuestionSubmit={handleQuestionSubmit}
-      isLastQuestion={
-        answeredQuestions.length === generatedQuestions.length - 1
-      }
+      isLastQuestion={isLastQuestion}
     />
-    // <div>
-    //   <div>
-    //     {/* <p>{JSON.stringify(generatedQuestions)}</p> */}
-    //     <p>{generatedQuestions[currentQuestion]?.question}</p>
-    //     {/* <p>{generatedQuestions[currentQuestion]?.answers[0]}</p> */}
-    //     {/* <p>{JSON.stringify(generatedQuestions[currentQuestion])}</p> */}
-    //     {generatedQuestions[currentQuestion]?.answers.map((answer) => {
-    //       return <p>{answer.answerContent}</p>;
-    //     })}
-    //   </div>
-    // </div>
   );
 };

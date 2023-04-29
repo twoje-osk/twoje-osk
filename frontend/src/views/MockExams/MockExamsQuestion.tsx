@@ -8,10 +8,10 @@ import {
   Typography,
 } from '@mui/material';
 import { MockExamQuestionDto } from '@osk/shared';
-import { useEffect, useMemo, useState } from 'react';
 import { Flex } from 'reflexbox';
-import { useQuestionState } from '../../hooks/useQuestionState/useQuestionState';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { theme } from '../../theme';
+import { useQuestionState } from '../../hooks/useQuestionState/useQuestionState';
 
 interface MockExamQuestionInterface {
   question: MockExamQuestionDto;
@@ -21,6 +21,8 @@ interface MockExamQuestionInterface {
 
 interface MediaInterface {
   mediaURL: string | null;
+  hasVideo: boolean | undefined;
+  onVideoEnd: () => void;
 }
 
 export const MockExamsQuestion = ({
@@ -29,13 +31,18 @@ export const MockExamsQuestion = ({
   isLastQuestion,
 }: MockExamQuestionInterface) => {
   const { answers } = question;
-  const [selectedAnswer, setSelectedAnswer] = useState<number>();
+  const selectedAnswerRef = useRef<number | undefined>(undefined);
+  const [selectedAnswer, setSelectedAnswerState] = useState<number>();
   const [progress, setProgress] = useState(0);
   const [state, startReadingQuestion, startAnsweringQuestion, startVideo] =
     useQuestionState();
   const [elementaryQuestionsAmount, setElementaryQuestionsAmount] = useState(0);
   const [advancedQuestionsAmount, setAdvancedQuestionsAmount] = useState(0);
 
+  const setSelectedAnswer = (value: number | undefined) => {
+    setSelectedAnswerState(value);
+    selectedAnswerRef.current = value;
+  };
   const maxTimeInMs = useMemo(() => {
     const maxTime =
       state.type === 'reading'
@@ -49,12 +56,15 @@ export const MockExamsQuestion = ({
   ]);
 
   const hasMedia = useMemo(() => question.mediaReference !== null, [question]);
-  const hasVideo = useMemo(
-    () => hasMedia && question.mediaReference?.endsWith('.wmv'),
-    [question.mediaReference, hasMedia],
-  );
+  const hasVideo = useMemo(() => {
+    return hasMedia && question.mediaReference?.endsWith('.wmv');
+  }, [question.mediaReference, hasMedia]);
 
-  const nextState = () => {
+  const submitQuestion = useCallback(() => {
+    onQuestionSubmit(question.id, selectedAnswerRef.current);
+  }, [onQuestionSubmit, question.id]);
+
+  const nextState = useCallback(() => {
     if (state.type === 'reading') {
       if (hasVideo) {
         startVideo();
@@ -64,7 +74,13 @@ export const MockExamsQuestion = ({
     } else {
       submitQuestion();
     }
-  };
+  }, [
+    hasVideo,
+    startAnsweringQuestion,
+    startVideo,
+    state.type,
+    submitQuestion,
+  ]);
 
   useEffect(() => {
     setSelectedAnswer(undefined);
@@ -80,20 +96,26 @@ export const MockExamsQuestion = ({
   useEffect(() => {
     let currentTimePassed = 0;
     const step = maxTimeInMs / 500;
-    const timer = setInterval(() => {
-      currentTimePassed += step;
-      const newProgress = (currentTimePassed / maxTimeInMs) * 100;
-      if (newProgress >= 100) {
-        nextState();
-      } else {
-        setProgress((currentTimePassed / maxTimeInMs) * 100);
-      }
-    }, step);
+    let timer: NodeJS.Timeout;
+    if (state.type === 'video') {
+      setProgress(0);
+    } else {
+      timer = setInterval(() => {
+        currentTimePassed += step;
+        const newProgress = (currentTimePassed / maxTimeInMs) * 100;
+        if (newProgress >= 100) {
+          nextState();
+        } else {
+          setProgress((currentTimePassed / maxTimeInMs) * 100);
+        }
+      }, step);
+    }
 
     return () => {
       clearInterval(timer);
     };
   }, [
+    nextState,
     maxTimeInMs,
     state,
     question.type.timeToAnswer,
@@ -115,11 +137,7 @@ export const MockExamsQuestion = ({
   };
 
   const handleReadyToAnswer = () => {
-    startAnsweringQuestion();
-  };
-
-  const submitQuestion = () => {
-    onQuestionSubmit(question.id, selectedAnswer);
+    nextState();
   };
 
   return (
@@ -156,7 +174,13 @@ export const MockExamsQuestion = ({
         </Typography>
       </Flex>
       <Flex flexDirection="column" flex="1">
-        {state.showMedia && <Media mediaURL={question.mediaURL} />}
+        {state.showMedia && (
+          <MediaContainer
+            hasVideo={hasVideo}
+            mediaURL={question.mediaReference}
+            onVideoEnd={startAnsweringQuestion}
+          />
+        )}
         <Typography
           variant="h6"
           align="center"
@@ -209,7 +233,7 @@ export const MockExamsQuestion = ({
             height: '16px',
             borderRadius: '0.4rem',
             width: '80%',
-            margin: '24px auto 24px auto',
+            margin: '16px auto 16px auto',
           }}
           value={progress}
         />
@@ -227,6 +251,7 @@ export const MockExamsQuestion = ({
             variant="contained"
             style={{ margin: '8px auto 0 auto' }}
             onClick={submitQuestion}
+            disabled={selectedAnswer === undefined}
           >
             {nextQuestionLabel}
           </Button>
@@ -236,16 +261,30 @@ export const MockExamsQuestion = ({
   );
 };
 
-const Media = ({ mediaURL }: MediaInterface) => {
-  return (
-    <StyledImageWrapper elevation={1}>
-      {mediaURL && <StyledImage width={800} src={mediaURL} alt="" />}
+const MediaContainer = ({ mediaURL, hasVideo, onVideoEnd }: MediaInterface) => {
+  return hasVideo ? (
+    <StyledMediaWrapper elevation={1}>
+      {mediaURL && (
+        <StyledVideo
+          width={700}
+          src="../../../public/1A601.mov"
+          onEnded={onVideoEnd}
+          autoPlay
+        />
+      )}
+      {!mediaURL && 'Brak Wideo'}
+    </StyledMediaWrapper>
+  ) : (
+    <StyledMediaWrapper elevation={1}>
+      {mediaURL && (
+        <StyledImage width={700} src="../../../public/3011pic-zt.jpg" alt="" />
+      )}
       {!mediaURL && 'Brak Zdjęcia'}
-    </StyledImageWrapper>
+    </StyledMediaWrapper>
   );
 };
 
-const StyledImageWrapper = styled(Paper)`
+const StyledMediaWrapper = styled(Paper)`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -255,11 +294,17 @@ const StyledImageWrapper = styled(Paper)`
   margin: auto;
   margin-top: 8px;
   margin-bottom: 48px;
-  max-height: 720px;
+  max-height: 500px;
   background: ${theme.palette.grey[300]};
 `;
 
 const StyledImage = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+`;
+
+const StyledVideo = styled.video`
   width: 100%;
   height: 100%;
   object-fit: cover;
