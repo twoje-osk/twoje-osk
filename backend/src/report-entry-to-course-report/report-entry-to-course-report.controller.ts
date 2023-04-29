@@ -44,6 +44,10 @@ export class ReportEntryToCourseReportController {
         );
       }
 
+      if (result.error === 'ERROR_DURING_UPSERT') {
+        throw new NotFoundException('Error during the report entry upsert');
+      }
+
       return assertNever(result.error);
     }
 

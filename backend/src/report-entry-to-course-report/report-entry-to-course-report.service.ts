@@ -1,10 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { IsolationLevel, Propagation } from 'typeorm-transactional-cls-hooked';
 import { OrganizationDomainService } from '../organization-domain/organization-domain.service';
 import { getFailure, getSuccess, Try } from '../types/Try';
 import { ReportEntryToCourseReport } from './entities/report-entry-to-course-report.entity';
 import { CourseReportsService } from '../course-reports/course-reports.service';
+import { TransactionalWithTry } from '../utils/TransactionalWithTry';
 
 @Injectable()
 export class ReportEntryToCourseReportService {
@@ -59,19 +61,16 @@ export class ReportEntryToCourseReportService {
     return getSuccess(record);
   }
 
-  async setEntryForCourseReport(
+  @TransactionalWithTry({
+    isolationLevel: IsolationLevel.REPEATABLE_READ,
+    propagation: Propagation.REQUIRES_NEW,
+  })
+  async upsertReportEntryToCourseReportsRepository(
     reportEntryId: number,
     courseReportId: number,
     done: boolean,
     mastered: boolean,
-  ): Promise<Try<undefined, 'COURSE_REPORT_NOT_FOUND'>> {
-    const courseReportExists =
-      await this.courseReportsService.findOneByCourseReportId(courseReportId);
-
-    if (!courseReportExists.ok) {
-      return getFailure(courseReportExists.error);
-    }
-
+  ): Promise<Try<undefined, 'ERROR_DURING_UPSERT'>> {
     const checkExistingEntry = await this.findOneByEntryCourse(
       reportEntryId,
       courseReportId,
@@ -96,6 +95,36 @@ export class ReportEntryToCourseReportService {
         { id: checkExistingEntry.data.id },
         { done, mastered },
       );
+      return getSuccess(undefined);
+    }
+    return getFailure('ERROR_DURING_UPSERT');
+  }
+
+  async setEntryForCourseReport(
+    reportEntryId: number,
+    courseReportId: number,
+    done: boolean,
+    mastered: boolean,
+  ): Promise<
+    Try<undefined, 'COURSE_REPORT_NOT_FOUND' | 'ERROR_DURING_UPSERT'>
+  > {
+    const courseReportExists =
+      await this.courseReportsService.findOneByCourseReportId(courseReportId);
+
+    if (!courseReportExists.ok) {
+      return getFailure(courseReportExists.error);
+    }
+
+    const upsertCourseReportEntry =
+      await this.upsertReportEntryToCourseReportsRepository(
+        reportEntryId,
+        courseReportId,
+        done,
+        mastered,
+      );
+
+    if (!upsertCourseReportEntry.ok) {
+      return getFailure('ERROR_DURING_UPSERT');
     }
 
     return getSuccess(undefined);
