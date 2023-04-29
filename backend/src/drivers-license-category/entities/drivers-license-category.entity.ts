@@ -1,3 +1,4 @@
+import { Exclude } from 'class-transformer';
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import type { Report } from '../../reports/entities/report.entity';
 
@@ -9,6 +10,7 @@ export class DriversLicenseCategory {
   @Column({ type: 'text', unique: true })
   name: string;
 
+  @Exclude()
   @OneToMany<Report>('Report', (report) => report.driversLicenseCategory)
   reports: Report[];
 }
