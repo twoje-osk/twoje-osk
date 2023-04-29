@@ -45,3 +45,9 @@ export class MockExamQuestionsGenerateResponseDto {
   @ValidateNested({ each: true })
   questions: MockExamQuestionDto[];
 }
+
+export class MockExamQuestionsFindByIdsRequestDto {
+  @ApiProperty()
+  @IsArray()
+  questionsIds: number[];
+}

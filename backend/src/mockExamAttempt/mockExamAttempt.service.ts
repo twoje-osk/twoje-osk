@@ -93,8 +93,6 @@ export class MockExamAttemptService {
     if (!trainee) {
       return getFailure('USER_NOT_FOUND');
     }
-    console.log(REQUIRED_AMOUNT_OF_QUESTIONS);
-    console.log(questions.length);
     if (questions.length !== REQUIRED_AMOUNT_OF_QUESTIONS) {
       return getFailure('INCORRECT_AMOUNT_OF_QUESTIONS');
     }

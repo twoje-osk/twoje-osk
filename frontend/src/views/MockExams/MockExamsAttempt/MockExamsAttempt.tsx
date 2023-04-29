@@ -7,11 +7,11 @@ import useSWR from 'swr';
 import { CreateMockExamQuestionAttemptRequestDto } from '@osk/shared/dist/dto/mockExamQuestionAttempt/mockExamQuestionAttempt.dto';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FullPageLoading } from '../../components/FullPageLoading/FullPageLoading';
-import { GeneralAPIError } from '../../components/GeneralAPIError/GeneralAPIError';
+import { FullPageLoading } from '../../../components/FullPageLoading/FullPageLoading';
+import { GeneralAPIError } from '../../../components/GeneralAPIError/GeneralAPIError';
 import { MockExamsQuestion } from './MockExamsQuestion';
-import { useMakeRequestWithAuth } from '../../hooks/useMakeRequestWithAuth/useMakeRequestWithAuth';
-import { useCommonSnackbars } from '../../hooks/useCommonSnackbars/useCommonSnackbars';
+import { useMakeRequestWithAuth } from '../../../hooks/useMakeRequestWithAuth/useMakeRequestWithAuth';
+import { useCommonSnackbars } from '../../../hooks/useCommonSnackbars/useCommonSnackbars';
 
 export const MockExamsAttempt = () => {
   const categoryId = 6;
@@ -22,12 +22,12 @@ export const MockExamsAttempt = () => {
   const [answeredQuestions, setAnsweredQuestions] = useState<
     CreateMockExamQuestionAttemptRequestDto[]
   >([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const makeRequest = useMakeRequestWithAuth();
   const navigate = useNavigate();
   const { showErrorSnackbar, showSuccessSnackbar } = useCommonSnackbars();
 
-  if (questionsData === undefined || isLoading) {
+  if (questionsData === undefined || isSubmitting) {
     return <FullPageLoading />;
   }
 
@@ -63,7 +63,7 @@ export const MockExamsAttempt = () => {
       },
     };
 
-    setIsLoading(true);
+    setIsSubmitting(true);
     const examURL = `/api/exams`;
     const response = await makeRequest<
       MockExamAttemptSubmitResponseDto,
@@ -71,12 +71,12 @@ export const MockExamsAttempt = () => {
     >(examURL, 'POST', body);
 
     if (!response.ok) {
-      setIsLoading(false);
+      setIsSubmitting(false);
       showErrorSnackbar();
       return;
     }
 
-    navigate(`/e-learning/score/${response.data.id}`);
+    navigate(`/e-learning/${response.data.id}/rezultat`);
     showSuccessSnackbar(`Egzamin zakończony!`);
   };
   return (

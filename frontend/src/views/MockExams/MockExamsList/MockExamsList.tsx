@@ -15,12 +15,12 @@ import {
 } from '@mui/material';
 import { MockExamAttemptFindAllResponseDto } from '@osk/shared';
 import { parseISO } from 'date-fns';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Flex } from 'reflexbox';
 import useSWR from 'swr';
-import { FullPageLoading } from '../../components/FullPageLoading/FullPageLoading';
-import { GeneralAPIError } from '../../components/GeneralAPIError/GeneralAPIError';
-import { formatLong } from '../../utils/date';
+import { FullPageLoading } from '../../../components/FullPageLoading/FullPageLoading';
+import { GeneralAPIError } from '../../../components/GeneralAPIError/GeneralAPIError';
+import { formatLong } from '../../../utils/date';
 
 export const MockExamsList = () => {
   const pageTitle = 'Próbne egzaminy teoretyczne';
@@ -28,6 +28,8 @@ export const MockExamsList = () => {
 
   const { data: mockExamsListData, error: mockExamsListError } =
     useSWR<MockExamAttemptFindAllResponseDto>('/api/exams');
+
+  const navigate = useNavigate();
 
   if (mockExamsListError) {
     return <GeneralAPIError />;
@@ -79,7 +81,12 @@ export const MockExamsList = () => {
           </TableHead>
           <TableBody>
             {examAttempts.map((mockExam) => (
-              <TableRow hover key={mockExam.id} sx={{ cursor: 'pointer' }}>
+              <TableRow
+                hover
+                key={mockExam.id}
+                sx={{ cursor: 'pointer' }}
+                onClick={() => navigate(`./${mockExam.id}`)}
+              >
                 <TableCell align="center">
                   {mockExam.isPassed ? (
                     <Icon color="success">check</Icon>

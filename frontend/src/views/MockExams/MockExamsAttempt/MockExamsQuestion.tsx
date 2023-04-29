@@ -10,8 +10,8 @@ import {
 import { MockExamQuestionDto } from '@osk/shared';
 import { Flex } from 'reflexbox';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { theme } from '../../theme';
-import { useQuestionState } from '../../hooks/useQuestionState/useQuestionState';
+import { theme } from '../../../theme';
+import { useQuestionState } from '../../../hooks/useQuestionState/useQuestionState';
 
 interface MockExamQuestionInterface {
   question: MockExamQuestionDto;
@@ -64,7 +64,7 @@ export const MockExamsQuestion = ({
     onQuestionSubmit(question.id, selectedAnswerRef.current);
   }, [onQuestionSubmit, question.id]);
 
-  const nextState = useCallback(() => {
+  const goToNextState = useCallback(() => {
     if (state.type === 'reading') {
       if (hasVideo) {
         startVideo();
@@ -96,15 +96,15 @@ export const MockExamsQuestion = ({
   useEffect(() => {
     let currentTimePassed = 0;
     const step = maxTimeInMs / 500;
-    let timer: NodeJS.Timeout;
+    let timer: number;
     if (state.type === 'video') {
       setProgress(0);
     } else {
-      timer = setInterval(() => {
+      timer = window.setInterval(() => {
         currentTimePassed += step;
         const newProgress = (currentTimePassed / maxTimeInMs) * 100;
         if (newProgress >= 100) {
-          nextState();
+          goToNextState();
         } else {
           setProgress((currentTimePassed / maxTimeInMs) * 100);
         }
@@ -112,10 +112,10 @@ export const MockExamsQuestion = ({
     }
 
     return () => {
-      clearInterval(timer);
+      window.clearInterval(timer);
     };
   }, [
-    nextState,
+    goToNextState,
     maxTimeInMs,
     state,
     question.type.timeToAnswer,
@@ -137,7 +137,7 @@ export const MockExamsQuestion = ({
   };
 
   const handleReadyToAnswer = () => {
-    nextState();
+    goToNextState();
   };
 
   return (
@@ -270,6 +270,7 @@ const MediaContainer = ({ mediaURL, hasVideo, onVideoEnd }: MediaInterface) => {
           src="../../../public/1A601.mov"
           onEnded={onVideoEnd}
           autoPlay
+          muted
         />
       )}
       {!mediaURL && 'Brak Wideo'}

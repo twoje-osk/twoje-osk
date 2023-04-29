@@ -6,6 +6,7 @@ import {
   IsNumber,
   ValidateNested,
 } from 'class-validator';
+import { MockExamQuestionDto } from '../mockExamQuestion/mockExamQuestion.dto';
 import { CreateMockExamQuestionAttemptRequestDto } from '../mockExamQuestionAttempt/mockExamQuestionAttempt.dto';
 import { TraineeDto } from '../trainee/trainee.dto';
 
@@ -55,6 +56,11 @@ export class MockExamAttemptFindAllResponseDto {
 export class MockExamAttemptFindOneResponseDto {
   @ApiProperty({ type: DtoMockExamAttempt })
   examAttempt: DtoMockExamAttempt;
+
+  @ApiProperty({ isArray: true, type: MockExamQuestionDto })
+  @ValidateNested()
+  @Type(() => MockExamQuestionDto)
+  questions: MockExamQuestionDto[];
 }
 
 export class MockExamAttemptSubmitResponseDto {

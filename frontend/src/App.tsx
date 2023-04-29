@@ -1,5 +1,5 @@
 import { UserRole } from '@osk/shared/src/types/user.types';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom';
 import { RequireAuth } from './components/RequireAuth/RequireAuth';
 import { RequireRole } from './components/RequireRole/RequireRole';
 import { ForgotPassword } from './views/ForgotPassword/ForgotPassword';
@@ -24,8 +24,10 @@ import { AnnouncementsList } from './views/Announcements/AnnouncementsList';
 import { Availability } from './views/Availability/Availability';
 import { DefaultAvailability } from './views/DefaultAvailability/DefaultAvailability';
 import { SignUp } from './views/SignUp/SignUp';
-import { MockExamsList } from './views/MockExams/MockExamsList';
-import { MockExamsAttempt } from './views/MockExams/MockExamsAttempt';
+import { MockExamsList } from './views/MockExams/MockExamsList/MockExamsList';
+import { MockExamsAttempt } from './views/MockExams/MockExamsAttempt/MockExamsAttempt';
+import { MockExamsScoreBoard } from './views/MockExams/MockExamsAttempt/MockExamsScoreBoard';
+import { MockExamsCompletedAttempt } from './views/MockExams/MockExamsAttempt/MockExamsCompletedAttempt';
 
 export const App = () => {
   return (
@@ -106,13 +108,13 @@ export const App = () => {
         </Route>
         <Route
           path="/e-learning"
-          element={<RequireRole roles={[UserRole.Trainee]} />}
+          element={
+            <RequireRole roles={[UserRole.Trainee, UserRole.Instructor]} />
+          }
         >
           <Route index element={<MockExamsList />} />
-          {/* <Route path="wynik" */}
-          {/*       element={<RequireRole roles={[UserRole.Trainee]}/>}> */}
-          {/*  <Route index element={<MockExamsScoreBoard}/>}/> */}
-          {/* </Route> */}
+          <Route path=":examId" element={<MockExamsCompletedAttempt />} />
+          <Route path=":examId/rezultat" element={<MockExamsScoreBoard />} />
           <Route
             path="nowy"
             element={<RequireRole roles={[UserRole.Trainee]} />}
