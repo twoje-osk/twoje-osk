@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Transactional } from 'typeorm-transactional-cls-hooked';
+import { TransactionalWithTry } from '../utils/TransactionalWithTry';
 import { OrganizationDomainService } from '../organization-domain/organization-domain.service';
 import { ReportsService } from '../reports/reports.service';
 import { TraineesService } from '../trainees/trainees.service';
@@ -73,7 +73,7 @@ export class CourseReportsService {
     return getSuccess(report);
   }
 
-  @Transactional()
+  @TransactionalWithTry()
   async create(
     traineeId: number,
   ): Promise<
