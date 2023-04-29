@@ -24,5 +24,5 @@ class ReportFactory extends Factory<Report> {
 export const reportFactory = new ReportFactory();
 
 export const seedReports = () => {
-  Array.from({ length: 1 }).forEach(() => reportFactory.generate());
+  reportFactory.generate();
 };
