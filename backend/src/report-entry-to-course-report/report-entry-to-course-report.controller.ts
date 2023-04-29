@@ -1,6 +1,10 @@
-import { Body, Controller, Put } from '@nestjs/common';
+import { Body, Controller, NotFoundException, Put } from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
-import { ReportEntryToCourseReportCreateOrUpdateRequestDto } from '@osk/shared';
+import {
+  ReportEntryToCourseReportCreateOrUpdateRequestDto,
+  ReportEntryToCourseReportCreateOrUpdateResponseDto,
+} from '@osk/shared';
+import { assertNever } from '../utils/assertNever';
 import { ReportEntryToCourseReportService } from './report-entry-to-course-report.service';
 
 export interface ReportEntryType {
@@ -16,30 +20,32 @@ export class ReportEntryToCourseReportController {
     private readonly reportEntryToCourseReportService: ReportEntryToCourseReportService,
   ) {}
 
-  // @ApiResponse({ type: '' })
-  // @Put()
-  // async createOrModify(
-  //   @Body()
-  //   {
-  //     reportEntryToCourseReport,
-  //   }: ReportEntryToCourseReportCreateOrModifyRequestDto,
-  // ): Promise<ReportEntryToCourseReportCreateOrModifyResponseDto>;
-
   @ApiResponse({
-    type: '',
+    type: ReportEntryToCourseReportCreateOrUpdateResponseDto,
     description: 'Create or update entries for course reports',
   })
   @Put()
   async createOrModify(
     @Body()
     reportEntryToCourseReport: ReportEntryToCourseReportCreateOrUpdateRequestDto,
-  ): Promise<any> {
-    await this.reportEntryToCourseReportService.setEntryForCourseReport(
-      reportEntryToCourseReport.reportEntryId,
-      reportEntryToCourseReport.courseReportId,
-      reportEntryToCourseReport.done,
-      reportEntryToCourseReport.mastered,
-    );
+  ): Promise<ReportEntryToCourseReportCreateOrUpdateResponseDto> {
+    const result =
+      await this.reportEntryToCourseReportService.setEntryForCourseReport(
+        reportEntryToCourseReport.reportEntryId,
+        reportEntryToCourseReport.courseReportId,
+        reportEntryToCourseReport.done,
+        reportEntryToCourseReport.mastered,
+      );
+
+    if (!result.ok) {
+      if (result.error === 'COURSE_REPORT_NOT_FOUND') {
+        throw new NotFoundException(
+          "Course report with specified id doesn't exist",
+        );
+      }
+
+      return assertNever(result.error);
+    }
 
     return {};
   }
