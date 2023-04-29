@@ -104,7 +104,7 @@ export class CourseReportsService {
       return getFailure('REPORT_ALREADY_CREATED_FOR_TRAINEE');
     }
 
-    const newTraineeReport = await this.courseReportsRepository.create({
+    const newTraineeReport = this.courseReportsRepository.create({
       trainee,
       report,
       reportEntryToCourseReports: [],
