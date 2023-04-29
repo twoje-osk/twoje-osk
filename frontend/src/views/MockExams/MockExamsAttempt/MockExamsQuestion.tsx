@@ -267,7 +267,7 @@ const MediaContainer = ({ mediaURL, hasVideo, onVideoEnd }: MediaInterface) => {
       {mediaURL && (
         <StyledVideo
           width={700}
-          src="../../../public/1A601.mov"
+          src="/1A601.mov"
           onEnded={onVideoEnd}
           autoPlay
           muted
@@ -277,9 +277,7 @@ const MediaContainer = ({ mediaURL, hasVideo, onVideoEnd }: MediaInterface) => {
     </StyledMediaWrapper>
   ) : (
     <StyledMediaWrapper elevation={1}>
-      {mediaURL && (
-        <StyledImage width={700} src="../../../public/3011pic-zt.jpg" alt="" />
-      )}
+      {mediaURL && <StyledImage width={700} src="/3011pic-zt.jpg" alt="" />}
       {!mediaURL && 'Brak Zdjęcia'}
     </StyledMediaWrapper>
   );
