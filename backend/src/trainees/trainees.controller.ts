@@ -119,6 +119,12 @@ export class TraineesController {
 
     const { error } = createTraineeCall;
 
+    if (error === 'DRIVER_LICENSE_CATEGORY_NOT_FOUND') {
+      throw new UnprocessableEntityException(
+        'Provided driver license category is not valid',
+      );
+    }
+
     if (error === 'TRAINEE_OR_USER_FOUND') {
       throw new ConflictException(
         'There is already a trainee which has the same pesel or a user with the same email',
@@ -149,9 +155,9 @@ export class TraineesController {
         );
       }
 
-      if (error === 'CEPIK_ERROR') {
+      if (error === 'DRIVER_LICENSE_CATEGORY_NOT_FOUND') {
         throw new UnprocessableEntityException(
-          'User with specified PKK and date of birth does not exist',
+          'Provided driver license category is not valid',
         );
       }
 
