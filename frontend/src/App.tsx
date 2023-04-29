@@ -35,6 +35,8 @@ import { PaymentNew } from './views/Payments/PaymentNew/PaymentNew';
 import { TraineePaymentNew } from './views/Trainees/TraineePayments/TraineePaymentNew/TraineePaymentNew';
 import { MyPaymentsList } from './views/MyPayments/MyPaymentsList/MyPaymentsList';
 import { MyPaymentDetails } from './views/MyPayments/MyPaymentsDetails/MyPaymentsDetails';
+import { TraineeReport } from './views/Trainees/TraineeReport/TraineeReport';
+import { InstructorFinishLesson } from './views/Lessons/InstructorMyLessons/InstructorFinishLesson/InstructorFinishLesson';
 
 export const App = () => {
   return (
@@ -71,6 +73,7 @@ export const App = () => {
                 element={<TraineePaymentEdit />}
               />
             </Route>
+            <Route path=":traineeId/raport" element={<TraineeReport />} />
           </Route>
           <Route
             path="/instruktorzy"
@@ -111,6 +114,11 @@ export const App = () => {
             }
           >
             <Route index element={<MyLessons />} />
+            <Route
+              path=":lessonId/zakoncz"
+              element={<InstructorFinishLesson />}
+            />
+            <Route path=":lessonId" element={<MyLessons />} />
           </Route>
           <Route
             path="/moja-dostepnosc"

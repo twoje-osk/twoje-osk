@@ -1,8 +1,12 @@
-import { Stack } from '@mui/material';
+import { MenuItem, Stack } from '@mui/material';
+import { DriversLicenseCategoryFindAllResponseDto } from '@osk/shared';
 import { Form, Formik, FormikHelpers } from 'formik';
 import { ReactNode } from 'react';
 import { Flex } from 'reflexbox';
+import useSWR from 'swr';
+import { PicklistOption } from '../../../components/FPicklistField/FPicklistField';
 import { FTextField } from '../../../components/FTextField/FTextField';
+import { FSelect } from '../../../components/FSelect/FSelect';
 import { traineeFormSchema, TraineeFormData } from './TraineeForm.schema';
 
 interface TraineeFormProps {
@@ -14,9 +18,12 @@ interface TraineeFormProps {
   ) => void | Promise<any>;
   children?: ReactNode;
   hideCreatedAt?: boolean;
+  isCreate?: boolean;
 }
 
-const defaultValues: TraineeFormData = {
+const defaultValues: Omit<TraineeFormData, 'driversLicenseCategory'> & {
+  driversLicenseCategory: TraineeFormData['driversLicenseCategory'] | undefined;
+} = {
   firstName: '',
   lastName: '',
   email: '',
@@ -26,6 +33,7 @@ const defaultValues: TraineeFormData = {
   pkk: '',
   driversLicenseNumber: '',
   createdAt: new Date(),
+  driversLicenseCategory: undefined,
 };
 
 export const TraineeForm = ({
@@ -34,10 +42,22 @@ export const TraineeForm = ({
   onSubmit = () => undefined,
   children: actions,
   hideCreatedAt = false,
+  isCreate = false,
 }: TraineeFormProps) => {
+  const { data: driversLicenseCategoryData } =
+    useSWR<DriversLicenseCategoryFindAllResponseDto>(
+      '/api/drivers-license-categories',
+    );
+  const driversLicenseCategoryOptions: PicklistOption[] =
+    driversLicenseCategoryData?.categories
+      ? driversLicenseCategoryData.categories.map((el) => {
+          return { value: el.id, label: el.name };
+        })
+      : [];
+
   return (
     <Formik<TraineeFormData>
-      initialValues={initialValues ?? defaultValues}
+      initialValues={initialValues ?? (defaultValues as TraineeFormData)}
       validationSchema={traineeFormSchema}
       onSubmit={onSubmit as any}
       enableReinitialize
@@ -100,6 +120,19 @@ export const TraineeForm = ({
               label="Numer PKK"
               disabled={disabled}
             />
+            <FSelect
+              id="driversLicenseCategory"
+              label="Kategoria Prawa Jazdy"
+              name="driversLicenseCategory"
+              disabled={disabled || !isCreate}
+              required
+            >
+              {driversLicenseCategoryOptions.map((category) => (
+                <MenuItem value={category.value} key={category.value}>
+                  {category.label}
+                </MenuItem>
+              ))}
+            </FSelect>
             {!hideCreatedAt && (
               <FTextField
                 id="createdAt"

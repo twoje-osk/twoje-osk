@@ -33,7 +33,7 @@ export const TraineeNew = () => {
         pesel: newTrainee.pesel || null,
         pkk: newTrainee.pkk,
         driversLicenseNumber: newTrainee.driversLicenseNumber || null,
-        driversLicenseCategoryId: 6, // TODO CHANGE THIS TO GET IT FROM BE FROM DRIVER LICENSE CATEGORY
+        driversLicenseCategoryId: newTrainee.driversLicenseCategory,
         dateOfBirth: formatApi(newTrainee.dateOfBirth!),
         user: {
           email: newTrainee.email,
@@ -84,7 +84,7 @@ export const TraineeNew = () => {
         </Breadcrumbs>
       </Toolbar>
       <Box as="main" p="16px" pt="0">
-        <TraineeForm onSubmit={onSubmit} hideCreatedAt>
+        <TraineeForm onSubmit={onSubmit} hideCreatedAt isCreate>
           <Stack direction="row" spacing={1}>
             <LoadingButton
               variant="contained"

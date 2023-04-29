@@ -16,7 +16,6 @@ type FSelectProps<T> = Omit<
   helperText?: string;
 };
 
-// eslint-disable-next-line react/function-component-definition
 export function FSelect<T>(props: FSelectProps<T>) {
   const {
     name,
@@ -39,7 +38,7 @@ export function FSelect<T>(props: FSelectProps<T>) {
   return (
     <FormControl>
       {label && (
-        <InputLabel id={labelId} required={required}>
+        <InputLabel required={required} id={labelId}>
           {label}
         </InputLabel>
       )}

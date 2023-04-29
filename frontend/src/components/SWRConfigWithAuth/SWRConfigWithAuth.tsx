@@ -37,6 +37,7 @@ export const SWRConfigWithAuth = ({ children }: SWRConfigWithAuthProps) => {
     <SWRConfig
       value={{
         fetcher: curriedMakeRequestWithAuth,
+        revalidateOnFocus: false,
       }}
     >
       {children}
