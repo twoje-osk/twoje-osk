@@ -6,6 +6,7 @@ import { Button, Icon, Stack, Toolbar, Typography } from '@mui/material';
 import { FullPageLoading } from '../../../components/FullPageLoading/FullPageLoading';
 import { GeneralAPIError } from '../../../components/GeneralAPIError/GeneralAPIError';
 import { theme } from '../../../theme';
+import { PERFECT_SCORE } from '../MockExams.constants';
 
 export const MockExamsScoreBoard = () => {
   const { examId } = useParams();
@@ -98,7 +99,7 @@ export const MockExamsScoreBoard = () => {
           marginBottom: '8px',
         }}
       >
-        Uzyskany wynik to {score} / 74 pkt
+        Uzyskany wynik to {score} / {PERFECT_SCORE} pkt
       </Typography>
       <Flex style={{ margin: '32px 0 auto 0' }}>
         <Button

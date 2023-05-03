@@ -5,6 +5,10 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { theme } from '../../../theme';
 import { useQuestionState } from '../../../hooks/useQuestionState/useQuestionState';
 import { MockExamQuestionLayout } from './MockExamQuestionLayout';
+import {
+  AMOUNT_OF_ADVANCED_QUESTIONS,
+  AMOUNT_OF_ELEMENTARY_QUESTIONS,
+} from '../MockExams.constants';
 
 interface MockExamQuestionInterface {
   question: MockExamQuestionDto;
@@ -20,7 +24,7 @@ export const MockExamsQuestion = ({
   const selectedAnswerRef = useRef<number | undefined>(undefined);
   const [selectedAnswer, setSelectedAnswerState] = useState<number>();
   const [progress, setProgress] = useState(0);
-  const [state, startReadingQuestion, startAnsweringQuestion, startVideo] =
+  const { state, startReadingQuestion, startAnsweringQuestion, startVideo } =
     useQuestionState();
   const [elementaryQuestionsAmount, setElementaryQuestionsAmount] = useState(0);
   const [advancedQuestionsAmount, setAdvancedQuestionsAmount] = useState(0);
@@ -152,7 +156,8 @@ export const MockExamsQuestion = ({
             marginBottom: '24px',
           }}
         >
-          Zakres podstawowy {elementaryQuestionsAmount}/20
+          Zakres podstawowy {elementaryQuestionsAmount}/
+          {AMOUNT_OF_ELEMENTARY_QUESTIONS}
         </Typography>
         <Typography
           variant="h6"
@@ -165,7 +170,8 @@ export const MockExamsQuestion = ({
             marginBottom: '24px',
           }}
         >
-          Zakres specjalistyczny {advancedQuestionsAmount}/12
+          Zakres specjalistyczny {advancedQuestionsAmount}/
+          {AMOUNT_OF_ADVANCED_QUESTIONS}
         </Typography>
       </Flex>
       <Flex flexDirection="column" flex="1">

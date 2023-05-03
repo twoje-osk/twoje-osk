@@ -80,10 +80,10 @@ export const useQuestionState = () => {
     dispatch({ type: 'startVideo' });
   }, []);
 
-  return [
+  return {
     state,
     startReadingQuestion,
     startAnsweringQuestion,
     startVideo,
-  ] as const;
+  } as const;
 };
