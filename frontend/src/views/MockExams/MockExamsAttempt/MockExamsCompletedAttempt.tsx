@@ -63,7 +63,7 @@ export const MockExamsCompletedAttempt = () => {
       <Flex>
         <Button
           variant="contained"
-          style={{ margin: '8px auto 0 auto', width: '50px' }}
+          style={{ margin: '8px auto 0 auto' }}
           onClick={prevQuestion}
           disabled={isFirstQuestion}
         >
@@ -71,7 +71,7 @@ export const MockExamsCompletedAttempt = () => {
         </Button>
         <Button
           variant="contained"
-          style={{ margin: '8px auto 0 auto', width: '50px' }}
+          style={{ margin: '8px auto 0 auto' }}
           onClick={nextQuestion}
           disabled={isLastQuestion}
         >
