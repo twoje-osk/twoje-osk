@@ -2,15 +2,7 @@ import useSWR from 'swr';
 import { MockExamAttemptFindOneResponseDto } from '@osk/shared';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Flex } from 'reflexbox';
-import {
-  Button,
-  Icon,
-  IconButton,
-  Stack,
-  Toolbar,
-  Tooltip,
-  Typography,
-} from '@mui/material';
+import { Button, Icon, Stack, Toolbar, Typography } from '@mui/material';
 import { FullPageLoading } from '../../../components/FullPageLoading/FullPageLoading';
 import { GeneralAPIError } from '../../../components/GeneralAPIError/GeneralAPIError';
 import { theme } from '../../../theme';

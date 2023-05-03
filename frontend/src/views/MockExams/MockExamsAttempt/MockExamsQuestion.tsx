@@ -1,17 +1,10 @@
-import styled from '@emotion/styled';
-import {
-  Button,
-  Checkbox,
-  FormControlLabel,
-  LinearProgress,
-  Paper,
-  Typography,
-} from '@mui/material';
+import { Button, LinearProgress, Typography } from '@mui/material';
 import { MockExamQuestionDto } from '@osk/shared';
 import { Flex } from 'reflexbox';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { theme } from '../../../theme';
 import { useQuestionState } from '../../../hooks/useQuestionState/useQuestionState';
+import { MockExamQuestionLayout } from './MockExamQuestionLayout';
 
 interface MockExamQuestionInterface {
   question: MockExamQuestionDto;
@@ -19,18 +12,11 @@ interface MockExamQuestionInterface {
   isLastQuestion: boolean;
 }
 
-interface MediaInterface {
-  mediaURL: string | null;
-  hasVideo: boolean | undefined;
-  onVideoEnd: () => void;
-}
-
 export const MockExamsQuestion = ({
   question,
   onQuestionSubmit,
   isLastQuestion,
 }: MockExamQuestionInterface) => {
-  const { answers } = question;
   const selectedAnswerRef = useRef<number | undefined>(undefined);
   const [selectedAnswer, setSelectedAnswerState] = useState<number>();
   const [progress, setProgress] = useState(0);
@@ -55,9 +41,18 @@ export const MockExamsQuestion = ({
     state.type,
   ]);
 
-  const hasMedia = useMemo(() => question.mediaReference !== null, [question]);
+  const hasMedia = useMemo(
+    () =>
+      question.mediaReference !== null && question.mediaReference !== undefined,
+    [question],
+  );
   const hasVideo = useMemo(() => {
-    return hasMedia && question.mediaReference?.endsWith('.wmv');
+    return (
+      hasMedia &&
+      question.mediaReference !== null &&
+      question.mediaReference !== undefined &&
+      question.mediaReference.endsWith('.wmv')
+    );
   }, [question.mediaReference, hasMedia]);
 
   const submitQuestion = useCallback(() => {
@@ -174,59 +169,15 @@ export const MockExamsQuestion = ({
         </Typography>
       </Flex>
       <Flex flexDirection="column" flex="1">
-        {state.showMedia && (
-          <MediaContainer
-            hasVideo={hasVideo}
-            mediaURL={question.mediaReference}
-            onVideoEnd={startAnsweringQuestion}
-          />
-        )}
-        <Typography
-          variant="h6"
-          align="center"
-          color={theme.palette.text.primary}
-          sx={{
-            width: '85%',
-            margin: 'auto',
-            marginTop: state.showMedia ? '8px' : 'auto',
-            marginBottom: state.showMedia ? '8px' : 'auto',
-            paddingTop: '8px',
-            paddingBottom: '8px',
-          }}
-        >
-          {question.question}
-        </Typography>
-      </Flex>
-      <Flex
-        alignItems="center"
-        style={{ margin: '16px 0 32px 0' }}
-        flexDirection="column"
-      >
-        <Flex
-          style={{ margin: '8px auto 8px auto', padding: 'auto' }}
-          flexDirection={answers.length > 2 ? 'column' : 'row'}
-        >
-          {answers.map((answer) => {
-            return (
-              <FormControlLabel
-                key={answer.id}
-                value={answer.id}
-                control={
-                  <Checkbox
-                    checked={selectedAnswer === answer.id}
-                    color="primary"
-                    onChange={handleAnswerSelection}
-                    value={answer.id.toString()}
-                    inputProps={{ type: 'radio' }}
-                    name="answer"
-                  />
-                }
-                label={answer.answerContent}
-                labelPlacement="end"
-              />
-            );
-          })}
-        </Flex>
+        <MockExamQuestionLayout
+          questionDetails={question}
+          showMedia={state.showMedia}
+          hasVideo={hasVideo}
+          onVideoEnd={startAnsweringQuestion}
+          onAnswerSelection={handleAnswerSelection}
+          selectedAnswer={selectedAnswer}
+          readOnlyMode={false}
+        />
         <LinearProgress
           variant="determinate"
           style={{
@@ -260,51 +211,3 @@ export const MockExamsQuestion = ({
     </Flex>
   );
 };
-
-const MediaContainer = ({ mediaURL, hasVideo, onVideoEnd }: MediaInterface) => {
-  return hasVideo ? (
-    <StyledMediaWrapper elevation={1}>
-      {mediaURL && (
-        <StyledVideo
-          width={700}
-          src="/1A601.mov"
-          onEnded={onVideoEnd}
-          autoPlay
-          muted
-        />
-      )}
-      {!mediaURL && 'Brak Wideo'}
-    </StyledMediaWrapper>
-  ) : (
-    <StyledMediaWrapper elevation={1}>
-      {mediaURL && <StyledImage width={700} src="/3011pic-zt.jpg" alt="" />}
-      {!mediaURL && 'Brak Zdjęcia'}
-    </StyledMediaWrapper>
-  );
-};
-
-const StyledMediaWrapper = styled(Paper)`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  flex: 1;
-  aspect-ratio: 16/9;
-  margin: auto;
-  margin-top: 8px;
-  margin-bottom: 48px;
-  max-height: 500px;
-  background: ${theme.palette.grey[300]};
-`;
-
-const StyledImage = styled.img`
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-`;
-
-const StyledVideo = styled.video`
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-`;

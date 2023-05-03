@@ -7,7 +7,10 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { MockExamQuestionDto } from '../mockExamQuestion/mockExamQuestion.dto';
-import { CreateMockExamQuestionAttemptRequestDto } from '../mockExamQuestionAttempt/mockExamQuestionAttempt.dto';
+import {
+  CreateMockExamQuestionAttemptRequestDto,
+  MockExamQuestionAttemptDto,
+} from '../mockExamQuestionAttempt/mockExamQuestionAttempt.dto';
 import { TraineeDto } from '../trainee/trainee.dto';
 
 export class DtoMockExamAttempt {
@@ -26,6 +29,12 @@ export class DtoMockExamAttempt {
     type: 'string',
   })
   attemptDate: ApiDate;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @ValidateNested()
+  @Type(() => MockExamQuestionAttemptDto)
+  questions: MockExamQuestionAttemptDto[];
 
   @ApiProperty()
   @IsNotEmpty()
