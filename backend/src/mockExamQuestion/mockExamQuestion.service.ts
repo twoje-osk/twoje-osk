@@ -236,7 +236,6 @@ export class MockExamQuestionService {
   async getQuestions(
     questionsIds: number[],
   ): Promise<Try<MockExamQuestion[], 'INCORRECT_IDS'>> {
-    console.log(questionsIds);
     const questions = await this.mockExamQuestionRepository.find({
       where: {
         id: In(questionsIds),

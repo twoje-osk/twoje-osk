@@ -78,7 +78,6 @@ export class MockExamAttemptController {
     const questionsToBeFetched = examAttemptResult.data.questions.map(
       (el) => el.questionId,
     );
-    console.log(questionsToBeFetched);
     const questionsResult = await this.mockExamQuestionService.getQuestions(
       questionsToBeFetched,
     );
