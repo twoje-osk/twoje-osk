@@ -9,4 +9,12 @@ export class DtoMockExamQuestionAnswer {
   @ApiProperty()
   @IsString()
   answerContent: string;
+
+  @ApiProperty()
+  @IsNumber()
+  questionId: number;
+
+  @ApiProperty()
+  @IsNumber()
+  isCorrectAnswerOfId: number;
 }

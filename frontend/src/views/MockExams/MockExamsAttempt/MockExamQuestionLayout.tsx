@@ -1,4 +1,4 @@
-import { MockExamQuestionDto } from '@osk/shared';
+import { DtoMockExamQuestionAnswer, MockExamQuestionDto } from '@osk/shared';
 import styled from '@emotion/styled';
 import { Checkbox, FormControlLabel, Paper, Typography } from '@mui/material';
 import { Flex } from 'reflexbox';
@@ -33,6 +33,26 @@ export const MockExamQuestionLayout = ({
   onAnswerSelection,
 }: QuestionLayoutProps) => {
   const { answers } = questionDetails;
+  const isAnsweredChecked = (answer: DtoMockExamQuestionAnswer) => {
+    return (
+      selectedAnswer === answer.id ||
+      (answer.isCorrectAnswerOfId === answer.questionId && readOnlyMode)
+    );
+  };
+  const getAnswerColor = (
+    answer: DtoMockExamQuestionAnswer,
+  ): 'primary' | 'success' | 'error' => {
+    if (
+      readOnlyMode &&
+      (selectedAnswer === answer.id ||
+        answer.isCorrectAnswerOfId === answer.questionId)
+    ) {
+      return answer.isCorrectAnswerOfId === answer.questionId
+        ? 'success'
+        : 'error';
+    }
+    return 'primary';
+  };
   return (
     <>
       {showMedia && (
@@ -74,13 +94,12 @@ export const MockExamQuestionLayout = ({
                 value={answer.id}
                 control={
                   <Checkbox
-                    checked={selectedAnswer === answer.id}
-                    color="primary"
+                    checked={isAnsweredChecked(answer)}
+                    color={getAnswerColor(answer)}
                     onChange={onAnswerSelection}
                     value={answer.id.toString()}
                     inputProps={{ type: 'radio' }}
                     name="answer"
-                    disabled={readOnlyMode}
                   />
                 }
                 label={answer.answerContent}
