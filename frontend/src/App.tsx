@@ -7,7 +7,6 @@ import { HomePage } from './views/HomePage/HomePage';
 import { InstructorsList } from './views/Instructors/InstructorsList/InstructorsList';
 import { InstructorsDetails } from './views/Instructors/InstructorsDetails/InstructorsDetails';
 import { InstructorsEdit } from './views/Instructors/InstructorsEdit/InstructorsEdit';
-import { Layout } from './views/Layout/Layout';
 import { MyLessons } from './views/Lessons/MyLessons/MyLessons';
 import { Login } from './views/Login/Login';
 import { ResetPassword } from './views/ResetPassword/ResetPassword';
@@ -24,6 +23,18 @@ import { AnnouncementsList } from './views/Announcements/AnnouncementsList';
 import { Availability } from './views/Availability/Availability';
 import { DefaultAvailability } from './views/DefaultAvailability/DefaultAvailability';
 import { SignUp } from './views/SignUp/SignUp';
+import { ErrorBoundary } from './components/ErrorBoundary/ErrorBoundary';
+import { MyProfile } from './views/MyProfile/MyProfile';
+import { TraineePaymentsList } from './views/Trainees/TraineePayments/TraineePaymentsList/TraineePaymentsList';
+import { PaymentsList } from './views/Payments/PaymentsList/PaymentsList';
+import { PaymentDetails } from './views/Payments/PaymentDetails/PaymentDetails';
+import { PaymentEdit } from './views/Payments/PaymentEdit/PaymentEdit';
+import { TraineePaymentDetails } from './views/Trainees/TraineePayments/TraineePaymentDetails/TraineePaymentDetails';
+import { TraineePaymentEdit } from './views/Trainees/TraineePayments/TraineePaymentEdit/TraineePaymentEdit';
+import { PaymentNew } from './views/Payments/PaymentNew/PaymentNew';
+import { TraineePaymentNew } from './views/Trainees/TraineePayments/TraineePaymentNew/TraineePaymentNew';
+import { MyPaymentsList } from './views/MyPayments/MyPaymentsList/MyPaymentsList';
+import { MyPaymentDetails } from './views/MyPayments/MyPaymentsDetails/MyPaymentsDetails';
 import { MockExamsList } from './views/MockExams/MockExamsList/MockExamsList';
 import { MockExamsAttempt } from './views/MockExams/MockExamsAttempt/MockExamsAttempt';
 import { MockExamsScoreBoard } from './views/MockExams/MockExamsAttempt/MockExamsScoreBoard';
@@ -31,98 +42,132 @@ import { MockExamsCompletedAttempt } from './views/MockExams/MockExamsAttempt/Mo
 
 export const App = () => {
   return (
-    <Routes>
-      <Route path="/login" element={<Login />} />
-      <Route path="/zapisz-sie" element={<SignUp />} />
-      <Route path="/account/zapomnialem-haslo" element={<ForgotPassword />} />
-      <Route path="/account/reset">
-        <Route index element={<Navigate to="/account/zapomnialem-haslo" />} />
-        <Route path=":token" element={<ResetPassword />} />
-      </Route>
-      <Route
-        path="/"
-        element={
-          <Layout>
-            <RequireAuth />
-          </Layout>
-        }
-      >
-        <Route index element={<HomePage />} />
-        <Route
-          path="/kursanci"
-          element={
-            <RequireRole roles={[UserRole.Admin, UserRole.Instructor]} />
-          }
-        >
-          <Route index element={<TraineesList />} />
-          <Route path="nowy" element={<TraineeNew />} />
-          <Route path=":traineeId" element={<TraineeDetails />} />
-          <Route path=":traineeId/edytuj" element={<TraineeEdit />} />
+    <ErrorBoundary>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/zapisz-sie" element={<SignUp />} />
+        <Route path="/account/zapomnialem-haslo" element={<ForgotPassword />} />
+        <Route path="/account/reset">
+          <Route index element={<Navigate to="/account/zapomnialem-haslo" />} />
+          <Route path=":token" element={<ResetPassword />} />
         </Route>
-        <Route
-          path="/instruktorzy"
-          element={
-            <RequireRole roles={[UserRole.Admin, UserRole.Instructor]} />
-          }
-        >
-          <Route index element={<InstructorsList />} />
-          <Route path="nowy" element={<InstructorsNew />} />
-          <Route path=":instructorId/edytuj" element={<InstructorsEdit />} />
-          <Route path=":instructorId" element={<InstructorsDetails />} />
-        </Route>
-        <Route
-          path="/pojazdy"
-          element={
-            <RequireRole roles={[UserRole.Admin, UserRole.Instructor]} />
-          }
-        >
-          <Route index element={<VehiclesList />} />
-          <Route path="nowy" element={<VehicleNew />} />
-          <Route path=":vehicleId/edytuj" element={<VehicleEdit />} />
-          <Route path=":vehicleId" element={<VehicleDetails />} />
-        </Route>
-        <Route
-          path="/ogloszenia"
-          element={
-            <RequireRole
-              roles={[UserRole.Admin, UserRole.Instructor, UserRole.Trainee]}
-            />
-          }
-        >
-          <Route index element={<AnnouncementsList />} />
-        </Route>
-        <Route
-          path="/moje-jazdy"
-          element={
-            <RequireRole roles={[UserRole.Trainee, UserRole.Instructor]} />
-          }
-        >
-          <Route index element={<MyLessons />} />
-        </Route>
-        <Route
-          path="/moja-dostepnosc"
-          element={<RequireRole role={UserRole.Instructor} />}
-        >
-          <Route index element={<Availability />} />
-          <Route path="domyslna" element={<DefaultAvailability />} />
-        </Route>
-        <Route
-          path="/e-learning"
-          element={
-            <RequireRole roles={[UserRole.Trainee, UserRole.Instructor]} />
-          }
-        >
-          <Route index element={<MockExamsList />} />
-          <Route path=":examId" element={<MockExamsCompletedAttempt />} />
-          <Route path=":examId/rezultat" element={<MockExamsScoreBoard />} />
+        <Route path="/" element={<RequireAuth />}>
+          <Route index element={<HomePage />} />
           <Route
-            path="nowy"
+            path="/kursanci"
+            element={
+              <RequireRole roles={[UserRole.Admin, UserRole.Instructor]} />
+            }
+          >
+            <Route index element={<TraineesList />} />
+            <Route path="nowy" element={<TraineeNew />} />
+            <Route path=":traineeId" element={<TraineeDetails />} />
+            <Route path=":traineeId/edytuj" element={<TraineeEdit />} />
+            <Route
+              path=":traineeId/platnosci"
+              element={<RequireRole roles={[UserRole.Admin]} />}
+            >
+              <Route index element={<TraineePaymentsList />} />
+              <Route path="nowa" element={<TraineePaymentNew />} />
+              <Route path=":paymentId" element={<TraineePaymentDetails />} />
+              <Route
+                path=":paymentId/edytuj"
+                element={<TraineePaymentEdit />}
+              />
+            </Route>
+          </Route>
+          <Route
+            path="/instruktorzy"
+            element={
+              <RequireRole roles={[UserRole.Admin, UserRole.Instructor]} />
+            }
+          >
+            <Route index element={<InstructorsList />} />
+            <Route path="nowy" element={<InstructorsNew />} />
+            <Route path=":instructorId/edytuj" element={<InstructorsEdit />} />
+            <Route path=":instructorId" element={<InstructorsDetails />} />
+          </Route>
+          <Route
+            path="/pojazdy"
+            element={
+              <RequireRole roles={[UserRole.Admin, UserRole.Instructor]} />
+            }
+          >
+            <Route index element={<VehiclesList />} />
+            <Route path="nowy" element={<VehicleNew />} />
+            <Route path=":vehicleId/edytuj" element={<VehicleEdit />} />
+            <Route path=":vehicleId" element={<VehicleDetails />} />
+          </Route>
+          <Route
+            path="/ogloszenia"
+            element={
+              <RequireRole
+                roles={[UserRole.Admin, UserRole.Instructor, UserRole.Trainee]}
+              />
+            }
+          >
+            <Route index element={<AnnouncementsList />} />
+          </Route>
+          <Route
+            path="/moje-jazdy"
+            element={
+              <RequireRole roles={[UserRole.Trainee, UserRole.Instructor]} />
+            }
+          >
+            <Route index element={<MyLessons />} />
+          </Route>
+          <Route
+            path="/moja-dostepnosc"
+            element={<RequireRole role={UserRole.Instructor} />}
+          >
+            <Route index element={<Availability />} />
+            <Route path="domyslna" element={<DefaultAvailability />} />
+          </Route>
+          <Route
+            path="/ogloszenia"
+            element={
+              <RequireRole roles={[UserRole.Trainee, UserRole.Instructor]} />
+            }
+          >
+            <Route index element={null} />
+          </Route>
+          <Route
+            path="/platnosci"
+            element={<RequireRole roles={[UserRole.Admin]} />}
+          >
+            <Route index element={<PaymentsList />} />
+            <Route path="nowa" element={<PaymentNew />} />
+            <Route path=":paymentId" element={<PaymentDetails />} />
+            <Route path=":paymentId/edytuj" element={<PaymentEdit />} />
+          </Route>
+          <Route
+            path="/moje-platnosci"
             element={<RequireRole roles={[UserRole.Trainee]} />}
           >
-            <Route index element={<MockExamsAttempt />} />
+            <Route index element={<MyPaymentsList />} />
+            <Route path=":paymentId" element={<MyPaymentDetails />} />
+          </Route>
+          <Route path="/profil">
+            <Route index element={<MyProfile />} />
+          </Route>
+          <Route
+            path="/e-learning"
+            element={
+              <RequireRole roles={[UserRole.Trainee, UserRole.Instructor]} />
+            }
+          >
+            <Route index element={<MockExamsList />} />
+            <Route path=":examId" element={<MockExamsCompletedAttempt />} />
+            <Route path=":examId/rezultat" element={<MockExamsScoreBoard />} />
+            <Route
+              path="nowy"
+              element={<RequireRole roles={[UserRole.Trainee]} />}
+            >
+              <Route index element={<MockExamsAttempt />} />
+            </Route>
           </Route>
         </Route>
-      </Route>
-    </Routes>
+      </Routes>
+    </ErrorBoundary>
   );
 };

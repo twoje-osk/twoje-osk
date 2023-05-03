@@ -9,11 +9,7 @@ import {
   Not,
   Repository,
 } from 'typeorm';
-import {
-  IsolationLevel,
-  Propagation,
-  Transactional,
-} from 'typeorm-transactional-cls-hooked';
+import { IsolationLevel, Propagation } from 'typeorm-transactional-cls-hooked';
 // eslint-disable-next-line import/no-cycle
 import { AvailabilityService } from '../availability/availability.service';
 import { CurrentUserService } from '../current-user/current-user.service';
@@ -21,6 +17,7 @@ import { InstructorsService } from '../instructors/instructors.service';
 import { OrganizationDomainService } from '../organization-domain/organization-domain.service';
 import { TraineesService } from '../trainees/trainees.service';
 import { Try, getFailure, getSuccess } from '../types/Try';
+import { TransactionalWithTry } from '../utils/TransactionalWithTry';
 import { Lesson } from './entities/lesson.entity';
 
 @Injectable()
@@ -135,7 +132,7 @@ export class LessonsService {
     return availabilities;
   }
 
-  @Transactional({
+  @TransactionalWithTry({
     isolationLevel: IsolationLevel.SERIALIZABLE,
     propagation: Propagation.REQUIRES_NEW,
   })
@@ -204,7 +201,7 @@ export class LessonsService {
     return getSuccess(undefined);
   }
 
-  @Transactional({
+  @TransactionalWithTry({
     isolationLevel: IsolationLevel.SERIALIZABLE,
     propagation: Propagation.REQUIRES_NEW,
   })
@@ -267,7 +264,7 @@ export class LessonsService {
     return getSuccess(createdLessonId);
   }
 
-  @Transactional()
+  @TransactionalWithTry()
   async cancelTraineeLesson(
     lessonId: number,
   ): Promise<
@@ -296,7 +293,7 @@ export class LessonsService {
     return getSuccess(undefined);
   }
 
-  @Transactional()
+  @TransactionalWithTry()
   async createLesson(
     traineeId: number,
     from: Date,
@@ -331,7 +328,7 @@ export class LessonsService {
     return getSuccess(createdLessonId);
   }
 
-  @Transactional()
+  @TransactionalWithTry()
   async updateLesson(
     lessonId: number,
     from: Date,

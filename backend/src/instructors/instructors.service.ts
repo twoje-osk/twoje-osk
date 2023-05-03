@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Transactional } from 'typeorm-transactional-cls-hooked';
 import { Instructor } from './entities/instructor.entity';
 import { User } from '../users/entities/user.entity';
 import { InstructorFields, InstructorUpdateFields } from './instructors.types';
@@ -9,6 +8,7 @@ import { DriversLicenseCategoriesService } from '../driversLicenseCategory/drive
 import { OrganizationDomainService } from '../organization-domain/organization-domain.service';
 import { Try, getFailure, getSuccess } from '../types/Try';
 import { UsersService } from '../users/users.service';
+import { TransactionalWithTry } from '../utils/TransactionalWithTry';
 
 @Injectable()
 export class InstructorsService {
@@ -61,7 +61,7 @@ export class InstructorsService {
     return user;
   }
 
-  @Transactional()
+  @TransactionalWithTry()
   async create(
     instructor: InstructorFields,
   ): Promise<Try<number, 'EMAIL_ALREADY_TAKEN' | 'WRONG_CATEGORIES'>> {
@@ -102,7 +102,7 @@ export class InstructorsService {
     return getSuccess(createdInstructor.id);
   }
 
-  @Transactional()
+  @TransactionalWithTry()
   async update(
     instructor: InstructorUpdateFields,
     instructorId: number,

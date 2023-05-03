@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Transactional } from 'typeorm-transactional-cls-hooked';
 import {
   MINIMAL_PASSING_SCORE,
   REQUIRED_AMOUNT_OF_QUESTIONS,
@@ -12,8 +11,8 @@ import {
 } from '../mockExamQuestionAttempt/entities/mockExamQuestionAttempt.entity';
 import { MockExamQuestionAttemptService } from '../mockExamQuestionAttempt/mockExamQuestionAttempt.service';
 import { TraineesService } from '../trainees/trainees.service';
-import { Try, getFailure, getSuccess, getFailureError } from '../types/Try';
-import { CatchFailure } from '../utils/CatchFailure';
+import { Try, getFailure, getSuccess } from '../types/Try';
+import { TransactionalWithTry } from '../utils/TransactionalWithTry';
 import { MockExamAttempt } from './entities/mockExamAttempt.entity';
 
 interface QuestionFields {
@@ -75,8 +74,7 @@ export class MockExamAttemptService {
     return getSuccess(attempt);
   }
 
-  @CatchFailure()
-  @Transactional()
+  @TransactionalWithTry()
   async submit(
     attempt: MockExamAttemptFields,
   ): Promise<
@@ -116,7 +114,7 @@ export class MockExamAttemptService {
       );
 
     if (!createQuestionsResult.ok) {
-      throw getFailureError(createQuestionsResult.error);
+      return getFailure(createQuestionsResult.error);
     }
 
     const createdQuestions = createQuestionsResult.data;

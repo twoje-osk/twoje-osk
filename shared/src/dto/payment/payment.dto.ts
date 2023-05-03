@@ -1,28 +1,24 @@
 import { ApiProperty, OmitType, PartialType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsDate, IsNotEmpty, IsNumber } from 'class-validator';
+import { IsDate, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import { TraineeDto } from '../trainee/trainee.dto';
 
 export class PaymentDto {
   @ApiProperty()
-  @IsNotEmpty()
-  @IsNumber()
   id: number;
 
   @ApiProperty()
-  @IsNotEmpty()
-  @IsNumber()
   amount: number;
 
   @ApiProperty()
-  @IsNotEmpty()
-  @Type(() => Date)
-  @IsDate()
-  date: ApiDate;
+  note: string;
 
   @ApiProperty()
-  @IsNotEmpty()
-  @Type(() => TraineeDto)
+  date: ApiDate;
+}
+
+export class PaymentWithTraineeDto extends PaymentDto {
+  @ApiProperty()
   trainee: TraineeDto;
 }
 
@@ -39,17 +35,37 @@ export class PaymentCreateRequestDto {
   date: ApiDate;
 
   @ApiProperty()
+  @IsString()
+  note: string;
+
+  @ApiProperty()
   @IsNotEmpty()
   @IsNumber()
-  traineeId: number;
+  idTrainee: number;
 }
 
 export class PaymentUpdateRequestDto extends OmitType(
   PartialType(PaymentCreateRequestDto),
-  ['traineeId'],
+  ['idTrainee'],
 ) {}
 
 export class PaymentFindAllResponseDto {
+  @ApiProperty({
+    isArray: true,
+    type: PaymentWithTraineeDto,
+  })
+  payments: PaymentWithTraineeDto[];
+}
+
+export class PaymentMyFindAllResponseDto {
+  @ApiProperty({
+    isArray: true,
+    type: PaymentWithTraineeDto,
+  })
+  payments: PaymentDto[];
+}
+
+export class PaymentFindAllByTraineeResponseDto {
   @ApiProperty({
     isArray: true,
     type: PaymentDto,
@@ -57,11 +73,27 @@ export class PaymentFindAllResponseDto {
   payments: PaymentDto[];
 }
 
-export class PaymentFindOneResponseDto {
+export class PaymentMyFindOneResponseDto {
   @ApiProperty({
     type: PaymentDto,
   })
   payment: PaymentDto;
 }
 
+export class PaymentFindOneResponseDto {
+  @ApiProperty({
+    type: PaymentWithTraineeDto,
+  })
+  payment: PaymentWithTraineeDto;
+}
+
+export class PaymentCreateResponseDto {
+  @ApiProperty({
+    type: PaymentWithTraineeDto,
+  })
+  payment: PaymentWithTraineeDto;
+}
+
 export class PaymentUpdateResponseDto {}
+
+export class PaymentDeleteResponseDto {}

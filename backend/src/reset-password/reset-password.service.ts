@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MoreThanOrEqual, Repository } from 'typeorm';
 import { add } from 'date-fns';
-import { Transactional } from 'typeorm-transactional-cls-hooked';
 import { ResetPasswordToken } from './entities/reset-password-token.entity';
 import { getToken, hashToken } from './reset-password.utils';
 import { CustomConfigService } from '../config/config.service';
@@ -10,6 +9,7 @@ import { MailService } from '../mail/mail.service';
 import { OrganizationDomainService } from '../organization-domain/organization-domain.service';
 import { Try, getSuccess, getFailure } from '../types/Try';
 import { UsersService } from '../users/users.service';
+import { TransactionalWithTry } from '../utils/TransactionalWithTry';
 
 @Injectable()
 export class ResetPasswordService {
@@ -113,7 +113,7 @@ export class ResetPasswordService {
     return getSuccess(undefined);
   }
 
-  @Transactional()
+  @TransactionalWithTry()
   async resetPassword(
     token: string,
     newPassword: string,

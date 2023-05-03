@@ -14,14 +14,7 @@ export class OrganizationsService {
     return this.usersRepository.findOne({
       where: {
         slug,
-      },
-    });
-  }
-
-  getOrganizationById(id: number) {
-    return this.usersRepository.findOne({
-      where: {
-        id,
+        isEnabled: true,
       },
     });
   }

@@ -7,6 +7,7 @@ import {
   IsOptional,
   IsString,
   Length,
+  ValidateIf,
 } from 'class-validator';
 import { OrganizationDto } from '../organization/organization.dto';
 import { UserRole } from '../../types/user.types';
@@ -141,3 +142,41 @@ export class UserMyProfileResponseDto {
   @ApiProperty()
   user: UserDto;
 }
+
+export class UpdateUserMyProfileRequestDto {
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsEmail()
+  @IsOptional()
+  email?: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsNotEmpty()
+  firstName?: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsNotEmpty()
+  lastName?: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsNotEmpty()
+  phoneNumber?: string;
+
+  @ValidateIf((o: UpdateUserMyProfileRequestDto) => Boolean(o.newPassword))
+  @ApiProperty({ type: 'string', required: false })
+  @IsString()
+  @IsNotEmpty()
+  oldPassword?: string;
+
+  @ApiProperty({ type: 'string', required: false })
+  @IsString()
+  @Length(8, 64)
+  @IsOptional()
+  @IsNotEmpty()
+  newPassword?: string;
+}
+
+export class UpdateUserMyProfileResponseDto {}

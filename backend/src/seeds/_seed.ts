@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { runSeeds } from './seed.setup';
 
 import { seedUsers } from './seed.user';
@@ -14,8 +15,10 @@ import { seedMockExam } from './seed.mockExam';
 import { seedDriversLicenseCategories } from './seed.driversLicenseCategories';
 
 runSeeds(async () => {
+  const useProductionData = process.env.USE_EXAM_PRODUCTION_DATA === 'true';
+
   seedDriversLicenseCategories();
-  await seedMockExam({ useProductionData: false });
+  await seedMockExam({ useProductionData });
   seedOrganizations();
   seedTrainees();
   seedInstructors();

@@ -11,4 +11,7 @@ export class Organization {
   @Index({ unique: true })
   @Column({ unique: true })
   slug: string;
+
+  @Column({ default: true })
+  isEnabled: boolean;
 }
