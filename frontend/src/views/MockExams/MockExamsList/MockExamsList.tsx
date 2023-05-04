@@ -21,10 +21,10 @@ import useSWR from 'swr';
 import { FullPageLoading } from '../../../components/FullPageLoading/FullPageLoading';
 import { GeneralAPIError } from '../../../components/GeneralAPIError/GeneralAPIError';
 import { formatLong } from '../../../utils/date';
+import { PERFECT_SCORE } from '../MockExams.constants';
 
 export const MockExamsList = () => {
   const pageTitle = 'Próbne egzaminy teoretyczne';
-  const PERFECT_SCORE = 74;
 
   const { data: mockExamsListData, error: mockExamsListError } =
     useSWR<MockExamAttemptFindAllResponseDto>('/api/exams');
