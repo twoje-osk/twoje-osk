@@ -23,6 +23,7 @@ import {
   TraineeAddNewRequestDto,
   TraineeDisableResponseDto,
   TraineeAddNewRequestSignupDto,
+  TraineeEnableResponseDto,
 } from '@osk/shared';
 import { TraineesService } from './trainees.service';
 import { SkipAuth } from '../auth/passport/skip-auth.guard';
@@ -201,6 +202,33 @@ export class TraineesController {
     if (error === 'TRAINEE_ALREADY_DISABLED') {
       throw new UnprocessableEntityException(
         'Trainee with this id is already disabled.',
+      );
+    }
+    return assertNever(error);
+  }
+
+  @ApiResponse({
+    type: TraineeEnableResponseDto,
+  })
+  @Patch(':id/enable')
+  async enable(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<TraineeEnableResponseDto> {
+    const enableTraineeCall = await this.traineesService.enable(id);
+
+    if (enableTraineeCall.ok) {
+      return { trainee: enableTraineeCall.data };
+    }
+
+    const { error } = enableTraineeCall;
+
+    if (error === 'TRAINEE_NOT_FOUND') {
+      throw new NotFoundException('Trainee with this id does not exist.');
+    }
+
+    if (error === 'TRAINEE_ALREADY_ENABLED') {
+      throw new UnprocessableEntityException(
+        'Trainee with this id is already enabled.',
       );
     }
     return assertNever(error);

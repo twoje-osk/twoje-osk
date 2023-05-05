@@ -175,3 +175,7 @@ export class TraineeAddNewResponseDto {
 export class TraineeDisableResponseDto {}
 
 export class TraineeDisableRequestDto {}
+
+export class TraineeEnableResponseDto {}
+
+export class TraineeEnableRequestDto {}

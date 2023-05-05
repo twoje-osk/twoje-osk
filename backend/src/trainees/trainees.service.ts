@@ -195,4 +195,36 @@ export class TraineesService {
 
     return getSuccess(undefined);
   }
+
+  @TransactionalWithTry()
+  async enable(
+    traineeId: number,
+  ): Promise<Try<undefined, 'TRAINEE_NOT_FOUND' | 'TRAINEE_ALREADY_ENABLED'>> {
+    const { id: organizationId } =
+      this.organizationDomainService.getRequestOrganization();
+
+    const traineeToDisable = await this.traineesRepository.findOne({
+      where: {
+        id: traineeId,
+        user: { organizationId },
+      },
+      relations: {
+        user: true,
+      },
+    });
+
+    if (traineeToDisable === null) {
+      return getFailure('TRAINEE_NOT_FOUND');
+    }
+
+    if (traineeToDisable.user.isActive === true) {
+      return getFailure('TRAINEE_ALREADY_ENABLED');
+    }
+
+    traineeToDisable.user.isActive = true;
+
+    await this.usersRepository.save(traineeToDisable.user);
+
+    return getSuccess(undefined);
+  }
 }
