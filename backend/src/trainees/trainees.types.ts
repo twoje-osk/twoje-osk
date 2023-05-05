@@ -1,4 +1,9 @@
 import { UserArguments } from '../types/UserArguments';
+import {
+  PresentationPaginationArguments,
+  PresentationSortArguments,
+} from '../utils/presentationArguments';
+import { TraineeSortField, TraineeUserSortField } from './trainee.utils';
 
 export interface TraineeArguments {
   user: UserArguments;
@@ -11,4 +16,12 @@ export interface TraineeArguments {
 export interface TraineeArgumentsUpdate
   extends Partial<Omit<TraineeArguments, 'user' | 'dateOfBirth'>> {
   user?: Partial<UserArguments>;
+}
+
+export type TraineePresentationSortArguments = PresentationSortArguments<
+  TraineeUserSortField | TraineeSortField
+>;
+export interface TraineePresentationArguments {
+  sort: TraineePresentationSortArguments;
+  pagination: PresentationPaginationArguments;
 }

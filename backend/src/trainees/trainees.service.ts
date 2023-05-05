@@ -1,13 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindOptionsWhere, Repository } from 'typeorm';
+import { FindManyOptions, FindOptionsWhere, Repository } from 'typeorm';
 import { OrganizationDomainService } from '../organization-domain/organization-domain.service';
 import { Try, getFailure, getSuccess } from '../types/Try';
 import { User } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
+import { getLimitArguments } from '../utils/presentationArguments';
 import { TransactionalWithTry } from '../utils/TransactionalWithTry';
 import { Trainee } from './entities/trainee.entity';
-import { TraineeArguments, TraineeArgumentsUpdate } from './trainees.types';
+import { isTraineeSortField, isTraineeUserSortField } from './trainee.utils';
+import {
+  TraineeArguments,
+  TraineeArgumentsUpdate,
+  TraineePresentationArguments,
+  TraineePresentationSortArguments,
+} from './trainees.types';
 
 @Injectable()
 export class TraineesService {
@@ -20,19 +27,50 @@ export class TraineesService {
     private usersService: UsersService,
   ) {}
 
-  async findAll() {
+  private buildOrderOption(
+    sortArguments: TraineePresentationSortArguments | undefined,
+  ): FindManyOptions<Trainee>['order'] {
+    const sortOrder = sortArguments?.sortOrder ?? 'desc';
+
+    const defaultSortOrder = {
+      user: {
+        createdAt: sortOrder,
+      },
+    };
+
+    if (sortArguments?.sortBy === undefined) {
+      return defaultSortOrder;
+    }
+
+    if (isTraineeUserSortField(sortArguments.sortBy)) {
+      return {
+        user: {
+          [sortArguments.sortBy]: sortOrder,
+        },
+      };
+    }
+
+    if (isTraineeSortField(sortArguments.sortBy)) {
+      return {
+        [sortArguments.sortBy]: sortOrder,
+      };
+    }
+
+    return defaultSortOrder;
+  }
+
+  async findAll(presentationArguments?: TraineePresentationArguments) {
     const { id: organizationId } =
       this.organizationDomainService.getRequestOrganization();
 
-    const users = await this.traineesRepository.find({
+    const limitArguments = getLimitArguments(presentationArguments?.pagination);
+
+    const [trainees, count] = await this.traineesRepository.findAndCount({
+      ...limitArguments,
+      order: this.buildOrderOption(presentationArguments?.sort),
       where: {
         user: {
           organizationId,
-        },
-      },
-      order: {
-        user: {
-          createdAt: 'DESC',
         },
       },
       relations: {
@@ -40,7 +78,7 @@ export class TraineesService {
       },
     });
 
-    return users;
+    return { trainees, count };
   }
 
   async findOneById(id: number) {

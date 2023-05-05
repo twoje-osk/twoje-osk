@@ -2,11 +2,15 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
   IsDate,
+  IsIn,
+  IsInt,
   IsNotEmpty,
   IsNumberString,
   IsOptional,
+  IsPositive,
   IsString,
   Length,
+  Min,
   ValidateNested,
 } from 'class-validator';
 import {
@@ -129,12 +133,51 @@ export class DtoUpdateTrainee {
   driversLicenseNumber?: string | null;
 }
 
+const traineeFindAllQueryDtoSortByOptions = [
+  'firstName',
+  'lastName',
+  'createdAt',
+  'isActive',
+] as const;
+const traineeFindAllQueryDtoSortOrderOptions = ['asc', 'desc'] as const;
+export class TraineeFindAllQueryDto {
+  @ApiProperty({ required: false, enum: traineeFindAllQueryDtoSortByOptions })
+  @IsOptional()
+  @IsIn(traineeFindAllQueryDtoSortByOptions)
+  sortBy?: typeof traineeFindAllQueryDtoSortByOptions[number];
+
+  @ApiProperty({
+    required: false,
+    enum: traineeFindAllQueryDtoSortOrderOptions,
+  })
+  @IsOptional()
+  @IsIn(traineeFindAllQueryDtoSortOrderOptions)
+  sortOrder?: typeof traineeFindAllQueryDtoSortOrderOptions[number];
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(0)
+  page?: number;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @IsPositive()
+  pageSize?: number;
+}
+
 export class TraineeFindAllResponseDto {
   @ApiProperty({
     isArray: true,
     type: TraineeDto,
   })
   trainees: TraineeDto[];
+
+  @ApiProperty()
+  total: number;
 }
 
 export class TraineeFindOneResponseDto {
