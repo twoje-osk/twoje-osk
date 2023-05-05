@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindManyOptions, FindOptionsWhere, Repository } from 'typeorm';
+import { FindManyOptions, FindOptionsWhere, ILike, Repository } from 'typeorm';
 import { OrganizationDomainService } from '../organization-domain/organization-domain.service';
 import { Try, getFailure, getSuccess } from '../types/Try';
 import { User } from '../users/entities/user.entity';
@@ -13,6 +13,7 @@ import {
   TraineeArguments,
   TraineeArgumentsUpdate,
   TraineePresentationArguments,
+  TraineePresentationFilterArguments,
   TraineePresentationSortArguments,
 } from './trainees.types';
 
@@ -59,6 +60,44 @@ export class TraineesService {
     return defaultSortOrder;
   }
 
+  private buildWhereOption(
+    filterArguments: TraineePresentationFilterArguments | undefined,
+    organizationId: number,
+  ): FindOptionsWhere<Trainee> {
+    const firstNameProperty =
+      filterArguments?.firstName !== undefined
+        ? ILike(`%${filterArguments.firstName}%`)
+        : undefined;
+
+    const lastNameProperty =
+      filterArguments?.lastName !== undefined
+        ? ILike(`%${filterArguments.lastName}%`)
+        : undefined;
+
+    const emailProperty =
+      filterArguments?.email !== undefined
+        ? ILike(`%${filterArguments.email}%`)
+        : undefined;
+
+    const phoneNumberProperty =
+      filterArguments?.phoneNumber !== undefined
+        ? ILike(`%${filterArguments.phoneNumber}%`)
+        : undefined;
+
+    const isActiveProperty = filterArguments?.isActive;
+
+    return {
+      user: {
+        firstName: firstNameProperty,
+        lastName: lastNameProperty,
+        email: emailProperty,
+        isActive: isActiveProperty,
+        phoneNumber: phoneNumberProperty,
+        organizationId,
+      },
+    };
+  }
+
   async findAll(presentationArguments?: TraineePresentationArguments) {
     const { id: organizationId } =
       this.organizationDomainService.getRequestOrganization();
@@ -68,11 +107,10 @@ export class TraineesService {
     const [trainees, count] = await this.traineesRepository.findAndCount({
       ...limitArguments,
       order: this.buildOrderOption(presentationArguments?.sort),
-      where: {
-        user: {
-          organizationId,
-        },
-      },
+      where: this.buildWhereOption(
+        presentationArguments?.filter,
+        organizationId,
+      ),
       relations: {
         user: true,
       },

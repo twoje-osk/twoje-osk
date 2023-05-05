@@ -57,6 +57,7 @@ export class TraineesController {
         sortBy: query.sortBy,
         sortOrder: query.sortOrder,
       },
+      filter: query.filters ?? {},
     });
 
     return { trainees, total: count };

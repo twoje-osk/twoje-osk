@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
+  IsBoolean,
   IsDate,
   IsIn,
   IsInt,
@@ -133,6 +134,42 @@ export class DtoUpdateTrainee {
   driversLicenseNumber?: string | null;
 }
 
+export class TraineeFindAllQueryDtoFilters {
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  firstName?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  lastName?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  phoneNumber?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @Transform(({ value }) => {
+    const isTrue = value === 'true';
+    const isFalse = value === 'false';
+
+    if (isTrue) {
+      return true;
+    }
+
+    if (isFalse) {
+      return false;
+    }
+
+    return value;
+  })
+  @IsBoolean()
+  isActive?: boolean;
+}
+
 const traineeFindAllQueryDtoSortByOptions = [
   'firstName',
   'lastName',
@@ -167,6 +204,12 @@ export class TraineeFindAllQueryDto {
   @IsInt()
   @IsPositive()
   pageSize?: number;
+
+  @ApiProperty()
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => TraineeFindAllQueryDtoFilters)
+  filters?: TraineeFindAllQueryDtoFilters;
 }
 
 export class TraineeFindAllResponseDto {

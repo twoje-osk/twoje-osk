@@ -1,22 +1,23 @@
 import {
   Button,
+  Divider,
   Icon,
-  IconButton,
   Stack,
   TableCell,
-  TableRow,
   Toolbar,
-  Tooltip,
   Typography,
 } from '@mui/material';
 import { TraineeFindAllQueryDto, TraineeFindAllResponseDto } from '@osk/shared';
 import { parseISO } from 'date-fns';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Flex } from 'reflexbox';
 import useSWR from 'swr';
 import { GeneralAPIError } from '../../../components/GeneralAPIError/GeneralAPIError';
+import { BooleanFilter } from '../../../components/Table/Filters/BooleanFilter/BooleanFilter';
+import { TextFilter } from '../../../components/Table/Filters/TextFilter/TextFilter';
 import { Table } from '../../../components/Table/Table';
+import { TableFilters } from '../../../components/Table/TableFilters';
 import { usePagination } from '../../../hooks/usePagination/usePagination';
 import { useSort } from '../../../hooks/useSort/useSort';
 import { addQueryParams } from '../../../utils/addQueryParams';
@@ -33,6 +34,8 @@ export const TraineesList = () => {
     getLabelSortDirection,
     onSortClick,
   } = useSort<Required<TraineeFindAllQueryDto>['sortBy']>('firstName', 'asc');
+  const { firstName, lastName, isActive, phoneNumber } = useFilters();
+  const [openedFilter, setOpenedFilter] = useState<null | string>(null);
 
   const apiUrl = useMemo(
     () =>
@@ -41,8 +44,23 @@ export const TraineesList = () => {
         pageSize: rowsPerPage,
         sortOrder,
         sortBy: sortedBy,
+        filters: {
+          firstName: firstName.value,
+          lastName: lastName.value,
+          isActive: isActive.value,
+          phoneNumber: phoneNumber.value,
+        },
       }),
-    [currentPage, rowsPerPage, sortOrder, sortedBy],
+    [
+      currentPage,
+      rowsPerPage,
+      sortOrder,
+      sortedBy,
+      firstName.value,
+      lastName.value,
+      isActive.value,
+      phoneNumber.value,
+    ],
   );
 
   const { data, error } = useSWR<TraineeFindAllResponseDto>(apiUrl);
@@ -55,7 +73,7 @@ export const TraineesList = () => {
 
   const rows = data?.trainees;
   const totalRows = data?.total ?? 0;
-  const activeColumnWidth = '116px';
+  const activeColumnWidth = '140px';
   const columnSize = '25%';
 
   return (
@@ -79,13 +97,79 @@ export const TraineesList = () => {
           >
             Dodaj Nowego Kursanta
           </Button>
-          <Tooltip title="Filtruj listę">
-            <IconButton>
-              <Icon>filter_list</Icon>
-            </IconButton>
-          </Tooltip>
         </Stack>
       </Toolbar>
+      <Divider />
+      <TableFilters
+        openedFilter={openedFilter}
+        setOpenedFilter={setOpenedFilter}
+        filters={[
+          {
+            id: 'firstName',
+            label: 'Imię',
+            isActive: firstName.value !== undefined,
+            activeLabel: firstName.value,
+            clearFilter: () => firstName.set(undefined),
+            renderFilter: ({ isOpen, toggle }) => (
+              <TextFilter
+                value={firstName.value}
+                setValue={firstName.set}
+                label="Imię"
+                isOpen={isOpen}
+                toggleOpen={toggle}
+              />
+            ),
+          },
+          {
+            id: 'lastName',
+            label: 'Nazwisko',
+            isActive: lastName.value !== undefined,
+            activeLabel: lastName.value,
+            clearFilter: () => lastName.set(undefined),
+            renderFilter: ({ isOpen, toggle }) => (
+              <TextFilter
+                value={lastName.value}
+                setValue={lastName.set}
+                label="Nazwisko"
+                isOpen={isOpen}
+                toggleOpen={toggle}
+              />
+            ),
+          },
+          {
+            id: 'phoneNumber',
+            label: 'Telefon',
+            isActive: phoneNumber.value !== undefined,
+            activeLabel: phoneNumber.value,
+            clearFilter: () => phoneNumber.set(undefined),
+            renderFilter: ({ isOpen, toggle }) => (
+              <TextFilter
+                value={phoneNumber.value}
+                setValue={phoneNumber.set}
+                label="Telefon"
+                isOpen={isOpen}
+                toggleOpen={toggle}
+              />
+            ),
+          },
+          {
+            id: 'isActive',
+            label: 'Aktywny',
+            isActive: isActive.value !== undefined,
+            activeLabel: isActive.value ? 'Tak' : 'Nie',
+            clearFilter: () => isActive.set(undefined),
+            renderFilter: ({ toggle }) => (
+              <BooleanFilter
+                trueLabel="Aktywny"
+                falseLabel="Nieaktywny"
+                value={isActive.value}
+                setValue={isActive.set}
+                toggleOpen={toggle}
+              />
+            ),
+          },
+        ]}
+      />
       <Table
         ariaLabel="Lista Kursantów"
         totalRows={totalRows}
@@ -102,17 +186,20 @@ export const TraineesList = () => {
             id: 'firstName',
             name: 'Imię',
             width: columnSize,
+            openFilter: () => setOpenedFilter('firstName'),
           },
           {
             id: 'lastName',
-            name: 'Imię',
+            name: 'Nazwisko',
             width: columnSize,
+            openFilter: () => setOpenedFilter('lastName'),
           },
           {
-            id: 'phone',
+            id: 'phoneNumber',
             name: 'Telefon',
             width: columnSize,
             sortable: false,
+            openFilter: () => setOpenedFilter('phoneNumber'),
           },
           {
             id: 'createdAt',
@@ -123,16 +210,13 @@ export const TraineesList = () => {
             id: 'isActive',
             name: 'Aktywny',
             width: activeColumnWidth,
+            openFilter: () => setOpenedFilter('isActive'),
           },
         ]}
+        onRowClick={(row) => navigate(`./${row.id}`)}
         rows={rows}
-        renderRow={(row) => (
-          <TableRow
-            hover
-            key={row.id}
-            onClick={() => navigate(`./${row.id}`)}
-            sx={{ cursor: 'pointer' }}
-          >
+        renderRowCells={(row) => (
+          <>
             <TableCell>{row.user.firstName}</TableCell>
             <TableCell>{row.user.lastName}</TableCell>
             <TableCell>{row.user.phoneNumber}</TableCell>
@@ -144,9 +228,26 @@ export const TraineesList = () => {
                 <Icon color="error">close</Icon>
               )}
             </TableCell>
-          </TableRow>
+          </>
         )}
       />
     </Flex>
+  );
+};
+
+const useFilters = () => {
+  const [firstName, setFirstName] = useState<string | undefined>();
+  const [lastName, setLastName] = useState<string | undefined>();
+  const [phoneNumber, setPhoneNumber] = useState<string | undefined>();
+  const [isActive, setIsActive] = useState<boolean | undefined>();
+
+  return useMemo(
+    () => ({
+      firstName: { set: setFirstName, value: firstName },
+      lastName: { set: setLastName, value: lastName },
+      isActive: { set: setIsActive, value: isActive },
+      phoneNumber: { set: setPhoneNumber, value: phoneNumber },
+    }),
+    [firstName, lastName, isActive, phoneNumber],
   );
 };

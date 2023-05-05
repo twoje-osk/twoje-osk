@@ -21,7 +21,17 @@ export interface TraineeArgumentsUpdate
 export type TraineePresentationSortArguments = PresentationSortArguments<
   TraineeUserSortField | TraineeSortField
 >;
+
+export interface TraineePresentationFilterArguments {
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  phoneNumber?: string;
+  isActive?: boolean;
+}
+
 export interface TraineePresentationArguments {
   sort: TraineePresentationSortArguments;
   pagination: PresentationPaginationArguments;
+  filter: TraineePresentationFilterArguments;
 }

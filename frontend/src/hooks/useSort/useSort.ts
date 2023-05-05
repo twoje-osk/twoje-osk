@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
 export const useSort = <T extends string>(
   defaultSortedBy: T,
@@ -7,16 +7,24 @@ export const useSort = <T extends string>(
   const [sortedBy, setSortedBy] = useState(defaultSortedBy);
   const [sortOrder, setSortOrder] = useState(defaultSortOrder);
 
-  const getCellSortDirection = (id: T) => (id === sortedBy ? sortOrder : false);
-  const getLabelIsActive = (id: T) => sortedBy === id;
-  const getLabelSortDirection = (id: T) =>
-    id === sortedBy ? sortOrder : 'asc';
+  const getCellSortDirection = useCallback(
+    (id: T) => (id === sortedBy ? sortOrder : false),
+    [sortOrder, sortedBy],
+  );
+  const getLabelIsActive = useCallback((id: T) => sortedBy === id, [sortedBy]);
+  const getLabelSortDirection = useCallback(
+    (id: T) => (id === sortedBy ? sortOrder : 'asc'),
+    [sortOrder, sortedBy],
+  );
 
-  const onSortClick = (id: T) => () => {
-    const isAsc = sortedBy === id && sortOrder === 'asc';
-    setSortOrder(isAsc ? 'desc' : 'asc');
-    setSortedBy(id);
-  };
+  const onSortClick = useCallback(
+    (id: T) => () => {
+      const isAsc = sortedBy === id && sortOrder === 'asc';
+      setSortOrder(isAsc ? 'desc' : 'asc');
+      setSortedBy(id);
+    },
+    [sortOrder, sortedBy],
+  );
 
   return {
     getLabelIsActive,

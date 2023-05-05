@@ -1,3 +1,4 @@
+import styled from '@emotion/styled';
 import {
   TableContainer,
   TableHead,
@@ -8,6 +9,9 @@ import {
   Table as MuiTable,
   SortDirection,
   TablePagination,
+  IconButton,
+  Icon,
+  Tooltip,
 } from '@mui/material';
 import { ReactNode } from 'react';
 import { LoadingTableBody } from '../LoadingTableBody/LoadingTableBody';
@@ -16,12 +20,13 @@ interface ColumnBase {
   name: string;
   width?: string;
   align?: 'inherit' | 'left' | 'center' | 'right' | 'justify';
+  openFilter?: () => void;
 }
 
-type Column<T extends string> = ColumnBase &
+type Column<TSortableId extends string> = ColumnBase &
   (
     | {
-        id: T;
+        id: TSortableId;
         sortable?: true;
       }
     | {
@@ -30,16 +35,18 @@ type Column<T extends string> = ColumnBase &
       }
   );
 
-interface TableProps<T, U extends string> {
-  columns: Column<U>[];
-  rows: T[] | undefined;
-  renderRow: (data: T) => ReactNode | undefined;
+type IdType = string | number;
+interface TableProps<TData extends { id: IdType }, TSortableId extends string> {
+  columns: Column<TSortableId>[];
+  rows: TData[] | undefined;
+  renderRowCells: (data: TData) => ReactNode | undefined;
+  onRowClick?: (data: TData) => void;
   ariaLabel: string;
 
-  getCellSortDirection?: (id: U) => SortDirection | undefined;
-  getLabelIsActive?: (id: U) => boolean;
-  getLabelSortDirection?: (id: U) => 'asc' | 'desc';
-  onSortClick?: (id: U) => () => void;
+  getCellSortDirection?: (id: TSortableId) => SortDirection | undefined;
+  getLabelIsActive?: (id: TSortableId) => boolean;
+  getLabelSortDirection?: (id: TSortableId) => 'asc' | 'desc';
+  onSortClick?: (id: TSortableId) => () => void;
 
   totalRows: number;
   rowsPerPage: number;
@@ -55,10 +62,14 @@ interface TableProps<T, U extends string> {
   rowsPerPageOptions?: number[];
 }
 // eslint-disable-next-line react/function-component-definition
-export function Table<T, U extends string>({
+export function Table<
+  TData extends { id: IdType },
+  TSortableId extends string,
+>({
   columns,
   rows,
-  renderRow,
+  renderRowCells,
+  onRowClick,
   getCellSortDirection,
   getLabelIsActive,
   getLabelSortDirection,
@@ -70,19 +81,32 @@ export function Table<T, U extends string>({
   onRowsPerPageChange,
   rowsPerPageOptions,
   ariaLabel,
-}: TableProps<T, U>) {
+}: TableProps<TData, TSortableId>) {
   return (
     <>
       <TableContainer sx={{ flex: '1 1', overflow: 'auto' }}>
         <MuiTable
           aria-label={ariaLabel}
           stickyHeader
-          style={{ height: '100%', tableLayout: 'fixed' }}
+          style={{
+            height: rows === undefined ? '100%' : undefined,
+            tableLayout: 'fixed',
+          }}
         >
           <TableHead>
             <TableRow>
-              {columns.map((column) =>
-                column.sortable !== false ? (
+              {columns.map((column) => {
+                const filterIcon = column.openFilter && (
+                  <Tooltip title="Filtruj">
+                    <FilterIconWrapper onClick={column.openFilter}>
+                      <IconButton aria-label="filtruj" size="small">
+                        <Icon fontSize="inherit">filter_list</Icon>
+                      </IconButton>
+                    </FilterIconWrapper>
+                  </Tooltip>
+                );
+
+                return column.sortable !== false ? (
                   <TableCell
                     key={column.id}
                     sortDirection={getCellSortDirection?.(column.id)}
@@ -96,6 +120,7 @@ export function Table<T, U extends string>({
                     >
                       {column.name}
                     </TableSortLabel>
+                    {filterIcon}
                   </TableCell>
                 ) : (
                   <TableCell
@@ -104,15 +129,34 @@ export function Table<T, U extends string>({
                     align={column.align}
                   >
                     {column.name}
+                    {filterIcon}
                   </TableCell>
-                ),
-              )}
+                );
+              })}
             </TableRow>
           </TableHead>
           {rows === undefined ? (
             <LoadingTableBody />
           ) : (
-            <TableBody>{rows.map(renderRow)}</TableBody>
+            <TableBody>
+              {rows.map((row) => {
+                const cell = renderRowCells(row);
+                if (onRowClick !== undefined) {
+                  return (
+                    <TableRow
+                      hover
+                      key={row.id}
+                      onClick={() => onRowClick(row)}
+                      sx={{ cursor: 'pointer' }}
+                    >
+                      {cell}
+                    </TableRow>
+                  );
+                }
+
+                return <TableRow key={row.id}>{cell}</TableRow>;
+              })}
+            </TableBody>
           )}
         </MuiTable>
       </TableContainer>
@@ -128,3 +172,27 @@ export function Table<T, U extends string>({
     </>
   );
 }
+
+const FilterIconWrapper = styled.div`
+  display: inline-flex;
+  width: 24px;
+  height: 24px;
+  position: relative;
+  vertical-align: middle;
+  float: right;
+  opacity: 0;
+  transition: opacity 195ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+
+  & > * {
+    position: absolute !important;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .MuiTableCell-root:hover &,
+  &.isOpen {
+    transition: opacity 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+    opacity: 1;
+  }
+`;
