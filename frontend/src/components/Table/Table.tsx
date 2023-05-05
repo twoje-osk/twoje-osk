@@ -168,6 +168,12 @@ export function Table<
         page={currentPage}
         onPageChange={onPageChange}
         onRowsPerPageChange={onRowsPerPageChange}
+        labelRowsPerPage="Wierszy na stronie:"
+        labelDisplayedRows={({ from, to, count }) => {
+          const ofPart = count !== -1 ? count : `more than ${to}`;
+
+          return `${from}–${to} z ${ofPart}`;
+        }}
       />
     </>
   );
