@@ -7,7 +7,10 @@ import TableRow from '@mui/material/TableRow';
 import { Checkbox, Typography } from '@mui/material';
 import { Box } from 'reflexbox';
 import { useEffect, useState } from 'react';
-import { ReportEntryToCourseReportCreateOrUpdateRequestDto } from '@osk/shared';
+import {
+  ReportEntryToCourseReportCreateOrUpdateRequestDto,
+  ReportEntryToCourseReportCreateOrUpdateResponseDto,
+} from '@osk/shared';
 import { useMakeRequestWithAuth } from '../../hooks/useMakeRequestWithAuth/useMakeRequestWithAuth';
 import { useCommonSnackbars } from '../../hooks/useCommonSnackbars/useCommonSnackbars';
 
@@ -82,9 +85,8 @@ const TraineeReportRow = ({ row, courseReportId }: TraineeReportRowProps) => {
       mastered,
     };
 
-    // TODO: Add response type
     return makeRequestWithAuth<
-      any,
+      ReportEntryToCourseReportCreateOrUpdateResponseDto,
       ReportEntryToCourseReportCreateOrUpdateRequestDto
     >('/api/report-entry-to-course-report', 'PUT', body);
   };
