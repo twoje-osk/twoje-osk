@@ -171,7 +171,3 @@ export class TraineeAddNewResponseDto {
   @IsNotEmpty()
   trainee: TraineeDto;
 }
-
-export class TraineeDisableResponseDto {}
-
-export class TraineeDisableRequestDto {}

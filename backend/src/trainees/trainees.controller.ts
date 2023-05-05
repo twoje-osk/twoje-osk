@@ -21,7 +21,6 @@ import {
   TraineeUpdateRequestDto,
   TraineeAddNewResponseDto,
   TraineeAddNewRequestDto,
-  TraineeDisableResponseDto,
   TraineeAddNewRequestSignupDto,
 } from '@osk/shared';
 import { TraineesService } from './trainees.service';
@@ -175,33 +174,6 @@ export class TraineesController {
 
     if (error === 'TRAINEE_NOT_FOUND') {
       throw new NotFoundException('Trainee with this id does not exist.');
-    }
-    return assertNever(error);
-  }
-
-  @ApiResponse({
-    type: TraineeDisableResponseDto,
-  })
-  @Patch(':id/disable')
-  async disable(
-    @Param('id', ParseIntPipe) id: number,
-  ): Promise<TraineeDisableResponseDto> {
-    const disableTraineeCall = await this.traineesService.disable(id);
-
-    if (disableTraineeCall.ok) {
-      return { trainee: disableTraineeCall.data };
-    }
-
-    const { error } = disableTraineeCall;
-
-    if (error === 'TRAINEE_NOT_FOUND') {
-      throw new NotFoundException('Trainee with this id does not exist.');
-    }
-
-    if (error === 'TRAINEE_ALREADY_DISABLED') {
-      throw new UnprocessableEntityException(
-        'Trainee with this id is already disabled.',
-      );
     }
     return assertNever(error);
   }
