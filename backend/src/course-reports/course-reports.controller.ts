@@ -93,7 +93,7 @@ export class CourseReportsController {
     );
 
     return {
-      courseReportId: traineeReport.data.report.id,
+      courseReportId: traineeReport.data.id,
       report,
     };
   }
