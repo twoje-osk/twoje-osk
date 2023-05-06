@@ -14,13 +14,9 @@ export class Report {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne<DriversLicenseCategory>(
-    'DriversLicenseCategory',
-    (driversLicenseCategory) => driversLicenseCategory.reports,
-    {
-      nullable: false,
-    },
-  )
+  @ManyToOne<DriversLicenseCategory>('DriversLicenseCategory', {
+    nullable: false,
+  })
   driversLicenseCategory: DriversLicenseCategory;
 
   @OneToMany<ReportEntry>('ReportEntry', (reportEntry) => reportEntry.report)

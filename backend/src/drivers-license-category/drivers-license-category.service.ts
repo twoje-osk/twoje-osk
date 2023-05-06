@@ -1,14 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, In } from 'typeorm';
-import { Report } from '../reports/entities/report.entity';
 import { getFailure, getSuccess, Try } from '../types/Try';
 import { DriversLicenseCategory } from './entities/drivers-license-category.entity';
 
 interface DriversLicenseCategoryResponseData {
   id: number;
   name: string;
-  reports: Report[];
 }
 
 @Injectable()
