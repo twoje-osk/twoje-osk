@@ -27,16 +27,4 @@ export class ReportsService {
 
     return report;
   }
-
-  async findByDriversLicenseCategoryId(driversLicenseCategoryId: number) {
-    const reports = await this.reportsRepository.find({
-      where: {
-        driversLicenseCategory: {
-          id: driversLicenseCategoryId,
-        },
-      },
-    });
-
-    return reports;
-  }
 }

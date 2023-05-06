@@ -32,7 +32,6 @@ export class ReportEntryToCourseReport {
   courseReport: CourseReport;
 
   @Exclude()
-  @Column()
   @RelationId(
     (reportEntryToCourseReports: ReportEntryToCourseReport) =>
       reportEntryToCourseReports.courseReport,
@@ -49,7 +48,6 @@ export class ReportEntryToCourseReport {
   reportEntry: ReportEntry;
 
   @Exclude()
-  @Column()
   @RelationId(
     (reportEntryToCourseReports: ReportEntryToCourseReport) =>
       reportEntryToCourseReports.reportEntry,

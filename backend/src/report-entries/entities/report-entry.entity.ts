@@ -6,7 +6,7 @@ import {
   OneToMany,
   Entity,
 } from 'typeorm';
-import { ReportEntryGroup } from '../../report-entry-groups/entities/report-entry-groups.entity';
+import { ReportEntryGroup } from './report-entry-groups.entity';
 import type { ReportEntryToCourseReport } from '../../report-entry-to-course-report/entities/report-entry-to-course-report.entity';
 import type { Report } from '../../reports/entities/report.entity';
 

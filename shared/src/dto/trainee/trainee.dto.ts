@@ -124,7 +124,7 @@ export class DtoUpdateTrainee {
     type: 'string',
     format: 'YYYY-mm-DDTHH:mm:ss.SZ',
   })
-  @IsNotEmpty()
+  @IsOptional()
   @Type(() => Date)
   @IsDate()
   dateOfBirth?: ApiDate;
@@ -177,7 +177,3 @@ export class TraineeAddNewResponseDto {
   @IsNotEmpty()
   trainee: TraineeDto;
 }
-
-export class TraineeDisableResponseDto {}
-
-export class TraineeDisableRequestDto {}

@@ -16,7 +16,7 @@ import { seedDriversLicenseCategories } from './seed.driversLicenseCategories';
 import { seedReports } from './seed.reports';
 import { seedCourseReports } from './seed.courseReports';
 import { seedReportEntries } from './seed.reportEntries';
-import { seedReportEntryToCourseReport } from './seed.ReportEntryToCourseReports';
+import { seedReportEntryToCourseReport } from './seed.reportEntryToCourseReports';
 import { seedReportEntryGroups } from './seed.reportEntryGroups';
 
 runSeeds(async () => {

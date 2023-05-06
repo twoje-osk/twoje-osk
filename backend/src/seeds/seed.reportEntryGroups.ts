@@ -1,4 +1,4 @@
-import { ReportEntryGroup } from '../report-entry-groups/entities/report-entry-groups.entity';
+import { ReportEntryGroup } from '../report-entries/entities/report-entry-groups.entity';
 import { Factory } from './seed.utils';
 
 class ReportEntryGroupFactory extends Factory<ReportEntryGroup> {
