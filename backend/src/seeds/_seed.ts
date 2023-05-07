@@ -13,6 +13,7 @@ import { seedAnnouncements } from './seed.announcement';
 import { seedDefaultAvailabilities } from './seed.defaultAvailabilities';
 import { seedMockExam } from './seed.mockExam';
 import { seedDriversLicenseCategories } from './seed.driversLicenseCategories';
+import { seedLectures } from './seed.lecture';
 
 runSeeds(async () => {
   const useProductionData = process.env.USE_EXAM_PRODUCTION_DATA === 'true';
@@ -29,4 +30,5 @@ runSeeds(async () => {
   seedLessons();
   seedAnnouncements();
   seedPayments();
+  seedLectures();
 });

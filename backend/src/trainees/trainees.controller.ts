@@ -8,6 +8,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Query,
   Request,
   UnprocessableEntityException,
 } from '@nestjs/common';
@@ -21,8 +22,8 @@ import {
   TraineeUpdateRequestDto,
   TraineeAddNewResponseDto,
   TraineeAddNewRequestDto,
-  TraineeDisableResponseDto,
   TraineeAddNewRequestSignupDto,
+  TraineeFindAllQueryDto,
 } from '@osk/shared';
 import { TraineesService } from './trainees.service';
 import { SkipAuth } from '../auth/passport/skip-auth.guard';
@@ -44,10 +45,22 @@ export class TraineesController {
     type: TraineeFindAllResponseDto,
   })
   @Get()
-  async findAll(): Promise<TraineeFindAllResponseDto> {
-    const trainees = await this.traineesService.findAll();
+  async findAll(
+    @Query() query: TraineeFindAllQueryDto,
+  ): Promise<TraineeFindAllResponseDto> {
+    const { trainees, count } = await this.traineesService.findAll({
+      pagination: {
+        page: query.page,
+        pageSize: query.pageSize,
+      },
+      sort: {
+        sortBy: query.sortBy,
+        sortOrder: query.sortOrder,
+      },
+      filter: query.filters ?? {},
+    });
 
-    return { trainees };
+    return { trainees, total: count };
   }
 
   @ApiResponse({
@@ -175,33 +188,6 @@ export class TraineesController {
 
     if (error === 'TRAINEE_NOT_FOUND') {
       throw new NotFoundException('Trainee with this id does not exist.');
-    }
-    return assertNever(error);
-  }
-
-  @ApiResponse({
-    type: TraineeDisableResponseDto,
-  })
-  @Patch(':id/disable')
-  async disable(
-    @Param('id', ParseIntPipe) id: number,
-  ): Promise<TraineeDisableResponseDto> {
-    const disableTraineeCall = await this.traineesService.disable(id);
-
-    if (disableTraineeCall.ok) {
-      return { trainee: disableTraineeCall.data };
-    }
-
-    const { error } = disableTraineeCall;
-
-    if (error === 'TRAINEE_NOT_FOUND') {
-      throw new NotFoundException('Trainee with this id does not exist.');
-    }
-
-    if (error === 'TRAINEE_ALREADY_DISABLED') {
-      throw new UnprocessableEntityException(
-        'Trainee with this id is already disabled.',
-      );
     }
     return assertNever(error);
   }

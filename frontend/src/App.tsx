@@ -39,6 +39,8 @@ import { MockExamsList } from './views/MockExams/MockExamsList/MockExamsList';
 import { MockExamsAttempt } from './views/MockExams/MockExamsAttempt/MockExamsAttempt';
 import { MockExamsScoreBoard } from './views/MockExams/MockExamsAttempt/MockExamsScoreBoard';
 import { MockExamsCompletedAttempt } from './views/MockExams/MockExamsAttempt/MockExamsCompletedAttempt';
+import { LecturesList } from './views/Lectures/LecturesList/LecturesList';
+import { LectureDetails } from './views/Lectures/LectureDetails/LectureDetails';
 
 export const App = () => {
   return (
@@ -146,6 +148,13 @@ export const App = () => {
           >
             <Route index element={<MyPaymentsList />} />
             <Route path=":paymentId" element={<MyPaymentDetails />} />
+          </Route>
+          <Route
+            path="/wyklady"
+            element={<RequireRole roles={[UserRole.Trainee]} />}
+          >
+            <Route index element={<LecturesList />} />
+            <Route path=":lectureId" element={<LectureDetails />} />
           </Route>
           <Route path="/profil">
             <Route index element={<MyProfile />} />
