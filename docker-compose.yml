@@ -70,6 +70,7 @@ services:
       - shared
     volumes:
       - ./frontend/src:/usr/src/app/frontend/src
+      - ./frontend/public:/usr/src/app/frontend/public
       - ./shared/src:/usr/src/app/shared/src
       - shared:/usr/src/app/shared/dist
     environment:
