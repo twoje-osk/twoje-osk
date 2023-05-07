@@ -34,9 +34,10 @@ import { TraineePaymentEdit } from './views/Trainees/TraineePayments/TraineePaym
 import { PaymentNew } from './views/Payments/PaymentNew/PaymentNew';
 import { TraineePaymentNew } from './views/Trainees/TraineePayments/TraineePaymentNew/TraineePaymentNew';
 import { MyPaymentsList } from './views/MyPayments/MyPaymentsList/MyPaymentsList';
-import { MyPaymentDetails } from './views/MyPayments/MyPaymentsDetails/MyPaymentsDetails';
 import { TraineeReport } from './views/Trainees/TraineeReport/TraineeReport';
 import { InstructorFinishLesson } from './views/Lessons/InstructorMyLessons/InstructorFinishLesson/InstructorFinishLesson';
+import { LecturesList } from './views/Lectures/LecturesList/LecturesList';
+import { LectureDetails } from './views/Lectures/LectureDetails/LectureDetails';
 
 export const App = () => {
   return (
@@ -150,6 +151,13 @@ export const App = () => {
           >
             <Route index element={<MyPaymentsList />} />
             <Route path=":paymentId" element={<MyPaymentDetails />} />
+          </Route>
+          <Route
+            path="/wyklady"
+            element={<RequireRole roles={[UserRole.Trainee]} />}
+          >
+            <Route index element={<LecturesList />} />
+            <Route path=":lectureId" element={<LectureDetails />} />
           </Route>
           <Route path="/profil">
             <Route index element={<MyProfile />} />

@@ -33,6 +33,7 @@ import { ReportsModule } from './reports/reports.module';
 import { ReportEntriesModule } from './report-entries/report-entries.module';
 import { CourseReportsModule } from './course-reports/course-reports.module';
 import { ReportEntryToCourseReportModule } from './report-entry-to-course-report/report-entry-to-course-report.module';
+import { LecturesModule } from './lectures/lectures.module';
 
 @Module({
   imports: [
@@ -85,6 +86,7 @@ import { ReportEntryToCourseReportModule } from './report-entry-to-course-report
     ReportEntriesModule,
     CourseReportsModule,
     ReportEntryToCourseReportModule,
+    LecturesModule,
   ],
   providers: [
     {
