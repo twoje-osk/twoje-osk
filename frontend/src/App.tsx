@@ -151,7 +151,7 @@ export const App = () => {
             <Route index element={<MyProfile />} />
           </Route>
           <Route
-            path="/e-learning"
+            path="/egzaminy"
             element={
               <RequireRole roles={[UserRole.Trainee, UserRole.Instructor]} />
             }

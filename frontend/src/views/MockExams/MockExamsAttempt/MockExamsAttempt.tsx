@@ -76,7 +76,7 @@ export const MockExamsAttempt = () => {
       return;
     }
 
-    navigate(`/e-learning/${response.data.id}/rezultat`);
+    navigate(`/egzaminy/${response.data.id}/rezultat`);
     showSuccessSnackbar(`Egzamin zakończony!`);
   };
   return (

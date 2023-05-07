@@ -26,10 +26,10 @@ export const MockExamsScoreBoard = () => {
   const { score } = attemptData.examAttempt;
 
   const navigateToAnswers = () => {
-    navigate(`/e-learning/${examId}`);
+    navigate(`/egzaminy/${examId}`);
   };
   const navigateToResultsList = () => {
-    navigate(`/e-learning`);
+    navigate(`/egzaminy`);
   };
 
   return (
@@ -50,7 +50,7 @@ export const MockExamsScoreBoard = () => {
             startIcon={<Icon>add</Icon>}
             variant="contained"
             component={Link}
-            to="../../e-learning/nowy"
+            to="../../egzaminy/nowy"
           >
             Nowe podejście
           </Button>
