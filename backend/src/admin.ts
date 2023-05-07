@@ -11,10 +11,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { resources } from './admin/admin.imports';
 import { LOGO, FAVICON } from './admin/admin.assets';
 import { RESOURCE_OVERRIDES } from './admin/admin.constants';
-import {
-  optionsWithAuth,
-  withCustomResourceOptions,
-} from './admin/admin.utils';
+import { withCustomResourceOptions } from './admin/admin.utils';
 import { CustomConfigModule } from './config/config.module';
 import { CustomConfigService } from './config/config.service';
 
@@ -36,25 +33,16 @@ import { CustomConfigService } from './config/config.service';
         };
       },
     }),
-    AdminModule.createAdminAsync({
-      imports: [CustomConfigModule],
-      inject: [CustomConfigService],
-      useFactory: (configService: CustomConfigService) => {
-        return optionsWithAuth(
-          configService.get('adminDisableAuth'),
-          configService.get('adminCookieSecret'),
-        )({
-          adminJsOptions: {
-            rootPath: '/',
-            resources: withCustomResourceOptions(resources, RESOURCE_OVERRIDES),
-            branding: {
-              companyName: 'Super Admin Panel | Twoje OSK',
-              logo: LOGO,
-              withMadeWithLove: false,
-              favicon: FAVICON,
-            },
-          },
-        });
+    AdminModule.createAdmin({
+      adminJsOptions: {
+        rootPath: '/',
+        resources: withCustomResourceOptions(resources, RESOURCE_OVERRIDES),
+        branding: {
+          companyName: 'Super Admin Panel | Twoje OSK',
+          logo: LOGO,
+          withMadeWithLove: false,
+          favicon: FAVICON,
+        },
       },
     }),
   ],

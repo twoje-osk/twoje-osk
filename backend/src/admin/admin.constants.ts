@@ -1,17 +1,36 @@
 import passwordsFeature from '@adminjs/passwords';
 import * as bcrypt from 'bcrypt';
-import { CurrentAdmin, ResourceWithOptions } from 'adminjs';
 // Adding `@ts-ignore` so that it doesn't throw an error when the admin entities aren't built
 // @ts-ignore
-import { User, Instructor, Trainee, Vehicle } from './admin.imports';
+import {
+  User,
+  Instructor,
+  Trainee,
+  Vehicle,
+  MockExamAttempt,
+  MockExamQuestion,
+  MockExamQuestionAnswer,
+  MockExamQuestionAttempt,
+  MockExamQuestionsAmount,
+  MockExamQuestionType,
+  ResetPasswordToken,
+} from './admin.imports';
+import {
+  setUserSubtypeOrganizationForList,
+  setUserSubtypeOrganizationForSingleElement,
+  SortedResourceWithOptions,
+} from './admin.utils';
 
-export const ADMIN_ACCOUNT: CurrentAdmin = {
-  email: 'super@example.com',
-  password: 'password',
+const USERS_GROUP = {
+  name: 'Users',
+};
+const MOCK_EXAM_GROUP = {
+  name: 'E-Learning',
 };
 
-export const RESOURCE_OVERRIDES: ResourceWithOptions[] = [
+export const RESOURCE_OVERRIDES: SortedResourceWithOptions[] = [
   {
+    order: 0,
     resource: User,
     options: {
       properties: {
@@ -22,6 +41,7 @@ export const RESOURCE_OVERRIDES: ResourceWithOptions[] = [
           isDisabled: true,
         },
       },
+      navigation: USERS_GROUP,
     },
     features: [
       passwordsFeature({
@@ -35,23 +55,59 @@ export const RESOURCE_OVERRIDES: ResourceWithOptions[] = [
   {
     resource: Instructor,
     options: {
+      actions: {
+        show: {
+          after: setUserSubtypeOrganizationForSingleElement,
+        },
+        list: {
+          after: setUserSubtypeOrganizationForList,
+        },
+      },
       properties: {
         userId: {
           isDisabled: true,
           reference: 'User',
+          type: 'reference',
+        },
+        organization: {
+          isDisabled: true,
+          reference: 'Organization',
+          type: 'reference',
         },
       },
+      navigation: USERS_GROUP,
     },
   },
   {
     resource: Trainee,
     options: {
+      actions: {
+        show: {
+          after: setUserSubtypeOrganizationForSingleElement,
+        },
+        list: {
+          after: setUserSubtypeOrganizationForList,
+        },
+      },
       properties: {
         userId: {
           isDisabled: true,
           reference: 'User',
+          type: 'reference',
+        },
+        organization: {
+          isDisabled: true,
+          reference: 'Organization',
+          type: 'reference',
         },
       },
+      navigation: USERS_GROUP,
+    },
+  },
+  {
+    resource: ResetPasswordToken,
+    options: {
+      navigation: USERS_GROUP,
     },
   },
   {
@@ -64,5 +120,24 @@ export const RESOURCE_OVERRIDES: ResourceWithOptions[] = [
         },
       },
     },
+  },
+  {
+    order: 1,
+    resource: MockExamAttempt,
+    options: { navigation: MOCK_EXAM_GROUP },
+  },
+  { resource: MockExamQuestion, options: { navigation: MOCK_EXAM_GROUP } },
+  { resource: MockExamQuestionType, options: { navigation: MOCK_EXAM_GROUP } },
+  {
+    resource: MockExamQuestionAnswer,
+    options: { navigation: MOCK_EXAM_GROUP },
+  },
+  {
+    resource: MockExamQuestionAttempt,
+    options: { navigation: MOCK_EXAM_GROUP },
+  },
+  {
+    resource: MockExamQuestionsAmount,
+    options: { navigation: MOCK_EXAM_GROUP },
   },
 ];
