@@ -1,5 +1,5 @@
 import { UserRole } from '@osk/shared/src/types/user.types';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom';
 import { RequireAuth } from './components/RequireAuth/RequireAuth';
 import { RequireRole } from './components/RequireRole/RequireRole';
 import { ForgotPassword } from './views/ForgotPassword/ForgotPassword';
@@ -36,6 +36,11 @@ import { TraineePaymentNew } from './views/Trainees/TraineePayments/TraineePayme
 import { MyPaymentsList } from './views/MyPayments/MyPaymentsList/MyPaymentsList';
 import { TraineeReport } from './views/Trainees/TraineeReport/TraineeReport';
 import { InstructorFinishLesson } from './views/Lessons/InstructorMyLessons/InstructorFinishLesson/InstructorFinishLesson';
+import { MyPaymentDetails } from './views/MyPayments/MyPaymentsDetails/MyPaymentsDetails';
+import { MockExamsList } from './views/MockExams/MockExamsList/MockExamsList';
+import { MockExamsAttempt } from './views/MockExams/MockExamsAttempt/MockExamsAttempt';
+import { MockExamsScoreBoard } from './views/MockExams/MockExamsAttempt/MockExamsScoreBoard';
+import { MockExamsCompletedAttempt } from './views/MockExams/MockExamsAttempt/MockExamsCompletedAttempt';
 import { LecturesList } from './views/Lectures/LecturesList/LecturesList';
 import { LectureDetails } from './views/Lectures/LectureDetails/LectureDetails';
 
@@ -161,6 +166,22 @@ export const App = () => {
           </Route>
           <Route path="/profil">
             <Route index element={<MyProfile />} />
+          </Route>
+          <Route
+            path="/egzaminy"
+            element={
+              <RequireRole roles={[UserRole.Trainee, UserRole.Instructor]} />
+            }
+          >
+            <Route index element={<MockExamsList />} />
+            <Route path=":examId" element={<MockExamsCompletedAttempt />} />
+            <Route path=":examId/rezultat" element={<MockExamsScoreBoard />} />
+            <Route
+              path="nowy"
+              element={<RequireRole roles={[UserRole.Trainee]} />}
+            >
+              <Route index element={<MockExamsAttempt />} />
+            </Route>
           </Route>
         </Route>
       </Routes>
