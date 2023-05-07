@@ -1,14 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindOptionsWhere, Repository } from 'typeorm';
+import { FindManyOptions, FindOptionsWhere, ILike, Repository } from 'typeorm';
 import { DriversLicenseCategoriesService } from '../drivers-license-category/drivers-license-category.service';
 import { OrganizationDomainService } from '../organization-domain/organization-domain.service';
 import { Try, getFailure, getSuccess } from '../types/Try';
 import { User } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
+import { getLimitArguments } from '../utils/presentationArguments';
 import { TransactionalWithTry } from '../utils/TransactionalWithTry';
 import { Trainee } from './entities/trainee.entity';
-import { TraineeArguments, TraineeArgumentsUpdate } from './trainees.types';
+import { isTraineeSortField, isTraineeUserSortField } from './trainee.utils';
+import {
+  TraineeArguments,
+  TraineeArgumentsUpdate,
+  TraineePresentationArguments,
+  TraineePresentationFilterArguments,
+  TraineePresentationSortArguments,
+} from './trainees.types';
 
 @Injectable()
 export class TraineesService {
@@ -22,27 +30,95 @@ export class TraineesService {
     private driversLicenseCategoriesService: DriversLicenseCategoriesService,
   ) {}
 
-  async findAll() {
+  private buildOrderOption(
+    sortArguments: TraineePresentationSortArguments | undefined,
+  ): FindManyOptions<Trainee>['order'] {
+    const sortOrder = sortArguments?.sortOrder ?? 'desc';
+
+    const defaultSortOrder = {
+      user: {
+        createdAt: sortOrder,
+      },
+    };
+
+    if (sortArguments?.sortBy === undefined) {
+      return defaultSortOrder;
+    }
+
+    if (isTraineeUserSortField(sortArguments.sortBy)) {
+      return {
+        user: {
+          [sortArguments.sortBy]: sortOrder,
+        },
+      };
+    }
+
+    if (isTraineeSortField(sortArguments.sortBy)) {
+      return {
+        [sortArguments.sortBy]: sortOrder,
+      };
+    }
+
+    return defaultSortOrder;
+  }
+
+  private buildWhereOption(
+    filterArguments: TraineePresentationFilterArguments | undefined,
+    organizationId: number,
+  ): FindOptionsWhere<Trainee> {
+    const firstNameProperty =
+      filterArguments?.firstName !== undefined
+        ? ILike(`%${filterArguments.firstName}%`)
+        : undefined;
+
+    const lastNameProperty =
+      filterArguments?.lastName !== undefined
+        ? ILike(`%${filterArguments.lastName}%`)
+        : undefined;
+
+    const emailProperty =
+      filterArguments?.email !== undefined
+        ? ILike(`%${filterArguments.email}%`)
+        : undefined;
+
+    const phoneNumberProperty =
+      filterArguments?.phoneNumber !== undefined
+        ? ILike(`%${filterArguments.phoneNumber}%`)
+        : undefined;
+
+    const isActiveProperty = filterArguments?.isActive;
+
+    return {
+      user: {
+        firstName: firstNameProperty,
+        lastName: lastNameProperty,
+        email: emailProperty,
+        isActive: isActiveProperty,
+        phoneNumber: phoneNumberProperty,
+        organizationId,
+      },
+    };
+  }
+
+  async findAll(presentationArguments?: TraineePresentationArguments) {
     const { id: organizationId } =
       this.organizationDomainService.getRequestOrganization();
 
-    const users = await this.traineesRepository.find({
-      where: {
-        user: {
-          organizationId,
-        },
-      },
-      order: {
-        user: {
-          createdAt: 'DESC',
-        },
-      },
+    const limitArguments = getLimitArguments(presentationArguments?.pagination);
+
+    const [trainees, count] = await this.traineesRepository.findAndCount({
+      ...limitArguments,
+      order: this.buildOrderOption(presentationArguments?.sort),
+      where: this.buildWhereOption(
+        presentationArguments?.filter,
+        organizationId,
+      ),
       relations: {
         user: true,
       },
     });
 
-    return users;
+    return { trainees, count };
   }
 
   async findOneById(id: number) {

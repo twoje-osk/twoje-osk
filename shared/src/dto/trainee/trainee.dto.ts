@@ -1,12 +1,17 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
+  IsBoolean,
   IsDate,
+  IsIn,
+  IsInt,
   IsNotEmpty,
   IsNumberString,
   IsOptional,
+  IsPositive,
   IsString,
   Length,
+  Min,
   ValidateNested,
 } from 'class-validator';
 import {
@@ -135,12 +140,93 @@ export class DtoUpdateTrainee {
   driversLicenseNumber?: string | null;
 }
 
+export class TraineeFindAllQueryDtoFilters {
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  firstName?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  lastName?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  phoneNumber?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @Transform(({ value }) => {
+    const isTrue = value === 'true';
+    const isFalse = value === 'false';
+
+    if (isTrue) {
+      return true;
+    }
+
+    if (isFalse) {
+      return false;
+    }
+
+    return value;
+  })
+  @IsBoolean()
+  isActive?: boolean;
+}
+
+const traineeFindAllQueryDtoSortByOptions = [
+  'firstName',
+  'lastName',
+  'createdAt',
+  'isActive',
+] as const;
+const traineeFindAllQueryDtoSortOrderOptions = ['asc', 'desc'] as const;
+export class TraineeFindAllQueryDto {
+  @ApiProperty({ required: false, enum: traineeFindAllQueryDtoSortByOptions })
+  @IsOptional()
+  @IsIn(traineeFindAllQueryDtoSortByOptions)
+  sortBy?: typeof traineeFindAllQueryDtoSortByOptions[number];
+
+  @ApiProperty({
+    required: false,
+    enum: traineeFindAllQueryDtoSortOrderOptions,
+  })
+  @IsOptional()
+  @IsIn(traineeFindAllQueryDtoSortOrderOptions)
+  sortOrder?: typeof traineeFindAllQueryDtoSortOrderOptions[number];
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(0)
+  page?: number;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @IsPositive()
+  pageSize?: number;
+
+  @ApiProperty()
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => TraineeFindAllQueryDtoFilters)
+  filters?: TraineeFindAllQueryDtoFilters;
+}
+
 export class TraineeFindAllResponseDto {
   @ApiProperty({
     isArray: true,
     type: TraineeDto,
   })
   trainees: TraineeDto[];
+
+  @ApiProperty()
+  total: number;
 }
 
 export class TraineeFindOneResponseDto {
