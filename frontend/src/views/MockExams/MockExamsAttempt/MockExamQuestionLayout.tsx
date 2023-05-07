@@ -72,15 +72,13 @@ export const MockExamQuestionLayout = ({
           margin: 'auto',
           marginTop: showMedia ? '8px' : 'auto',
           marginBottom: showMedia ? '8px' : 'auto',
-          paddingTop: '8px',
-          paddingBottom: '8px',
         }}
       >
         {questionDetails.question}
       </Typography>
       <Flex
         alignItems="center"
-        style={{ margin: '16px 0 32px 0' }}
+        style={{ margin: '16px 0 16px 0' }}
         flexDirection="column"
       >
         <Flex
@@ -150,8 +148,8 @@ const StyledMediaWrapper = styled(Paper)`
   aspect-ratio: 16/9;
   margin: auto;
   margin-top: 8px;
-  margin-bottom: 48px;
-  max-height: 500px;
+  margin-bottom: 24px;
+  max-height: 50%;
   background: ${theme.palette.grey[300]};
 `;
 

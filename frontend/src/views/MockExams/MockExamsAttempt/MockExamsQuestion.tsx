@@ -194,19 +194,18 @@ export const MockExamsQuestion = ({
           }}
           value={progress}
         />
-        <Flex style={{ margin: '8px 0 8px 0' }}>
+        <Flex
+          style={{ margin: '8px 0 8px 0', gap: '16px' }}
+          justifyContent="center"
+        >
           {state.showStartButton && (
-            <Button
-              variant="outlined"
-              style={{ margin: '8px 8px 0 auto' }}
-              onClick={handleReadyToAnswer}
-            >
+            <Button variant="outlined" style={{}} onClick={handleReadyToAnswer}>
               {startLabel}
             </Button>
           )}
           <Button
             variant="contained"
-            style={{ margin: '8px auto 0 auto' }}
+            style={{}}
             onClick={submitQuestion}
             disabled={selectedAnswer === undefined}
           >
