@@ -1,11 +1,12 @@
 import styled from '@emotion/styled';
 import { Button } from '@mui/material';
+import { LAYOUT_HEIGHT } from '../../Layout/Layout';
 
 export const FullPageRelativeWrapper = styled.div`
   position: relative;
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: ${LAYOUT_HEIGHT};
   padding: 32px;
 `;
 

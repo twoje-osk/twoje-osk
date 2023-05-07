@@ -8,6 +8,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Query,
   Request,
   UnprocessableEntityException,
 } from '@nestjs/common';
@@ -22,6 +23,7 @@ import {
   TraineeAddNewResponseDto,
   TraineeAddNewRequestDto,
   TraineeAddNewRequestSignupDto,
+  TraineeFindAllQueryDto,
 } from '@osk/shared';
 import { TraineesService } from './trainees.service';
 import { SkipAuth } from '../auth/passport/skip-auth.guard';
@@ -43,10 +45,22 @@ export class TraineesController {
     type: TraineeFindAllResponseDto,
   })
   @Get()
-  async findAll(): Promise<TraineeFindAllResponseDto> {
-    const trainees = await this.traineesService.findAll();
+  async findAll(
+    @Query() query: TraineeFindAllQueryDto,
+  ): Promise<TraineeFindAllResponseDto> {
+    const { trainees, count } = await this.traineesService.findAll({
+      pagination: {
+        page: query.page,
+        pageSize: query.pageSize,
+      },
+      sort: {
+        sortBy: query.sortBy,
+        sortOrder: query.sortOrder,
+      },
+      filter: query.filters ?? {},
+    });
 
-    return { trainees };
+    return { trainees, total: count };
   }
 
   @ApiResponse({
