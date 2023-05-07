@@ -50,7 +50,7 @@ export const useSelectedVehicle = (vehicleIdFromLesson: number | null) => {
   }, [vehiclesData, vehiclesError]);
 
   const sortedVehicles = useMemo(() => {
-    return [...vehicles]
+    return vehicles
       .map((v) => ({
         ...v,
         isFavourite: favouritesIds.includes(v.id),
