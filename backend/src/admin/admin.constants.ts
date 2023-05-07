@@ -15,6 +15,8 @@ import {
   MockExamQuestionType,
   ResetPasswordToken,
   Lecture,
+  // Adding `@ts-ignore` so that it doesn't throw an error when the admin entities aren't built
+  // @ts-ignore
 } from './admin.imports';
 import {
   setUserSubtypeOrganizationForList,
