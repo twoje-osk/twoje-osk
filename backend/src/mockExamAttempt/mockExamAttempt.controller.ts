@@ -20,6 +20,7 @@ import { Roles } from '../common/guards/roles.decorator';
 import { CurrentUserService } from '../current-user/current-user.service';
 import { assertNever } from '../utils/assertNever';
 import { MockExamAttemptService } from './mockExamAttempt.service';
+import { MockExamQuestionService } from '../mockExamQuestion/mockExamQuestion.service';
 
 @Controller('exams')
 @Roles(UserRole.Trainee)
@@ -27,6 +28,7 @@ export class MockExamAttemptController {
   constructor(
     private readonly mockExamAttemptService: MockExamAttemptService,
     private readonly currentUserService: CurrentUserService,
+    private readonly mockExamQuestionService: MockExamQuestionService,
   ) {}
 
   @Roles(UserRole.Admin, UserRole.Instructor)
@@ -73,7 +75,19 @@ export class MockExamAttemptController {
     if (!examAttemptResult.ok) {
       throw new NotFoundException();
     }
-    return { examAttempt: examAttemptResult.data };
+    const questionsToBeFetched = examAttemptResult.data.questions.map(
+      (el) => el.questionId,
+    );
+    const questionsResult = await this.mockExamQuestionService.getQuestions(
+      questionsToBeFetched,
+    );
+    if (!questionsResult.ok) {
+      throw new NotFoundException();
+    }
+    return {
+      examAttempt: examAttemptResult.data,
+      questions: questionsResult.data,
+    };
   }
 
   @ApiResponse({

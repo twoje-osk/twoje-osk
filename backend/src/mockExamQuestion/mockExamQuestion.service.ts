@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MockExamQuestionsGenerateResponseDto } from '@osk/shared';
 
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { MockExamQuestionsAmount } from '../mockExamQuestionsAmount/entities/mockExamQuestionsAmount.entity';
 import { getFailure, getSuccess, Try } from '../types/Try';
 
@@ -199,8 +199,13 @@ export class MockExamQuestionService {
               id: typeId,
             },
           },
+          join: { alias: 'MockExamQuestionsAnswer' },
           skip: index,
           take: 1,
+          relations: {
+            answers: true,
+            type: true,
+          },
         });
       },
     );
@@ -226,5 +231,23 @@ export class MockExamQuestionService {
       counter++;
     }
     return indexes;
+  }
+
+  async getQuestions(
+    questionsIds: number[],
+  ): Promise<Try<MockExamQuestion[], 'INCORRECT_IDS'>> {
+    const questions = await this.mockExamQuestionRepository.find({
+      where: {
+        id: In(questionsIds),
+      },
+      relations: {
+        answers: true,
+        type: true,
+      },
+    });
+    if (!questions) {
+      return getFailure('INCORRECT_IDS');
+    }
+    return getSuccess(questions);
   }
 }

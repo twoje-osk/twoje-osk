@@ -8,9 +8,10 @@ import {
   ListItemButton,
   Container,
   Paper,
+  ListSubheader,
 } from '@mui/material';
 import { UserRole } from '@osk/shared/src/types/user.types';
-import { ComponentProps, forwardRef, ReactNode } from 'react';
+import { ComponentProps, forwardRef, Fragment, ReactNode } from 'react';
 import { NavLink } from 'react-router-dom';
 import { Box, Flex } from 'reflexbox';
 import { useAuth } from '../../hooks/useAuth/useAuth';
@@ -29,6 +30,7 @@ interface MenuItem {
   text: string;
   icon: string;
   link: string;
+  subheader?: string;
 }
 
 const menuItemsForRole: Record<UserRole, MenuItem[]> = {
@@ -54,10 +56,14 @@ const menuItemsForRole: Record<UserRole, MenuItem[]> = {
   [UserRole.Trainee]: [
     { text: 'Moje Jazdy', icon: 'toys', link: '/moje-jazdy' },
     { text: 'Ogłoszenia', icon: 'campaign', link: '/ogloszenia' },
-    { text: 'Płatności', icon: 'attach_money', link: '/' },
-    { text: 'E-learning', icon: 'school', link: '/' },
-    { text: 'Wykłady', icon: 'school', link: '/wyklady' },
     { text: 'Moje Płatności', icon: 'attach_money', link: '/moje-platnosci' },
+    {
+      text: 'Egzaminy teoretyczne',
+      subheader: 'E-learning',
+      icon: 'checklist',
+      link: '/egzaminy',
+    },
+    { text: 'Wykłady', icon: 'school', link: '/wyklady' },
   ],
 };
 
@@ -101,16 +107,21 @@ export const Layout = ({ children }: LayoutProps) => {
             </Box>
             <Box flexGrow="1">
               {menuItems.map((menuItem) => (
-                <ListItemButton
-                  key={menuItem.text}
-                  component={NavLinkForMUI}
-                  to={menuItem.link}
-                >
-                  <ListItemIcon>
-                    <Icon>{menuItem.icon}</Icon>
-                  </ListItemIcon>
-                  <ListItemText primary={menuItem.text} />
-                </ListItemButton>
+                <Fragment key={menuItem.text}>
+                  {menuItem.subheader && (
+                    <ListSubheader>{menuItem.subheader}</ListSubheader>
+                  )}
+                  <ListItemButton
+                    key={menuItem.text}
+                    component={NavLinkForMUI}
+                    to={menuItem.link}
+                  >
+                    <ListItemIcon>
+                      <Icon>{menuItem.icon}</Icon>
+                    </ListItemIcon>
+                    <ListItemText primary={menuItem.text} />
+                  </ListItemButton>
+                </Fragment>
               ))}
             </Box>
             <Box mb="8px">
