@@ -53,6 +53,7 @@ const menuItemsForRole: Record<UserRole, MenuItem[]> = {
     { text: 'Ogłoszenia', icon: 'campaign', link: '/ogloszenia' },
     { text: 'Płatności', icon: 'attach_money', link: '/' },
     { text: 'E-learning', icon: 'school', link: '/' },
+    { text: 'Wykłady', icon: 'school', link: '/wyklady' },
     { text: 'Moje Płatności', icon: 'attach_money', link: '/moje-platnosci' },
   ],
 };

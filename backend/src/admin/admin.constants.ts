@@ -14,6 +14,7 @@ import {
   MockExamQuestionsAmount,
   MockExamQuestionType,
   ResetPasswordToken,
+  Lecture,
 } from './admin.imports';
 import {
   setUserSubtypeOrganizationForList,
@@ -139,5 +140,19 @@ export const RESOURCE_OVERRIDES: SortedResourceWithOptions[] = [
   {
     resource: MockExamQuestionsAmount,
     options: { navigation: MOCK_EXAM_GROUP },
+  },
+  {
+    resource: Lecture,
+    options: {
+      navigation: MOCK_EXAM_GROUP,
+      properties: {
+        body: {
+          type: 'richtext',
+        },
+        index: {
+          type: 'number',
+        },
+      },
+    },
   },
 ];
