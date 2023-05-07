@@ -199,13 +199,12 @@ export const MockExamsQuestion = ({
           justifyContent="center"
         >
           {state.showStartButton && (
-            <Button variant="outlined" style={{}} onClick={handleReadyToAnswer}>
+            <Button variant="outlined" onClick={handleReadyToAnswer}>
               {startLabel}
             </Button>
           )}
           <Button
             variant="contained"
-            style={{}}
             onClick={submitQuestion}
             disabled={selectedAnswer === undefined}
           >
