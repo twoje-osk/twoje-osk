@@ -31,6 +31,7 @@ import { CepikService } from '../cepik/cepik.service';
 import { Roles } from '../common/guards/roles.decorator';
 import { ResetPasswordService } from '../reset-password/reset-password.service';
 import { assertNever } from '../utils/assertNever';
+import { DriversLicenseCategoriesService } from '../drivers-license-category/drivers-license-category.service';
 
 @Roles(UserRole.Admin, UserRole.Instructor)
 @Controller('trainees')
@@ -39,6 +40,7 @@ export class TraineesController {
     private readonly traineesService: TraineesService,
     private readonly resetPasswordService: ResetPasswordService,
     private readonly cepikService: CepikService,
+    private driversLicenseCategoriesService: DriversLicenseCategoriesService,
   ) {}
 
   @ApiResponse({
@@ -97,6 +99,17 @@ export class TraineesController {
       );
     }
 
+    const foundDriversLicenseCategory =
+      await this.driversLicenseCategoriesService.findByCategoryName(
+        cepikData.data.driverLicenseCategoryName,
+      );
+
+    if (!foundDriversLicenseCategory.ok) {
+      throw new NotFoundException(
+        'Driver license category with this name does not exist.',
+      );
+    }
+
     const traineeWithCepikData = {
       ...trainee,
       user: {
@@ -106,6 +119,7 @@ export class TraineesController {
         lastName: cepikData.data.lastName,
       },
       pesel: cepikData.data.pesel,
+      driversLicenseCategoryId: foundDriversLicenseCategory.data.id,
     };
 
     const createTraineeCall = await this.traineesService.create(
@@ -118,11 +132,18 @@ export class TraineesController {
 
     const { error } = createTraineeCall;
 
+    if (error === 'DRIVER_LICENSE_CATEGORY_NOT_FOUND') {
+      throw new UnprocessableEntityException(
+        'Provided driver license category is not valid',
+      );
+    }
+
     if (error === 'TRAINEE_OR_USER_FOUND') {
       throw new ConflictException(
         'There is already a trainee which has the same pesel or a user with the same email',
       );
     }
+
     return assertNever(error);
   }
 
@@ -147,11 +168,12 @@ export class TraineesController {
         );
       }
 
-      if (error === 'CEPIK_ERROR') {
+      if (error === 'DRIVER_LICENSE_CATEGORY_NOT_FOUND') {
         throw new UnprocessableEntityException(
-          'User with specified PKK and date of birth does not exist',
+          'Provided driver license category is not valid',
         );
       }
+
       return assertNever(error);
     }
 

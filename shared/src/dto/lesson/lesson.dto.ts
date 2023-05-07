@@ -40,6 +40,12 @@ export class LessonsDTO {
     type: TraineeDto,
   })
   trainee: TraineeDto;
+
+  @ApiProperty({
+    type: 'number',
+    nullable: true,
+  })
+  vehicleId: number | null;
 }
 
 export class GetMyLessonsQueryDTO {
@@ -68,6 +74,11 @@ export class GetMyLessonsResponseDTO {
     isArray: true,
   })
   lessons: LessonsDTO[];
+}
+
+export class GetLessonByIdResponseDTO {
+  @ApiProperty()
+  lesson: LessonsDTO;
 }
 
 export class CreateLessonForInstructorRequestDTO {
@@ -146,6 +157,14 @@ export class UpdateLessonRequestDTO {
   })
   @IsEnum(LessonStatus)
   status: LessonStatus;
+
+  @ApiProperty({
+    type: 'number',
+    nullable: true,
+  })
+  @IsOptional()
+  @IsNumber()
+  vehicleId?: number | null;
 }
 
 export class UpdateLessonResponseDTO {}

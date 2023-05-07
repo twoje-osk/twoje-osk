@@ -27,7 +27,7 @@ import { assertNever } from '../utils/assertNever';
 import { InstructorsService } from './instructors.service';
 
 @Controller('instructors')
-@Roles(UserRole.Admin)
+@Roles(UserRole.Admin, UserRole.Instructor)
 export class InstructorsController {
   constructor(private readonly instructorsService: InstructorsService) {}
 

@@ -5,7 +5,7 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { DriversLicenseCategory } from '../../driversLicenseCategory/entities/driversLicenseCategory.entity';
+import { DriversLicenseCategory } from '../../drivers-license-category/entities/drivers-license-category.entity';
 import { MockExamQuestionType } from '../../mockExamQuestion/entities/mockExamQuestionType.entity';
 
 @Index('questions_amount_unique_index', ['points', 'typeId', 'categoryId'], {

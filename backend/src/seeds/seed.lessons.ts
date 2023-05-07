@@ -3,7 +3,6 @@ import { Lesson } from '../lessons/entities/lesson.entity';
 import { instructorsFactory } from './seed.instructors';
 import { traineesFactory } from './seed.trainees';
 import { Factory } from './seed.utils';
-import { vehiclesFactory } from './seed.vehicles';
 
 class LessonsFactory extends Factory<Lesson> {
   constructor() {
@@ -25,20 +24,20 @@ export const seedLessons = () => [
     to: setHours(today, 11),
     instructor: instructorsFactory.getAll()[0],
     trainee: traineesFactory.getAll()[0],
-    vehicle: vehiclesFactory.getAll()[0],
+    vehicle: null,
   }),
   lessonsFactory.generateFromData({
     from: setHours(today, 13),
     to: setHours(today, 14),
     instructor: instructorsFactory.getAll()[0],
     trainee: traineesFactory.getAll()[0],
-    vehicle: vehiclesFactory.getAll()[0],
+    vehicle: null,
   }),
   lessonsFactory.generateFromData({
     from: setHours(today, 17),
     to: setHours(today, 18),
     instructor: instructorsFactory.getAll()[0],
     trainee: traineesFactory.getAll()[0],
-    vehicle: vehiclesFactory.getAll()[0],
+    vehicle: null,
   }),
 ];

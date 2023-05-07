@@ -6,6 +6,7 @@ interface CepikResponseData {
   firstName: string;
   lastName: string;
   pesel: string | null;
+  driverLicenseCategoryName: string;
 }
 @Injectable()
 export class CepikService {
@@ -24,6 +25,7 @@ export class CepikService {
       firstName: faker.name.firstName(),
       lastName: faker.name.lastName(),
       pesel: faker.datatype.boolean() ? faker.random.numeric(11) : null,
+      driverLicenseCategoryName: 'B',
     });
   }
 }

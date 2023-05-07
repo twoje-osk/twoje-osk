@@ -13,6 +13,7 @@ import { ApiResponse } from '@nestjs/swagger';
 import {
   CreateLessonRequestDTO,
   CreateLessonResponseDTO,
+  GetLessonByIdResponseDTO,
   GetMyLessonsQueryDTO,
   GetMyLessonsResponseDTO,
   UpdateLessonRequestDTO,
@@ -88,12 +89,28 @@ export class InstructorLessonsController {
     return assertNever(error);
   }
 
+  @Get(':lessonId')
+  @ApiResponse({
+    type: GetLessonByIdResponseDTO,
+  })
+  async getLesson(
+    @Param('lessonId', ParseIntPipe) lessonId: number,
+  ): Promise<GetLessonByIdResponseDTO> {
+    const lesson = await this.lessonsService.getById(lessonId);
+
+    if (lesson === null) {
+      throw new NotFoundException("Lesson with provided id doesn't exist");
+    }
+
+    return { lesson };
+  }
+
   @Put(':lessonId')
   @ApiResponse({
     type: UpdateLessonRequestDTO,
   })
   async updateLesson(
-    @Body() { from, to, status }: UpdateLessonRequestDTO,
+    @Body() { from, to, status, vehicleId }: UpdateLessonRequestDTO,
     @Param('lessonId', ParseIntPipe) lessonId: number,
   ): Promise<UpdateLessonResponseDTO> {
     const result = await this.lessonsService.updateLesson(
@@ -101,6 +118,7 @@ export class InstructorLessonsController {
       from,
       to,
       status,
+      vehicleId,
     );
 
     if (result.ok) {

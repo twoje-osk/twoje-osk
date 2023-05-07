@@ -7,11 +7,19 @@ import {
   Button,
   Icon,
   Box,
+  Breadcrumbs,
 } from '@mui/material';
 import { LessonStatus } from '@osk/shared/src/types/lesson.types';
 import { UserRole } from '@osk/shared/src/types/user.types';
-import { FormikHelpers } from 'formik';
+import MUILink from '@mui/material/Link';
+import { FormikHelpers, useFormikContext } from 'formik';
+import { useMemo } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { TraineeFindAllResponseDto } from '@osk/shared';
+import useSWR from 'swr';
 import { useAuth } from '../../../../hooks/useAuth/useAuth';
+import { theme } from '../../../../theme';
+import { assertNever } from '../../../../utils/asserNever';
 import { EditLessonForm } from '../EditLessonForm/EditLessonForm';
 import {
   LessonFormData,
@@ -59,6 +67,109 @@ export const EditLessonModal = ({
     role === UserRole.Instructor ||
     event?.status === LessonStatus.Requested ||
     event?.status === LessonStatus.Accepted;
+  const formikHelpers = useFormikContext<LessonFormData>();
+  const navigate = useNavigate();
+
+  const { data: traineesData } = useSWR<TraineeFindAllResponseDto>(
+    () => '/api/trainees',
+  );
+
+  const modalStatusButtons = useMemo(() => {
+    if (event === null) {
+      return null;
+    }
+
+    const updateStatus = (status: LessonStatus) => {
+      onSubmit(
+        {
+          ...event,
+          status,
+        },
+        formikHelpers,
+      );
+    };
+
+    const acceptButton = (
+      <Button
+        variant="contained"
+        onClick={() => updateStatus(LessonStatus.Accepted)}
+        color="success"
+        startIcon={<Icon>done</Icon>}
+      >
+        Zaakceptuj Lekcję
+      </Button>
+    );
+
+    const cancelButton = (
+      <Button
+        variant="contained"
+        onClick={onLessonCancel}
+        color="error"
+        startIcon={<Icon>close</Icon>}
+      >
+        Anuluj Lekcję
+      </Button>
+    );
+
+    const finishButton = (
+      <Button
+        variant="contained"
+        onClick={() => navigate(`/moje-jazdy/${event.id}/zakoncz`)}
+        color="success"
+        startIcon={<Icon>done_all</Icon>}
+      >
+        Zakończ Lekcję
+      </Button>
+    );
+
+    const finishedButton = (
+      <Button
+        variant="outlined"
+        onClick={() => navigate(`/moje-jazdy/${event.id}/zakoncz`)}
+        color="success"
+        startIcon={<Icon>done_all</Icon>}
+      >
+        Zobacz Szczegóły Lekcji
+      </Button>
+    );
+
+    if (event.status === LessonStatus.Requested) {
+      return (
+        <>
+          {acceptButton}
+          {cancelButton}
+        </>
+      );
+    }
+
+    if (event.status === LessonStatus.Canceled) {
+      return acceptButton;
+    }
+
+    if (event.status === LessonStatus.Accepted) {
+      return (
+        <>
+          {finishButton}
+          {cancelButton}
+        </>
+      );
+    }
+
+    if (event.status === LessonStatus.Finished) {
+      return finishedButton;
+    }
+
+    return assertNever(event.status);
+  }, [event, formikHelpers, navigate, onLessonCancel, onSubmit]);
+
+  const formValue = useMemo(() => mapEventToFormValues(event), [event]);
+  const trainee = useMemo(() => {
+    if (traineesData == null) {
+      return null;
+    }
+
+    return traineesData.trainees.find(({ id }) => id === formValue?.traineeId);
+  }, [formValue?.traineeId, traineesData]);
 
   return (
     <Modal
@@ -67,20 +178,42 @@ export const EditLessonModal = ({
       aria-labelledby="edit-lesson-modal-title"
     >
       <Paper sx={style} elevation={24}>
-        <Typography id="edit-lesson-modal-title" variant="h6" component="h2">
-          {isCreating ? 'Dodaj nową lekcję' : 'Edytuj lekcję'}
-        </Typography>
+        {isCreating && (
+          <Typography id="edit-lesson-modal-title" variant="h6" component="h2">
+            Dodaj nową lekcję
+          </Typography>
+        )}
+        {!isCreating && (
+          <Breadcrumbs separator={<Icon fontSize="small">navigate_next</Icon>}>
+            <Typography
+              variant="h6"
+              color={theme.palette.text.primary}
+              id="edit-lesson-modal-title"
+            >
+              Edytuj nową lekcję
+            </Typography>
+            <MUILink
+              underline="hover"
+              to={`/kursanci/${formValue?.traineeId}`}
+              component={Link}
+              variant="h6"
+            >
+              {trainee?.user.firstName} {trainee?.user.lastName}
+            </MUILink>
+          </Breadcrumbs>
+        )}
         <Box marginTop={2}>
           <EditLessonForm
             onSubmit={onSubmit}
-            initialValues={mapEventToFormValues(event)}
+            initialValues={formValue}
             disabled={!editingEnabled || isLoading}
-            showStatus={!isCreating || role === UserRole.Instructor}
+            showStatus={!isCreating && role !== UserRole.Instructor}
+            isCreating={isCreating}
           >
             <Stack direction="row" justifyContent="space-between" spacing={1}>
               <Stack direction="row" spacing={1}>
                 <LoadingButton
-                  variant="contained"
+                  variant={isCreating ? 'contained' : 'outlined'}
                   startIcon={<Icon>save</Icon>}
                   type="submit"
                   disabled={!editingEnabled || isCanceling}
@@ -88,14 +221,22 @@ export const EditLessonModal = ({
                 >
                   Zapisz
                 </LoadingButton>
-                <Button
-                  variant="outlined"
-                  onClick={onClose}
-                  disabled={isLoading || isCanceling}
-                >
-                  Anuluj
-                </Button>
+
+                {(role === UserRole.Trainee || isCreating) && (
+                  <Button
+                    variant="outlined"
+                    onClick={onClose}
+                    disabled={isLoading || isCanceling}
+                  >
+                    Anuluj
+                  </Button>
+                )}
               </Stack>
+              {role === UserRole.Instructor && !isCreating && (
+                <Stack direction="row" spacing={1}>
+                  {modalStatusButtons}
+                </Stack>
+              )}
               {role === UserRole.Trainee && (
                 <TraineeActionButtons
                   isCreating={isCreating}

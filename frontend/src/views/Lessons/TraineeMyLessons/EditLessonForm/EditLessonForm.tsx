@@ -32,6 +32,7 @@ interface EditLessonFormProps {
     formikHelpers: FormikHelpers<LessonFormData>,
   ) => void | Promise<any>;
   children: ReactNode;
+  isCreating?: boolean;
   showStatus?: boolean;
   disabled?: boolean;
 }
@@ -49,6 +50,7 @@ export const EditLessonForm = ({
   initialValues,
   onSubmit,
   children: actions,
+  isCreating = false,
   disabled = false,
   showStatus = false,
 }: EditLessonFormProps) => {
@@ -58,7 +60,7 @@ export const EditLessonForm = ({
     isTrainee ? '/api/instructors' : null,
   );
   const { data: traineesData } = useSWR<TraineeFindAllResponseDto>(() =>
-    !isTrainee ? '/api/trainees' : null,
+    !isTrainee && isCreating ? '/api/trainees' : null,
   );
 
   const onInternalSubmit = (
@@ -145,7 +147,7 @@ export const EditLessonForm = ({
                 </Select>
               </FormControl>
             )}
-            {!isTrainee && (
+            {!isTrainee && isCreating && (
               <FSelect
                 name="traineeId"
                 id="traineeId"

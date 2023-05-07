@@ -1,4 +1,6 @@
 import { Trainee } from '../trainees/entities/trainee.entity';
+import { courseReportFactory } from './seed.courseReports';
+import { driversLicenseCategoriesFactory } from './seed.driversLicenseCategories';
 import { Factory } from './seed.utils';
 
 class TraineesFactory extends Factory<Trainee> {
@@ -15,8 +17,22 @@ class TraineesFactory extends Factory<Trainee> {
     trainee.pkk = this.faker.random.numeric(20);
     trainee.dateOfBirth = this.faker.date.past();
 
+    trainee.driversLicenseCategory = driversLicenseCategoriesFactory
+      .getAll()
+      .find((category) => category.name === 'B')!;
+    trainee.courseReport = courseReportFactory.generate();
+
     this.entities.push(trainee);
     return trainee;
+  }
+
+  public remove(entityToRemove: Trainee) {
+    const { courseReport } = entityToRemove;
+    if (courseReport !== null) {
+      courseReportFactory.remove(courseReport);
+    }
+
+    super.remove(entityToRemove);
   }
 }
 

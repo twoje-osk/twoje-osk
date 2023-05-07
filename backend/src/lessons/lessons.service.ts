@@ -108,6 +108,10 @@ export class LessonsService {
           user: { id: traineeUserId, organizationId },
         },
       },
+      relations: {
+        trainee: true,
+        instructor: true,
+      },
     });
   }
 
@@ -334,6 +338,7 @@ export class LessonsService {
     from: Date,
     to: Date,
     status: LessonStatus,
+    vehicleId?: number | null,
   ): Promise<Try<undefined, 'LESSON_NOT_FOUND'>> {
     const { userId } = this.currentUserService.getRequestCurrentUser();
     const organizationId =
@@ -356,6 +361,7 @@ export class LessonsService {
       from,
       to,
       status,
+      vehicleId,
     });
 
     return getSuccess(undefined);

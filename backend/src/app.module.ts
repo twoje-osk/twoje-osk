@@ -21,7 +21,7 @@ import { JwtAuthGuard } from './auth/passport/jwt-auth.guard';
 import { RolesGuard } from './common/guards/roles.guard';
 import { CustomConfigService } from './config/config.service';
 import { DefaultAvailabilityModule } from './defaultAvailability/defaultAvailability.module';
-import { DriversLicenseCategoriesModule } from './driversLicenseCategory/driversLicenseCategory.module';
+import { DriversLicenseCategoriesModule } from './drivers-license-category/drivers-license-category.module';
 import { InstructorsModule } from './instructors/instructors.module';
 import { OrganizationDomainMiddleware } from './organization-domain/organization-domain.middleware';
 import { OrganizationDomainModule } from './organization-domain/organization-domain.module';
@@ -29,6 +29,10 @@ import { PaymentsModule } from './payments/payments.module';
 import { MockExamAttemptModule } from './mockExamAttempt/mockExamAttempt.module';
 import { MockExamQuestionAttemptModule } from './mockExamQuestionAttempt/mockExamQuestionAttempt.module';
 import { MockExamQuestionModule } from './mockExamQuestion/mockExamQuestion.module';
+import { ReportsModule } from './reports/reports.module';
+import { ReportEntriesModule } from './report-entries/report-entries.module';
+import { CourseReportsModule } from './course-reports/course-reports.module';
+import { ReportEntryToCourseReportModule } from './report-entry-to-course-report/report-entry-to-course-report.module';
 import { LecturesModule } from './lectures/lectures.module';
 
 @Module({
@@ -78,6 +82,10 @@ import { LecturesModule } from './lectures/lectures.module';
     MockExamAttemptModule,
     MockExamQuestionAttemptModule,
     MockExamQuestionModule,
+    ReportsModule,
+    ReportEntriesModule,
+    CourseReportsModule,
+    ReportEntryToCourseReportModule,
     LecturesModule,
   ],
   providers: [

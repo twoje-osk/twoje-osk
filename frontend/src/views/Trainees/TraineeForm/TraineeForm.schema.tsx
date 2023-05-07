@@ -9,7 +9,8 @@ export interface TraineeFormData {
   dateOfBirth?: Date;
   pesel?: string;
   pkk: string;
-  driversLicenseNumber?: string;
+  driversLicenseNumber: string | undefined;
+  driversLicenseCategory: number;
   createdAt: Date;
 }
 
@@ -28,5 +29,6 @@ export const traineeFormSchema: Yup.SchemaOf<TraineeFormData> =
     driversLicenseNumber: Yup.string()
       .optional()
       .transform((value) => (value === '' ? undefined : value)),
+    driversLicenseCategory: Yup.number().required(),
     createdAt: Yup.date().required(),
   });

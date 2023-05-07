@@ -11,6 +11,7 @@ export interface TraineeArguments {
   pkk: string;
   driversLicenseNumber: string | null;
   dateOfBirth: Date;
+  driversLicenseCategoryId: number;
 }
 
 export interface TraineeArgumentsUpdate

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindManyOptions, FindOptionsWhere, ILike, Repository } from 'typeorm';
+import { DriversLicenseCategoriesService } from '../drivers-license-category/drivers-license-category.service';
 import { OrganizationDomainService } from '../organization-domain/organization-domain.service';
 import { Try, getFailure, getSuccess } from '../types/Try';
 import { User } from '../users/entities/user.entity';
@@ -26,6 +27,7 @@ export class TraineesService {
     @InjectRepository(User)
     private usersRepository: Repository<User>,
     private usersService: UsersService,
+    private driversLicenseCategoriesService: DriversLicenseCategoriesService,
   ) {}
 
   private buildOrderOption(
@@ -156,7 +158,9 @@ export class TraineesService {
   @TransactionalWithTry()
   async create(
     trainee: TraineeArguments,
-  ): Promise<Try<Trainee, 'TRAINEE_OR_USER_FOUND'>> {
+  ): Promise<
+    Try<Trainee, 'TRAINEE_OR_USER_FOUND' | 'DRIVER_LICENSE_CATEGORY_NOT_FOUND'>
+  > {
     const { id: organizationId } =
       this.organizationDomainService.getRequestOrganization();
 
@@ -189,22 +193,41 @@ export class TraineesService {
       return getFailure('TRAINEE_OR_USER_FOUND');
     }
 
-    const createdUser = this.usersService.createUserWithoutSave(trainee.user);
+    const userToBeCreated = this.usersService.createUserWithoutSave(
+      trainee.user,
+    );
 
-    const createdTrainee = this.traineesRepository.create({
-      user: createdUser,
+    const driversLicenseCategory =
+      await this.driversLicenseCategoriesService.findOneCategoryById(
+        trainee.driversLicenseCategoryId,
+      );
+
+    if (driversLicenseCategory === null) {
+      return getFailure('DRIVER_LICENSE_CATEGORY_NOT_FOUND');
+    }
+
+    const traineeToBeCreated = this.traineesRepository.create({
+      user: userToBeCreated,
       pesel: trainee.pesel,
       driversLicenseNumber: trainee.driversLicenseNumber,
       dateOfBirth: trainee.dateOfBirth,
       pkk: trainee.pkk,
+      driversLicenseCategory: driversLicenseCategory!,
     });
 
-    createdUser.trainee = createdTrainee;
-    await this.usersRepository.save(createdUser);
+    userToBeCreated.trainee = traineeToBeCreated;
+    await this.usersRepository.save(userToBeCreated);
 
-    await this.traineesRepository.save(createdTrainee);
+    const { id: createdTraineeId } = await this.traineesRepository.save(
+      traineeToBeCreated,
+    );
 
-    return getSuccess(createdTrainee);
+    const createdTrainee = await this.traineesRepository.findOne({
+      where: { id: createdTraineeId },
+      relations: { user: true },
+    });
+
+    return getSuccess(createdTrainee!);
   }
 
   @TransactionalWithTry()
