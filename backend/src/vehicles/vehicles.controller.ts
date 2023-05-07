@@ -9,17 +9,19 @@ import {
   Patch,
   ParseIntPipe,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { ApiResponse, ApiBody, ApiCreatedResponse } from '@nestjs/swagger';
 import {
   VehicleFindOneResponseDto,
-  VehicleGetAllResponseDto,
+  VehicleFindAllResponseDto,
   VehicleAddNewResponseDto,
   VehicleAddNewRequestDto,
   VehicleUpdateRequestDto,
   VehicleUpdateResponseDto,
   VehicleDeleteResponseDto,
   UserRole,
+  VehicleFindAllQueryDto,
 } from '@osk/shared';
 import { Roles } from '../common/guards/roles.decorator';
 import { assertNever } from '../utils/assertNever';
@@ -31,11 +33,24 @@ export class VehiclesController {
   constructor(private readonly vehicleService: VehicleService) {}
 
   @ApiResponse({
-    type: VehicleGetAllResponseDto,
+    type: VehicleFindAllResponseDto,
   })
   @Get()
-  async findAll(): Promise<VehicleGetAllResponseDto> {
-    return { vehicles: await this.vehicleService.findAll() };
+  async findAll(
+    @Query() query: VehicleFindAllQueryDto,
+  ): Promise<VehicleFindAllResponseDto> {
+    const { vehicles, count } = await this.vehicleService.findAll({
+      pagination: {
+        page: query.page,
+        pageSize: query.pageSize,
+      },
+      sort: {
+        sortBy: query.sortBy,
+        sortOrder: query.sortOrder,
+      },
+      filter: query.filters ?? {},
+    });
+    return { vehicles, total: count };
   }
 
   @ApiResponse({

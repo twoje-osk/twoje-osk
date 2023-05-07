@@ -13,7 +13,7 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import { VehicleGetAllResponseDto } from '@osk/shared';
+import { VehicleFindAllResponseDto } from '@osk/shared';
 import { parseISO } from 'date-fns';
 import { Link, useNavigate } from 'react-router-dom';
 import { Flex } from 'reflexbox';
@@ -23,7 +23,7 @@ import { GeneralAPIError } from '../../../components/GeneralAPIError/GeneralAPIE
 import { formatLong } from '../../../utils/date';
 
 export const VehiclesList = () => {
-  const { data, error } = useSWR<VehicleGetAllResponseDto>('/api/vehicles');
+  const { data, error } = useSWR<VehicleFindAllResponseDto>('/api/vehicles');
   const navigate = useNavigate();
 
   if (error) {

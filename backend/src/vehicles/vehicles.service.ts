@@ -1,19 +1,23 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Not } from 'typeorm';
+import {
+  Repository,
+  Not,
+  FindManyOptions,
+  ILike,
+  FindOptionsWhere,
+} from 'typeorm';
 import { OrganizationDomainService } from '../organization-domain/organization-domain.service';
 import { Try, getFailure, getSuccess } from '../types/Try';
+import { getLimitArguments } from '../utils/presentationArguments';
 import { Vehicle } from './entities/vehicle.entity';
-
-interface VehicleArguments {
-  name?: string;
-  licensePlate?: string;
-  vin?: string;
-  dateOfNextCheck?: Date;
-  photo: string | null;
-  additionalDetails: string | null;
-  notes: string | null;
-}
+import {
+  VehicleArguments,
+  VehiclePresentationArguments,
+  VehiclePresentationFilterArguments,
+  VehiclePresentationSortArguments,
+} from './vehicles.types';
+import { isVehicleSortField } from './vehicles.utils';
 
 @Injectable()
 export class VehicleService {
@@ -23,15 +27,90 @@ export class VehicleService {
     private organizationDomainService: OrganizationDomainService,
   ) {}
 
-  async findAll(): Promise<Vehicle[]> {
+  private buildOrderOption(
+    sortArguments: VehiclePresentationSortArguments | undefined,
+  ): FindManyOptions<Vehicle>['order'] {
+    const sortOrder = sortArguments?.sortOrder ?? 'desc';
+
+    const defaultSortOrder = {
+      licensePlate: sortOrder,
+    };
+
+    if (sortArguments?.sortBy === undefined) {
+      return defaultSortOrder;
+    }
+
+    if (isVehicleSortField(sortArguments.sortBy)) {
+      return {
+        [sortArguments.sortBy]: sortOrder,
+      };
+    }
+
+    return defaultSortOrder;
+  }
+
+  private buildWhereOption(
+    filterArguments: VehiclePresentationFilterArguments | undefined,
+    organizationId: number,
+  ): FindOptionsWhere<Vehicle> {
+    const nameProperty =
+      filterArguments?.name !== undefined
+        ? ILike(`%${filterArguments.name}%`)
+        : undefined;
+
+    const licensePlateProperty =
+      filterArguments?.licensePlate !== undefined
+        ? ILike(`%${filterArguments.licensePlate}%`)
+        : undefined;
+
+    const vinProperty =
+      filterArguments?.vin !== undefined
+        ? ILike(`%${filterArguments.vin}%`)
+        : undefined;
+
+    // TODO Add filtering between date A and date B
+    // const dateOfNextCheckProperty =
+    //   filterArguments?.dateOfNextCheck !== undefined
+    //     ? ILike(`%${filterArguments.dateOfNextCheck}%`)
+    //     : undefined;
+
+    const additionalDetailsProperty =
+      filterArguments?.additionalDetails !== undefined
+        ? ILike(`%${filterArguments.additionalDetails}%`)
+        : undefined;
+
+    const notesProperty =
+      filterArguments?.notes !== undefined
+        ? ILike(`%${filterArguments.notes}%`)
+        : undefined;
+
+    return {
+      name: nameProperty,
+      licensePlate: licensePlateProperty,
+      vin: vinProperty,
+      // dateOfNextCheck: dateOfNextCheckProperty,
+      additionalDetails: additionalDetailsProperty,
+      notes: notesProperty,
+      organizationId,
+    };
+  }
+
+  async findAll(presentationArguments?: VehiclePresentationArguments) {
     const { id: organizationId } =
       this.organizationDomainService.getRequestOrganization();
 
-    return this.vehiclesRepository.find({
-      where: {
-        organization: { id: organizationId },
-      },
+    const limitArguments = getLimitArguments(presentationArguments?.pagination);
+
+    const [vehicles, count] = await this.vehiclesRepository.findAndCount({
+      ...limitArguments,
+      order: this.buildOrderOption(presentationArguments?.sort),
+      where: this.buildWhereOption(
+        presentationArguments?.filter,
+        organizationId,
+      ),
     });
+
+    return { vehicles, count };
   }
 
   async findOneById(id: number): Promise<Try<Vehicle, 'VEHICLE_NOT_FOUND'>> {
