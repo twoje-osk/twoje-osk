@@ -2,11 +2,14 @@ import { Exclude } from 'class-transformer';
 import {
   Column,
   Entity,
+  ManyToOne,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   RelationId,
 } from 'typeorm';
+import { CourseReport } from '../../course-reports/entities/course-report.entity';
+import { DriversLicenseCategory } from '../../drivers-license-category/entities/drivers-license-category.entity';
 import type { Payment } from '../../payments/entities/payment.entity';
 import type { User } from '../../users/entities/user.entity';
 
@@ -36,4 +39,20 @@ export class Trainee {
 
   @OneToMany<Payment>('Payment', (payment) => payment.trainee)
   payments: Payment[];
+
+  @OneToOne<CourseReport>(
+    'CourseReport',
+    (courseReport) => courseReport.trainee,
+    { nullable: true },
+  )
+  courseReport: CourseReport | null;
+
+  @Exclude()
+  @ManyToOne<DriversLicenseCategory>('DriversLicenseCategory', {
+    nullable: false,
+  })
+  driversLicenseCategory: DriversLicenseCategory;
+
+  @RelationId((trainee: Trainee) => trainee.driversLicenseCategory)
+  driversLicenseCategoryId: number;
 }

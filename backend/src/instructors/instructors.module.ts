@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { DriversLicenseCategoriesModule } from '../driversLicenseCategory/driversLicenseCategory.module';
+import { DriversLicenseCategoriesModule } from '../drivers-license-category/drivers-license-category.module';
 import { User } from '../users/entities/user.entity';
 import { UsersModule } from '../users/users.module';
 import { Instructor } from './entities/instructor.entity';

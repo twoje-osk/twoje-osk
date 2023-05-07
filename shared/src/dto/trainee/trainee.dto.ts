@@ -42,6 +42,9 @@ export class TraineeDto {
 
   @ApiProperty({ nullable: true })
   driversLicenseNumber: string | null;
+
+  @ApiProperty()
+  driversLicenseCategoryId: number;
 }
 
 export class DtoCreateTrainee {
@@ -74,6 +77,9 @@ export class DtoCreateTrainee {
   @IsOptional()
   @IsString()
   driversLicenseNumber: string | null;
+
+  @IsNotEmpty()
+  driversLicenseCategoryId: number;
 }
 
 export class DtoCreateTraineeSignup {
