@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { OrganizationDomainService } from '../organization-domain/organization-domain.service';
 import { Try, getFailure, getSuccess } from '../types/Try';
+import { DateBetweenProperty } from '../utils/DateBetweenProperty';
 import { getLimitArguments } from '../utils/presentationArguments';
 import { Vehicle } from './entities/vehicle.entity';
 import {
@@ -68,11 +69,10 @@ export class VehicleService {
         ? ILike(`%${filterArguments.vin}%`)
         : undefined;
 
-    // TODO Add filtering between date A and date B
-    // const dateOfNextCheckProperty =
-    //   filterArguments?.dateOfNextCheck !== undefined
-    //     ? ILike(`%${filterArguments.dateOfNextCheck}%`)
-    //     : undefined;
+    const dataOfNextCheckProperty = DateBetweenProperty(
+      filterArguments?.dateOfNextCheckFrom,
+      filterArguments?.dateOfNextCheckTo,
+    );
 
     const additionalDetailsProperty =
       filterArguments?.additionalDetails !== undefined
@@ -88,7 +88,7 @@ export class VehicleService {
       name: nameProperty,
       licensePlate: licensePlateProperty,
       vin: vinProperty,
-      // dateOfNextCheck: dateOfNextCheckProperty,
+      dateOfNextCheck: dataOfNextCheckProperty,
       additionalDetails: additionalDetailsProperty,
       notes: notesProperty,
       organizationId,

@@ -22,7 +22,8 @@ export interface VehiclePresentationFilterArguments {
   name?: string;
   licensePlate?: string;
   vin?: string;
-  // dateOfNextCheck?: Date;
+  dateOfNextCheckFrom?: Date;
+  dateOfNextCheckTo?: Date;
   photo?: string;
   additionalDetails?: string;
   notes?: string;
