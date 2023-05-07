@@ -22,6 +22,7 @@ import {
   useDeleteAnnouncement,
   useEditAnnouncement,
 } from './AnnouncementList.hooks';
+import { LAYOUT_HEIGHT } from '../Layout/Layout';
 
 export const AnnouncementsList = () => {
   const {
@@ -66,7 +67,7 @@ export const AnnouncementsList = () => {
   const { announcements } = announcementsData;
 
   return (
-    <Flex flexDirection="column" height="100%">
+    <Flex flexDirection="column" height={LAYOUT_HEIGHT}>
       <Toolbar
         sx={{
           pl: { sm: 2 },
@@ -95,7 +96,12 @@ export const AnnouncementsList = () => {
         </Stack>
       </Toolbar>
       <Box style={{ overflow: 'auto' }}>
-        <Stack direction="column">
+        <Stack
+          direction="column"
+          alignItems="center"
+          gap="2rem"
+          sx={{ p: '2rem' }}
+        >
           {announcements.map((announcement) => (
             <AnnouncementCard
               key={announcement.id}
