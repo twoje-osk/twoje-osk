@@ -62,6 +62,7 @@ stages:
           - checkout: self
             persistCredentials: true
             fetchDepth: 5
+
           - bash: |
               if [[ "$(Build.Reason)" != "PullRequest" ]]; then
                 DIFFS=`git diff HEAD HEAD~ --name-only -- 'frontend' 'backend' 'shared' 'yarn.lock' 'docker/Dockerfile.backend'`
@@ -89,14 +90,18 @@ stages:
                 yarn
               path: $(YARN_CACHE_FOLDER)
             displayName: Cache Yarn packages
+
           - script: yarn --immutable
             displayName: Install Dependencies
+
           - bash: |
               cd shared && yarn run build
             displayName: Build @osk/shared
+
           - bash: |
               yarn run type-check
             displayName: Type Check
+
           - bash: |
               yarn run lint --max-warnings 0
             displayName: Lint
@@ -115,17 +120,20 @@ stages:
             ),
             eq(variables['MANUAL_TRIGGER'], 'true')
           )
+
         steps:
           - task: Docker@2
             inputs:
               containerRegistry: '$(ACR_NAME)'
               command: 'login'
             displayName: "Docker login to acr"
+
           - script: |
               docker pull $(ACR_ADDRESS)/$(DOCKER_REPO):latest
               docker pull $(ACR_ADDRESS)/$(DOCKER_REPO_ADMIN):latest
-            displayName: Pull latest for layer caching
             continueOnError: true # for first build, no available cache
+            displayName: Pull latest for layer caching
+
           - task: Docker@2
             name: docker_build
             inputs:
@@ -137,6 +145,8 @@ stages:
               arguments: '--cache-from=$(ACR_ADDRESS)/$(DOCKER_REPO):latest'
               tags: |
                 latest
+            displayName: Build Twoje-OSK Docker image
+
           - task: Docker@2
             name: docker_build_admin
             inputs:
@@ -148,7 +158,8 @@ stages:
               arguments: '--cache-from=$(ACR_ADDRESS)/$(DOCKER_REPO_ADMIN):latest'
               tags: |
                 latest
-            displayName: Build Docker image
+            displayName: Build Twoje-OSK Admin Docker image
+
           - task: Docker@2
             name: docker_push
             inputs:
@@ -158,6 +169,7 @@ stages:
               tags: |
                 latest
             displayName: Push Twoje-OSK Docker image to ACR
+
           - task: Docker@2
             name: docker_push_admin
             inputs:
