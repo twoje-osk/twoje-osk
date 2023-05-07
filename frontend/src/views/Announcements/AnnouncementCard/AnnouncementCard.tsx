@@ -52,13 +52,13 @@ export const AnnouncementCard = ({
   return (
     <Card
       sx={{
-        mx: '15rem',
-        my: '2rem',
-        bgColor: '#fafafa',
+        maxWidth: '600px',
       }}
     >
       <CardHeader
-        avatar={<Avatar sx={{ bgcolor: blue[100] }}>{userInitials}</Avatar>}
+        avatar={
+          <Avatar sx={{ backgroundColor: blue[100] }}>{userInitials}</Avatar>
+        }
         action={
           role === UserRole.Admin && (
             <IconButton

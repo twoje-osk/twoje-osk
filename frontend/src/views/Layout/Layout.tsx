@@ -22,6 +22,9 @@ interface LayoutProps {
 
 const DRAWER_WIDTH = '320px';
 
+const LAYOUT_PADDING = '32px';
+export const LAYOUT_HEIGHT = `calc(100vh - ${LAYOUT_PADDING} * 2)`;
+
 interface MenuItem {
   text: string;
   icon: string;
@@ -132,8 +135,15 @@ export const Layout = ({ children }: LayoutProps) => {
       </Drawer>
       <Box flexGrow="1">
         <Container maxWidth="xl">
-          <Flex width="100%" height="100vh" alignItems="center" p="32px">
-            <Paper sx={{ width: '100%', height: '100%' }} elevation={1}>
+          <Flex width="100%" alignItems="center" p={LAYOUT_PADDING}>
+            <Paper
+              sx={{
+                width: '100%',
+                height: '100%',
+                minHeight: LAYOUT_HEIGHT,
+              }}
+              elevation={1}
+            >
               {children}
             </Paper>
           </Flex>
