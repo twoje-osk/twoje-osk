@@ -43,6 +43,8 @@ variables:
     value: oskshrdacr.azurecr.io
   - name: DOCKER_REPO
     value: twoje-osk
+  - name: DOCKER_REPO_ADMIN
+    value: twoje-osk-admin
   - ${{ if in( variables['Build.SourceBranchName'], 'main' ) }}:
     - name: ENVIRONMENT_TYPE
       value: prod
@@ -121,6 +123,7 @@ stages:
             displayName: "Docker login to acr"
           - script: |
               docker pull $(ACR_ADDRESS)/$(DOCKER_REPO):latest
+              docker pull $(ACR_ADDRESS)/$(DOCKER_REPO_ADMIN):latest
             displayName: Pull latest for layer caching
             continueOnError: true # for first build, no available cache
           - task: Docker@2
@@ -134,6 +137,17 @@ stages:
               arguments: '--cache-from=$(ACR_ADDRESS)/$(DOCKER_REPO):latest'
               tags: |
                 latest
+          - task: Docker@2
+            name: docker_build_admin
+            inputs:
+              containerRegistry: '$(ACR_NAME)'
+              repository: '$(DOCKER_REPO_ADMIN)'
+              command: 'build'
+              Dockerfile: 'docker/Dockerfile.admin'
+              buildContext: '$(System.DefaultWorkingDirectory)'
+              arguments: '--cache-from=$(ACR_ADDRESS)/$(DOCKER_REPO_ADMIN):latest'
+              tags: |
+                latest
             displayName: Build Docker image
           - task: Docker@2
             name: docker_push
@@ -143,4 +157,13 @@ stages:
               command: 'push'
               tags: |
                 latest
-            displayName: Push Docker image to ACR
+            displayName: Push Twoje-OSK Docker image to ACR
+          - task: Docker@2
+            name: docker_push_admin
+            inputs:
+              containerRegistry: '$(ACR_NAME)'
+              repository: '$(DOCKER_REPO_ADMIN)'
+              command: 'push'
+              tags: |
+                latest
+            displayName: Push Twoje-OSK Admin Docker image to ACR
