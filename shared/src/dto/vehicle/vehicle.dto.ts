@@ -7,6 +7,7 @@ import {
   MinLength,
   IsString,
   ValidateNested,
+  IsNumber,
 } from 'class-validator';
 import { Transform, Type } from 'class-transformer';
 
@@ -129,3 +130,27 @@ export class VehicleUpdateRequestDto {
 }
 
 export class VehicleDeleteResponseDto {}
+
+export class VehicleGetMyFavouritesResponseDto {
+  @ApiProperty({
+    isArray: true,
+    type: VehicleDto,
+  })
+  vehicles: number[];
+}
+
+export class VehicleAddFavouriteRequestDto {
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsNumber()
+  vehicleId: number;
+}
+export class VehicleAddFavouriteResponseDto {}
+
+export class VehicleRemoveFavouriteRequestDto {
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsNumber()
+  vehicleId: number;
+}
+export class VehicleRemoveFavouriteResponseDto {}
