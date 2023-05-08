@@ -146,6 +146,7 @@ export class PaymentsService {
       where: this.buildWhereOption(
         presentationArguments?.filter,
         organizationId,
+        undefined,
         userId,
       ),
     });

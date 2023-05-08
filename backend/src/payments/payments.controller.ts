@@ -84,7 +84,7 @@ export class PaymentsController {
     return { payments, total: count };
   }
 
-  @Roles(UserRole.Trainee, UserRole.Admin)
+  @Roles(UserRole.Trainee)
   @ApiResponse({
     type: PaymentMyFindAllResponseDto,
   })
