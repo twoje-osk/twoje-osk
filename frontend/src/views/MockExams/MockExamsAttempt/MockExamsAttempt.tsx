@@ -12,6 +12,7 @@ import { GeneralAPIError } from '../../../components/GeneralAPIError/GeneralAPIE
 import { MockExamsQuestion } from './MockExamsQuestion';
 import { useMakeRequestWithAuth } from '../../../hooks/useMakeRequestWithAuth/useMakeRequestWithAuth';
 import { useCommonSnackbars } from '../../../hooks/useCommonSnackbars/useCommonSnackbars';
+import { MockExamsRules } from './MockExamsRules';
 
 export const MockExamsAttempt = () => {
   const categoryId = 6;
@@ -23,9 +24,14 @@ export const MockExamsAttempt = () => {
     CreateMockExamQuestionAttemptRequestDto[]
   >([]);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [showRules, setShowRules] = useState<boolean>(true);
   const makeRequest = useMakeRequestWithAuth();
   const navigate = useNavigate();
   const { showErrorSnackbar, showSuccessSnackbar } = useCommonSnackbars();
+
+  if (showRules) {
+    return <MockExamsRules onStartExam={() => setShowRules(false)} />;
+  }
 
   if (questionsData === undefined || isSubmitting) {
     return <FullPageLoading />;
@@ -79,6 +85,7 @@ export const MockExamsAttempt = () => {
     navigate(`/egzaminy/${response.data.id}/rezultat`);
     showSuccessSnackbar(`Egzamin zakończony!`);
   };
+
   return (
     <MockExamsQuestion
       question={currentQuestion}

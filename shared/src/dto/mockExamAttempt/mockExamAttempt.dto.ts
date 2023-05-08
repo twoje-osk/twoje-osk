@@ -1,9 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
   IsBoolean,
+  IsIn,
+  IsInt,
   IsNotEmpty,
   IsNumber,
+  IsOptional,
+  IsPositive,
+  Min,
   ValidateNested,
 } from 'class-validator';
 import { MockExamQuestionDto } from '../mockExamQuestion/mockExamQuestion.dto';
@@ -60,6 +65,75 @@ export class SubmitMockExamAttemptDto {
 export class MockExamAttemptFindAllResponseDto {
   @ApiProperty({ type: DtoMockExamAttempt, isArray: true })
   examAttempts: DtoMockExamAttempt[];
+
+  @ApiProperty()
+  total: number;
+}
+
+export class MockExamAttemptFindAllQueryDtoFilters {
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @Transform(({ value }) => {
+    const isTrue = value === 'true';
+    const isFalse = value === 'false';
+
+    if (isTrue) {
+      return true;
+    }
+
+    if (isFalse) {
+      return false;
+    }
+
+    return value;
+  })
+  @IsBoolean()
+  isPassed?: boolean;
+}
+
+const mockExamAttemptFindAllQueryDtoSortByOptions = [
+  'isPassed',
+  'score',
+  'attemptDate',
+] as const;
+const mockExamAttemptFindAllQueryDtoSortOrderOptions = ['asc', 'desc'] as const;
+
+export class MockExamAttemptFindAllQueryDto {
+  @ApiProperty({
+    required: false,
+    enum: mockExamAttemptFindAllQueryDtoSortByOptions,
+  })
+  @IsOptional()
+  @IsIn(mockExamAttemptFindAllQueryDtoSortByOptions)
+  sortBy?: typeof mockExamAttemptFindAllQueryDtoSortByOptions[number];
+
+  @ApiProperty({
+    required: false,
+    enum: mockExamAttemptFindAllQueryDtoSortOrderOptions,
+  })
+  @IsOptional()
+  @IsIn(mockExamAttemptFindAllQueryDtoSortOrderOptions)
+  sortOrder?: typeof mockExamAttemptFindAllQueryDtoSortOrderOptions[number];
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(0)
+  page?: number;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @IsPositive()
+  pageSize?: number;
+
+  @ApiProperty()
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => MockExamAttemptFindAllQueryDtoFilters)
+  filters?: MockExamAttemptFindAllQueryDtoFilters;
 }
 
 export class MockExamAttemptFindOneResponseDto {

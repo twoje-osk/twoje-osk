@@ -6,6 +6,7 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Query,
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
@@ -15,6 +16,7 @@ import {
   MockExamAttemptFindOneResponseDto,
   MockExamAttemptSubmitResponseDto,
   MockExamAttemptSubmitRequestDto,
+  MockExamAttemptFindAllQueryDto,
 } from '@osk/shared';
 import { Roles } from '../common/guards/roles.decorator';
 import { CurrentUserService } from '../current-user/current-user.service';
@@ -31,36 +33,35 @@ export class MockExamAttemptController {
     private readonly mockExamQuestionService: MockExamQuestionService,
   ) {}
 
-  @Roles(UserRole.Admin, UserRole.Instructor)
-  @ApiResponse({
-    type: MockExamAttemptFindAllResponseDto,
-    description: 'Returns all mock exam attempts of given user',
-  })
-  @Get('user/:userId')
-  async findAllAttemptsOfUser(
-    @Param('userId', ParseIntPipe) userId: number,
-  ): Promise<MockExamAttemptFindAllResponseDto> {
-    const examAttemptsResponse =
-      await this.mockExamAttemptService.findAllAttemptsOfUser(userId);
-    if (!examAttemptsResponse.ok) {
-      throw new NotFoundException(examAttemptsResponse.error);
-    }
-    return { examAttempts: examAttemptsResponse.data };
-  }
-
   @ApiResponse({
     type: MockExamAttemptFindAllResponseDto,
     description: 'Returns all mock exam attempts of currently logged user',
   })
   @Get()
-  async findAllMyAttempts(): Promise<MockExamAttemptFindAllResponseDto> {
+  async findAllMyAttempts(
+    @Query() query: MockExamAttemptFindAllQueryDto,
+  ): Promise<MockExamAttemptFindAllResponseDto> {
     const { userId: id } = this.currentUserService.getRequestCurrentUser();
-    const examAttemptsResult =
-      await this.mockExamAttemptService.findAllAttemptsOfUser(id);
-    if (!examAttemptsResult.ok) {
-      throw new NotFoundException(examAttemptsResult.error);
+
+    const result = await this.mockExamAttemptService.findAllAttemptsOfUser(id, {
+      pagination: {
+        page: query.page,
+        pageSize: query.pageSize,
+      },
+      sort: {
+        sortBy: query.sortBy,
+        sortOrder: query.sortOrder,
+      },
+      filter: query.filters ?? {},
+    });
+
+    if (!result.ok) {
+      throw new NotFoundException(result.error);
     }
-    return { examAttempts: examAttemptsResult.data };
+
+    const { mockExamAttempts, count } = result.data;
+
+    return { examAttempts: mockExamAttempts, total: count };
   }
 
   @ApiResponse({

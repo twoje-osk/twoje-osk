@@ -7,6 +7,7 @@ import { FullPageLoading } from '../../../components/FullPageLoading/FullPageLoa
 import { GeneralAPIError } from '../../../components/GeneralAPIError/GeneralAPIError';
 import { theme } from '../../../theme';
 import { PERFECT_SCORE } from '../MockExams.constants';
+import { LAYOUT_HEIGHT } from '../../Layout/Layout';
 
 export const MockExamsScoreBoard = () => {
   const { examId } = useParams();
@@ -35,7 +36,11 @@ export const MockExamsScoreBoard = () => {
   return (
     <Flex
       flexDirection="column"
-      style={{ height: '100%', paddingTop: '8px', paddingBottom: '8px' }}
+      style={{
+        minHeight: LAYOUT_HEIGHT,
+        paddingTop: '8px',
+        paddingBottom: '8px',
+      }}
     >
       <Toolbar
         sx={{
