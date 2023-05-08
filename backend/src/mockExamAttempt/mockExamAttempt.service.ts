@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { FindManyOptions, FindOptionsWhere, Repository } from 'typeorm';
 import {
   MINIMAL_PASSING_SCORE,
   REQUIRED_AMOUNT_OF_QUESTIONS,
@@ -12,8 +12,15 @@ import {
 import { MockExamQuestionAttemptService } from '../mockExamQuestionAttempt/mockExamQuestionAttempt.service';
 import { TraineesService } from '../trainees/trainees.service';
 import { Try, getFailure, getSuccess } from '../types/Try';
+import { getLimitArguments } from '../utils/presentationArguments';
 import { TransactionalWithTry } from '../utils/TransactionalWithTry';
 import { MockExamAttempt } from './entities/mockExamAttempt.entity';
+import {
+  MockExamAttemptPresentationSortArguments,
+  MockExamAttemptPresentationFilterArguments,
+  MockExamAttemptPresentationArguments,
+} from './mockExamAttempt.types';
+import { isMockExamAttemptSortField } from './mockExamAttempt.utils';
 
 interface QuestionFields {
   questionId: number;
@@ -33,28 +40,67 @@ export class MockExamAttemptService {
     private mockExamQuestionAttemptService: MockExamQuestionAttemptService,
   ) {}
 
+  private buildOrderOption(
+    sortArguments: MockExamAttemptPresentationSortArguments | undefined,
+  ): FindManyOptions<MockExamAttempt>['order'] {
+    const sortOrder = sortArguments?.sortOrder ?? 'desc';
+
+    const defaultSortOrder = {
+      attemptDate: sortOrder,
+    };
+
+    if (sortArguments?.sortBy === undefined) {
+      return defaultSortOrder;
+    }
+
+    if (isMockExamAttemptSortField(sortArguments.sortBy)) {
+      return {
+        [sortArguments.sortBy]: sortOrder,
+      };
+    }
+
+    return defaultSortOrder;
+  }
+
+  private buildWhereOption(
+    filterArguments: MockExamAttemptPresentationFilterArguments | undefined,
+    traineeId: number,
+  ): FindOptionsWhere<MockExamAttempt> {
+    const isPassedProperty = filterArguments?.isPassed;
+
+    return {
+      isPassed: isPassedProperty,
+      trainee: { id: traineeId },
+    };
+  }
+
   async findAllAttemptsOfUser(
     id: number,
-  ): Promise<Try<MockExamAttempt[], 'TRAINEE_DOES_NOT_EXIST'>> {
+    presentationArguments?: MockExamAttemptPresentationArguments,
+  ): Promise<
+    Try<
+      { mockExamAttempts: MockExamAttempt[]; count: number },
+      'TRAINEE_DOES_NOT_EXIST'
+    >
+  > {
     const trainee = await this.traineeService.findOneByUserId(id);
     if (trainee === null) {
       return getFailure('TRAINEE_DOES_NOT_EXIST');
     }
-    const attempts = await this.mockExamAttemptRepository.find({
-      where: {
-        trainee: {
-          id: trainee.id,
-        },
-      },
-      relations: {
-        questions: true,
-      },
-      order: {
-        attemptDate: 'DESC',
-      },
-    });
 
-    return getSuccess(attempts);
+    const limitArguments = getLimitArguments(presentationArguments?.pagination);
+
+    const [mockExamAttempts, count] =
+      await this.mockExamAttemptRepository.findAndCount({
+        ...limitArguments,
+        order: this.buildOrderOption(presentationArguments?.sort),
+        where: this.buildWhereOption(presentationArguments?.filter, trainee.id),
+        relations: {
+          questions: true,
+        },
+      });
+
+    return getSuccess({ mockExamAttempts, count });
   }
 
   async findOne(
