@@ -12,15 +12,14 @@ import {
 import { VehicleFindAllQueryDto, VehicleFindAllResponseDto } from '@osk/shared';
 import { orange } from '@mui/material/colors';
 import { UserRole } from '@osk/shared/src/types/user.types';
-import { parseISO } from 'date-fns';
+import { endOfDay, formatISO, parseISO } from 'date-fns';
 import { Link, useNavigate } from 'react-router-dom';
 import { Flex } from 'reflexbox';
 import useSWR from 'swr';
 import { useMemo, useState } from 'react';
-import { FullPageLoading } from '../../../components/FullPageLoading/FullPageLoading';
 import { GeneralAPIError } from '../../../components/GeneralAPIError/GeneralAPIError';
 import { useAuth } from '../../../hooks/useAuth/useAuth';
-import { formatLong } from '../../../utils/date';
+import { formatDatesRange, formatLong } from '../../../utils/date';
 import { useVehicleFavourites } from './VehiclesList.hooks';
 import { Table } from '../../../components/Table/Table';
 import { usePagination } from '../../../hooks/usePagination/usePagination';
@@ -28,6 +27,7 @@ import { useSort } from '../../../hooks/useSort/useSort';
 import { addQueryParams } from '../../../utils/addQueryParams';
 import { TableFilters } from '../../../components/Table/TableFilters';
 import { TextFilter } from '../../../components/Table/Filters/TextFilter/TextFilter';
+import { DateFilter } from '../../../components/Table/Filters/DateFilter/DateFilter';
 
 export const VehiclesList = () => {
   const { rowsPerPage, currentPage, onPageChange, onRowsPerPageChange } =
@@ -51,7 +51,14 @@ export const VehiclesList = () => {
         sortOrder,
         sortBy: sortedBy,
         filters: {
-          dateOfNextCheck: dateOfNextCheck.value,
+          dateOfNextCheckFrom:
+            dateOfNextCheck.value.from !== undefined
+              ? formatISO(dateOfNextCheck.value.from)
+              : undefined,
+          dateOfNextCheckTo:
+            dateOfNextCheck.value.to !== undefined
+              ? formatISO(endOfDay(dateOfNextCheck.value.to))
+              : undefined,
           licensePlate: licensePlate.value,
           name: name.value,
         },
@@ -81,11 +88,7 @@ export const VehiclesList = () => {
     return <GeneralAPIError />;
   }
 
-  if (data === undefined) {
-    return <FullPageLoading />;
-  }
-
-  const rows = data.vehicles;
+  const rows = data?.vehicles;
   const totalRows = data?.total ?? 0;
   const columnSize = '33%';
 
@@ -153,15 +156,19 @@ export const VehiclesList = () => {
           {
             id: 'dateOfNextCheck',
             label: 'Data Następnego Przeglądu',
-            isActive: dateOfNextCheck.value !== undefined,
-            activeLabel: dateOfNextCheck.value,
-            clearFilter: () => dateOfNextCheck.set(undefined),
-            renderFilter: ({ isOpen, toggle }) => (
-              <TextFilter
-                value={dateOfNextCheck.value}
+            isActive:
+              dateOfNextCheck.value.from !== undefined ||
+              dateOfNextCheck.value.to !== undefined,
+            activeLabel: formatDatesRange(
+              dateOfNextCheck.value.from,
+              dateOfNextCheck.value.to,
+            ),
+            clearFilter: () => dateOfNextCheck.set(undefined, undefined),
+            renderFilter: ({ toggle }) => (
+              <DateFilter
+                valueFrom={dateOfNextCheck.value.from}
+                valueTo={dateOfNextCheck.value.to}
                 setValue={dateOfNextCheck.set}
-                label="Data Następnego Przeglądu"
-                isOpen={isOpen}
                 toggleOpen={toggle}
               />
             ),
@@ -193,7 +200,7 @@ export const VehiclesList = () => {
             id: 'dateOfNextCheck',
             name: 'Data Następnego Przeglądu',
             width: columnSize,
-            openFilter: () => setOpenedFilter('licensePlate'),
+            openFilter: () => setOpenedFilter('dateOfNextCheck'),
           },
         ]}
         ariaLabel="Lista Pojazdów"
@@ -264,13 +271,21 @@ const StarButton = styled(IconButton)<{ isFavourite: boolean }>`
 const useFilters = () => {
   const [name, setName] = useState<string | undefined>();
   const [licensePlate, setLicensePlate] = useState<string | undefined>();
-  const [dateOfNextCheck, setDateOfNextCheck] = useState<string | undefined>();
+  const [dateOfNextCheck, setDateOfNextCheck] = useState<{
+    from: Date | undefined;
+    to: Date | undefined;
+  }>({ from: undefined, to: undefined });
 
   return useMemo(
     () => ({
       name: { value: name, set: setName },
       licensePlate: { value: licensePlate, set: setLicensePlate },
-      dateOfNextCheck: { value: dateOfNextCheck, set: setDateOfNextCheck },
+      dateOfNextCheck: {
+        value: dateOfNextCheck,
+        set: (from: Date | undefined, to: Date | undefined) => {
+          setDateOfNextCheck({ from, to });
+        },
+      },
     }),
     [dateOfNextCheck, licensePlate, name],
   );

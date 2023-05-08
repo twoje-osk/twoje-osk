@@ -137,7 +137,17 @@ export class VehicleFindAllQueryDtoFilters {
   @IsOptional()
   @IsDate()
   @Type(() => Date)
-  dateOfNextCheck?: ApiDate;
+  dateOfNextCheckFrom?: ApiDate;
+
+  @ApiProperty({
+    type: 'string',
+    format: 'YYYY-mm-DDTHH:mm:ss.SZ',
+    required: false,
+  })
+  @IsOptional()
+  @IsDate()
+  @Type(() => Date)
+  dateOfNextCheckTo?: ApiDate;
 
   @ApiProperty({ required: false })
   @IsOptional()
