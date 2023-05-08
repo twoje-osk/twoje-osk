@@ -149,7 +149,8 @@ const StyledMediaWrapper = styled(Paper)`
   margin: auto;
   margin-top: 8px;
   margin-bottom: 24px;
-  max-height: 50%;
+  max-height: 40%;
+  width: 700px;
   background: ${theme.palette.grey[300]};
 `;
 
