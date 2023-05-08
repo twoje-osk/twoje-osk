@@ -8,6 +8,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
 import {
@@ -21,6 +22,7 @@ import {
   PaymentCreateResponseDto,
   PaymentCreateRequestDto,
   PaymentMyFindAllResponseDto,
+  PaymentFindAllQueryDto,
 } from '@osk/shared';
 import { Roles } from '../common/guards/roles.decorator';
 import { CurrentUserService } from '../current-user/current-user.service';
@@ -39,10 +41,21 @@ export class PaymentsController {
     type: PaymentFindAllResponseDto,
   })
   @Get()
-  async findAll(): Promise<PaymentFindAllResponseDto> {
-    const payments = await this.paymentsService.findAll();
-
-    return { payments };
+  async findAll(
+    @Query() query: PaymentFindAllQueryDto,
+  ): Promise<PaymentFindAllResponseDto> {
+    const { payments, count } = await this.paymentsService.findAll({
+      pagination: {
+        page: query.page,
+        pageSize: query.pageSize,
+      },
+      sort: {
+        sortBy: query.sortBy,
+        sortOrder: query.sortOrder,
+      },
+      filter: query.filters ?? {},
+    });
+    return { payments, total: count };
   }
 
   @Roles(UserRole.Admin)
@@ -52,25 +65,50 @@ export class PaymentsController {
   @Get('trainees/:traineeId')
   async findAllByTraineeId(
     @Param('traineeId', ParseIntPipe) traineeId: number,
+    @Query() query: PaymentFindAllQueryDto,
   ): Promise<PaymentFindAllByTraineeResponseDto> {
-    const payments = await this.paymentsService.findAllByTraineeId(traineeId);
-
-    return { payments };
+    const { payments, count } = await this.paymentsService.findAllByTraineeId(
+      traineeId,
+      {
+        pagination: {
+          page: query.page,
+          pageSize: query.pageSize,
+        },
+        sort: {
+          sortBy: query.sortBy,
+          sortOrder: query.sortOrder,
+        },
+        filter: query.filters ?? {},
+      },
+    );
+    return { payments, total: count };
   }
 
-  @Roles(UserRole.Trainee)
+  @Roles(UserRole.Trainee, UserRole.Admin)
   @ApiResponse({
     type: PaymentMyFindAllResponseDto,
   })
   @Get('my')
-  async findAllForCurrentUser(): Promise<PaymentMyFindAllResponseDto> {
-    const loggedUser = this.currentUserService.getRequestCurrentUser();
+  async findAllForCurrentUser(
+    @Query() query: PaymentFindAllQueryDto,
+  ): Promise<PaymentMyFindAllResponseDto> {
+    const { userId } = this.currentUserService.getRequestCurrentUser();
 
-    const payments = await this.paymentsService.findAllByUserId(
-      loggedUser.userId,
+    const { payments, count } = await this.paymentsService.findAllByUserId(
+      userId,
+      {
+        pagination: {
+          page: query.page,
+          pageSize: query.pageSize,
+        },
+        sort: {
+          sortBy: query.sortBy,
+          sortOrder: query.sortOrder,
+        },
+        filter: query.filters ?? {},
+      },
     );
-
-    return { payments };
+    return { payments, total: count };
   }
 
   @Roles(UserRole.Trainee)
