@@ -116,10 +116,19 @@ export class InstructorFindAllQueryDtoFilters {
   @IsString()
   email?: string;
 
-  @ApiProperty({ isArray: true, required: false })
+  @ApiProperty({ required: false })
   @IsOptional()
-  @IsString({ each: true })
-  instructorQualifications?: string[];
+  @IsInt()
+  @Min(0)
+  @Transform(({ value }) => {
+    if (value === undefined) {
+      return undefined;
+    }
+
+    const parsedValue = Number.parseInt(value, 10);
+    return Number.isNaN(parsedValue) ? undefined : parsedValue;
+  })
+  instructorQualification?: number;
 
   @ApiProperty({ required: false })
   @IsOptional()

@@ -27,7 +27,7 @@ export interface InstructorPresentationFilterArguments {
   email?: string;
   phoneNumber?: string;
   isActive?: boolean;
-  instructorQualifications?: string[];
+  instructorQualification?: number;
 }
 
 export interface InstructorPresentationArguments {

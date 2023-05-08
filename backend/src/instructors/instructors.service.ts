@@ -1,12 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import {
-  FindManyOptions,
-  FindOptionsWhere,
-  ILike,
-  In,
-  Repository,
-} from 'typeorm';
+import { FindManyOptions, FindOptionsWhere, ILike, Repository } from 'typeorm';
 import { Instructor } from './entities/instructor.entity';
 import { User } from '../users/entities/user.entity';
 import {
@@ -85,10 +79,9 @@ export class InstructorsService {
         ? ILike(`%${filterArguments.phoneNumber}%`)
         : undefined;
 
-    const qualificationsProperty =
-      filterArguments?.instructorQualifications !== undefined &&
-      filterArguments?.instructorQualifications.length !== 0
-        ? In(filterArguments.instructorQualifications)
+    const qualificationProperty =
+      filterArguments?.instructorQualification !== undefined
+        ? { id: filterArguments?.instructorQualification }
         : undefined;
 
     const isActiveProperty = filterArguments?.isActive;
@@ -102,29 +95,9 @@ export class InstructorsService {
         phoneNumber: phoneNumberProperty,
         organizationId,
       },
-      instructorsQualifications: qualificationsProperty,
+      instructorsQualifications: qualificationProperty,
     };
   }
-
-  // async findAll(isActive?: boolean) {
-  //   const { id: organizationId } =
-  //     this.organizationDomainService.getRequestOrganization();
-
-  //   const users = await this.instructorsRepository.find({
-  //     where: {
-  //       user: {
-  //         organizationId,
-  //         isActive,
-  //       },
-  //     },
-  //     relations: {
-  //       user: true,
-  //       instructorsQualifications: true,
-  //     },
-  //   });
-
-  //   return users;
-  // }
 
   async findAll(presentationArguments?: InstructorPresentationArguments) {
     const { id: organizationId } =
