@@ -36,6 +36,7 @@ export class Vehicle {
   @ManyToOne(() => Organization)
   organization: Organization;
 
+  @Column()
   @RelationId((vehicle: Vehicle) => vehicle.organization)
   organizationId: number;
 }

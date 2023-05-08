@@ -52,3 +52,25 @@ export function formatApi(date: null): null;
 export function formatApi(date: Date | null) {
   return date === null ? null : formatISO(date);
 }
+
+export function formatDatesRange(
+  fromDate: Date | undefined,
+  toDate: Date | undefined,
+) {
+  const formattedFromDate = formatLong(fromDate ?? null);
+  const formattedToDate = formatLong(toDate ?? null);
+
+  if (formattedFromDate !== null && formattedToDate !== null) {
+    return `${formattedFromDate}–${formattedToDate}`;
+  }
+
+  if (formattedFromDate !== null) {
+    return formattedFromDate;
+  }
+
+  if (formattedToDate !== null) {
+    return formattedToDate;
+  }
+
+  return '';
+}
