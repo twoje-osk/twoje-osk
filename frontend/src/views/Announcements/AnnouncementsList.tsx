@@ -1,12 +1,4 @@
-import {
-  Button,
-  Icon,
-  IconButton,
-  Stack,
-  Toolbar,
-  Tooltip,
-  Typography,
-} from '@mui/material';
+import { Button, Icon, Stack, Toolbar, Typography } from '@mui/material';
 import { AnnouncementFindAllResponseDto } from '@osk/shared';
 import { Box, Flex } from 'reflexbox';
 import useSWR from 'swr';
@@ -88,11 +80,6 @@ export const AnnouncementsList = () => {
               Dodaj Nowe Ogłoszenie
             </Button>
           )}
-          <Tooltip title="Filtruj listę">
-            <IconButton>
-              <Icon>filter_list</Icon>
-            </IconButton>
-          </Tooltip>
         </Stack>
       </Toolbar>
       <Box style={{ overflow: 'auto' }}>
