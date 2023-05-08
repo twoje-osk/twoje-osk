@@ -4,7 +4,7 @@ import {
   LessonsDTO,
   UpdateLessonRequestDTO,
   UpdateLessonResponseDTO,
-  VehicleGetAllResponseDto,
+  VehicleFindAllResponseDto,
   VehicleGetMyFavouritesResponseDto,
 } from '@osk/shared';
 import { useEffect, useMemo, useState } from 'react';
@@ -15,7 +15,7 @@ import { useCommonSnackbars } from '../../../../hooks/useCommonSnackbars/useComm
 export const useSelectedVehicle = (vehicleIdFromLesson: number | null) => {
   const favouritesIds = useFavouriteVehicles();
   const { data: vehiclesData, error: vehiclesError } =
-    useSWR<VehicleGetAllResponseDto>('/api/vehicles');
+    useSWR<VehicleFindAllResponseDto>('/api/vehicles');
   const [selectedVehicle, setSelectedVehicle] = useState<number | null>(null);
   const [hasSelectedVehicleSubmitError, setHasSelectedVehicleSubmitError] =
     useState(false);
