@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { FullPageLoading } from '../../../components/FullPageLoading/FullPageLoading';
 import { GeneralAPIError } from '../../../components/GeneralAPIError/GeneralAPIError';
 import { MockExamQuestionLayout } from './MockExamQuestionLayout';
+import { LAYOUT_HEIGHT } from '../../Layout/Layout';
 
 export const MockExamsCompletedAttempt = () => {
   const { examId } = useParams();
@@ -23,7 +24,7 @@ export const MockExamsCompletedAttempt = () => {
   }
   const { questions, examAttempt: attemptDetails } = attemptData;
   const isFirstQuestion = currentIndex === 0;
-  const isLastQuestion = currentIndex === attemptDetails?.questions.length;
+  const isLastQuestion = currentIndex + 1 === attemptDetails?.questions.length;
   const currentAttemptDetails = attemptDetails.questions[currentIndex];
   if (currentAttemptDetails === undefined) {
     return <GeneralAPIError />;
@@ -51,7 +52,7 @@ export const MockExamsCompletedAttempt = () => {
   };
 
   return (
-    <Flex flexDirection="column">
+    <Flex flexDirection="column" style={{ minHeight: LAYOUT_HEIGHT }}>
       <MockExamQuestionLayout
         questionDetails={currentQuestion}
         selectedAnswer={answerId}
@@ -60,7 +61,7 @@ export const MockExamsCompletedAttempt = () => {
         showMedia
         readOnlyMode
       />
-      <Flex>
+      <Flex style={{ marginBottom: '16px' }}>
         <Button
           variant="contained"
           style={{ margin: '8px auto 0 auto' }}
