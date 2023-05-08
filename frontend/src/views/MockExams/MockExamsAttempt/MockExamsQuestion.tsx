@@ -9,6 +9,7 @@ import {
   AMOUNT_OF_ADVANCED_QUESTIONS,
   AMOUNT_OF_ELEMENTARY_QUESTIONS,
 } from '../MockExams.constants';
+import { LAYOUT_HEIGHT } from '../../Layout/Layout';
 
 interface MockExamQuestionInterface {
   question: MockExamQuestionDto;
@@ -142,7 +143,11 @@ export const MockExamsQuestion = ({
   return (
     <Flex
       flexDirection="column"
-      style={{ height: '100%', paddingTop: '8px', paddingBottom: '8px' }}
+      style={{
+        minHeight: LAYOUT_HEIGHT,
+        paddingTop: '8px',
+        paddingBottom: '8px',
+      }}
     >
       <Flex>
         <Typography
