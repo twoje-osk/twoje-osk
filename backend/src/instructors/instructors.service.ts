@@ -9,6 +9,7 @@ import { OrganizationDomainService } from '../organization-domain/organization-d
 import { Try, getFailure, getSuccess } from '../types/Try';
 import { UsersService } from '../users/users.service';
 import { TransactionalWithTry } from '../utils/TransactionalWithTry';
+import { Vehicle } from '../vehicles/entities/vehicle.entity';
 
 @Injectable()
 export class InstructorsService {
@@ -169,7 +170,7 @@ export class InstructorsService {
     return getSuccess(updatedInstructor.id);
   }
 
-  async findOneByUserId(userId: number) {
+  async findOneByUserId(userId: number, includeFavouriteVehicles = false) {
     const { id: organizationId } =
       this.organizationDomainService.getRequestOrganization();
 
@@ -182,7 +183,80 @@ export class InstructorsService {
       },
       relations: {
         user: true,
+        favouriteVehicles: includeFavouriteVehicles,
       },
     });
+  }
+
+  async getFavouritesByUserId(
+    userId: number,
+  ): Promise<Try<number[], 'NO_SUCH_INSTRUCTOR'>> {
+    const { id: organizationId } =
+      this.organizationDomainService.getRequestOrganization();
+
+    const instructor = await this.instructorsRepository.findOne({
+      where: {
+        user: {
+          id: userId,
+          organizationId,
+        },
+      },
+      relations: {
+        favouriteVehicles: true,
+      },
+    });
+
+    if (instructor === null) {
+      return getFailure('NO_SUCH_INSTRUCTOR');
+    }
+
+    return getSuccess(instructor.favouriteVehiclesIds);
+  }
+
+  async addFavourite(
+    userId: number,
+    vehicle: Vehicle,
+  ): Promise<Try<boolean, 'NO_SUCH_INSTRUCTOR'>> {
+    const instructor = await this.findOneByUserId(userId, true);
+
+    if (instructor === null) {
+      return getFailure('NO_SUCH_INSTRUCTOR');
+    }
+
+    const favouriteVehicles = instructor.favouriteVehicles ?? [];
+    const isVehicleInFavourites = favouriteVehicles.some(
+      (v) => v.id === vehicle.id,
+    );
+
+    if (isVehicleInFavourites) {
+      return getSuccess(false);
+    }
+
+    favouriteVehicles.push(vehicle);
+    instructor.favouriteVehicles = favouriteVehicles;
+    await this.instructorsRepository.save(instructor);
+
+    return getSuccess(true);
+  }
+
+  async removeFavourite(
+    userId: number,
+    vehicle: Vehicle,
+  ): Promise<Try<boolean, 'NO_SUCH_INSTRUCTOR'>> {
+    const instructor = await this.findOneByUserId(userId, true);
+
+    if (instructor === null) {
+      return getFailure('NO_SUCH_INSTRUCTOR');
+    }
+
+    const favouriteVehicles = instructor.favouriteVehicles ?? [];
+    const newFavouriteVehicles = favouriteVehicles.filter(
+      (v) => v.id !== vehicle.id,
+    );
+
+    instructor.favouriteVehicles = newFavouriteVehicles;
+    await this.instructorsRepository.save(instructor);
+
+    return getSuccess(true);
   }
 }
