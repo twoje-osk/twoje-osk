@@ -43,10 +43,10 @@ interface TableProps<TData extends { id: IdType }, TSortableId extends string> {
   onRowClick?: (data: TData) => void;
   ariaLabel: string;
 
-  getCellSortDirection?: (id: TSortableId) => SortDirection | undefined;
-  getLabelIsActive?: (id: TSortableId) => boolean;
-  getLabelSortDirection?: (id: TSortableId) => 'asc' | 'desc';
-  onSortClick?: (id: TSortableId) => () => void;
+  getCellSortDirection: (id: TSortableId) => SortDirection | undefined;
+  getLabelIsActive: (id: TSortableId) => boolean;
+  getLabelSortDirection: (id: TSortableId) => 'asc' | 'desc';
+  onSortClick: (id: TSortableId) => () => void;
 
   totalRows: number;
   rowsPerPage: number;
