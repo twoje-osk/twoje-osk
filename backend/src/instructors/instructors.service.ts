@@ -1,15 +1,29 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import {
+  FindManyOptions,
+  FindOptionsWhere,
+  ILike,
+  In,
+  Repository,
+} from 'typeorm';
 import { Instructor } from './entities/instructor.entity';
 import { User } from '../users/entities/user.entity';
-import { InstructorFields, InstructorUpdateFields } from './instructors.types';
+import {
+  InstructorFields,
+  InstructorPresentationArguments,
+  InstructorPresentationFilterArguments,
+  InstructorPresentationSortArguments,
+  InstructorUpdateFields,
+} from './instructors.types';
 import { DriversLicenseCategoriesService } from '../drivers-license-category/drivers-license-category.service';
 import { OrganizationDomainService } from '../organization-domain/organization-domain.service';
 import { Try, getFailure, getSuccess } from '../types/Try';
 import { UsersService } from '../users/users.service';
 import { TransactionalWithTry } from '../utils/TransactionalWithTry';
 import { Vehicle } from '../vehicles/entities/vehicle.entity';
+import { isInstructorUserSortField } from './instructors.utils';
+import { getLimitArguments } from '../utils/presentationArguments';
 
 @Injectable()
 export class InstructorsService {
@@ -23,24 +37,114 @@ export class InstructorsService {
     private organizationDomainService: OrganizationDomainService,
   ) {}
 
-  async findAll(isActive?: boolean) {
+  private buildOrderOption(
+    sortArguments: InstructorPresentationSortArguments | undefined,
+  ): FindManyOptions<Instructor>['order'] {
+    const sortOrder = sortArguments?.sortOrder ?? 'desc';
+    const defaultSortOrder = {
+      user: {
+        createdAt: sortOrder,
+      },
+    };
+    if (sortArguments?.sortBy === undefined) {
+      return defaultSortOrder;
+    }
+
+    if (isInstructorUserSortField(sortArguments.sortBy)) {
+      return {
+        user: {
+          [sortArguments.sortBy]: sortOrder,
+        },
+      };
+    }
+
+    return defaultSortOrder;
+  }
+
+  private buildWhereOption(
+    filterArguments: InstructorPresentationFilterArguments | undefined,
+    organizationId: number,
+  ): FindOptionsWhere<Instructor> {
+    const firstNameProperty =
+      filterArguments?.firstName !== undefined
+        ? ILike(`%${filterArguments.firstName}%`)
+        : undefined;
+
+    const lastNameProperty =
+      filterArguments?.lastName !== undefined
+        ? ILike(`%${filterArguments.lastName}%`)
+        : undefined;
+
+    const emailProperty =
+      filterArguments?.email !== undefined
+        ? ILike(`%${filterArguments.email}%`)
+        : undefined;
+
+    const phoneNumberProperty =
+      filterArguments?.phoneNumber !== undefined
+        ? ILike(`%${filterArguments.phoneNumber}%`)
+        : undefined;
+
+    const qualificationsProperty =
+      filterArguments?.instructorQualifications !== undefined &&
+      filterArguments?.instructorQualifications.length !== 0
+        ? In(filterArguments.instructorQualifications)
+        : undefined;
+
+    const isActiveProperty = filterArguments?.isActive;
+
+    return {
+      user: {
+        firstName: firstNameProperty,
+        lastName: lastNameProperty,
+        email: emailProperty,
+        isActive: isActiveProperty,
+        phoneNumber: phoneNumberProperty,
+        organizationId,
+      },
+      instructorsQualifications: qualificationsProperty,
+    };
+  }
+
+  // async findAll(isActive?: boolean) {
+  //   const { id: organizationId } =
+  //     this.organizationDomainService.getRequestOrganization();
+
+  //   const users = await this.instructorsRepository.find({
+  //     where: {
+  //       user: {
+  //         organizationId,
+  //         isActive,
+  //       },
+  //     },
+  //     relations: {
+  //       user: true,
+  //       instructorsQualifications: true,
+  //     },
+  //   });
+
+  //   return users;
+  // }
+
+  async findAll(presentationArguments?: InstructorPresentationArguments) {
     const { id: organizationId } =
       this.organizationDomainService.getRequestOrganization();
 
-    const users = await this.instructorsRepository.find({
-      where: {
-        user: {
-          organizationId,
-          isActive,
-        },
-      },
+    const limitArguments = getLimitArguments(presentationArguments?.pagination);
+
+    const [instructors, count] = await this.instructorsRepository.findAndCount({
+      ...limitArguments,
+      order: this.buildOrderOption(presentationArguments?.sort),
+      where: this.buildWhereOption(
+        presentationArguments?.filter,
+        organizationId,
+      ),
       relations: {
         user: true,
-        instructorsQualifications: true,
       },
     });
 
-    return users;
+    return { instructors, count };
   }
 
   async findOne(id: number) {

@@ -6,10 +6,15 @@ import {
 } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import {
+  IsBoolean,
+  IsIn,
+  IsInt,
   IsNotEmpty,
   IsNumber,
   IsOptional,
+  IsPositive,
   IsString,
+  Min,
   ValidateNested,
 } from 'class-validator';
 import { CreateUserDto, UpdateUserDto, UserDto } from '../user/user.dto';
@@ -90,6 +95,96 @@ export class DtoUpdateInstructor extends OmitType(
   user: UpdateUserDto;
 }
 
+export class InstructorFindAllQueryDtoFilters {
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  firstName?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  lastName?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  phoneNumber?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  email?: string;
+
+  @ApiProperty({ isArray: true, required: false })
+  @IsOptional()
+  @IsString({ each: true })
+  instructorQualifications?: string[];
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @Transform(({ value }) => {
+    const isTrue = value === 'true';
+    const isFalse = value === 'false';
+
+    if (isTrue) {
+      return true;
+    }
+
+    if (isFalse) {
+      return false;
+    }
+
+    return value;
+  })
+  @IsBoolean()
+  isActive?: boolean;
+}
+
+const instructorFindAllQueryDtoSortByOptions = [
+  'firstName',
+  'lastName',
+  'isActive',
+] as const;
+const instructorFindAllQueryDtoSortOrderOptions = ['asc', 'desc'] as const;
+export class InstructorFindAllQueryDto {
+  @ApiProperty({
+    required: false,
+    enum: instructorFindAllQueryDtoSortByOptions,
+  })
+  @IsOptional()
+  @IsIn(instructorFindAllQueryDtoSortByOptions)
+  sortBy?: typeof instructorFindAllQueryDtoSortByOptions[number];
+
+  @ApiProperty({
+    required: false,
+    enum: instructorFindAllQueryDtoSortOrderOptions,
+  })
+  @IsOptional()
+  @IsIn(instructorFindAllQueryDtoSortOrderOptions)
+  sortOrder?: typeof instructorFindAllQueryDtoSortOrderOptions[number];
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(0)
+  page?: number;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @IsPositive()
+  pageSize?: number;
+
+  @ApiProperty()
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => InstructorFindAllQueryDtoFilters)
+  filters?: InstructorFindAllQueryDtoFilters;
+}
+
 export class InstructorFindAllResponseDto {
   @ApiProperty({
     isArray: true,
@@ -98,6 +193,9 @@ export class InstructorFindAllResponseDto {
   @ValidateNested()
   @Type(() => InstructorDto)
   instructors: InstructorDto[];
+
+  @ApiProperty()
+  total: number;
 }
 
 export class InstructorFindOneResponseDto {
