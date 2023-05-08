@@ -8,12 +8,14 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
 import {
   AnnouncementCreateRequestDto,
   AnnouncementCreateResponseDto,
   AnnouncementDeleteResponseDto,
+  AnnouncementFindAllQueryDto,
   AnnouncementFindAllResponseDto,
   AnnouncementFindOneResponseDto,
   AnnouncementUpdateRequestDto,
@@ -34,9 +36,16 @@ export class AnnouncementsController {
     type: AnnouncementFindAllResponseDto,
   })
   @Get()
-  async findAll(): Promise<AnnouncementFindAllResponseDto> {
-    const announcements = await this.announcementsService.findAll();
-    return { announcements };
+  async findAll(
+    @Query() query: AnnouncementFindAllQueryDto,
+  ): Promise<AnnouncementFindAllResponseDto> {
+    const { announcements, count } = await this.announcementsService.findAll({
+      pagination: {
+        page: query.page,
+        pageSize: query.pageSize,
+      },
+    });
+    return { announcements, total: count };
   }
 
   @ApiResponse({

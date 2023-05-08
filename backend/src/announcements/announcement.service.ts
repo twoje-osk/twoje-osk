@@ -5,7 +5,9 @@ import { Repository } from 'typeorm';
 import { CurrentUserService } from '../current-user/current-user.service';
 import { OrganizationDomainService } from '../organization-domain/organization-domain.service';
 import { Try, getFailure, getSuccess } from '../types/Try';
+import { getLimitArguments } from '../utils/presentationArguments';
 import { TransactionalWithTry } from '../utils/TransactionalWithTry';
+import { AnnouncementPresentationArguments } from './announcement.types';
 import { Announcement } from './entities/announcement.entity';
 
 @Injectable()
@@ -17,23 +19,21 @@ export class AnnouncementsService {
     private currentUserService: CurrentUserService,
   ) {}
 
-  async findAll() {
+  async findAll(presentationArguments?: AnnouncementPresentationArguments) {
     const { id: organizationId } =
       this.organizationDomainService.getRequestOrganization();
-    const announcements = await this.announcementsRepository.find({
-      where: {
-        createdBy: {
-          organizationId,
-        },
-      },
-      relations: {
-        createdBy: true,
-      },
-      order: {
-        createdAt: { direction: 'desc' },
-      },
-    });
-    return announcements;
+
+    const limitArguments = getLimitArguments(presentationArguments?.pagination);
+
+    const [announcements, count] =
+      await this.announcementsRepository.findAndCount({
+        ...limitArguments,
+        order: { createdAt: { direction: 'desc' } },
+        where: { createdBy: { organizationId } },
+        relations: { createdBy: true },
+      });
+
+    return { announcements, count };
   }
 
   async findOne(id: number) {
