@@ -16,7 +16,7 @@ interface AnnouncementHooksArguments {
   mutate: () => Promise<unknown>;
 }
 
-export const useCreateAnouncement = ({
+export const useCreateAnnouncement = ({
   mutate,
 }: AnnouncementHooksArguments) => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
