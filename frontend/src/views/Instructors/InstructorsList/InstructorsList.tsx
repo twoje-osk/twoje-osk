@@ -13,6 +13,7 @@ import useSWR from 'swr';
 import {
   DriversLicenseCategoryFindAllResponseDto,
   InstructorFindAllResponseDto,
+  InstructorFindAllQueryDto,
 } from '@osk/shared';
 import { useMemo, useState } from 'react';
 import { GeneralAPIError } from '../../../components/GeneralAPIError/GeneralAPIError';
@@ -23,6 +24,9 @@ import { TextFilter } from '../../../components/Table/Filters/TextFilter/TextFil
 import { usePagination } from '../../../hooks/usePagination/usePagination';
 import { TableFilters } from '../../../components/Table/TableFilters';
 import { Table } from '../../../components/Table/Table';
+import { FullPageLoading } from '../../../components/FullPageLoading/FullPageLoading';
+import { PicklistFilter } from '../../../components/Table/Filters/PicklistFilter/PicklistFilter';
+import { PicklistOption } from '../../../components/FPicklistField/FPicklistField';
 
 export const InstructorsList = () => {
   const { rowsPerPage, currentPage, onPageChange, onRowsPerPageChange } =
@@ -34,16 +38,22 @@ export const InstructorsList = () => {
     getLabelIsActive,
     getLabelSortDirection,
     onSortClick,
-  } = useSort<Required<InstructorFindAllResponseDto>['sortBy']>(
+  } = useSort<Required<InstructorFindAllQueryDto>['sortBy']>(
     'firstName',
     'asc',
   );
-  const { firstName, lastName, isActive, phoneNumber } = useFilters();
+  const {
+    firstName,
+    lastName,
+    isActive,
+    phoneNumber,
+    instructorQualifications,
+  } = useFilters();
   const [openedFilter, setOpenedFilter] = useState<null | string>(null);
 
   const apiUrl = useMemo(
     () =>
-      addQueryParams<InstructorFindAllResponseDto>('/api/instructors', {
+      addQueryParams<InstructorFindAllQueryDto>('/api/instructors', {
         page: currentPage,
         pageSize: rowsPerPage,
         sortOrder,
@@ -52,6 +62,7 @@ export const InstructorsList = () => {
           firstName: firstName.value,
           lastName: lastName.value,
           isActive: isActive.value,
+          instructorQualification: instructorQualifications.value,
           phoneNumber: phoneNumber.value,
         },
       }),
@@ -63,6 +74,7 @@ export const InstructorsList = () => {
       firstName.value,
       lastName.value,
       isActive.value,
+      instructorQualifications.value,
       phoneNumber.value,
     ],
   );
@@ -79,6 +91,14 @@ export const InstructorsList = () => {
   if (instructorsError || qualificationsError) {
     return <GeneralAPIError />;
   }
+  if (qualificationsData === undefined) {
+    return <FullPageLoading />;
+  }
+
+  const qualificationsOptions: PicklistOption[] = [];
+  qualificationsData.categories.forEach((quali) => {
+    qualificationsOptions.push({ value: quali.id, label: quali.name });
+  });
 
   const rows = instructorsData?.instructors;
   const totalRows = instructorsData?.total ?? 0;
@@ -164,6 +184,23 @@ export const InstructorsList = () => {
                 label="Telefon"
                 isOpen={isOpen}
                 toggleOpen={toggle}
+              />
+            ),
+          },
+          {
+            id: 'qualifications',
+            label: 'Uprawnienia',
+            isActive: instructorQualifications.value !== undefined,
+            activeLabel: qualificationsOptions.find(
+              (option) => option.value === instructorQualifications.value,
+            )?.label,
+            clearFilter: () => instructorQualifications.set(undefined),
+            renderFilter: ({ toggle }) => (
+              <PicklistFilter
+                value={instructorQualifications.value}
+                setValue={instructorQualifications.set}
+                toggleOpen={toggle}
+                options={qualificationsOptions}
               />
             ),
           },
@@ -259,15 +296,22 @@ const useFilters = () => {
   const [firstName, setFirstName] = useState<string | undefined>();
   const [lastName, setLastName] = useState<string | undefined>();
   const [phoneNumber, setPhoneNumber] = useState<string | undefined>();
+  const [instructorsQualification, setInstructorsQualifications] = useState<
+    number | undefined
+  >();
   const [isActive, setIsActive] = useState<boolean | undefined>();
 
   return useMemo(
     () => ({
       firstName: { set: setFirstName, value: firstName },
       lastName: { set: setLastName, value: lastName },
-      isActive: { set: setIsActive, value: isActive },
       phoneNumber: { set: setPhoneNumber, value: phoneNumber },
+      instructorQualifications: {
+        set: setInstructorsQualifications,
+        value: instructorsQualification,
+      },
+      isActive: { set: setIsActive, value: isActive },
     }),
-    [firstName, lastName, isActive, phoneNumber],
+    [firstName, lastName, isActive, phoneNumber, instructorsQualification],
   );
 };
