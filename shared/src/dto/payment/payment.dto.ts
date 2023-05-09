@@ -1,6 +1,17 @@
 import { ApiProperty, OmitType, PartialType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsDate, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import {
+  IsDate,
+  IsIn,
+  IsInt,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsPositive,
+  IsString,
+  Min,
+  ValidateNested,
+} from 'class-validator';
 import { TraineeDto } from '../trainee/trainee.dto';
 
 export class PaymentDto {
@@ -55,6 +66,9 @@ export class PaymentFindAllResponseDto {
     type: PaymentWithTraineeDto,
   })
   payments: PaymentWithTraineeDto[];
+
+  @ApiProperty()
+  total: number;
 }
 
 export class PaymentMyFindAllResponseDto {
@@ -63,6 +77,9 @@ export class PaymentMyFindAllResponseDto {
     type: PaymentWithTraineeDto,
   })
   payments: PaymentDto[];
+
+  @ApiProperty()
+  total: number;
 }
 
 export class PaymentFindAllByTraineeResponseDto {
@@ -71,6 +88,74 @@ export class PaymentFindAllByTraineeResponseDto {
     type: PaymentDto,
   })
   payments: PaymentDto[];
+
+  @ApiProperty()
+  total: number;
+}
+
+export class PaymentFindAllQueryDtoFilters {
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsInt()
+  amount?: number;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  note?: string;
+
+  @ApiProperty({
+    type: 'string',
+    format: 'YYYY-mm-DDTHH:mm:ss.SZ',
+    required: false,
+  })
+  @IsOptional()
+  @IsDate()
+  @Type(() => Date)
+  date?: ApiDate;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  trainee?: string;
+}
+
+const paymentFindAllQueryDtoSortByOptions = ['amount', 'note', 'date'] as const;
+const paymentFindAllQueryDtoSortOrderOptions = ['asc', 'desc'] as const;
+
+export class PaymentFindAllQueryDto {
+  @ApiProperty({ required: false, enum: paymentFindAllQueryDtoSortByOptions })
+  @IsOptional()
+  @IsIn(paymentFindAllQueryDtoSortByOptions)
+  sortBy?: typeof paymentFindAllQueryDtoSortByOptions[number];
+
+  @ApiProperty({
+    required: false,
+    enum: paymentFindAllQueryDtoSortOrderOptions,
+  })
+  @IsOptional()
+  @IsIn(paymentFindAllQueryDtoSortOrderOptions)
+  sortOrder?: typeof paymentFindAllQueryDtoSortOrderOptions[number];
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(0)
+  page?: number;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @IsPositive()
+  pageSize?: number;
+
+  @ApiProperty()
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => PaymentFindAllQueryDtoFilters)
+  filters?: PaymentFindAllQueryDtoFilters;
 }
 
 export class PaymentMyFindOneResponseDto {

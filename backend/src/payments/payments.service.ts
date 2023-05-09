@@ -1,13 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { FindManyOptions, FindOptionsWhere, ILike, Repository } from 'typeorm';
 import { CurrentUserService } from '../current-user/current-user.service';
 import { OrganizationDomainService } from '../organization-domain/organization-domain.service';
 import { TraineesService } from '../trainees/trainees.service';
 import { Try, getFailure, getSuccess } from '../types/Try';
+import { DateBetweenProperty } from '../utils/DateBetweenProperty';
+import { getLimitArguments } from '../utils/presentationArguments';
 import { TransactionalWithTry } from '../utils/TransactionalWithTry';
 import { Payment } from './entities/payment.entity';
-import { PaymentArguments, PaymentArgumentsUpdate } from './payments.types';
+import {
+  PaymentArguments,
+  PaymentArgumentsUpdate,
+  PaymentPresentationArguments,
+  PaymentPresentationFilterArguments,
+  PaymentPresentationSortArguments,
+} from './payments.types';
+import { isPaymentSortField } from './payments.utils';
 
 @Injectable()
 export class PaymentsService {
@@ -19,69 +28,130 @@ export class PaymentsService {
     private traineesService: TraineesService,
   ) {}
 
-  async findAll() {
-    const { id: organizationId } =
-      this.organizationDomainService.getRequestOrganization();
+  private buildOrderOption(
+    sortArguments: PaymentPresentationSortArguments | undefined,
+  ): FindManyOptions<Payment>['order'] {
+    const sortOrder = sortArguments?.sortOrder ?? 'desc';
 
-    const payments = await this.paymentsRepository.find({
-      where: {
-        trainee: {
-          user: {
-            organizationId,
-          },
-        },
-      },
-      relations: {
-        trainee: { user: true },
-      },
-      order: {
-        date: 'DESC',
-      },
-    });
+    const defaultSortOrder = {
+      date: sortOrder,
+    };
 
-    return payments;
+    if (sortArguments?.sortBy === undefined) {
+      return defaultSortOrder;
+    }
+
+    if (isPaymentSortField(sortArguments.sortBy)) {
+      return {
+        [sortArguments.sortBy]: sortOrder,
+      };
+    }
+
+    return defaultSortOrder;
   }
 
-  async findAllByTraineeId(traineeId: number) {
-    const { id: organizationId } =
-      this.organizationDomainService.getRequestOrganization();
+  private buildWhereOption(
+    filterArguments: PaymentPresentationFilterArguments | undefined,
+    organizationId: number,
+    traineeId?: number,
+    userId?: number,
+  ): FindOptionsWhere<Payment> {
+    const dateProperty = DateBetweenProperty(
+      filterArguments?.dateFrom,
+      filterArguments?.dateTo,
+    );
 
-    const payments = await this.paymentsRepository.find({
-      where: {
-        trainee: {
-          id: traineeId,
-          user: {
-            organizationId,
-          },
+    const noteProperty =
+      filterArguments?.note !== undefined
+        ? ILike(`%${filterArguments.note}%`)
+        : undefined;
+
+    const firstNameProperty =
+      filterArguments?.firstName !== undefined
+        ? ILike(`%${filterArguments.firstName}%`)
+        : undefined;
+
+    const lastNameProperty =
+      filterArguments?.lastName !== undefined
+        ? ILike(`%${filterArguments.lastName}%`)
+        : undefined;
+
+    return {
+      date: dateProperty,
+      note: noteProperty,
+      trainee: {
+        user: {
+          firstName: firstNameProperty,
+          lastName: lastNameProperty,
+          organizationId,
+          id: userId,
         },
+        id: traineeId,
       },
-      order: {
-        date: 'DESC',
-      },
-    });
-
-    return payments;
+    };
   }
 
-  async findAllByUserId(traineeId: number) {
+  async findAll(presentationArguments?: PaymentPresentationArguments) {
     const { id: organizationId } =
       this.organizationDomainService.getRequestOrganization();
 
-    const payments = await this.paymentsRepository.find({
-      where: {
-        trainee: {
-          user: {
-            organizationId,
-            id: traineeId,
-          },
-        },
-      },
-      order: {
-        date: 'DESC',
-      },
+    const limitArguments = getLimitArguments(presentationArguments?.pagination);
+
+    const [payments, count] = await this.paymentsRepository.findAndCount({
+      ...limitArguments,
+      order: this.buildOrderOption(presentationArguments?.sort),
+      where: this.buildWhereOption(
+        presentationArguments?.filter,
+        organizationId,
+      ),
     });
 
-    return payments;
+    return { payments, count };
+  }
+
+  async findAllByTraineeId(
+    traineeId: number,
+    presentationArguments?: PaymentPresentationArguments,
+  ) {
+    const { id: organizationId } =
+      this.organizationDomainService.getRequestOrganization();
+
+    const limitArguments = getLimitArguments(presentationArguments?.pagination);
+
+    const [payments, count] = await this.paymentsRepository.findAndCount({
+      ...limitArguments,
+      order: this.buildOrderOption(presentationArguments?.sort),
+      where: this.buildWhereOption(
+        presentationArguments?.filter,
+        organizationId,
+        traineeId,
+      ),
+    });
+
+    return { payments, count };
+  }
+
+  async findAllByUserId(
+    userId: number,
+    presentationArguments?: PaymentPresentationArguments,
+  ) {
+    const { id: organizationId } =
+      this.organizationDomainService.getRequestOrganization();
+
+    const limitArguments = getLimitArguments(presentationArguments?.pagination);
+
+    const [payments, count] = await this.paymentsRepository.findAndCount({
+      ...limitArguments,
+      order: this.buildOrderOption(presentationArguments?.sort),
+      where: this.buildWhereOption(
+        presentationArguments?.filter,
+        organizationId,
+        undefined,
+        userId,
+      ),
+    });
+
+    return { payments, count };
   }
 
   @TransactionalWithTry()
