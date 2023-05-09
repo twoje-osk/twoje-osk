@@ -1,9 +1,13 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
+  IsInt,
   IsNotEmpty,
   IsNumber,
+  IsOptional,
+  IsPositive,
   IsString,
+  Min,
   ValidateNested,
 } from 'class-validator';
 import { UserDto } from '../user/user.dto';
@@ -59,6 +63,25 @@ export class AnnouncementFindAllResponseDto {
   @ValidateNested()
   @Type(() => AnnouncementDto)
   announcements: AnnouncementDto[];
+
+  @ApiProperty()
+  total: number;
+}
+
+export class AnnouncementFindAllQueryDto {
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(0)
+  page?: number;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @IsPositive()
+  pageSize?: number;
 }
 
 export class AnnouncementFindOneResponseDto {
