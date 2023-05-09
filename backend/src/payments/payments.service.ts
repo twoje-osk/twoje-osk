@@ -1,6 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindManyOptions, FindOptionsWhere, ILike, Repository } from 'typeorm';
+import {
+  Between,
+  FindManyOptions,
+  FindOptionsWhere,
+  ILike,
+  Repository,
+} from 'typeorm';
 import { CurrentUserService } from '../current-user/current-user.service';
 import { OrganizationDomainService } from '../organization-domain/organization-domain.service';
 import { TraineesService } from '../trainees/trainees.service';
@@ -76,8 +82,15 @@ export class PaymentsService {
         ? ILike(`%${filterArguments.lastName}%`)
         : undefined;
 
+    const amountProperty =
+      filterArguments?.amountFrom !== undefined &&
+      filterArguments?.amountTo !== undefined
+        ? Between(filterArguments.amountFrom, filterArguments.amountTo)
+        : undefined;
+
     return {
       date: dateProperty,
+      amount: amountProperty,
       note: noteProperty,
       trainee: {
         user: {
@@ -104,6 +117,9 @@ export class PaymentsService {
         presentationArguments?.filter,
         organizationId,
       ),
+      relations: {
+        trainee: { user: true },
+      },
     });
 
     return { payments, count };
