@@ -7,6 +7,10 @@ import {
   MinLength,
   IsString,
   ValidateNested,
+  IsIn,
+  IsPositive,
+  IsInt,
+  Min,
   IsNumber,
 } from 'class-validator';
 import { Transform, Type } from 'class-transformer';
@@ -93,17 +97,112 @@ export class DtoCreateVehicle {
 
 export class DtoUpdateVehicle extends PartialType(DtoCreateVehicle) {}
 
-export class VehicleGetAllResponseDto {
+export class VehicleFindAllResponseDto {
   @ApiProperty({
     isArray: true,
     type: VehicleDto,
   })
   vehicles: VehicleDto[];
+
+  @ApiProperty()
+  total: number;
 }
 
 export class VehicleFindOneResponseDto {
   @ApiProperty()
   vehicle: VehicleDto;
+}
+
+export class VehicleFindAllQueryDtoFilters {
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  name?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  licensePlate?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  vin?: string;
+
+  @ApiProperty({
+    type: 'string',
+    format: 'YYYY-mm-DDTHH:mm:ss.SZ',
+    required: false,
+  })
+  @IsOptional()
+  @IsDate()
+  @Type(() => Date)
+  dateOfNextCheckFrom?: ApiDate;
+
+  @ApiProperty({
+    type: 'string',
+    format: 'YYYY-mm-DDTHH:mm:ss.SZ',
+    required: false,
+  })
+  @IsOptional()
+  @IsDate()
+  @Type(() => Date)
+  dateOfNextCheckTo?: ApiDate;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  additionalDetails?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  notes?: string;
+}
+
+const vehicleFindAllQueryDtoSortByOptions = [
+  'name',
+  'licensePlate',
+  'vin',
+  'dateOfNextCheck',
+  'additionalDetails',
+  'notes',
+] as const;
+const vehicleFindAllQueryDtoSortOrderOptions = ['asc', 'desc'] as const;
+
+export class VehicleFindAllQueryDto {
+  @ApiProperty({ required: false, enum: vehicleFindAllQueryDtoSortByOptions })
+  @IsOptional()
+  @IsIn(vehicleFindAllQueryDtoSortByOptions)
+  sortBy?: typeof vehicleFindAllQueryDtoSortByOptions[number];
+
+  @ApiProperty({
+    required: false,
+    enum: vehicleFindAllQueryDtoSortOrderOptions,
+  })
+  @IsOptional()
+  @IsIn(vehicleFindAllQueryDtoSortOrderOptions)
+  sortOrder?: typeof vehicleFindAllQueryDtoSortOrderOptions[number];
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(0)
+  page?: number;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @IsPositive()
+  pageSize?: number;
+
+  @ApiProperty()
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => VehicleFindAllQueryDtoFilters)
+  filters?: VehicleFindAllQueryDtoFilters;
 }
 
 export class VehicleAddNewResponseDto {
