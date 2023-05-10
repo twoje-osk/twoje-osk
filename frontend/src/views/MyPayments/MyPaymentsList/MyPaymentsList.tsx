@@ -42,7 +42,7 @@ export const MyPaymentsList = () => {
     getLabelIsActive,
     getLabelSortDirection,
     onSortClick,
-  } = useSort<Required<PaymentFindAllQueryDto>['sortBy']>('date', 'asc');
+  } = useSort<Required<PaymentFindAllQueryDto>['sortBy']>('date', 'desc');
   const { note, amount, date } = useFilters();
   const [openedFilter, setOpenedFilter] = useState<null | string>(null);
 

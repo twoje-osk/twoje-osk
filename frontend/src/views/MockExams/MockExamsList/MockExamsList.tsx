@@ -42,7 +42,7 @@ export const MockExamsList = () => {
     onSortClick,
   } = useSort<Required<MockExamAttemptFindAllQueryDto>['sortBy']>(
     'attemptDate',
-    'asc',
+    'desc',
   );
   const { isPassed, score, date } = useFilters();
   const [openedFilter, setOpenedFilter] = useState<null | string>(null);
