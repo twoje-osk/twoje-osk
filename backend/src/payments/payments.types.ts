@@ -23,6 +23,8 @@ export interface PaymentPresentationFilterArguments {
   note?: string;
   firstName?: string;
   lastName?: string;
+  amountTo?: number;
+  amountFrom?: number;
 }
 
 export interface PaymentPresentationArguments {

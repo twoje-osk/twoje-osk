@@ -147,21 +147,19 @@ const StyledMediaWrapper = styled(Paper)`
   flex: 1;
   aspect-ratio: 16/9;
   margin: auto;
-  margin-top: 8px;
+  margin-top: 16px;
   margin-bottom: 24px;
-  max-height: 40%;
-  width: 700px;
+  max-height: 450px;
+  min-width: 800px;
   background: ${theme.palette.grey[300]};
 `;
 
 const StyledImage = styled.img`
   width: 100%;
-  height: 100%;
   object-fit: cover;
 `;
 
 const StyledVideo = styled.video`
   width: 100%;
-  height: 100%;
   object-fit: cover;
 `;

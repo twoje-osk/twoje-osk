@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import {
   IsBoolean,
+  IsDate,
   IsIn,
   IsInt,
   IsNotEmpty,
@@ -71,6 +72,54 @@ export class MockExamAttemptFindAllResponseDto {
 }
 
 export class MockExamAttemptFindAllQueryDtoFilters {
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  @Transform(({ value }) => {
+    if (value === undefined) {
+      return undefined;
+    }
+
+    const parsedValue = Number.parseInt(value, 10);
+    return Number.isNaN(parsedValue) ? undefined : parsedValue;
+  })
+  scoreFrom?: number;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  @Transform(({ value }) => {
+    if (value === undefined) {
+      return undefined;
+    }
+
+    const parsedValue = Number.parseInt(value, 10);
+    return Number.isNaN(parsedValue) ? undefined : parsedValue;
+  })
+  scoreTo?: number;
+
+  @ApiProperty({
+    type: 'string',
+    format: 'YYYY-mm-DDTHH:mm:ss.SZ',
+    required: false,
+  })
+  @IsOptional()
+  @IsDate()
+  @Type(() => Date)
+  dateFrom?: ApiDate;
+
+  @ApiProperty({
+    type: 'string',
+    format: 'YYYY-mm-DDTHH:mm:ss.SZ',
+    required: false,
+  })
+  @IsOptional()
+  @IsDate()
+  @Type(() => Date)
+  dateTo?: ApiDate;
+
   @ApiProperty({ required: false })
   @IsOptional()
   @Transform(({ value }) => {

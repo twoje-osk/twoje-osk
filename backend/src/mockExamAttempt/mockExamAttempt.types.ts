@@ -8,6 +8,10 @@ export type MockExamAttemptPresentationSortArguments =
   PresentationSortArguments<MockExamAttemptSortField>;
 
 export interface MockExamAttemptPresentationFilterArguments {
+  dateFrom?: Date;
+  dateTo?: Date;
+  scoreTo?: number;
+  scoreFrom?: number;
   isPassed?: boolean;
 }
 

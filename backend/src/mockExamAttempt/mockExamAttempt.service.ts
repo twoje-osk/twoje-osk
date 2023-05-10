@@ -1,6 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindManyOptions, FindOptionsWhere, Repository } from 'typeorm';
+import {
+  Between,
+  FindManyOptions,
+  FindOptionsWhere,
+  Repository,
+} from 'typeorm';
 import {
   MINIMAL_PASSING_SCORE,
   REQUIRED_AMOUNT_OF_QUESTIONS,
@@ -21,6 +26,7 @@ import {
   MockExamAttemptPresentationArguments,
 } from './mockExamAttempt.types';
 import { isMockExamAttemptSortField } from './mockExamAttempt.utils';
+import { DateBetweenProperty } from '../utils/DateBetweenProperty';
 
 interface QuestionFields {
   questionId: number;
@@ -66,10 +72,21 @@ export class MockExamAttemptService {
     filterArguments: MockExamAttemptPresentationFilterArguments | undefined,
     traineeId: number,
   ): FindOptionsWhere<MockExamAttempt> {
+    const dateProperty = DateBetweenProperty(
+      filterArguments?.dateFrom,
+      filterArguments?.dateTo,
+    );
     const isPassedProperty = filterArguments?.isPassed;
+    const scoreProperty =
+      filterArguments?.scoreFrom !== undefined &&
+      filterArguments?.scoreTo !== undefined
+        ? Between(filterArguments.scoreFrom, filterArguments.scoreTo)
+        : undefined;
 
     return {
       isPassed: isPassedProperty,
+      attemptDate: dateProperty,
+      score: scoreProperty,
       trainee: { id: traineeId },
     };
   }

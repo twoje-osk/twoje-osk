@@ -1,5 +1,5 @@
 import { ApiProperty, OmitType, PartialType } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
   IsDate,
   IsIn,
@@ -97,7 +97,30 @@ export class PaymentFindAllQueryDtoFilters {
   @ApiProperty({ required: false })
   @IsOptional()
   @IsInt()
-  amount?: number;
+  @Min(0)
+  @Transform(({ value }) => {
+    if (value === undefined) {
+      return undefined;
+    }
+
+    const parsedValue = Number.parseInt(value, 10);
+    return Number.isNaN(parsedValue) ? undefined : parsedValue;
+  })
+  amountFrom?: number;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  @Transform(({ value }) => {
+    if (value === undefined) {
+      return undefined;
+    }
+
+    const parsedValue = Number.parseInt(value, 10);
+    return Number.isNaN(parsedValue) ? undefined : parsedValue;
+  })
+  amountTo?: number;
 
   @ApiProperty({ required: false })
   @IsOptional()
@@ -112,15 +135,36 @@ export class PaymentFindAllQueryDtoFilters {
   @IsOptional()
   @IsDate()
   @Type(() => Date)
-  date?: ApiDate;
+  dateFrom?: ApiDate;
+
+  @ApiProperty({
+    type: 'string',
+    format: 'YYYY-mm-DDTHH:mm:ss.SZ',
+    required: false,
+  })
+  @IsOptional()
+  @IsDate()
+  @Type(() => Date)
+  dateTo?: ApiDate;
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
-  trainee?: string;
+  firstName?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  lastName?: string;
 }
 
-const paymentFindAllQueryDtoSortByOptions = ['amount', 'note', 'date'] as const;
+const paymentFindAllQueryDtoSortByOptions = [
+  'amount',
+  'note',
+  'date',
+  'firstName',
+  'lastName',
+] as const;
 const paymentFindAllQueryDtoSortOrderOptions = ['asc', 'desc'] as const;
 
 export class PaymentFindAllQueryDto {
