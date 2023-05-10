@@ -28,6 +28,8 @@ import { TableFilters } from '../../../components/Table/TableFilters';
 import { TextFilter } from '../../../components/Table/Filters/TextFilter/TextFilter';
 import { DateFilter } from '../../../components/Table/Filters/DateFilter/DateFilter';
 import { IntegerRangeFilter } from '../../../components/Table/Filters/IntegerRangeFilter/IntegerRangeFilter';
+import { LAYOUT_HEIGHT } from '../../Layout/Layout';
+import { useListTotal } from '../../../hooks/useListTotal/useListTotal';
 
 const MIN_AMOUNT = 0;
 const MAX_AMOUNT = 10000;
@@ -80,16 +82,16 @@ export const PaymentsList = () => {
     ],
   );
   const { data, error } = useSWR<PaymentFindAllResponseDto>(apiUrl);
+  const rows = data?.payments;
+  const totalRows = useListTotal(data?.total);
+  const columnSize = '25%';
 
   if (error) {
     return <GeneralAPIError />;
   }
 
-  const rows = data?.payments;
-  const totalRows = data?.total ?? 0;
-  const columnSize = '25%';
   return (
-    <Flex flexDirection="column" height="100%">
+    <Flex flexDirection="column" height={LAYOUT_HEIGHT}>
       <Toolbar
         sx={{
           pl: { sm: 2 },
@@ -169,9 +171,10 @@ export const PaymentsList = () => {
           {
             id: 'amount',
             label: 'Kwota',
-            isActive: true,
+            isActive:
+              amount.value.from !== undefined && amount.value.to !== undefined,
             activeLabel: `${amount.value.from}zł - ${amount.value.to}zł`,
-            clearFilter: () => amount.set({ from: MIN_AMOUNT, to: MAX_AMOUNT }),
+            clearFilter: () => amount.set({ from: undefined, to: undefined }),
             renderFilter: () => (
               <IntegerRangeFilter
                 label="Kwota"
@@ -249,9 +252,9 @@ const useFilters = () => {
     to: Date | undefined;
   }>({ from: undefined, to: undefined });
   const [amount, setAmount] = useState<{
-    from: number;
-    to: number;
-  }>({ from: MIN_AMOUNT, to: MAX_AMOUNT });
+    from: number | undefined;
+    to: number | undefined;
+  }>({ from: undefined, to: undefined });
 
   return useMemo(
     () => ({

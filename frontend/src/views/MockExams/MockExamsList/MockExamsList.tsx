@@ -27,6 +27,8 @@ import { Table } from '../../../components/Table/Table';
 import { DateFilter } from '../../../components/Table/Filters/DateFilter/DateFilter';
 import { IntegerRangeFilter } from '../../../components/Table/Filters/IntegerRangeFilter/IntegerRangeFilter';
 import { BooleanFilter } from '../../../components/Table/Filters/BooleanFilter/BooleanFilter';
+import { useListTotal } from '../../../hooks/useListTotal/useListTotal';
+import { LAYOUT_HEIGHT } from '../../Layout/Layout';
 
 const MIN_SCORE = 0;
 export const MockExamsList = () => {
@@ -82,16 +84,15 @@ export const MockExamsList = () => {
     useSWR<MockExamAttemptFindAllResponseDto>(apiUrl);
 
   const navigate = useNavigate();
+  const examAttempts = mockExamsListData?.examAttempts;
+  const totalRows = useListTotal(mockExamsListData?.total);
 
   if (mockExamsListError) {
     return <GeneralAPIError />;
   }
 
-  const examAttempts = mockExamsListData?.examAttempts;
-  const totalRows = mockExamsListData?.total ?? 0;
-
   return (
-    <Flex flexDirection="column" height="100%">
+    <Flex flexDirection="column" height={LAYOUT_HEIGHT}>
       <Toolbar
         sx={{
           pl: { sm: 2 },
@@ -153,10 +154,10 @@ export const MockExamsList = () => {
           {
             id: 'score',
             label: 'Punktacja',
-            isActive: true,
+            isActive:
+              score.value.from !== undefined && score.value.to !== undefined,
             activeLabel: `${score.value.from}pkt - ${score.value.to}pkt`,
-            clearFilter: () =>
-              score.set({ from: MIN_SCORE, to: PERFECT_SCORE }),
+            clearFilter: () => score.set({ from: undefined, to: undefined }),
             renderFilter: () => (
               <IntegerRangeFilter
                 label="Punktacja"
@@ -183,7 +184,7 @@ export const MockExamsList = () => {
           {
             id: 'icon',
             name: '',
-            width: '10%',
+            width: '56px',
             sortable: false,
           },
           {
@@ -245,9 +246,9 @@ const useFilters = () => {
     to: Date | undefined;
   }>({ from: undefined, to: undefined });
   const [score, setScore] = useState<{
-    from: number;
-    to: number;
-  }>({ from: MIN_SCORE, to: PERFECT_SCORE });
+    from: number | undefined;
+    to: number | undefined;
+  }>({ from: undefined, to: undefined });
 
   return useMemo(
     () => ({

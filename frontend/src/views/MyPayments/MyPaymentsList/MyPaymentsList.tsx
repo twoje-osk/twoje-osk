@@ -28,6 +28,8 @@ import { TableFilters } from '../../../components/Table/TableFilters';
 import { TextFilter } from '../../../components/Table/Filters/TextFilter/TextFilter';
 import { DateFilter } from '../../../components/Table/Filters/DateFilter/DateFilter';
 import { IntegerRangeFilter } from '../../../components/Table/Filters/IntegerRangeFilter/IntegerRangeFilter';
+import { LAYOUT_HEIGHT } from '../../Layout/Layout';
+import { useListTotal } from '../../../hooks/useListTotal/useListTotal';
 
 const MIN_AMOUNT = 0;
 const MAX_AMOUNT = 10000;
@@ -78,16 +80,15 @@ export const MyPaymentsList = () => {
     ],
   );
   const { data, error } = useSWR<PaymentFindAllByTraineeResponseDto>(apiUrl);
+  const rows = data?.payments;
+  const totalRows = useListTotal(data?.total);
 
   if (error) {
     return <GeneralAPIError />;
   }
 
-  const rows = data?.payments;
-  const totalRows = data?.total ?? 0;
-
   return (
-    <Flex flexDirection="column" height="100%">
+    <Flex flexDirection="column" height={LAYOUT_HEIGHT}>
       <Toolbar
         sx={{
           pl: { sm: 2 },
@@ -141,9 +142,10 @@ export const MyPaymentsList = () => {
           {
             id: 'amount',
             label: 'Kwota',
-            isActive: true,
+            isActive:
+              amount.value.from !== undefined && amount.value.to !== undefined,
             activeLabel: `${amount.value.from}zł - ${amount.value.to}zł`,
-            clearFilter: () => amount.set({ from: MIN_AMOUNT, to: MAX_AMOUNT }),
+            clearFilter: () => amount.set({ from: undefined, to: undefined }),
             renderFilter: () => (
               <IntegerRangeFilter
                 label="Kwota"
@@ -195,7 +197,11 @@ export const MyPaymentsList = () => {
             <>
               <TableCell>{formatLong(parseISO(row.date))}</TableCell>
               <TableCell
-                style={{ color: row.note.trim() ? 'black' : 'lightgrey' }}
+                style={{
+                  color: row.note.trim()
+                    ? theme.palette.text.primary
+                    : theme.palette.text.disabled,
+                }}
               >
                 {row.note.trim() || 'Brak'}
               </TableCell>
@@ -217,9 +223,9 @@ const useFilters = () => {
     to: Date | undefined;
   }>({ from: undefined, to: undefined });
   const [amount, setAmount] = useState<{
-    from: number;
-    to: number;
-  }>({ from: MIN_AMOUNT, to: MAX_AMOUNT });
+    from: number | undefined;
+    to: number | undefined;
+  }>({ from: undefined, to: undefined });
 
   return useMemo(
     () => ({

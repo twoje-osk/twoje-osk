@@ -27,6 +27,8 @@ import { Table } from '../../../components/Table/Table';
 import { FullPageLoading } from '../../../components/FullPageLoading/FullPageLoading';
 import { PicklistFilter } from '../../../components/Table/Filters/PicklistFilter/PicklistFilter';
 import { PicklistOption } from '../../../components/FPicklistField/FPicklistField';
+import { useListTotal } from '../../../hooks/useListTotal/useListTotal';
+import { LAYOUT_HEIGHT } from '../../Layout/Layout';
 
 export const InstructorsList = () => {
   const { rowsPerPage, currentPage, onPageChange, onRowsPerPageChange } =
@@ -87,6 +89,10 @@ export const InstructorsList = () => {
     );
   const navigate = useNavigate();
   const pageTitle = 'Instruktorzy';
+  const rows = instructorsData?.instructors;
+  const totalRows = useListTotal(instructorsData?.total);
+  const activeColumnWidth = '140px';
+  const columnSize = '25%';
 
   if (instructorsError || qualificationsError) {
     return <GeneralAPIError />;
@@ -100,11 +106,6 @@ export const InstructorsList = () => {
     qualificationsOptions.push({ value: quali.id, label: quali.name });
   });
 
-  const rows = instructorsData?.instructors;
-  const totalRows = instructorsData?.total ?? 0;
-  const activeColumnWidth = '140px';
-  const columnSize = '25%';
-
   const qualifications = Object.fromEntries(
     qualificationsData.categories.map((quali) => {
       return [quali.id, quali.name];
@@ -112,7 +113,7 @@ export const InstructorsList = () => {
   );
 
   return (
-    <Flex flexDirection="column" height="100%">
+    <Flex flexDirection="column" height={LAYOUT_HEIGHT}>
       <Toolbar
         sx={{
           pl: { sm: 2 },

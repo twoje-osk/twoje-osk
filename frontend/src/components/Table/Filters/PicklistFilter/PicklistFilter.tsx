@@ -24,6 +24,7 @@ export const PicklistFilter = ({
         {options.map((option) => {
           return (
             <MenuItem
+              key={option.value}
               value={option.value}
               selected={option.value === value}
               onClick={() => handleClick(option.value)}
