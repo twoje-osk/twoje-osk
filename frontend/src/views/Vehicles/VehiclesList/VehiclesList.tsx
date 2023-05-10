@@ -28,6 +28,8 @@ import { addQueryParams } from '../../../utils/addQueryParams';
 import { TableFilters } from '../../../components/Table/TableFilters';
 import { TextFilter } from '../../../components/Table/Filters/TextFilter/TextFilter';
 import { DateFilter } from '../../../components/Table/Filters/DateFilter/DateFilter';
+import { useListTotal } from '../../../hooks/useListTotal/useListTotal';
+import { LAYOUT_HEIGHT } from '../../Layout/Layout';
 
 export const VehiclesList = () => {
   const { rowsPerPage, currentPage, onPageChange, onRowsPerPageChange } =
@@ -83,17 +85,17 @@ export const VehiclesList = () => {
     onToggleFavourite,
     isLoading: areVehicleFavouritesLoading,
   } = useVehicleFavourites();
+  const totalRows = useListTotal(data?.total);
 
   if (error) {
     return <GeneralAPIError />;
   }
 
   const rows = data?.vehicles;
-  const totalRows = data?.total ?? 0;
   const columnSize = '33%';
 
   return (
-    <Flex flexDirection="column" height="100%">
+    <Flex flexDirection="column" height={LAYOUT_HEIGHT}>
       <Toolbar
         sx={{
           pl: { sm: 2 },

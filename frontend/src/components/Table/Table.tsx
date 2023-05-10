@@ -12,6 +12,7 @@ import {
   IconButton,
   Icon,
   Tooltip,
+  Divider,
 } from '@mui/material';
 import { ReactNode } from 'react';
 import { LoadingTableBody } from '../LoadingTableBody/LoadingTableBody';
@@ -160,6 +161,7 @@ export function Table<
           )}
         </MuiTable>
       </TableContainer>
+      <Divider />
       <TablePagination
         rowsPerPageOptions={rowsPerPageOptions ?? [10, 25, 100]}
         component="div"
