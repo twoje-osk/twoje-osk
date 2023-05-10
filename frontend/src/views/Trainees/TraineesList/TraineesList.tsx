@@ -18,10 +18,12 @@ import { BooleanFilter } from '../../../components/Table/Filters/BooleanFilter/B
 import { TextFilter } from '../../../components/Table/Filters/TextFilter/TextFilter';
 import { Table } from '../../../components/Table/Table';
 import { TableFilters } from '../../../components/Table/TableFilters';
+import { useListTotal } from '../../../hooks/useListTotal/useListTotal';
 import { usePagination } from '../../../hooks/usePagination/usePagination';
 import { useSort } from '../../../hooks/useSort/useSort';
 import { addQueryParams } from '../../../utils/addQueryParams';
 import { formatLong } from '../../../utils/date';
+import { LAYOUT_HEIGHT } from '../../Layout/Layout';
 
 export const TraineesList = () => {
   const { rowsPerPage, currentPage, onPageChange, onRowsPerPageChange } =
@@ -66,18 +68,18 @@ export const TraineesList = () => {
   const { data, error } = useSWR<TraineeFindAllResponseDto>(apiUrl);
 
   const navigate = useNavigate();
+  const totalRows = useListTotal(data?.total);
 
   if (error) {
     return <GeneralAPIError />;
   }
 
   const rows = data?.trainees;
-  const totalRows = data?.total ?? 0;
   const activeColumnWidth = '140px';
   const columnSize = '25%';
 
   return (
-    <Flex flexDirection="column" height="100%">
+    <Flex flexDirection="column" height={LAYOUT_HEIGHT}>
       <Toolbar
         sx={{
           pl: { sm: 2 },

@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 
-export const usePagination = () => {
-  const [rowsPerPage, setRowsPerPage] = useState(100);
+export const usePagination = (initialRowsPerPage = 100) => {
+  const [rowsPerPage, setRowsPerPage] = useState(initialRowsPerPage);
   const [currentPage, setCurrentPage] = useState(0);
 
   const onPageChange = useCallback(
