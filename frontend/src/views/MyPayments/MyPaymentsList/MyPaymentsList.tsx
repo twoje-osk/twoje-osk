@@ -194,7 +194,11 @@ export const MyPaymentsList = () => {
           return (
             <>
               <TableCell>{formatLong(parseISO(row.date))}</TableCell>
-              <TableCell>{row.note.trim() || 'Brak'}</TableCell>
+              <TableCell
+                style={{ color: row.note.trim() ? 'black' : 'lightgrey' }}
+              >
+                {row.note.trim() || 'Brak'}
+              </TableCell>
               <AmountTableCell align="right">
                 {formatCurrency(row.amount)}
               </AmountTableCell>
