@@ -40,7 +40,7 @@ export class MockExamAttempt {
   @Column()
   isPassed: boolean;
 
-  @ManyToOne(() => DriversLicenseCategory)
+  @ManyToOne(() => DriversLicenseCategory, { nullable: false })
   category: DriversLicenseCategory;
 
   @RelationId((examAttempt: MockExamAttempt) => examAttempt.category)
