@@ -27,6 +27,7 @@ import {
 } from './mockExamAttempt.types';
 import { isMockExamAttemptSortField } from './mockExamAttempt.utils';
 import { DateBetweenProperty } from '../utils/DateBetweenProperty';
+import { DriversLicenseCategoriesService } from '../drivers-license-category/drivers-license-category.service';
 
 interface QuestionFields {
   questionId: number;
@@ -34,6 +35,7 @@ interface QuestionFields {
 }
 interface MockExamAttemptFields {
   userId: number;
+  categoryId: number;
   questions: QuestionFields[];
 }
 
@@ -43,6 +45,7 @@ export class MockExamAttemptService {
     @InjectRepository(MockExamAttempt)
     private mockExamAttemptRepository: Repository<MockExamAttempt>,
     private traineeService: TraineesService,
+    private driversLicenseCategoriesService: DriversLicenseCategoriesService,
     private mockExamQuestionAttemptService: MockExamQuestionAttemptService,
   ) {}
 
@@ -82,11 +85,16 @@ export class MockExamAttemptService {
       filterArguments?.scoreTo !== undefined
         ? Between(filterArguments.scoreFrom, filterArguments.scoreTo)
         : undefined;
+    const categoryProperty =
+      filterArguments?.categoryId !== undefined
+        ? { id: filterArguments?.categoryId }
+        : undefined;
 
     return {
       isPassed: isPassedProperty,
       attemptDate: dateProperty,
       score: scoreProperty,
+      category: categoryProperty,
       trainee: { id: traineeId },
     };
   }
@@ -114,6 +122,7 @@ export class MockExamAttemptService {
         where: this.buildWhereOption(presentationArguments?.filter, trainee.id),
         relations: {
           questions: true,
+          category: true,
         },
       });
 
@@ -149,9 +158,13 @@ export class MockExamAttemptService {
       | 'ANSWER_NOT_FOUND'
     >
   > {
-    const { questions, userId } = attempt;
+    const { questions, userId, categoryId } = attempt;
     const trainee = await this.traineeService.findOneByUserId(userId);
-    if (!trainee) {
+    const category =
+      await this.driversLicenseCategoriesService.findOneCategoryById(
+        categoryId,
+      );
+    if (!trainee || !category) {
       return getFailure('USER_NOT_FOUND');
     }
     if (questions.length !== REQUIRED_AMOUNT_OF_QUESTIONS) {
@@ -164,6 +177,7 @@ export class MockExamAttemptService {
       questions: [],
       score: 0,
       isPassed: false,
+      category,
     });
 
     const questionsWithAttempt = questions.map((question) => ({

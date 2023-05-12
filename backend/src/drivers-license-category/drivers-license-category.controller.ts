@@ -8,7 +8,7 @@ import { Roles } from '../common/guards/roles.decorator';
 import { DriversLicenseCategoriesService } from './drivers-license-category.service';
 
 @Controller('drivers-license-categories')
-@Roles(UserRole.Admin, UserRole.Instructor)
+@Roles(UserRole.Admin, UserRole.Instructor, UserRole.Trainee)
 export class DriversLicenseCategoriesController {
   constructor(
     private readonly driversLicenseCategoriesService: DriversLicenseCategoriesService,

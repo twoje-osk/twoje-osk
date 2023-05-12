@@ -5,33 +5,29 @@ import {
 } from '@osk/shared';
 import useSWR from 'swr';
 import { CreateMockExamQuestionAttemptRequestDto } from '@osk/shared/dist/dto/mockExamQuestionAttempt/mockExamQuestionAttempt.dto';
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRef, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { FullPageLoading } from '../../../components/FullPageLoading/FullPageLoading';
 import { GeneralAPIError } from '../../../components/GeneralAPIError/GeneralAPIError';
 import { MockExamsQuestion } from './MockExamsQuestion';
 import { useMakeRequestWithAuth } from '../../../hooks/useMakeRequestWithAuth/useMakeRequestWithAuth';
 import { useCommonSnackbars } from '../../../hooks/useCommonSnackbars/useCommonSnackbars';
-import { MockExamsRules } from './MockExamsRules';
 
 export const MockExamsAttempt = () => {
-  const categoryId = 6;
+  const { categoryId } = useParams();
+  const random = useRef(Date.now());
   const { data: questionsData, error: questionsError } =
-    useSWR<MockExamQuestionsGenerateResponseDto>(
+    useSWR<MockExamQuestionsGenerateResponseDto>([
       `/api/questions/exam/${categoryId}`,
-    );
+      random,
+    ]);
   const [answeredQuestions, setAnsweredQuestions] = useState<
     CreateMockExamQuestionAttemptRequestDto[]
   >([]);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  const [showRules, setShowRules] = useState<boolean>(true);
   const makeRequest = useMakeRequestWithAuth();
   const navigate = useNavigate();
   const { showErrorSnackbar, showSuccessSnackbar } = useCommonSnackbars();
-
-  if (showRules) {
-    return <MockExamsRules onStartExam={() => setShowRules(false)} />;
-  }
 
   if (questionsData === undefined || isSubmitting) {
     return <FullPageLoading />;
@@ -42,7 +38,11 @@ export const MockExamsAttempt = () => {
   const isLastQuestion =
     answeredQuestions.length === generatedQuestions.length - 1;
 
-  if (questionsError || currentQuestion === undefined) {
+  if (
+    questionsError ||
+    currentQuestion === undefined ||
+    categoryId === undefined
+  ) {
     return <GeneralAPIError />;
   }
 
@@ -63,9 +63,11 @@ export const MockExamsAttempt = () => {
   const submitExam = async (
     submitQuestionsData: CreateMockExamQuestionAttemptRequestDto[],
   ) => {
+    const parsedCategory = +categoryId;
     const body: MockExamAttemptSubmitRequestDto = {
       mockExam: {
         questions: submitQuestionsData,
+        categoryId: parsedCategory,
       },
     };
 

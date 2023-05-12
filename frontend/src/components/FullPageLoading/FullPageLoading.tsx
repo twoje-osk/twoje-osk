@@ -1,10 +1,11 @@
 import { CircularProgress } from '@mui/material';
 import { Flex } from 'reflexbox';
+import { LAYOUT_HEIGHT } from '../../views/Layout/Layout';
 
 export const FullPageLoading = () => {
   return (
     <Flex
-      height="100%"
+      height={LAYOUT_HEIGHT}
       width="100%"
       alignItems="center"
       justifyContent="center"

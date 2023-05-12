@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
@@ -100,8 +101,12 @@ export class MockExamAttemptController {
     @Body() attempt: MockExamAttemptSubmitRequestDto,
   ): Promise<MockExamAttemptSubmitResponseDto> {
     const { userId } = this.currentUserService.getRequestCurrentUser();
+    if (attempt.mockExam.categoryId === undefined) {
+      throw new BadRequestException('Missing categoryId');
+    }
     const examAttemptResponse = await this.mockExamAttemptService.submit({
       questions: attempt.mockExam.questions,
+      categoryId: attempt.mockExam.categoryId,
       userId,
     });
     if (examAttemptResponse.ok) {

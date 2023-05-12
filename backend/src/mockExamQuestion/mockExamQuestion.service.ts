@@ -53,6 +53,7 @@ export class MockExamQuestionService {
     const questionsDistribution = questionsDistributionResult.data;
     const randomQuestionsResult = await this.getRandomQuestions(
       questionsDistribution,
+      categoryId,
     );
     if (randomQuestionsResult.ok !== true) {
       return getFailure(randomQuestionsResult.error);
@@ -119,6 +120,7 @@ export class MockExamQuestionService {
 
   async getRandomQuestions(
     questionsDistribution: QuestionsDistribution,
+    categoryId: number,
   ): Promise<Try<MockExamQuestion[], 'NO_QUESTION_TYPES_FOUND'>> {
     const {
       onePointQuestionsAmount,
@@ -147,36 +149,42 @@ export class MockExamQuestionService {
         REQUIRED_AMOUNT_OF_ONE_POINT_QUESTIONS,
         elementaryQuestionType.id,
         1,
+        categoryId,
       ),
       this.getRandomQuestionsForType(
         twoPointQuestionsAmount,
         REQUIRED_AMOUNT_OF_TWO_POINT_QUESTIONS,
         elementaryQuestionType.id,
         2,
+        categoryId,
       ),
       this.getRandomQuestionsForType(
         threePointQuestionsAmount,
         REQUIRED_AMOUNT_OF_THREE_POINT_QUESTIONS,
         elementaryQuestionType.id,
         3,
+        categoryId,
       ),
       this.getRandomQuestionsForType(
         onePointAdvancedQuestionsAmount,
         REQUIRED_AMOUNT_OF_ONE_POINT_ADVANCED_QUESTIONS,
         advancedQuestionType.id,
         1,
+        categoryId,
       ),
       this.getRandomQuestionsForType(
         twoPointAdvancedQuestionsAmount,
         REQUIRED_AMOUNT_OF_TWO_POINT_ADVANCED_QUESTIONS,
         advancedQuestionType.id,
         2,
+        categoryId,
       ),
       this.getRandomQuestionsForType(
         threePointAdvancedQuestionsAmount,
         REQUIRED_AMOUNT_OF_THREE_POINT_ADVANCED_QUESTIONS,
         advancedQuestionType.id,
         3,
+        categoryId,
       ),
     ]);
     const questions: MockExamQuestion[] = retrievedQuestions.flat();
@@ -188,6 +196,7 @@ export class MockExamQuestionService {
     requiredAmount: number,
     typeId: number,
     points: number,
+    categoryId: number,
   ): Promise<MockExamQuestion[]> {
     const indexes = this.getRandomIndexes(totalAmount, requiredAmount);
     const questionsPromises: Promise<MockExamQuestion[]>[] = indexes.map(
@@ -198,12 +207,16 @@ export class MockExamQuestionService {
             type: {
               id: typeId,
             },
+            categories: {
+              id: categoryId,
+            },
           },
           skip: index,
           take: 1,
           relations: {
             answers: true,
             type: true,
+            categories: true,
           },
         });
       },

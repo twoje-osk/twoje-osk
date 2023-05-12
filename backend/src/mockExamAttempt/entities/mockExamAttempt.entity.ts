@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import type { MockExamQuestionAttempt } from '../../mockExamQuestionAttempt/entities/mockExamQuestionAttempt.entity';
 import { Trainee } from '../../trainees/entities/trainee.entity';
+import { DriversLicenseCategory } from '../../drivers-license-category/entities/drivers-license-category.entity';
 
 @Entity()
 export class MockExamAttempt {
@@ -38,4 +39,10 @@ export class MockExamAttempt {
 
   @Column()
   isPassed: boolean;
+
+  @ManyToOne(() => DriversLicenseCategory)
+  category: DriversLicenseCategory;
+
+  @RelationId((examAttempt: MockExamAttempt) => examAttempt.category)
+  categoryId: number;
 }

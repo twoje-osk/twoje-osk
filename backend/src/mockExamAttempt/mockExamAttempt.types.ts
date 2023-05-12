@@ -13,6 +13,7 @@ export interface MockExamAttemptPresentationFilterArguments {
   scoreTo?: number;
   scoreFrom?: number;
   isPassed?: boolean;
+  categoryId?: number;
 }
 
 export interface MockExamAttemptPresentationArguments {

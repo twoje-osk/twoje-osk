@@ -8,6 +8,7 @@ import {
   Divider,
 } from '@mui/material';
 import {
+  DriversLicenseCategoryFindAllResponseDto,
   MockExamAttemptFindAllQueryDto,
   MockExamAttemptFindAllResponseDto,
 } from '@osk/shared';
@@ -29,6 +30,9 @@ import { IntegerRangeFilter } from '../../../components/Table/Filters/IntegerRan
 import { BooleanFilter } from '../../../components/Table/Filters/BooleanFilter/BooleanFilter';
 import { useListTotal } from '../../../hooks/useListTotal/useListTotal';
 import { LAYOUT_HEIGHT } from '../../Layout/Layout';
+import { PicklistFilter } from '../../../components/Table/Filters/PicklistFilter/PicklistFilter';
+import { PicklistOption } from '../../../components/FPicklistField/FPicklistField';
+import { FullPageLoading } from '../../../components/FullPageLoading/FullPageLoading';
 
 const MIN_SCORE = 0;
 export const MockExamsList = () => {
@@ -46,7 +50,7 @@ export const MockExamsList = () => {
     'attemptDate',
     'desc',
   );
-  const { isPassed, score, date } = useFilters();
+  const { isPassed, score, date, category } = useFilters();
   const [openedFilter, setOpenedFilter] = useState<null | string>(null);
 
   const apiUrl = useMemo(
@@ -68,6 +72,7 @@ export const MockExamsList = () => {
           isPassed: isPassed.value,
           scoreFrom: score.value.from,
           scoreTo: score.value.to,
+          categoryId: category.value,
         },
       }),
     [
@@ -78,18 +83,31 @@ export const MockExamsList = () => {
       date.value,
       score.value,
       isPassed.value,
+      category.value,
     ],
   );
   const { data: mockExamsListData, error: mockExamsListError } =
     useSWR<MockExamAttemptFindAllResponseDto>(apiUrl);
-
+  const { data: categoriesData, error: categoriesError } =
+    useSWR<DriversLicenseCategoryFindAllResponseDto>(
+      '/api/drivers-license-categories',
+    );
   const navigate = useNavigate();
   const examAttempts = mockExamsListData?.examAttempts;
   const totalRows = useListTotal(mockExamsListData?.total);
 
-  if (mockExamsListError) {
+  if (mockExamsListError || categoriesError) {
     return <GeneralAPIError />;
   }
+
+  if (categoriesData === undefined) {
+    return <FullPageLoading />;
+  }
+
+  const categoriesOptions: PicklistOption[] = [];
+  categoriesData.categories.forEach((cat) => {
+    categoriesOptions.push({ value: cat.id, label: cat.name });
+  });
 
   return (
     <Flex flexDirection="column" height={LAYOUT_HEIGHT}>
@@ -132,6 +150,23 @@ export const MockExamsList = () => {
                 value={isPassed.value}
                 setValue={isPassed.set}
                 toggleOpen={toggle}
+              />
+            ),
+          },
+          {
+            id: 'category',
+            label: 'Kategoria',
+            isActive: category.value !== undefined,
+            activeLabel: categoriesOptions.find(
+              (option) => option.value === category.value,
+            )?.label,
+            clearFilter: () => category.set(undefined),
+            renderFilter: ({ toggle }) => (
+              <PicklistFilter
+                value={category.value}
+                setValue={category.set}
+                toggleOpen={toggle}
+                options={categoriesOptions}
               />
             ),
           },
@@ -195,16 +230,23 @@ export const MockExamsList = () => {
             sortable: true,
           },
           {
+            id: 'category',
+            name: 'Kategoria',
+            width: '25%',
+            openFilter: () => setOpenedFilter('category'),
+            sortable: false,
+          },
+          {
             id: 'score',
             name: 'Punktacja',
-            width: '30%',
+            width: '25',
             openFilter: () => setOpenedFilter('score'),
             sortable: true,
           },
           {
             id: 'attemptDate',
             name: 'Data',
-            width: '30%',
+            width: '25%',
             sortable: true,
             openFilter: () => setOpenedFilter('date'),
           },
@@ -224,7 +266,7 @@ export const MockExamsList = () => {
               <TableCell>
                 {mockExam.isPassed ? 'Pozytywny' : 'Negatywny'}
               </TableCell>
-
+              <TableCell>Kategoria {mockExam.category.name}</TableCell>
               <TableCell>
                 {mockExam.score}/{PERFECT_SCORE}
               </TableCell>
@@ -249,6 +291,7 @@ const useFilters = () => {
     from: number | undefined;
     to: number | undefined;
   }>({ from: undefined, to: undefined });
+  const [category, setCategory] = useState<number | undefined>();
 
   return useMemo(
     () => ({
@@ -260,7 +303,11 @@ const useFilters = () => {
         },
         value: date,
       },
+      category: {
+        set: setCategory,
+        value: category,
+      },
     }),
-    [isPassed, score, date],
+    [category, isPassed, score, date],
   );
 };
