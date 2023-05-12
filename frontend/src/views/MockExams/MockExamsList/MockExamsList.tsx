@@ -239,7 +239,7 @@ export const MockExamsList = () => {
           {
             id: 'score',
             name: 'Punktacja',
-            width: '25',
+            width: '25%',
             openFilter: () => setOpenedFilter('score'),
             sortable: true,
           },

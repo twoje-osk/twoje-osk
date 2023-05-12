@@ -71,14 +71,6 @@ export class SubmitMockExamAttemptDto {
 
   @ApiProperty()
   @IsInt()
-  @Transform(({ value }) => {
-    if (value === undefined) {
-      return undefined;
-    }
-
-    const parsedValue = Number.parseInt(value, 10);
-    return Number.isNaN(parsedValue) ? undefined : parsedValue;
-  })
   categoryId: number;
 }
 
