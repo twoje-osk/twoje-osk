@@ -43,6 +43,7 @@ import { MockExamsScoreBoard } from './views/MockExams/MockExamsAttempt/MockExam
 import { MockExamsCompletedAttempt } from './views/MockExams/MockExamsAttempt/MockExamsCompletedAttempt';
 import { LecturesList } from './views/Lectures/LecturesList/LecturesList';
 import { LectureDetails } from './views/Lectures/LectureDetails/LectureDetails';
+import { MockExamsRules } from './views/MockExams/MockExamsAttempt/MockExamsRules';
 
 export const App = () => {
   return (
@@ -180,7 +181,8 @@ export const App = () => {
               path="nowy"
               element={<RequireRole roles={[UserRole.Trainee]} />}
             >
-              <Route index element={<MockExamsAttempt />} />
+              <Route index element={<MockExamsRules />} />
+              <Route path=":categoryId" element={<MockExamsAttempt />} />
             </Route>
           </Route>
         </Route>

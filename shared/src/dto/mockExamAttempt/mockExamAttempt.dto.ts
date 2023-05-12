@@ -18,6 +18,7 @@ import {
   MockExamQuestionAttemptDto,
 } from '../mockExamQuestionAttempt/mockExamQuestionAttempt.dto';
 import { TraineeDto } from '../trainee/trainee.dto';
+import { DriversLicenseCategoryDto } from '../driversLicenseCategory/driversLicenseCategory.dto';
 
 export class DtoMockExamAttempt {
   @ApiProperty()
@@ -54,6 +55,12 @@ export class DtoMockExamAttempt {
   @ApiProperty()
   @IsBoolean()
   isPassed: boolean;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @ValidateNested()
+  @Type(() => DriversLicenseCategoryDto)
+  category: DriversLicenseCategoryDto;
 }
 
 export class SubmitMockExamAttemptDto {
@@ -61,6 +68,10 @@ export class SubmitMockExamAttemptDto {
   @ValidateNested()
   @Type(() => CreateMockExamQuestionAttemptRequestDto)
   questions: CreateMockExamQuestionAttemptRequestDto[];
+
+  @ApiProperty()
+  @IsInt()
+  categoryId: number;
 }
 
 export class MockExamAttemptFindAllResponseDto {
@@ -138,6 +149,20 @@ export class MockExamAttemptFindAllQueryDtoFilters {
   })
   @IsBoolean()
   isPassed?: boolean;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  @Transform(({ value }) => {
+    if (value === undefined) {
+      return undefined;
+    }
+
+    const parsedValue = Number.parseInt(value, 10);
+    return Number.isNaN(parsedValue) ? undefined : parsedValue;
+  })
+  categoryId?: number;
 }
 
 const mockExamAttemptFindAllQueryDtoSortByOptions = [

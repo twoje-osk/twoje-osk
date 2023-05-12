@@ -102,6 +102,7 @@ export class MockExamAttemptController {
     const { userId } = this.currentUserService.getRequestCurrentUser();
     const examAttemptResponse = await this.mockExamAttemptService.submit({
       questions: attempt.mockExam.questions,
+      categoryId: attempt.mockExam.categoryId,
       userId,
     });
     if (examAttemptResponse.ok) {

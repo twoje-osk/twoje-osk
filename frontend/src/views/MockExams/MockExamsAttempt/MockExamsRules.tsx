@@ -1,12 +1,44 @@
 import { Flex } from 'reflexbox';
-import { Button, List, ListItem, Toolbar, Typography } from '@mui/material';
+import {
+  Button,
+  FormControl,
+  InputLabel,
+  List,
+  ListItem,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+  Toolbar,
+  Typography,
+} from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import useSWR from 'swr';
+import { DriversLicenseCategoryFindAllResponseDto } from '@osk/shared';
+import { useState } from 'react';
+import { GeneralAPIError } from '../../../components/GeneralAPIError/GeneralAPIError';
+import { PicklistOption } from '../../../components/FPicklistField/FPicklistField';
 
-interface RulesProps {
-  onStartExam: () => void;
-}
-export const MockExamsRules = ({
-  onStartExam: handleStartExam,
-}: RulesProps) => {
+export const MockExamsRules = () => {
+  const navigate = useNavigate();
+  const [selectedCategory, setSelectedCategory] = useState<number>();
+  const { data: categoriesData, error } =
+    useSWR<DriversLicenseCategoryFindAllResponseDto>(
+      '/api/drivers-license-categories',
+    );
+
+  if (error) {
+    return <GeneralAPIError />;
+  }
+
+  const categoriesOptions: PicklistOption[] = categoriesData?.categories
+    ? categoriesData.categories.map((el) => {
+        return { value: el.id, label: el.name };
+      })
+    : [];
+
+  const handleChange = (event: SelectChangeEvent) => {
+    setSelectedCategory(+event.target.value);
+  };
   return (
     <Flex flexDirection="column" height="100%">
       <Toolbar
@@ -81,13 +113,43 @@ export const MockExamsRules = ({
           Należy w tym czasie wybrać <strong>jedną</strong> odpowiedź.
         </Typography>
       </Flex>
-      <Button
-        onClick={handleStartExam}
-        style={{ marginTop: '32px', marginLeft: 'auto', marginRight: 'auto' }}
-        variant="contained"
+      <Flex
+        style={{
+          marginTop: '32px',
+          marginLeft: 'auto',
+          marginRight: 'auto',
+          gap: '8px',
+        }}
       >
-        Rozpocznij egzamin
-      </Button>
+        <FormControl variant="outlined">
+          <InputLabel id="label">Kategoria</InputLabel>
+          <Select
+            labelId="label"
+            onChange={handleChange}
+            label="Kategoria"
+            disabled={categoriesData === undefined}
+            style={{ width: '200px' }}
+          >
+            {categoriesOptions.map((option) => (
+              <MenuItem key={option.value} value={option.value}>
+                {option.label}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        <Button
+          onClick={() => navigate(`./${selectedCategory}`)}
+          variant="contained"
+          disabled={selectedCategory === undefined}
+          style={{
+            height: 'fit-content',
+            marginTop: 'auto',
+            marginBottom: 'auto',
+          }}
+        >
+          Rozpocznij egzamin
+        </Button>
+      </Flex>
     </Flex>
   );
 };

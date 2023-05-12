@@ -6,12 +6,14 @@ import { MockExamAttempt } from './entities/mockExamAttempt.entity';
 import { MockExamAttemptController } from './mockExamAttempt.controller';
 import { MockExamAttemptService } from './mockExamAttempt.service';
 import { MockExamQuestionModule } from '../mockExamQuestion/mockExamQuestion.module';
+import { DriversLicenseCategoriesModule } from '../drivers-license-category/drivers-license-category.module';
 
 @Module({
   controllers: [MockExamAttemptController],
   imports: [
     TypeOrmModule.forFeature([MockExamAttempt]),
     TraineesModule,
+    DriversLicenseCategoriesModule,
     MockExamQuestionAttemptModule,
     MockExamQuestionModule,
   ],
