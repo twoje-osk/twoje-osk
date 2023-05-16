@@ -16,6 +16,7 @@ import {
   CancelLessonForInstructorResponseDTO,
   CreateLessonForInstructorRequestDTO,
   CreateLessonForInstructorResponseDTO,
+  GetLessonByIdResponseDTO,
   GetMyLessonsQueryDTO,
   GetMyLessonsResponseDTO,
   LessonsDTO,
@@ -112,6 +113,26 @@ export class TraineeLessonsController {
     }
 
     return assertNever(error);
+  }
+
+  @Get(':lessonId')
+  @ApiResponse({
+    type: GetLessonByIdResponseDTO,
+  })
+  async getLesson(
+    @Param('lessonId', ParseIntPipe) lessonId: number,
+  ): Promise<GetLessonByIdResponseDTO> {
+    const currentUser = this.currentUserService.getRequestCurrentUser();
+    const lesson = await this.lessonsService.getById(
+      lessonId,
+      currentUser.userId,
+    );
+
+    if (lesson === null) {
+      throw new NotFoundException("Lesson with provided id doesn't exist");
+    }
+
+    return { lesson };
   }
 
   @Patch(':lessonId')

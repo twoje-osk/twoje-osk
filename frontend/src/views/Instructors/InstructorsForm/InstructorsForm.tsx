@@ -24,6 +24,7 @@ interface InstructorsFormProps {
     formikHelpers: FormikHelpers<InstructorsFormData>,
   ) => void | Promise<any>;
   children?: ReactNode;
+  hideImage?: boolean;
 }
 
 const defaultValues: InstructorsFormData = {
@@ -42,6 +43,7 @@ export const InstructorsForm = ({
   disabled,
   onSubmit = () => undefined,
   children: actions,
+  hideImage = false,
 }: InstructorsFormProps) => {
   const { data: driversLicenseCategoryData } =
     useSWR<DriversLicenseCategoryFindAllResponseDto>(
@@ -63,7 +65,7 @@ export const InstructorsForm = ({
     >
       <Form noValidate>
         <Flex style={{ gap: '32px' }} alignItems="flex-start">
-          <Photo />
+          {!hideImage && <Photo />}
           <Stack spacing={2} style={{ flex: 1 }} justifyContent="flex-start">
             <FTextField
               required
