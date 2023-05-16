@@ -15,7 +15,7 @@ import MUILink from '@mui/material/Link';
 import { FormikHelpers, useFormikContext } from 'formik';
 import { useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { TraineeFindAllResponseDto } from '@osk/shared';
+import { TraineeFindOneResponseDto } from '@osk/shared';
 import useSWR from 'swr';
 import { useAuth } from '../../../../hooks/useAuth/useAuth';
 import { theme } from '../../../../theme';
@@ -70,8 +70,8 @@ export const EditLessonModal = ({
   const formikHelpers = useFormikContext<LessonFormData>();
   const navigate = useNavigate();
 
-  const { data: traineesData } = useSWR<TraineeFindAllResponseDto>(
-    () => '/api/trainees',
+  const { data: lessonTraineesData } = useSWR<TraineeFindOneResponseDto>(
+    !isCreating && event?.traineeId ? `/api/trainees/${event.traineeId}` : null,
   );
 
   const modalStatusButtons = useMemo(() => {
@@ -163,13 +163,6 @@ export const EditLessonModal = ({
   }, [event, formikHelpers, navigate, onLessonCancel, onSubmit]);
 
   const formValue = useMemo(() => mapEventToFormValues(event), [event]);
-  const trainee = useMemo(() => {
-    if (traineesData == null) {
-      return null;
-    }
-
-    return traineesData.trainees.find(({ id }) => id === formValue?.traineeId);
-  }, [formValue?.traineeId, traineesData]);
 
   return (
     <Modal
@@ -198,7 +191,8 @@ export const EditLessonModal = ({
               component={Link}
               variant="h6"
             >
-              {trainee?.user.firstName} {trainee?.user.lastName}
+              {lessonTraineesData?.trainee.user.firstName}{' '}
+              {lessonTraineesData?.trainee.user.lastName}
             </MUILink>
           </Breadcrumbs>
         )}

@@ -109,8 +109,8 @@ export class LessonsService {
         },
       },
       relations: {
-        trainee: true,
-        instructor: true,
+        trainee: { user: true },
+        instructor: { user: true },
       },
     });
   }
