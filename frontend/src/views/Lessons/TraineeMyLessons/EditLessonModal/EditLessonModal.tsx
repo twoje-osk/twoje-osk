@@ -51,7 +51,9 @@ const style = {
   width: 600,
   p: 4,
   outline: 'none',
-};
+  overflow: 'auto',
+  maxHeight: 'calc(100vh - 64px)',
+} as const;
 
 export const EditLessonModal = ({
   event,
@@ -172,14 +174,7 @@ export const EditLessonModal = ({
       onClose={isLoading ? undefined : onClose}
       aria-labelledby="edit-lesson-modal-title"
     >
-      <Paper
-        sx={style}
-        elevation={24}
-        style={{
-          overflow: 'auto',
-          maxHeight: 'calc(100vh - 64px)',
-        }}
-      >
+      <Paper sx={style} elevation={24}>
         {isCreating && (
           <Typography id="edit-lesson-modal-title" variant="h6" component="h2">
             Dodaj nową lekcję
