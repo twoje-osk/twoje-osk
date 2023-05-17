@@ -127,7 +127,7 @@ export const EditLessonForm = ({
                 ))}
               </FSelect>
             )}
-            {selectedInstructor && (
+            {selectedInstructor && isCreating && (
               <FormControl>
                 <InputLabel id="instructorId-label">Instruktor</InputLabel>
                 <Select
