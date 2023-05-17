@@ -12,6 +12,7 @@ import {
   TraineeUpdateRequestDto,
   TraineeUpdateResponseDto,
 } from '@osk/shared';
+import { UserRole } from '@osk/shared/src/types/user.types';
 import { parseISO } from 'date-fns';
 import { useCallback } from 'react';
 import { Navigate, useParams, Link } from 'react-router-dom';
@@ -26,9 +27,11 @@ import { theme } from '../../../theme';
 import { TraineeForm } from '../TraineeForm/TraineeForm';
 import { TraineeFormData } from '../TraineeForm/TraineeForm.schema';
 import { useMakeRequestWithAuth } from '../../../hooks/useMakeRequestWithAuth/useMakeRequestWithAuth';
+import { useAuth } from '../../../hooks/useAuth/useAuth';
 
 export const TraineeDetails = () => {
   const { traineeId } = useParams();
+  const { role } = useAuth();
   const { data, error, mutate } = useSWR<TraineeFindOneResponseDto>(
     traineeId ? `/api/trainees/${traineeId}` : null,
   );
@@ -183,15 +186,17 @@ export const TraineeDetails = () => {
             <Button variant="contained" component={Link} to="raport">
               Zobacz Raport Postępów
             </Button>
-            <Button
-              variant="outlined"
-              color="success"
-              startIcon={<Icon>attach_money</Icon>}
-              component={Link}
-              to="platnosci"
-            >
-              Płatności
-            </Button>
+            {role === UserRole.Admin && (
+              <Button
+                variant="outlined"
+                color="success"
+                startIcon={<Icon>attach_money</Icon>}
+                component={Link}
+                to="platnosci"
+              >
+                Płatności
+              </Button>
+            )}
             <Button
               variant="outlined"
               startIcon={<Icon>edit</Icon>}
