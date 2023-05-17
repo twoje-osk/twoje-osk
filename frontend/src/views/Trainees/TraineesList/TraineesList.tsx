@@ -35,7 +35,7 @@ export const TraineesList = () => {
     getLabelIsActive,
     getLabelSortDirection,
     onSortClick,
-  } = useSort<Required<TraineeFindAllQueryDto>['sortBy']>('firstName', 'asc');
+  } = useSort<Required<TraineeFindAllQueryDto>['sortBy']>('lastName', 'asc');
   const { firstName, lastName, isActive, phoneNumber } = useFilters();
   const [openedFilter, setOpenedFilter] = useState<null | string>(null);
 
