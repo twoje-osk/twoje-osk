@@ -13,7 +13,7 @@ export class MockExamQuestionAnswer {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ length: 255 })
   answerContent: string;
 
   @ManyToOne(() => MockExamQuestion, { onDelete: 'CASCADE' })

@@ -12,13 +12,13 @@ export class Vehicle {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ length: 64 })
   name: string;
 
-  @Column()
+  @Column({ length: 7 })
   licensePlate: string;
 
-  @Column()
+  @Column({ length: 17 })
   vin: string;
 
   @Column()

@@ -5,11 +5,11 @@ export class Organization {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ length: 128 })
   name: string;
 
   @Index({ unique: true })
-  @Column({ unique: true })
+  @Column({ unique: true, length: 64 })
   slug: string;
 
   @Column({ default: true })

@@ -25,6 +25,7 @@ export class Lesson {
   @Column({
     enum: LessonStatus,
     default: LessonStatus.Requested,
+    length: 255,
   })
   status: LessonStatus;
 

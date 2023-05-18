@@ -24,10 +24,10 @@ export class Instructor {
   @RelationId((instructor: Instructor) => instructor.user)
   userId: number;
 
-  @Column({ type: 'text' })
+  @Column({ length: 15 })
   registrationNumber: string;
 
-  @Column({ type: 'text' })
+  @Column({ length: 10 })
   licenseNumber: string;
 
   @ManyToMany(() => DriversLicenseCategory)

@@ -14,12 +14,14 @@ export class Payment {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('numeric', {
+  @Column('decimal', {
     transformer: new ColumnNumericTransformer(),
+    precision: 12,
+    scale: 2,
   })
   amount: number;
 
-  @Column({ default: '' })
+  @Column({ default: '', length: 256 })
   note: string;
 
   @Column()

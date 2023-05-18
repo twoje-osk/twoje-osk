@@ -18,13 +18,13 @@ export class Trainee {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ nullable: true, type: 'text' })
+  @Column({ nullable: true, length: 11 })
   pesel: string | null;
 
-  @Column({ nullable: true, type: 'text' })
+  @Column({ nullable: true, length: 32 })
   driversLicenseNumber: string | null;
 
-  @Column()
+  @Column({ length: 20 })
   pkk: string;
 
   @Column()
