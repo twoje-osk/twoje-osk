@@ -16,7 +16,7 @@ export class Payment {
 
   @Column('decimal', {
     transformer: new ColumnNumericTransformer(),
-    precision: 12,
+    precision: 8,
     scale: 2,
   })
   amount: number;
