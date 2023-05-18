@@ -48,7 +48,6 @@ export class MockExamQuestionAttempt {
     type: 'enum',
     enum: QuestionStatus,
     default: QuestionStatus.UNANSWERED,
-    length: 64,
   })
   status: QuestionStatus;
 }

@@ -18,10 +18,10 @@ export class Trainee {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ nullable: true, length: 11 })
+  @Column({ nullable: true, length: 11, type: 'varchar' })
   pesel: string | null;
 
-  @Column({ nullable: true, length: 32 })
+  @Column({ nullable: true, length: 32, type: 'varchar' })
   driversLicenseNumber: string | null;
 
   @Column({ length: 20 })
