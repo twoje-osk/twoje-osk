@@ -9,6 +9,6 @@ export interface AnnouncementFormSchema {
 setupYupLocale();
 export const announcementsValidationSchema: Yup.SchemaOf<AnnouncementFormSchema> =
   Yup.object().shape({
-    subject: Yup.string().required(),
-    body: Yup.string().required(),
+    subject: Yup.string().required().max(512),
+    body: Yup.string().required().max(1000),
   });

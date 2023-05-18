@@ -19,14 +19,16 @@ setupYupLocale();
 export const vehicleFormSchema: Yup.SchemaOf<VehiclesSubmitData> =
   Yup.object().shape({
     photo: Yup.string(),
-    name: Yup.string().required(),
-    licensePlate: Yup.string().required(),
+    name: Yup.string().required().max(64),
+    licensePlate: Yup.string().required().max(7),
     vin: Yup.string().required().length(17),
     dateOfNextCheck: Yup.date().required(),
     additionalDetails: Yup.string()
       .optional()
-      .transform((value) => (value === '' ? undefined : value)),
+      .transform((value) => (value === '' ? undefined : value))
+      .max(1000),
     notes: Yup.string()
       .optional()
-      .transform((value) => (value === '' ? undefined : value)),
+      .transform((value) => (value === '' ? undefined : value))
+      .max(1000),
   });
