@@ -70,7 +70,6 @@ export class User {
   instructorId: number | null;
 
   @Expose()
-  @Column({ length: 32 })
   get role(): UserRole {
     if (this.traineeId !== null) {
       return UserRole.Trainee;
