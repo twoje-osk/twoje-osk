@@ -66,6 +66,8 @@ export const FAutocomplete = ({
           helperText={helperText}
         />
       )}
+      noOptionsText="Brak wyników"
+      loadingText="Ładowanie..."
       options={options}
       loading={loading}
       value={field.value}
