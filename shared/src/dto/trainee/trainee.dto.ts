@@ -140,6 +140,12 @@ export class DtoUpdateTrainee {
   driversLicenseNumber?: string | null;
 }
 
+export class TraineeFilterByNameQueryDto {
+  @ApiProperty({ required: true })
+  @IsString()
+  like: string;
+}
+
 export class TraineeFindAllQueryDtoFilters {
   @ApiProperty({ required: false })
   @IsOptional()
@@ -227,6 +233,14 @@ export class TraineeFindAllResponseDto {
 
   @ApiProperty()
   total: number;
+}
+
+export class TraineeFilterByNameResponseDto {
+  @ApiProperty({
+    isArray: true,
+    type: TraineeDto,
+  })
+  trainees: TraineeDto[];
 }
 
 export class TraineeFindOneResponseDto {

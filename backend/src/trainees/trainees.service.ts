@@ -100,6 +100,29 @@ export class TraineesService {
     };
   }
 
+  async filterByName(filter: string) {
+    const { id: organizationId } =
+      this.organizationDomainService.getRequestOrganization();
+    const trainees = await this.traineesRepository.find({
+      where: [
+        {
+          user: {
+            firstName: ILike(`%${filter}%`),
+            organizationId,
+          },
+        },
+        {
+          user: {
+            lastName: ILike(`%${filter}%`),
+            organizationId,
+          },
+        },
+      ],
+      relations: { user: true },
+    });
+    return { trainees };
+  }
+
   async findAll(presentationArguments?: TraineePresentationArguments) {
     const { id: organizationId } =
       this.organizationDomainService.getRequestOrganization();

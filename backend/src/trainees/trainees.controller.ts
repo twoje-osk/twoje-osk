@@ -24,6 +24,8 @@ import {
   TraineeAddNewRequestDto,
   TraineeAddNewRequestSignupDto,
   TraineeFindAllQueryDto,
+  TraineeFilterByNameQueryDto,
+  TraineeFilterByNameResponseDto,
 } from '@osk/shared';
 import { TraineesService } from './trainees.service';
 import { SkipAuth } from '../auth/passport/skip-auth.guard';
@@ -63,6 +65,15 @@ export class TraineesController {
     });
 
     return { trainees, total: count };
+  }
+
+  @ApiResponse({ type: TraineeFilterByNameResponseDto })
+  @Get('name')
+  async filterByName(
+    @Query() query: TraineeFilterByNameQueryDto,
+  ): Promise<TraineeFilterByNameResponseDto> {
+    const { trainees } = await this.traineesService.filterByName(query.like);
+    return { trainees };
   }
 
   @ApiResponse({
