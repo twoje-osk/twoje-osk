@@ -98,6 +98,14 @@ export class DtoUpdateInstructor extends OmitType(
 export class InstructorFindAllQueryDtoFilters {
   @ApiProperty({ required: false })
   @IsOptional()
+  @Transform(({ value }) => {
+    return decodeURI(value);
+  })
+  @IsString()
+  fullName?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
   @IsString()
   firstName?: string;
 

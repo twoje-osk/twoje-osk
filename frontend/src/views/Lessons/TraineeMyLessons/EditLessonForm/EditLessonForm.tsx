@@ -30,6 +30,7 @@ import {
   FAutocompleteOption,
 } from '../../../../components/FAutocomplete/FAutocomplete';
 import { useMakeRequestWithAuth } from '../../../../hooks/useMakeRequestWithAuth/useMakeRequestWithAuth';
+import { TraineesAutocomplete } from '../../../../components/TraineesAutocomplete/TraineesAutocomplete';
 
 interface EditLessonFormProps {
   initialValues?: LessonFormData;
@@ -177,29 +178,7 @@ export const EditLessonForm = ({
                 </Select>
               </FormControl>
             )}
-            {!isTrainee && isCreating && (
-              // <FSelect
-              //   name="traineeId"
-              //   id="traineeId"
-              //   fullWidth
-              //   label="Kursant"
-              // >
-              //   {traineesData?.trainees.map((trainee) => (
-              //     <MenuItem value={trainee.id} key={trainee.id}>
-              //       {trainee.user.firstName} {trainee.user.lastName}
-              //     </MenuItem>
-              //   ))}
-              // </FSelect>
-              <FAutocomplete
-                onInputChange={handleInputChange}
-                options={autocompleteOptions}
-                loading={isLoadingOptions}
-                label="Kursant"
-                name="traineeId"
-                id="traineeId"
-                required
-              />
-            )}
+            {!isTrainee && isCreating && <TraineesAutocomplete required />}
             {actions && <div>{actions}</div>}
           </Stack>
         );

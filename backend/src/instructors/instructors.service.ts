@@ -1,6 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindManyOptions, FindOptionsWhere, ILike, Repository } from 'typeorm';
+import {
+  FindManyOptions,
+  FindOptionsWhere,
+  ILike,
+  Raw,
+  Repository,
+} from 'typeorm';
 import { Instructor } from './entities/instructor.entity';
 import { User } from '../users/entities/user.entity';
 import {
@@ -59,6 +65,15 @@ export class InstructorsService {
     filterArguments: InstructorPresentationFilterArguments | undefined,
     organizationId: number,
   ): FindOptionsWhere<Instructor> {
+    const fullNameProperty =
+      filterArguments?.fullName !== undefined
+        ? Raw(
+            () => {
+              return `"firstName" || ' ' || "lastName" ILIKE :fullName`;
+            },
+            { fullName: `%${filterArguments.fullName}%` },
+          )
+        : undefined;
     const firstNameProperty =
       filterArguments?.firstName !== undefined
         ? ILike(`%${filterArguments.firstName}%`)
@@ -88,7 +103,7 @@ export class InstructorsService {
 
     return {
       user: {
-        firstName: firstNameProperty,
+        firstName: fullNameProperty ?? firstNameProperty,
         lastName: lastNameProperty,
         email: emailProperty,
         isActive: isActiveProperty,

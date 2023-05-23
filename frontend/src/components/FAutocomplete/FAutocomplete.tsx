@@ -1,8 +1,6 @@
 import { Autocomplete } from '@mui/lab';
 import { TextField } from '@mui/material';
-import { useState } from 'react';
 import { useField, useFormikContext } from 'formik';
-import { useDebounce } from '../../hooks/useDebounce/useDebounce';
 
 export interface FAutocompleteOption {
   label: string;
@@ -27,9 +25,7 @@ export const FAutocomplete = ({
   name,
   required,
 }: FAutocompleteProps) => {
-  const [field, meta] = useField({
-    name,
-  });
+  const [field, meta] = useField(name);
   const hasError = Boolean(meta.error && meta.touched);
   const helperText = hasError ? meta.error : '';
   const { setFieldValue } = useFormikContext();
@@ -49,6 +45,8 @@ export const FAutocomplete = ({
           helperText={helperText}
         />
       )}
+      {...field}
+      isOptionEqualToValue={(option, value) => option.id === value.id}
       noOptionsText="Brak wyników"
       loadingText="Ładowanie..."
       options={options}
@@ -57,6 +55,7 @@ export const FAutocomplete = ({
       inputValue={inputValue}
       onChange={handleChange}
       onInputChange={(e, currentValue) => setExternalValue(currentValue)}
+      on
     />
   );
 };

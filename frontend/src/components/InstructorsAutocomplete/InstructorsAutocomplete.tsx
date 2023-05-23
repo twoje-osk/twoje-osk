@@ -1,30 +1,30 @@
 import useSWR from 'swr';
-import { TraineeFindAllResponseDto } from '@osk/shared';
+import { InstructorFindAllResponseDto } from '@osk/shared';
 import { useState } from 'react';
 import { addQueryParams } from '../../utils/addQueryParams';
 import { GeneralAPIError } from '../GeneralAPIError/GeneralAPIError';
 import { FAutocomplete } from '../FAutocomplete/FAutocomplete';
 import { useDebounce } from '../../hooks/useDebounce/useDebounce';
 
-interface TraineesAutocompleteProps {
+interface InstructorsAutocompleteProps {
   required: boolean;
 }
 
-export const TraineesAutocomplete = ({
+export const InstructorsAutocomplete = ({
   required,
-}: TraineesAutocompleteProps) => {
+}: InstructorsAutocompleteProps) => {
   const [inputValue, setInputValue] = useState<string>('');
 
   const debouncedValue = useDebounce(inputValue);
-  const { data, error, isValidating } = useSWR<TraineeFindAllResponseDto>(
+  const { data, error, isValidating } = useSWR<InstructorFindAllResponseDto>(
     debouncedValue
-      ? addQueryParams('/api/trainees', {
+      ? addQueryParams('/api/instructors', {
           filters: { fullName: debouncedValue },
         })
       : null,
   );
   const traineesOptions =
-    data?.trainees?.map((option) => {
+    data?.instructors?.map((option) => {
       return {
         label: `${option.user.firstName} ${option.user.lastName}`,
         id: option.id,
@@ -41,9 +41,9 @@ export const TraineesAutocomplete = ({
       inputValue={inputValue}
       options={traineesOptions}
       loading={isValidating}
-      label="Kursant"
-      name="trainee"
-      id="trainee"
+      label="Instruktor"
+      name="instructor"
+      id="instructorId"
       required={required}
     />
   );
