@@ -67,15 +67,6 @@ export class TraineesController {
     return { trainees, total: count };
   }
 
-  @ApiResponse({ type: TraineeFilterByNameResponseDto })
-  @Get('name')
-  async filterByName(
-    @Query() query: TraineeFilterByNameQueryDto,
-  ): Promise<TraineeFilterByNameResponseDto> {
-    const { trainees } = await this.traineesService.filterByName(query.like);
-    return { trainees };
-  }
-
   @ApiResponse({
     type: TraineeFindOneResponseDto,
   })

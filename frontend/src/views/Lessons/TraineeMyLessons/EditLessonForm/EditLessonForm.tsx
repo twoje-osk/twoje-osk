@@ -7,12 +7,13 @@ import {
 } from '@mui/material';
 import {
   InstructorFindAllResponseDto,
+  TraineeFilterByNameResponseDto,
   TraineeFindAllResponseDto,
 } from '@osk/shared';
 import { LessonStatus } from '@osk/shared/src/types/lesson.types';
 import { UserRole } from '@osk/shared/src/types/user.types';
 import { Form, Formik, FormikHelpers } from 'formik';
-import { ReactNode } from 'react';
+import { ReactNode, useState } from 'react';
 import useSWR from 'swr';
 import { FSelect } from '../../../../components/FSelect/FSelect';
 import { FTextField } from '../../../../components/FTextField/FTextField';
@@ -24,6 +25,11 @@ import {
   LessonSubmitData,
 } from './EditLessonForm.schema';
 import { combineDateWithTime } from './EditLessonForm.utils';
+import {
+  FAutocomplete,
+  FAutocompleteOption,
+} from '../../../../components/FAutocomplete/FAutocomplete';
+import { useMakeRequestWithAuth } from '../../../../hooks/useMakeRequestWithAuth/useMakeRequestWithAuth';
 
 interface EditLessonFormProps {
   initialValues?: LessonFormData;
@@ -56,13 +62,37 @@ export const EditLessonForm = ({
 }: EditLessonFormProps) => {
   const { user } = useAuth();
   const isTrainee = user?.role === UserRole.Trainee;
+  const traineesUrl = '/api/trainees/name?like=';
   const { data: instructorsData } = useSWR<InstructorFindAllResponseDto>(() =>
     isTrainee ? '/api/instructors' : null,
   );
-  const { data: traineesData } = useSWR<TraineeFindAllResponseDto>(() =>
-    !isTrainee && isCreating ? '/api/trainees' : null,
-  );
-
+  const instructorsUrl = '/api/instructors/name?like=';
+  const makeRequest = useMakeRequestWithAuth();
+  const [autocompleteOptions, setAutocompleteOptions] = useState<
+    FAutocompleteOption[]
+  >([]);
+  const [isLoadingOptions, setIsLoadingOptions] = useState<boolean>(false);
+  const handleInputChange = async (newValue: string | undefined) => {
+    if (newValue === undefined) {
+      setAutocompleteOptions([]);
+      return;
+    }
+    setIsLoadingOptions(true);
+    const response = await makeRequest<TraineeFilterByNameResponseDto, any>(
+      `${traineesUrl}${newValue}`,
+      'GET',
+    );
+    if (response.ok) {
+      const options = response.data.trainees.map((option) => {
+        return {
+          label: `${option.user.firstName} ${option.user.lastName}`,
+          id: option.id,
+        };
+      });
+      setAutocompleteOptions(options);
+    }
+    setIsLoadingOptions(false);
+  };
   const onInternalSubmit = (
     values: LessonFormData,
     formikHelpers: FormikHelpers<LessonFormData>,
@@ -148,18 +178,27 @@ export const EditLessonForm = ({
               </FormControl>
             )}
             {!isTrainee && isCreating && (
-              <FSelect
+              // <FSelect
+              //   name="traineeId"
+              //   id="traineeId"
+              //   fullWidth
+              //   label="Kursant"
+              // >
+              //   {traineesData?.trainees.map((trainee) => (
+              //     <MenuItem value={trainee.id} key={trainee.id}>
+              //       {trainee.user.firstName} {trainee.user.lastName}
+              //     </MenuItem>
+              //   ))}
+              // </FSelect>
+              <FAutocomplete
+                onInputChange={handleInputChange}
+                options={autocompleteOptions}
+                loading={isLoadingOptions}
+                label="Kursant"
                 name="traineeId"
                 id="traineeId"
-                fullWidth
-                label="Kursant"
-              >
-                {traineesData?.trainees.map((trainee) => (
-                  <MenuItem value={trainee.id} key={trainee.id}>
-                    {trainee.user.firstName} {trainee.user.lastName}
-                  </MenuItem>
-                ))}
-              </FSelect>
+                required
+              />
             )}
             {actions && <div>{actions}</div>}
           </Stack>

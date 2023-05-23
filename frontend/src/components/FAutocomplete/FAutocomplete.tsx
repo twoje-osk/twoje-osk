@@ -1,9 +1,8 @@
 import { Autocomplete } from '@mui/lab';
 import { TextField } from '@mui/material';
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { useField, useFormikContext } from 'formik';
-
-const DEBOUNCE_TIME = 500;
+import { useDebounce } from '../../hooks/useDebounce/useDebounce';
 
 export interface FAutocompleteOption {
   label: string;
@@ -11,6 +10,7 @@ export interface FAutocompleteOption {
 }
 interface FAutocompleteProps {
   onInputChange: (newValue: string | undefined) => void;
+  inputValue: string;
   options: FAutocompleteOption[];
   loading: boolean;
   label: string;
@@ -20,39 +20,22 @@ interface FAutocompleteProps {
 }
 export const FAutocomplete = ({
   onInputChange: setExternalValue,
+  inputValue,
   options,
   loading,
   label,
   name,
   required,
 }: FAutocompleteProps) => {
-  const [value, setValueState] = useState('');
   const [field, meta] = useField({
     name,
   });
   const hasError = Boolean(meta.error && meta.touched);
   const helperText = hasError ? meta.error : '';
-  const valueRef = useRef<typeof value>(value);
   const { setFieldValue } = useFormikContext();
-  const debounceRef = useRef<number | undefined>(undefined);
-  const handleInputChange = (event: React.SyntheticEvent, val: string) => {
-    valueRef.current = val;
-    setValueState(val);
-    window.clearTimeout(debounceRef.current);
-    debounceRef.current = window.setTimeout(updateExternalValue, DEBOUNCE_TIME);
-  };
 
   const handleChange = (e: any, val: FAutocompleteOption) => {
     setFieldValue(name, val.id);
-  };
-  const updateExternalValue = () => {
-    window.clearTimeout(debounceRef.current);
-    debounceRef.current = undefined;
-
-    const currentValue = valueRef.current;
-    const cleanedUpValue =
-      currentValue.trim() === '' ? undefined : currentValue;
-    setExternalValue(cleanedUpValue);
   };
 
   return (
@@ -71,8 +54,9 @@ export const FAutocomplete = ({
       options={options}
       loading={loading}
       value={field.value}
+      inputValue={inputValue}
       onChange={handleChange}
-      onInputChange={handleInputChange}
+      onInputChange={(e, currentValue) => setExternalValue(currentValue)}
     />
   );
 };

@@ -1,6 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindManyOptions, FindOptionsWhere, ILike, Repository } from 'typeorm';
+import {
+  FindManyOptions,
+  FindOptionsWhere,
+  ILike,
+  Repository,
+  Raw,
+} from 'typeorm';
 import { DriversLicenseCategoriesService } from '../drivers-license-category/drivers-license-category.service';
 import { OrganizationDomainService } from '../organization-domain/organization-domain.service';
 import { Try, getFailure, getSuccess } from '../types/Try';
@@ -66,6 +72,16 @@ export class TraineesService {
     filterArguments: TraineePresentationFilterArguments | undefined,
     organizationId: number,
   ): FindOptionsWhere<Trainee> {
+    const fullNameProperty =
+      filterArguments?.fullName !== undefined
+        ? Raw(
+            () => {
+              return `"firstName" || ' ' || "lastName" ILIKE :fullName`;
+            },
+            { fullName: `%${filterArguments.fullName}%` },
+          )
+        : undefined;
+
     const firstNameProperty =
       filterArguments?.firstName !== undefined
         ? ILike(`%${filterArguments.firstName}%`)
@@ -90,7 +106,7 @@ export class TraineesService {
 
     return {
       user: {
-        firstName: firstNameProperty,
+        firstName: fullNameProperty ?? firstNameProperty,
         lastName: lastNameProperty,
         email: emailProperty,
         isActive: isActiveProperty,
