@@ -55,7 +55,6 @@ export const FAutocomplete = ({
       inputValue={inputValue}
       onChange={handleChange}
       onInputChange={(e, currentValue) => setExternalValue(currentValue)}
-      on
     />
   );
 };

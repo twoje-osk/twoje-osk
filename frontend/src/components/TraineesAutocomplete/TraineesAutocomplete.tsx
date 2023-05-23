@@ -42,8 +42,8 @@ export const TraineesAutocomplete = ({
       options={traineesOptions}
       loading={isValidating}
       label="Kursant"
-      name="trainee"
-      id="trainee"
+      name="traineeId"
+      id="traineeId"
       required={required}
     />
   );
