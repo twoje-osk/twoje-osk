@@ -14,15 +14,16 @@ export const TraineesAutocomplete = ({
   required,
 }: TraineesAutocompleteProps) => {
   const [inputValue, setInputValue] = useState<string>('');
-
+  const [savedInputValue, setSavedInputValue] = useState<string | null>(null);
   const debouncedValue = useDebounce(inputValue);
   const { data, error, isValidating } = useSWR<TraineeFindAllResponseDto>(
     debouncedValue
       ? addQueryParams('/api/trainees', {
-          filters: { searchedPhrase: debouncedValue },
+          filters: { searchedPhrase: savedInputValue ?? debouncedValue },
         })
       : null,
   );
+
   const traineesOptions =
     data?.trainees?.map((option) => {
       return {
@@ -37,7 +38,14 @@ export const TraineesAutocomplete = ({
 
   return (
     <FAutocomplete
-      onInputChange={(newValue) => setInputValue(newValue ?? '')}
+      onInputChange={(newValue, reason) => {
+        if (reason === 'reset') {
+          setSavedInputValue(inputValue);
+        } else {
+          setSavedInputValue(null);
+        }
+        setInputValue(newValue ?? '');
+      }}
       inputValue={inputValue}
       options={traineesOptions}
       loading={isValidating}
