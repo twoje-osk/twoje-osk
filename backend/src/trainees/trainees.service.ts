@@ -73,12 +73,12 @@ export class TraineesService {
     organizationId: number,
   ): FindOptionsWhere<Trainee> {
     const fullNameProperty =
-      filterArguments?.fullName !== undefined
+      filterArguments?.searchedPhrase !== undefined
         ? Raw(
             () => {
-              return `"firstName" || ' ' || "lastName" ILIKE :fullName`;
+              return `"firstName" || ' ' || "lastName" || ' ' || "phoneNumber" ILIKE :searchedPhrase`;
             },
-            { fullName: `%${filterArguments.fullName}%` },
+            { searchedPhrase: `%${filterArguments.searchedPhrase}%` },
           )
         : undefined;
 

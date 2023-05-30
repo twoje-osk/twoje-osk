@@ -153,7 +153,7 @@ export class TraineeFindAllQueryDtoFilters {
     return decodeURI(value);
   })
   @IsString()
-  fullName?: string;
+  searchedPhrase?: string;
 
   @ApiProperty({ required: false })
   @IsOptional()

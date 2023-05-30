@@ -24,7 +24,7 @@ export type TraineePresentationSortArguments = PresentationSortArguments<
 >;
 
 export interface TraineePresentationFilterArguments {
-  fullName?: string;
+  searchedPhrase?: string;
   firstName?: string;
   lastName?: string;
   email?: string;

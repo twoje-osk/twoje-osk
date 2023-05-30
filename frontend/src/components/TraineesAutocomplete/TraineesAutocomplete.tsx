@@ -19,14 +19,14 @@ export const TraineesAutocomplete = ({
   const { data, error, isValidating } = useSWR<TraineeFindAllResponseDto>(
     debouncedValue
       ? addQueryParams('/api/trainees', {
-          filters: { fullName: debouncedValue },
+          filters: { searchedPhrase: debouncedValue },
         })
       : null,
   );
   const traineesOptions =
     data?.trainees?.map((option) => {
       return {
-        label: `${option.user.firstName} ${option.user.lastName}`,
+        label: `${option.user.firstName} ${option.user.lastName} (tel: ${option.user.phoneNumber})`,
         id: option.id,
       };
     }) ?? [];
