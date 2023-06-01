@@ -44,8 +44,12 @@ export const Report = ({ groups, courseReportId }: ReportProps) => {
             <TableHead>
               <TableRow>
                 <TableCell>Czynność</TableCell>
-                <TableCell align="center">Przetrenowane</TableCell>
-                <TableCell align="center">Opanowane</TableCell>
+                <TableCell style={{ width: '136px' }} align="center">
+                  Przetrenowane
+                </TableCell>
+                <TableCell style={{ width: '136px' }} align="center">
+                  Opanowane
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>

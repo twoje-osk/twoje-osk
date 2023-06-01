@@ -13,9 +13,9 @@ import { LessonStatus } from '@osk/shared/src/types/lesson.types';
 import { UserRole } from '@osk/shared/src/types/user.types';
 import MUILink from '@mui/material/Link';
 import { FormikHelpers, useFormikContext } from 'formik';
-import { useMemo } from 'react';
+import { ReactNode, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { TraineeFindAllResponseDto } from '@osk/shared';
+import { TraineeFindOneResponseDto } from '@osk/shared';
 import useSWR from 'swr';
 import { useAuth } from '../../../../hooks/useAuth/useAuth';
 import { theme } from '../../../../theme';
@@ -40,6 +40,7 @@ interface EditLessonModalProps {
     helpers: FormikHelpers<LessonFormData>,
   ) => void;
   onLessonCancel: () => void;
+  instructorDetails?: ReactNode;
 }
 
 const style = {
@@ -50,7 +51,9 @@ const style = {
   width: 600,
   p: 4,
   outline: 'none',
-};
+  overflow: 'auto',
+  maxHeight: 'calc(100vh - 64px)',
+} as const;
 
 export const EditLessonModal = ({
   event,
@@ -61,6 +64,7 @@ export const EditLessonModal = ({
   isLoading,
   isCanceling,
   onLessonCancel,
+  instructorDetails,
 }: EditLessonModalProps) => {
   const { role } = useAuth();
   const editingEnabled =
@@ -70,8 +74,8 @@ export const EditLessonModal = ({
   const formikHelpers = useFormikContext<LessonFormData>();
   const navigate = useNavigate();
 
-  const { data: traineesData } = useSWR<TraineeFindAllResponseDto>(
-    () => '/api/trainees',
+  const { data: lessonTraineesData } = useSWR<TraineeFindOneResponseDto>(
+    !isCreating && event?.traineeId ? `/api/trainees/${event.traineeId}` : null,
   );
 
   const modalStatusButtons = useMemo(() => {
@@ -163,13 +167,6 @@ export const EditLessonModal = ({
   }, [event, formikHelpers, navigate, onLessonCancel, onSubmit]);
 
   const formValue = useMemo(() => mapEventToFormValues(event), [event]);
-  const trainee = useMemo(() => {
-    if (traineesData == null) {
-      return null;
-    }
-
-    return traineesData.trainees.find(({ id }) => id === formValue?.traineeId);
-  }, [formValue?.traineeId, traineesData]);
 
   return (
     <Modal
@@ -190,16 +187,19 @@ export const EditLessonModal = ({
               color={theme.palette.text.primary}
               id="edit-lesson-modal-title"
             >
-              Edytuj nową lekcję
+              Edytuj lekcję
             </Typography>
-            <MUILink
-              underline="hover"
-              to={`/kursanci/${formValue?.traineeId}`}
-              component={Link}
-              variant="h6"
-            >
-              {trainee?.user.firstName} {trainee?.user.lastName}
-            </MUILink>
+            {role === UserRole.Instructor && (
+              <MUILink
+                underline="hover"
+                to={`/kursanci/${formValue?.traineeId}`}
+                component={Link}
+                variant="h6"
+              >
+                {lessonTraineesData?.trainee.user.firstName}{' '}
+                {lessonTraineesData?.trainee.user.lastName}
+              </MUILink>
+            )}
           </Breadcrumbs>
         )}
         <Box marginTop={2}>
@@ -210,42 +210,45 @@ export const EditLessonModal = ({
             showStatus={!isCreating && role !== UserRole.Instructor}
             isCreating={isCreating}
           >
-            <Stack direction="row" justifyContent="space-between" spacing={1}>
-              <Stack direction="row" spacing={1}>
-                <LoadingButton
-                  variant={isCreating ? 'contained' : 'outlined'}
-                  startIcon={<Icon>save</Icon>}
-                  type="submit"
-                  disabled={!editingEnabled || isCanceling}
-                  loading={isLoading}
-                >
-                  Zapisz
-                </LoadingButton>
-
-                {(role === UserRole.Trainee || isCreating) && (
-                  <Button
-                    variant="outlined"
-                    onClick={onClose}
-                    disabled={isLoading || isCanceling}
+            <Stack direction="column" spacing={1}>
+              {instructorDetails}
+              <Stack direction="row" justifyContent="space-between" spacing={1}>
+                <Stack direction="row" spacing={1}>
+                  <LoadingButton
+                    variant={isCreating ? 'contained' : 'outlined'}
+                    startIcon={<Icon>save</Icon>}
+                    type="submit"
+                    disabled={!editingEnabled || isCanceling}
+                    loading={isLoading}
                   >
-                    Anuluj
-                  </Button>
+                    Zapisz
+                  </LoadingButton>
+
+                  {(role === UserRole.Trainee || isCreating) && (
+                    <Button
+                      variant="outlined"
+                      onClick={onClose}
+                      disabled={isLoading || isCanceling}
+                    >
+                      Anuluj
+                    </Button>
+                  )}
+                </Stack>
+                {role === UserRole.Instructor && !isCreating && (
+                  <Stack direction="row" spacing={1}>
+                    {modalStatusButtons}
+                  </Stack>
+                )}
+                {role === UserRole.Trainee && (
+                  <TraineeActionButtons
+                    isCreating={isCreating}
+                    editingEnabled={editingEnabled}
+                    isLoading={isLoading}
+                    isCanceling={isCanceling}
+                    onLessonCancel={onLessonCancel}
+                  />
                 )}
               </Stack>
-              {role === UserRole.Instructor && !isCreating && (
-                <Stack direction="row" spacing={1}>
-                  {modalStatusButtons}
-                </Stack>
-              )}
-              {role === UserRole.Trainee && (
-                <TraineeActionButtons
-                  isCreating={isCreating}
-                  editingEnabled={editingEnabled}
-                  isLoading={isLoading}
-                  isCanceling={isCanceling}
-                  onLessonCancel={onLessonCancel}
-                />
-              )}
             </Stack>
           </EditLessonForm>
         </Box>
