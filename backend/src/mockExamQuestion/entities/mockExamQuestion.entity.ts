@@ -20,16 +20,16 @@ export class MockExamQuestion {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ length: 1024 })
+  @Column()
   question: string;
 
   @Column()
   points: number;
 
-  @Column({ nullable: true, length: 255 })
+  @Column({ nullable: true })
   mediaURL: string;
 
-  @Column({ nullable: true, length: 128 })
+  @Column({ nullable: true })
   mediaReference: string;
 
   @OneToOne<MockExamQuestionAnswer>(

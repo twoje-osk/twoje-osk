@@ -21,7 +21,7 @@ export class Payment {
   })
   amount: number;
 
-  @Column({ default: '', length: 256 })
+  @Column({ default: '' })
   note: string;
 
   @Column()

@@ -1,3 +1,4 @@
+import { MaxLength } from 'class-validator';
 import {
   PrimaryGeneratedColumn,
   Column,
@@ -14,7 +15,8 @@ export class ReportEntry {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ length: 255 })
+  @Column()
+  @MaxLength(255)
   description: string;
 
   @ManyToOne<Report>('Report', (report) => report.reportEntries, {

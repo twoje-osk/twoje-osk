@@ -14,7 +14,7 @@ export class Announcement {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ length: 512 })
+  @Column()
   subject: string;
 
   @Column()

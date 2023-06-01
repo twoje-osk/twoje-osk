@@ -6,6 +6,6 @@ export class ReportEntryGroup {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ length: 255 })
+  @Column()
   description: string;
 }

@@ -19,17 +19,17 @@ export class User {
   id: number;
 
   @Index()
-  @Column({ length: 255 })
+  @Column()
   email: string;
 
   @Exclude()
-  @Column({ nullable: true, type: 'varchar', length: 255 })
+  @Column({ nullable: true, type: 'varchar' })
   password: string | null;
 
-  @Column({ length: 64 })
+  @Column()
   firstName: string;
 
-  @Column({ length: 64 })
+  @Column()
   lastName: string;
 
   @Column({ default: false })
@@ -46,7 +46,7 @@ export class User {
   @Column()
   createdAt: Date;
 
-  @Column({ length: 12 })
+  @Column()
   phoneNumber: string;
 
   @OneToOne<Trainee>('Trainee', (trainee) => trainee.user, {
