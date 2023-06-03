@@ -5,13 +5,9 @@ import {
   CircularProgress,
   FormControl,
   Icon,
-  InputLabel,
-  MenuItem,
-  Select,
 } from '@mui/material';
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { Flex } from 'reflexbox';
-import { FullPageLoading } from '../../../components/FullPageLoading/FullPageLoading';
 import { GeneralAPIError } from '../../../components/GeneralAPIError/GeneralAPIError';
 import { LessonsCalendar } from './LessonsCalendar/LessonsCalendar';
 import { EditLessonModal } from './EditLessonModal/EditLessonModal';
@@ -26,6 +22,7 @@ import { getInstructorEvents, getUserEvents } from './TraineeMyLessons.utils';
 import { isRangeAvailable } from './LessonsCalendar/LessonsCalendar.utils';
 import { useAuth } from '../../../hooks/useAuth/useAuth';
 import { useSelectedDate } from '../../../hooks/useSelectedDate/useSelectedDate';
+import { InstructorsAutocomplete } from '../../../components/InstructorsAutocomplete/InstructorsAutocomplete';
 
 export const TraineeMyLessons = () => {
   const auth = useAuth();
@@ -33,7 +30,9 @@ export const TraineeMyLessons = () => {
   const [selectedInstructorId, setSelectedInstructorId] = useState<
     number | null
   >(null);
-
+  const [instructorsSearchValue, setInstructorsSearchValue] =
+    useState<string>('');
+  const fetchDefaultInstructor = useRef<boolean>(true);
   const { selectedDate, onPrevWeekClick, onTodayClick, onNextWeekClick } =
     useSelectedDate();
 
@@ -49,8 +48,18 @@ export const TraineeMyLessons = () => {
     selectedDate,
     selectedInstructorId,
     setSelectedInstructorId,
+    searchedPhrase: instructorsSearchValue,
+    fetchDefault: fetchDefaultInstructor.current,
   });
-
+  const instructorsOptions = instructorsData
+    ? instructorsData?.instructors?.map((instructor) => {
+        return {
+          label: `${instructor.user.firstName} ${instructor.user.lastName} (tel: ${instructor.user.phoneNumber})`,
+          id: instructor.id,
+        };
+      }) ?? []
+    : [];
+  fetchDefaultInstructor.current = false;
   const {
     closeEditModal,
     openEditModal,
@@ -78,9 +87,7 @@ export const TraineeMyLessons = () => {
     return <GeneralAPIError />;
   }
 
-  if (instructorsData === undefined) {
-    return <FullPageLoading />;
-  }
+  const isInputLoading = instructorsData === undefined;
 
   return (
     <FullPageRelativeWrapper>
@@ -102,27 +109,17 @@ export const TraineeMyLessons = () => {
         </ButtonGroup>
         <Box width={320}>
           <FormControl fullWidth>
-            <InputLabel id="instructor-label">Instruktor</InputLabel>
-            <Select<number | null>
-              labelId="instructor-label"
-              id="instructor"
-              value={selectedInstructorId}
-              label="Instruktor"
-              onChange={(e) => {
-                const { value } = e.target;
-                if (typeof value === 'string') {
-                  return;
-                }
-
-                setSelectedInstructorId(value);
+            <InstructorsAutocomplete
+              options={instructorsOptions}
+              handleInputChange={setInstructorsSearchValue}
+              setSelectedInstructorId={setSelectedInstructorId}
+              selectedInstructorId={selectedInstructorId}
+              isLoading={isInputLoading}
+              onBlur={() => {
+                fetchDefaultInstructor.current = selectedInstructorId === null;
+                setInstructorsSearchValue('');
               }}
-            >
-              {instructorsData.instructors.map(({ id, user }) => (
-                <MenuItem value={id} key={id}>
-                  {user.firstName} {user.lastName}
-                </MenuItem>
-              ))}
-            </Select>
+            />
           </FormControl>
         </Box>
       </Flex>

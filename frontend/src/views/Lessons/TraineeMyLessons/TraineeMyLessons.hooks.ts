@@ -7,6 +7,7 @@ import {
   UpdateLessonForInstructorRequestDTO,
   UpdateLessonForInstructorResponseDTO,
   CancelLessonForInstructorResponseDTO,
+  AnnouncementFindAllQueryDto,
 } from '@osk/shared';
 import { formatISO, endOfWeek } from 'date-fns';
 import { FormikHelpers } from 'formik';
@@ -16,17 +17,22 @@ import { useCommonSnackbars } from '../../../hooks/useCommonSnackbars/useCommonS
 import { useMakeRequestWithAuth } from '../../../hooks/useMakeRequestWithAuth/useMakeRequestWithAuth';
 import { LessonFormData } from './EditLessonForm/EditLessonForm.schema';
 import { LessonEvent } from './LessonsCalendar/LessonsCalendar.types';
+import { addQueryParams } from '../../../utils/addQueryParams';
 
 interface UseFetchDataArguments {
   selectedDate: Date;
   selectedInstructorId: number | null;
   setSelectedInstructorId: (newSelectedInstructorId: number) => void;
+  searchedPhrase: string | null;
+  fetchDefault: boolean;
 }
 
 export const useFetchData = ({
   selectedDate,
   selectedInstructorId,
   setSelectedInstructorId,
+  searchedPhrase,
+  fetchDefault,
 }: UseFetchDataArguments) => {
   const currentlySelectedDateQueryParams = useMemo(() => {
     const params = new URLSearchParams();
@@ -58,13 +64,34 @@ export const useFetchData = ({
   } = useSWR<InstructorPublicAvailabilityResponseDTO>(
     getInstructorEventsDataUrl(),
   );
+  console.log('============================================');
+  const instructorsUrl =
+    fetchDefault || searchedPhrase === null || searchedPhrase === ''
+      ? addQueryParams<AnnouncementFindAllQueryDto>('/api/instructors', {
+          page: 0,
+          pageSize: 1,
+        })
+      : addQueryParams('/api/instructors', {
+          filters: { searchedPhrase },
+        });
   const { data: instructorsData, error: instructorsError } =
-    useSWR<InstructorFindAllResponseDto>('/api/instructors', {
+    useSWR<InstructorFindAllResponseDto>(instructorsUrl, {
       onSuccess: (data) => {
-        setSelectedInstructorId(data.instructors[0]?.id ?? -1);
+        if (
+          selectedInstructorId === null &&
+          (searchedPhrase === null || searchedPhrase === '')
+        ) {
+          setSelectedInstructorId(data.instructors[0]?.id ?? -1);
+        }
       },
       revalidateOnFocus: false,
     });
+  console.log(
+    'fetched',
+    instructorsData?.instructors.length,
+    'records from',
+    instructorsUrl,
+  );
 
   const mutate = () =>
     Promise.all([lessonsMutate(), instructorsEventsMutate()]);

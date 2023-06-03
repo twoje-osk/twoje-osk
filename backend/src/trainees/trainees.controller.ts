@@ -24,8 +24,6 @@ import {
   TraineeAddNewRequestDto,
   TraineeAddNewRequestSignupDto,
   TraineeFindAllQueryDto,
-  TraineeFilterByNameQueryDto,
-  TraineeFilterByNameResponseDto,
 } from '@osk/shared';
 import { TraineesService } from './trainees.service';
 import { SkipAuth } from '../auth/passport/skip-auth.guard';

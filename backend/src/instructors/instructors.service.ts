@@ -65,13 +65,13 @@ export class InstructorsService {
     filterArguments: InstructorPresentationFilterArguments | undefined,
     organizationId: number,
   ): FindOptionsWhere<Instructor> {
-    const fullNameProperty =
-      filterArguments?.fullName !== undefined
+    const searchedPhraseProperty =
+      filterArguments?.searchedPhrase !== undefined
         ? Raw(
             () => {
-              return `"firstName" || ' ' || "lastName" ILIKE :fullName`;
+              return `"firstName" || ' ' || "lastName" || ' ' || "phoneNumber" ILIKE :searchedPhrase`;
             },
-            { fullName: `%${filterArguments.fullName}%` },
+            { searchPhrase: `%${filterArguments.searchedPhrase}%` },
           )
         : undefined;
     const firstNameProperty =
@@ -103,7 +103,7 @@ export class InstructorsService {
 
     return {
       user: {
-        firstName: fullNameProperty ?? firstNameProperty,
+        firstName: searchedPhraseProperty ?? firstNameProperty,
         lastName: lastNameProperty,
         email: emailProperty,
         isActive: isActiveProperty,

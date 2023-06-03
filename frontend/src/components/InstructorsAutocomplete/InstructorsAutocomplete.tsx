@@ -1,50 +1,72 @@
-import useSWR from 'swr';
-import { InstructorFindAllResponseDto } from '@osk/shared';
-import { useState } from 'react';
-import { addQueryParams } from '../../utils/addQueryParams';
-import { GeneralAPIError } from '../GeneralAPIError/GeneralAPIError';
-import { FAutocomplete } from '../FAutocomplete/FAutocomplete';
-import { useDebounce } from '../../hooks/useDebounce/useDebounce';
+import { FocusEventHandler, useMemo, useState } from 'react';
+import { Autocomplete } from '@mui/lab';
+import { TextField } from '@mui/material';
+import { FAutocompleteOption } from '../FAutocomplete/FAutocomplete';
 
 interface InstructorsAutocompleteProps {
-  required: boolean;
+  options: FAutocompleteOption[];
+  handleInputChange: (newValue: string) => void;
+  selectedInstructorId: number | null;
+  setSelectedInstructorId: (newValue: number | null) => void;
+  isLoading: boolean;
+  onBlur: FocusEventHandler<HTMLDivElement>;
 }
 
 export const InstructorsAutocomplete = ({
-  required,
+  options,
+  handleInputChange: setExternalInputChange,
+  selectedInstructorId: externalValue,
+  setSelectedInstructorId: setExternalValue,
+  isLoading,
+  onBlur,
 }: InstructorsAutocompleteProps) => {
   const [inputValue, setInputValue] = useState<string>('');
 
-  const debouncedValue = useDebounce(inputValue);
-  const { data, error, isValidating } = useSWR<InstructorFindAllResponseDto>(
-    debouncedValue
-      ? addQueryParams('/api/instructors', {
-          filters: { fullName: debouncedValue },
-        })
-      : null,
+  const handleChange = (
+    e: any,
+    value: FAutocompleteOption | FAutocompleteOption[] | null,
+  ) => {
+    if (value === null) {
+      setExternalValue(null);
+    } else if (Array.isArray(value)) {
+      setExternalValue(value[0]?.id ?? null);
+    } else {
+      setExternalValue(value.id);
+    }
+  };
+  const optionsMap = useMemo(
+    () =>
+      Object.fromEntries(
+        options.map((option) => [option.id, option]),
+      ) as Record<number, FAutocompleteOption>,
+    [options],
   );
-  const traineesOptions =
-    data?.instructors?.map((option) => {
-      return {
-        label: `${option.user.firstName} ${option.user.lastName}`,
-        id: option.id,
-      };
-    }) ?? [];
-
-  if (error) {
-    return <GeneralAPIError />;
-  }
-
   return (
-    <FAutocomplete
-      onInputChange={(newValue) => setInputValue(newValue ?? '')}
+    <Autocomplete
+      renderInput={(params) => <TextField {...params} label="Instructor" />}
+      noOptionsText="Brak wyników"
+      loadingText="Ładowanie..."
+      options={options}
+      loading={isLoading}
+      value={externalValue === null ? null : optionsMap[externalValue] ?? null}
+      onChange={handleChange}
       inputValue={inputValue}
-      options={traineesOptions}
-      loading={isValidating}
-      label="Instruktor"
-      name="instructor"
-      id="instructorId"
-      required={required}
+      onBlur={onBlur}
+      onInputChange={(e, newValue, reason) => {
+        const currentSelectionLabel =
+          externalValue === null ? null : optionsMap[externalValue]?.label;
+        if (reason === 'reset') {
+          setInputValue(
+            inputValue === '' || newValue === currentSelectionLabel
+              ? newValue
+              : inputValue,
+          );
+        } else {
+          setInputValue(newValue);
+          setExternalInputChange(newValue);
+          setExternalValue(null);
+        }
+      }}
     />
   );
 };
