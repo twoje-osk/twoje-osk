@@ -149,9 +149,6 @@ export class TraineeFilterByNameQueryDto {
 export class TraineeFindAllQueryDtoFilters {
   @ApiProperty({ required: false })
   @IsOptional()
-  @Transform(({ value }) => {
-    return decodeURI(value);
-  })
   @IsString()
   searchedPhrase?: string;
 

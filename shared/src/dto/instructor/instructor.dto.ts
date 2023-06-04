@@ -98,9 +98,6 @@ export class DtoUpdateInstructor extends OmitType(
 export class InstructorFindAllQueryDtoFilters {
   @ApiProperty({ required: false })
   @IsOptional()
-  @Transform(({ value }) => {
-    return decodeURI(value);
-  })
   @IsString()
   searchedPhrase?: string;
 
