@@ -6,7 +6,7 @@ import {
   FormControl,
   Icon,
 } from '@mui/material';
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Flex } from 'reflexbox';
 import { GeneralAPIError } from '../../../components/GeneralAPIError/GeneralAPIError';
 import { LessonsCalendar } from './LessonsCalendar/LessonsCalendar';
@@ -23,6 +23,7 @@ import { isRangeAvailable } from './LessonsCalendar/LessonsCalendar.utils';
 import { useAuth } from '../../../hooks/useAuth/useAuth';
 import { useSelectedDate } from '../../../hooks/useSelectedDate/useSelectedDate';
 import { InstructorsAutocomplete } from '../../../components/InstructorsAutocomplete/InstructorsAutocomplete';
+import { useDebounce } from '../../../hooks/useDebounce/useDebounce';
 
 export const TraineeMyLessons = () => {
   const auth = useAuth();
@@ -32,9 +33,16 @@ export const TraineeMyLessons = () => {
   >(null);
   const [instructorsSearchValue, setInstructorsSearchValue] =
     useState<string>('');
-  const fetchDefaultInstructor = useRef<boolean>(true);
+  const debouncedSearchedValue = useDebounce(instructorsSearchValue, 500);
   const { selectedDate, onPrevWeekClick, onTodayClick, onNextWeekClick } =
     useSelectedDate();
+  const [selectedInstructorIdFilter, setSelectedInstructorIdFilter] =
+    useState(selectedInstructorId);
+  useEffect(() => {
+    if (selectedInstructorId !== null) {
+      setSelectedInstructorIdFilter(selectedInstructorId);
+    }
+  }, [selectedInstructorId]);
 
   const {
     lessonsData,
@@ -42,24 +50,26 @@ export const TraineeMyLessons = () => {
     mutate,
     instructorEventsData,
     instructorsEventsError,
+    defaultInstructorError,
+    defaultInstructorData,
     instructorsData,
     instructorsError,
   } = useFetchData({
     selectedDate,
     selectedInstructorId,
+    selectedInstructorIdFilter,
     setSelectedInstructorId,
-    searchedPhrase: instructorsSearchValue,
-    fetchDefault: fetchDefaultInstructor.current,
+    searchedPhrase: debouncedSearchedValue,
   });
-  const instructorsOptions = instructorsData
-    ? instructorsData?.instructors?.map((instructor) => {
+  const fullInstructorsList = instructorsData ?? defaultInstructorData;
+  const instructorsOptions = fullInstructorsList
+    ? fullInstructorsList?.instructors?.map((instructor) => {
         return {
           label: `${instructor.user.firstName} ${instructor.user.lastName} (tel: ${instructor.user.phoneNumber})`,
           id: instructor.id,
         };
       }) ?? []
     : [];
-  fetchDefaultInstructor.current = false;
   const {
     closeEditModal,
     openEditModal,
@@ -73,6 +83,8 @@ export const TraineeMyLessons = () => {
     traineeId,
   });
 
+  const defaultInstructor = defaultInstructorData?.instructors[0] ?? null;
+
   const instructorEvents = useMemo(
     () => getInstructorEvents(instructorEventsData),
     [instructorEventsData],
@@ -83,11 +95,17 @@ export const TraineeMyLessons = () => {
     [lessonsData],
   );
 
-  if (errorData || instructorsEventsError || instructorsError) {
+  if (
+    errorData ||
+    instructorsEventsError ||
+    instructorsError ||
+    defaultInstructorError
+  ) {
     return <GeneralAPIError />;
   }
 
-  const isInputLoading = instructorsData === undefined;
+  const isInputLoading =
+    instructorsData === undefined || defaultInstructorData === undefined;
 
   return (
     <FullPageRelativeWrapper>
@@ -116,8 +134,13 @@ export const TraineeMyLessons = () => {
               selectedInstructorId={selectedInstructorId}
               isLoading={isInputLoading}
               onBlur={() => {
-                fetchDefaultInstructor.current = selectedInstructorId === null;
-                setInstructorsSearchValue('');
+                if (
+                  selectedInstructorId === null &&
+                  defaultInstructor !== null
+                ) {
+                  setInstructorsSearchValue('');
+                  setSelectedInstructorId(defaultInstructor.id);
+                }
               }}
             />
           </FormControl>

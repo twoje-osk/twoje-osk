@@ -71,7 +71,7 @@ export class InstructorsService {
             () => {
               return `"firstName" || ' ' || "lastName" || ' ' || "phoneNumber" ILIKE :searchedPhrase`;
             },
-            { searchPhrase: `%${filterArguments.searchedPhrase}%` },
+            { searchedPhrase: `%${filterArguments.searchedPhrase}%` },
           )
         : undefined;
     const firstNameProperty =
