@@ -13,6 +13,7 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
+
 import useSWR from 'swr';
 import { GetLessonByIdResponseDTO } from '@osk/shared';
 import { Box, Flex } from 'reflexbox';
@@ -28,6 +29,7 @@ import {
   useSelectedVehicle,
 } from './InstructorFinishLesson.hooks';
 import { InstructorFinishLessonReport } from './InstructorFinishLessonReport/InstructorFinishLessonReport';
+import { InstructorFinishLessonTraineeData } from './InstructorFinishLessonTraineeData/InstructorFinishLessonTraineeData';
 
 export interface RowData {
   action: string;
@@ -193,6 +195,7 @@ export const InstructorFinishLesson = () => {
             : 'Zakończ Jazdę'}
         </LoadingButton>
       </Stack>
+      <InstructorFinishLessonTraineeData trainee={lesson.trainee} />
       <InstructorFinishLessonReport traineeId={traineeId} />
     </Flex>
   );
