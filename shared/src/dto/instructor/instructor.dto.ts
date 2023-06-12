@@ -14,7 +14,9 @@ import {
   IsOptional,
   IsPositive,
   IsString,
+  MaxLength,
   Min,
+  MinLength,
   ValidateNested,
 } from 'class-validator';
 import { CreateUserDto, UpdateUserDto, UserDto } from '../user/user.dto';
@@ -65,11 +67,14 @@ export class DtoCreateInstructor {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
+  @MaxLength(10)
   registrationNumber: string;
 
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
+  @MinLength(6)
+  @MaxLength(6)
   licenseNumber: string;
 
   @ApiProperty()

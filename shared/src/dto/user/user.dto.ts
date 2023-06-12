@@ -7,6 +7,7 @@ import {
   IsOptional,
   IsString,
   Length,
+  MaxLength,
   ValidateIf,
 } from 'class-validator';
 import { OrganizationDto } from '../organization/organization.dto';
@@ -67,16 +68,19 @@ export class CreateUserDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsEmail()
+  @MaxLength(255)
   email: string;
 
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
+  @MaxLength(64)
   firstName: string;
 
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
+  @MaxLength(64)
   lastName: string;
 
   @ApiProperty()
@@ -87,6 +91,7 @@ export class CreateUserDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
+  @MaxLength(12)
   phoneNumber: string;
 }
 
@@ -94,6 +99,7 @@ export class CreateUserSignupDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsEmail()
+  @MaxLength(255)
   email: string;
 
   @ApiProperty()
@@ -148,21 +154,25 @@ export class UpdateUserMyProfileRequestDto {
   @IsNotEmpty()
   @IsEmail()
   @IsOptional()
+  @MaxLength(255)
   email?: string;
 
   @ApiProperty()
   @IsOptional()
   @IsNotEmpty()
+  @MaxLength(64)
   firstName?: string;
 
   @ApiProperty()
   @IsOptional()
   @IsNotEmpty()
+  @MaxLength(64)
   lastName?: string;
 
   @ApiProperty()
   @IsOptional()
   @IsNotEmpty()
+  @MaxLength(12)
   phoneNumber?: string;
 
   @ValidateIf((o: UpdateUserMyProfileRequestDto) => Boolean(o.newPassword))

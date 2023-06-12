@@ -11,7 +11,9 @@ import {
   IsPositive,
   IsString,
   Length,
+  MaxLength,
   Min,
+  MinLength,
   ValidateNested,
 } from 'class-validator';
 import {
@@ -62,6 +64,8 @@ export class DtoCreateTrainee {
 
   @ApiProperty()
   @IsNotEmpty()
+  @MinLength(20)
+  @MaxLength(20)
   pkk: string;
 
   @ApiProperty({
@@ -76,6 +80,7 @@ export class DtoCreateTrainee {
   @ApiProperty({ nullable: true })
   @IsOptional()
   @IsString()
+  @MaxLength(32)
   driversLicenseNumber: string | null;
 
   @IsNotEmpty()
@@ -91,6 +96,8 @@ export class DtoCreateTraineeSignup {
 
   @ApiProperty()
   @IsNotEmpty()
+  @MinLength(20)
+  @MaxLength(20)
   pkk: string;
 
   @ApiProperty({
@@ -105,6 +112,7 @@ export class DtoCreateTraineeSignup {
   @ApiProperty({ nullable: true })
   @IsOptional()
   @IsString()
+  @MaxLength(32)
   driversLicenseNumber: string | null;
 }
 
@@ -123,6 +131,8 @@ export class DtoUpdateTrainee {
 
   @ApiProperty()
   @IsOptional()
+  @MinLength(20)
+  @MaxLength(20)
   pkk?: string;
 
   @ApiProperty({
@@ -137,6 +147,7 @@ export class DtoUpdateTrainee {
   @ApiProperty({ nullable: true })
   @IsOptional()
   @IsString()
+  @MaxLength(32)
   driversLicenseNumber?: string | null;
 }
 

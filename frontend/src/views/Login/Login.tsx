@@ -73,7 +73,7 @@ export const Login = () => {
             aria-hidden={!isLoading}
             className={!isLoading ? 'hidden' : undefined}
           >
-            <FullPageLoading />
+            <FullPageLoading height="100%" />
           </UnauthenticatedViewLoaderWrapper>
           <UnauthenticatedViewHiddenWrapper
             aria-hidden={isLoading}
