@@ -16,7 +16,7 @@ export interface PaymentFormData {
 setupYupLocale();
 export const paymentFormSchema: Yup.SchemaOf<PaymentFormData> =
   Yup.object().shape({
-    amount: Yup.number().required().max(100_000),
+    amount: Yup.number().required().max(100_000).min(-100_000),
     note: Yup.string().default('').max(256),
     date: Yup.date().required(),
   });
