@@ -142,7 +142,14 @@ export const EditLessonForm = ({
                 </Select>
               </FormControl>
             )}
-            {!isTrainee && isCreating && <TraineesAutocomplete required />}
+            {!isTrainee && isCreating && (
+              <TraineesAutocomplete
+                label="Kursant"
+                name="traineeId"
+                id="traineeId"
+                required
+              />
+            )}
             {actions && <div>{actions}</div>}
           </Stack>
         );

@@ -39,7 +39,12 @@ export const PaymentFormNew = ({
       enableReinitialize
     >
       <PaymentFormFields actions={actions} disabled={disabled}>
-        <TraineesAutocomplete required />
+        <TraineesAutocomplete
+          label="Kursant"
+          name="traineeId"
+          id="traineeId"
+          required
+        />
       </PaymentFormFields>
     </Formik>
   );

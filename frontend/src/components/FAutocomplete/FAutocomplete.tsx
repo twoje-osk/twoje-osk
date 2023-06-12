@@ -22,6 +22,7 @@ interface FAutocompleteProps {
 }
 export const FAutocomplete = ({
   onInputChange: setExternalValue,
+  inputValue,
   options,
   loading,
   label,
@@ -66,7 +67,7 @@ export const FAutocomplete = ({
         />
       )}
       {...field}
-      noOptionsText="Brak wyników"
+      noOptionsText={inputValue ? 'Brak wyników' : 'Wpisz aby wyszukać...'}
       loadingText="Ładowanie..."
       options={options}
       loading={loading}

@@ -8,6 +8,7 @@ import {
   UpdateLessonForInstructorResponseDTO,
   CancelLessonForInstructorResponseDTO,
   AnnouncementFindAllQueryDto,
+  InstructorFindAllQueryDto,
 } from '@osk/shared';
 import { formatISO, endOfWeek } from 'date-fns';
 import { FormikHelpers } from 'formik';
@@ -47,7 +48,10 @@ export const useFetchData = ({
       return undefined;
     }
 
-    return `/api/availability/instructors/${selectedInstructorIdFilter}/public?${currentlySelectedDateQueryParams}`;
+    return addQueryParams<URLSearchParams>(
+      `/api/availability/instructors/${selectedInstructorIdFilter}/public`,
+      currentlySelectedDateQueryParams,
+    );
   };
 
   const {
@@ -84,7 +88,7 @@ export const useFetchData = ({
       revalidateOnFocus: false,
     });
   const instructorsUrl = searchedPhrase
-    ? addQueryParams('/api/instructors', {
+    ? addQueryParams<InstructorFindAllQueryDto>('/api/instructors', {
         filters: { searchedPhrase },
       })
     : null;

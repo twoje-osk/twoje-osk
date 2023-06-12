@@ -23,6 +23,7 @@ import {
   TraineePresentationFilterArguments,
   TraineePresentationSortArguments,
 } from './trainees.types';
+import { escapeForbiddenCharsFromFilter } from '../instructors/instructors.utils';
 
 @Injectable()
 export class TraineesService {
@@ -79,9 +80,8 @@ export class TraineesService {
               return `"firstName" || ' ' || "lastName" || ' ' || "phoneNumber" ILIKE :searchedPhrase`;
             },
             {
-              searchedPhrase: `%${filterArguments.searchedPhrase.replace(
-                /[\\%_]/g,
-                (match) => `\\${match}`,
+              searchedPhrase: `%${escapeForbiddenCharsFromFilter(
+                filterArguments.searchedPhrase,
               )}%`,
             },
           )
@@ -119,29 +119,6 @@ export class TraineesService {
         organizationId,
       },
     };
-  }
-
-  async filterByName(filter: string) {
-    const { id: organizationId } =
-      this.organizationDomainService.getRequestOrganization();
-    const trainees = await this.traineesRepository.find({
-      where: [
-        {
-          user: {
-            firstName: ILike(`%${filter}%`),
-            organizationId,
-          },
-        },
-        {
-          user: {
-            lastName: ILike(`%${filter}%`),
-            organizationId,
-          },
-        },
-      ],
-      relations: { user: true },
-    });
-    return { trainees };
   }
 
   async findAll(presentationArguments?: TraineePresentationArguments) {

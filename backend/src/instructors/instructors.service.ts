@@ -22,7 +22,10 @@ import { Try, getFailure, getSuccess } from '../types/Try';
 import { UsersService } from '../users/users.service';
 import { TransactionalWithTry } from '../utils/TransactionalWithTry';
 import { Vehicle } from '../vehicles/entities/vehicle.entity';
-import { isInstructorUserSortField } from './instructors.utils';
+import {
+  escapeForbiddenCharsFromFilter,
+  isInstructorUserSortField,
+} from './instructors.utils';
 import { getLimitArguments } from '../utils/presentationArguments';
 
 @Injectable()
@@ -72,9 +75,8 @@ export class InstructorsService {
               return `"firstName" || ' ' || "lastName" || ' ' || "phoneNumber" ILIKE :searchedPhrase`;
             },
             {
-              searchedPhrase: `%${filterArguments.searchedPhrase.replace(
-                /[\\%_]/g,
-                (match) => `\\${match}`,
+              searchedPhrase: `%${escapeForbiddenCharsFromFilter(
+                filterArguments.searchedPhrase,
               )}%`,
             },
           )

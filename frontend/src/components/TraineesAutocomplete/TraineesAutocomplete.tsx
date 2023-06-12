@@ -1,5 +1,5 @@
 import useSWR from 'swr';
-import { TraineeFindAllResponseDto } from '@osk/shared';
+import { TraineeFindAllQueryDto, TraineeFindAllResponseDto } from '@osk/shared';
 import { useState } from 'react';
 import { addQueryParams } from '../../utils/addQueryParams';
 import { GeneralAPIError } from '../GeneralAPIError/GeneralAPIError';
@@ -8,17 +8,23 @@ import { useDebounce } from '../../hooks/useDebounce/useDebounce';
 
 interface TraineesAutocompleteProps {
   required: boolean;
+  label: string;
+  id: string;
+  name: string;
 }
 
 export const TraineesAutocomplete = ({
   required,
+  label,
+  id,
+  name,
 }: TraineesAutocompleteProps) => {
   const [inputValue, setInputValue] = useState<string>('');
   const [savedInputValue, setSavedInputValue] = useState<string | null>(null);
   const debouncedValue = useDebounce(inputValue);
   const { data, error, isValidating } = useSWR<TraineeFindAllResponseDto>(
     debouncedValue
-      ? addQueryParams('/api/trainees', {
+      ? addQueryParams<TraineeFindAllQueryDto>('/api/trainees', {
           filters: { searchedPhrase: savedInputValue ?? debouncedValue },
         })
       : null,
@@ -49,9 +55,9 @@ export const TraineesAutocomplete = ({
       inputValue={inputValue}
       options={traineesOptions}
       loading={isValidating}
-      label="Kursant"
-      name="traineeId"
-      id="traineeId"
+      label={label}
+      name={name}
+      id={id}
       required={required}
     />
   );
