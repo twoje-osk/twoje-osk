@@ -7,6 +7,7 @@ import {
   IsOptional,
   IsPositive,
   IsString,
+  MaxLength,
   Min,
   ValidateNested,
 } from 'class-validator';
@@ -45,6 +46,7 @@ export class CreateAnnouncementDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
+  @MaxLength(512)
   subject: string;
 
   @ApiProperty()

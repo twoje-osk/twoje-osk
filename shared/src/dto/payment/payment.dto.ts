@@ -9,6 +9,8 @@ import {
   IsOptional,
   IsPositive,
   IsString,
+  Max,
+  MaxLength,
   Min,
   ValidateNested,
 } from 'class-validator';
@@ -37,6 +39,8 @@ export class PaymentCreateRequestDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsNumber()
+  @Max(100000.0)
+  @Min(-100000.0)
   amount: number;
 
   @ApiProperty()
@@ -47,6 +51,7 @@ export class PaymentCreateRequestDto {
 
   @ApiProperty()
   @IsString()
+  @MaxLength(256)
   note: string;
 
   @ApiProperty()

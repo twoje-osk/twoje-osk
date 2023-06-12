@@ -1,4 +1,3 @@
-import { Length } from 'class-validator';
 import { Column, Entity, PrimaryGeneratedColumn, Unique } from 'typeorm';
 
 @Entity()
@@ -8,6 +7,5 @@ export class ReportEntryGroup {
   id: number;
 
   @Column()
-  @Length(255)
   description: string;
 }

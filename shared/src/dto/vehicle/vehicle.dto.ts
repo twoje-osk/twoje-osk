@@ -52,11 +52,14 @@ export class DtoCreateVehicle {
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
+  @MaxLength(64)
   name: string;
 
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
+  @MinLength(7)
+  @MaxLength(7)
   licensePlate: string;
 
   @ApiProperty()

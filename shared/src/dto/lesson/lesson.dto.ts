@@ -7,6 +7,7 @@ import {
   IsNotEmpty,
   IsNumber,
   IsOptional,
+  MaxLength,
 } from 'class-validator';
 import { addHours, startOfHour } from 'date-fns';
 import { LessonStatus } from '../../types/lesson.types';
@@ -156,6 +157,7 @@ export class UpdateLessonRequestDTO {
     enum: LessonStatus,
   })
   @IsEnum(LessonStatus)
+  @MaxLength(255)
   status: LessonStatus;
 
   @ApiProperty({
@@ -193,6 +195,7 @@ export class CreateLessonRequestDTO {
     enum: LessonStatus,
   })
   @IsEnum(LessonStatus)
+  @MaxLength(255)
   status: LessonStatus;
 
   @IsNotEmpty()
