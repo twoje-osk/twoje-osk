@@ -1,6 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindManyOptions, FindOptionsWhere, ILike, Repository } from 'typeorm';
+import {
+  FindManyOptions,
+  FindOptionsWhere,
+  ILike,
+  Repository,
+  Raw,
+} from 'typeorm';
 import { DriversLicenseCategoriesService } from '../drivers-license-category/drivers-license-category.service';
 import { OrganizationDomainService } from '../organization-domain/organization-domain.service';
 import { Try, getFailure, getSuccess } from '../types/Try';
@@ -17,6 +23,7 @@ import {
   TraineePresentationFilterArguments,
   TraineePresentationSortArguments,
 } from './trainees.types';
+import { escapeForbiddenCharsFromFilter } from '../instructors/instructors.utils';
 
 @Injectable()
 export class TraineesService {
@@ -66,6 +73,20 @@ export class TraineesService {
     filterArguments: TraineePresentationFilterArguments | undefined,
     organizationId: number,
   ): FindOptionsWhere<Trainee> {
+    const fullNameProperty =
+      filterArguments?.searchedPhrase !== undefined
+        ? Raw(
+            () => {
+              return `"firstName" || ' ' || "lastName" || ' ' || "phoneNumber" ILIKE :searchedPhrase`;
+            },
+            {
+              searchedPhrase: `%${escapeForbiddenCharsFromFilter(
+                filterArguments.searchedPhrase,
+              )}%`,
+            },
+          )
+        : undefined;
+
     const firstNameProperty =
       filterArguments?.firstName !== undefined
         ? ILike(`%${filterArguments.firstName}%`)
@@ -90,7 +111,7 @@ export class TraineesService {
 
     return {
       user: {
-        firstName: firstNameProperty,
+        firstName: fullNameProperty ?? firstNameProperty,
         lastName: lastNameProperty,
         email: emailProperty,
         isActive: isActiveProperty,

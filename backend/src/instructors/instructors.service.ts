@@ -1,6 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindManyOptions, FindOptionsWhere, ILike, Repository } from 'typeorm';
+import {
+  FindManyOptions,
+  FindOptionsWhere,
+  ILike,
+  Raw,
+  Repository,
+} from 'typeorm';
 import { Instructor } from './entities/instructor.entity';
 import { User } from '../users/entities/user.entity';
 import {
@@ -16,7 +22,10 @@ import { Try, getFailure, getSuccess } from '../types/Try';
 import { UsersService } from '../users/users.service';
 import { TransactionalWithTry } from '../utils/TransactionalWithTry';
 import { Vehicle } from '../vehicles/entities/vehicle.entity';
-import { isInstructorUserSortField } from './instructors.utils';
+import {
+  escapeForbiddenCharsFromFilter,
+  isInstructorUserSortField,
+} from './instructors.utils';
 import { getLimitArguments } from '../utils/presentationArguments';
 
 @Injectable()
@@ -59,6 +68,19 @@ export class InstructorsService {
     filterArguments: InstructorPresentationFilterArguments | undefined,
     organizationId: number,
   ): FindOptionsWhere<Instructor> {
+    const searchedPhraseProperty =
+      filterArguments?.searchedPhrase !== undefined
+        ? Raw(
+            () => {
+              return `"firstName" || ' ' || "lastName" || ' ' || "phoneNumber" ILIKE :searchedPhrase`;
+            },
+            {
+              searchedPhrase: `%${escapeForbiddenCharsFromFilter(
+                filterArguments.searchedPhrase,
+              )}%`,
+            },
+          )
+        : undefined;
     const firstNameProperty =
       filterArguments?.firstName !== undefined
         ? ILike(`%${filterArguments.firstName}%`)
@@ -88,7 +110,7 @@ export class InstructorsService {
 
     return {
       user: {
-        firstName: firstNameProperty,
+        firstName: searchedPhraseProperty ?? firstNameProperty,
         lastName: lastNameProperty,
         email: emailProperty,
         isActive: isActiveProperty,

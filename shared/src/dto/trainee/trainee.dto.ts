@@ -155,6 +155,11 @@ export class TraineeFindAllQueryDtoFilters {
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
+  searchedPhrase?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
   firstName?: string;
 
   @ApiProperty({ required: false })
@@ -238,6 +243,14 @@ export class TraineeFindAllResponseDto {
 
   @ApiProperty()
   total: number;
+}
+
+export class TraineeFilterByNameResponseDto {
+  @ApiProperty({
+    isArray: true,
+    type: TraineeDto,
+  })
+  trainees: TraineeDto[];
 }
 
 export class TraineeFindOneResponseDto {

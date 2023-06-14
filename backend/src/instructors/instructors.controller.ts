@@ -71,6 +71,7 @@ export class InstructorsController {
     return { instructor };
   }
 
+  @Roles(UserRole.Admin)
   @ApiResponse({
     type: InstructorCreateResponseDto,
   })
@@ -93,6 +94,7 @@ export class InstructorsController {
     return assertNever(createResult.error);
   }
 
+  @Roles(UserRole.Admin)
   @ApiResponse({
     type: InstructorUpdateResponseDto,
   })

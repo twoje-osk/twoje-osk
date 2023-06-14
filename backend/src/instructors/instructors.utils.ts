@@ -11,3 +11,7 @@ export function isInstructorUserSortField(
 ): text is InstructorUserSortField {
   return (INSTRUCTOR_USER_SORT_FIELDS as readonly string[]).includes(text);
 }
+
+export function escapeForbiddenCharsFromFilter(text: string): string {
+  return text.replace(/[\\%_]/g, (match) => `\\${match}`);
+}

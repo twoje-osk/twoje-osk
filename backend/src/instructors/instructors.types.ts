@@ -22,6 +22,7 @@ export type InstructorPresentationSortArguments =
   PresentationSortArguments<InstructorUserSortField>;
 
 export interface InstructorPresentationFilterArguments {
+  searchedPhrase?: string;
   firstName?: string;
   lastName?: string;
   email?: string;

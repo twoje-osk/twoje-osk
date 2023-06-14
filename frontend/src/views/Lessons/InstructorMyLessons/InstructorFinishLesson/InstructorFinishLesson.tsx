@@ -165,7 +165,7 @@ export const InstructorFinishLesson = () => {
                     </ListItemIcon>
                   )}
 
-                  {vehicle.name}
+                  {`${vehicle.name} (${vehicle.licensePlate})`}
                 </MenuItem>
               ))}
             </Select>

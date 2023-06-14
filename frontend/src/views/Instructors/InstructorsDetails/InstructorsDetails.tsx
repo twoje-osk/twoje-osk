@@ -13,6 +13,7 @@ import {
   InstructorUpdateRequestDto,
   InstructorUpdateResponseDto,
 } from '@osk/shared';
+import { UserRole } from '@osk/shared/src/types/user.types';
 import { Link, Navigate, useParams } from 'react-router-dom';
 import { Box } from 'reflexbox';
 import useSWR from 'swr';
@@ -25,10 +26,12 @@ import { theme } from '../../../theme';
 import { InstructorsForm } from '../InstructorsForm/InstructorsForm';
 import { InstructorsFormData } from '../InstructorsForm/InstructorsForm.schema';
 import { ActionModal } from '../../../components/ActionModal/ActionModal';
+import { useAuth } from '../../../hooks/useAuth/useAuth';
 
 export const InstructorsDetails = () => {
   const { instructorId } = useParams();
   const makeRequest = useMakeRequestWithAuth();
+  const { role } = useAuth();
   const {
     setLoading: setActivateModalLoading,
     isLoading: isActivateModalLoading,
@@ -153,39 +156,41 @@ export const InstructorsDetails = () => {
           key={JSON.stringify(initialValues)}
           disabled
         >
-          <Stack direction="row" spacing={1}>
-            <Button
-              variant="contained"
-              startIcon={<Icon>edit</Icon>}
-              component={Link}
-              to="edytuj"
-            >
-              Edytuj
-            </Button>
-            {instructor.user.isActive ? (
-              <LoadingButton
-                color="error"
-                variant="outlined"
-                onClick={() => openDeactivateModal()}
-                startIcon={<Icon>delete</Icon>}
-                disabled={isDeactivateModalLoading}
-                loading={isDeactivateModalLoading}
+          {role === UserRole.Admin && (
+            <Stack direction="row" spacing={1}>
+              <Button
+                variant="contained"
+                startIcon={<Icon>edit</Icon>}
+                component={Link}
+                to="edytuj"
               >
-                Dezaktywuj
-              </LoadingButton>
-            ) : (
-              <LoadingButton
-                color="success"
-                variant="outlined"
-                onClick={() => openActivateModal()}
-                startIcon={<Icon>check</Icon>}
-                disabled={isActivateModalLoading}
-                loading={isActivateModalLoading}
-              >
-                Aktywuj
-              </LoadingButton>
-            )}
-          </Stack>
+                Edytuj
+              </Button>
+              {instructor.user.isActive ? (
+                <LoadingButton
+                  color="error"
+                  variant="outlined"
+                  onClick={() => openDeactivateModal()}
+                  startIcon={<Icon>delete</Icon>}
+                  disabled={isDeactivateModalLoading}
+                  loading={isDeactivateModalLoading}
+                >
+                  Dezaktywuj
+                </LoadingButton>
+              ) : (
+                <LoadingButton
+                  color="success"
+                  variant="outlined"
+                  onClick={() => openActivateModal()}
+                  startIcon={<Icon>check</Icon>}
+                  disabled={isActivateModalLoading}
+                  loading={isActivateModalLoading}
+                >
+                  Aktywuj
+                </LoadingButton>
+              )}
+            </Stack>
+          )}
         </InstructorsForm>
       </Box>
       <ActionModal

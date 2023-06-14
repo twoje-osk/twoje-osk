@@ -40,10 +40,7 @@ export const InstructorsList = () => {
     getLabelIsActive,
     getLabelSortDirection,
     onSortClick,
-  } = useSort<Required<InstructorFindAllQueryDto>['sortBy']>(
-    'firstName',
-    'asc',
-  );
+  } = useSort<Required<InstructorFindAllQueryDto>['sortBy']>('lastName', 'asc');
   const {
     firstName,
     lastName,

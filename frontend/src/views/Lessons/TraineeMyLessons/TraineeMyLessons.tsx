@@ -5,11 +5,8 @@ import {
   CircularProgress,
   FormControl,
   Icon,
-  InputLabel,
-  MenuItem,
-  Select,
 } from '@mui/material';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Flex } from 'reflexbox';
 import { GetLessonByIdResponseDTO } from '@osk/shared';
 import useSWR from 'swr';
@@ -28,6 +25,8 @@ import { getInstructorEvents, getUserEvents } from './TraineeMyLessons.utils';
 import { isRangeAvailable } from './LessonsCalendar/LessonsCalendar.utils';
 import { useAuth } from '../../../hooks/useAuth/useAuth';
 import { useSelectedDate } from '../../../hooks/useSelectedDate/useSelectedDate';
+import { InstructorsAutocomplete } from '../../../components/InstructorsAutocomplete/InstructorsAutocomplete';
+import { useDebounce } from '../../../hooks/useDebounce/useDebounce';
 import {
   Accordion,
   AccordionDetails,
@@ -42,9 +41,18 @@ export const TraineeMyLessons = () => {
   const [selectedInstructorId, setSelectedInstructorId] = useState<
     number | null
   >(null);
-
+  const [instructorsSearchValue, setInstructorsSearchValue] =
+    useState<string>('');
+  const debouncedSearchedValue = useDebounce(instructorsSearchValue, 500);
   const { selectedDate, onPrevWeekClick, onTodayClick, onNextWeekClick } =
     useSelectedDate();
+  const [selectedInstructorIdFilter, setSelectedInstructorIdFilter] =
+    useState(selectedInstructorId);
+  useEffect(() => {
+    if (selectedInstructorId !== null) {
+      setSelectedInstructorIdFilter(selectedInstructorId);
+    }
+  }, [selectedInstructorId]);
 
   const {
     lessonsData,
@@ -52,14 +60,26 @@ export const TraineeMyLessons = () => {
     mutate,
     instructorEventsData,
     instructorsEventsError,
+    defaultInstructorError,
+    defaultInstructorData,
     instructorsData,
     instructorsError,
   } = useFetchData({
     selectedDate,
     selectedInstructorId,
+    selectedInstructorIdFilter,
     setSelectedInstructorId,
+    searchedPhrase: debouncedSearchedValue,
   });
-
+  const fullInstructorsList = instructorsData ?? defaultInstructorData;
+  const instructorsOptions = fullInstructorsList
+    ? fullInstructorsList?.instructors?.map((instructor) => {
+        return {
+          label: `${instructor.user.firstName} ${instructor.user.lastName} (tel: ${instructor.user.phoneNumber})`,
+          id: instructor.id,
+        };
+      }) ?? []
+    : [];
   const {
     closeEditModal,
     openEditModal,
@@ -73,6 +93,8 @@ export const TraineeMyLessons = () => {
     traineeId,
   });
 
+  const defaultInstructor = defaultInstructorData?.instructors[0] ?? null;
+
   const instructorEvents = useMemo(
     () => getInstructorEvents(instructorEventsData),
     [instructorEventsData],
@@ -83,13 +105,17 @@ export const TraineeMyLessons = () => {
     [lessonsData],
   );
 
-  if (errorData || instructorsEventsError || instructorsError) {
+  if (
+    errorData ||
+    instructorsEventsError ||
+    instructorsError ||
+    defaultInstructorError
+  ) {
     return <GeneralAPIError />;
   }
 
-  if (instructorsData === undefined) {
-    return <FullPageLoading />;
-  }
+  const isInputLoading =
+    instructorsData === undefined || defaultInstructorData === undefined;
 
   return (
     <FullPageRelativeWrapper>
@@ -111,27 +137,22 @@ export const TraineeMyLessons = () => {
         </ButtonGroup>
         <Box width={320}>
           <FormControl fullWidth>
-            <InputLabel id="instructor-label">Instruktor</InputLabel>
-            <Select<number | null>
-              labelId="instructor-label"
-              id="instructor"
-              value={selectedInstructorId}
-              label="Instruktor"
-              onChange={(e) => {
-                const { value } = e.target;
-                if (typeof value === 'string') {
-                  return;
+            <InstructorsAutocomplete
+              options={instructorsOptions}
+              handleInputChange={setInstructorsSearchValue}
+              setSelectedInstructorId={setSelectedInstructorId}
+              selectedInstructorId={selectedInstructorId}
+              isLoading={isInputLoading}
+              onBlur={() => {
+                if (
+                  selectedInstructorId === null &&
+                  defaultInstructor !== null
+                ) {
+                  setInstructorsSearchValue('');
+                  setSelectedInstructorId(defaultInstructor.id);
                 }
-
-                setSelectedInstructorId(value);
               }}
-            >
-              {instructorsData.instructors.map(({ id, user }) => (
-                <MenuItem value={id} key={id}>
-                  {user.firstName} {user.lastName}
-                </MenuItem>
-              ))}
-            </Select>
+            />
           </FormControl>
         </Box>
       </Flex>

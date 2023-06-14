@@ -5,10 +5,7 @@ import {
   InputLabel,
   FormControl,
 } from '@mui/material';
-import {
-  InstructorFindAllResponseDto,
-  TraineeFindAllResponseDto,
-} from '@osk/shared';
+import { InstructorFindAllResponseDto } from '@osk/shared';
 import { LessonStatus } from '@osk/shared/src/types/lesson.types';
 import { UserRole } from '@osk/shared/src/types/user.types';
 import { Form, Formik, FormikHelpers } from 'formik';
@@ -24,6 +21,7 @@ import {
   LessonSubmitData,
 } from './EditLessonForm.schema';
 import { combineDateWithTime } from './EditLessonForm.utils';
+import { TraineesAutocomplete } from '../../../../components/TraineesAutocomplete/TraineesAutocomplete';
 
 interface EditLessonFormProps {
   initialValues?: LessonFormData;
@@ -58,9 +56,6 @@ export const EditLessonForm = ({
   const isTrainee = user?.role === UserRole.Trainee;
   const { data: instructorsData } = useSWR<InstructorFindAllResponseDto>(() =>
     isTrainee ? '/api/instructors' : null,
-  );
-  const { data: traineesData } = useSWR<TraineeFindAllResponseDto>(() =>
-    !isTrainee && isCreating ? '/api/trainees' : null,
   );
 
   const onInternalSubmit = (
@@ -148,18 +143,12 @@ export const EditLessonForm = ({
               </FormControl>
             )}
             {!isTrainee && isCreating && (
-              <FSelect
+              <TraineesAutocomplete
+                label="Kursant"
                 name="traineeId"
                 id="traineeId"
-                fullWidth
-                label="Kursant"
-              >
-                {traineesData?.trainees.map((trainee) => (
-                  <MenuItem value={trainee.id} key={trainee.id}>
-                    {trainee.user.firstName} {trainee.user.lastName}
-                  </MenuItem>
-                ))}
-              </FSelect>
+                required
+              />
             )}
             {actions && <div>{actions}</div>}
           </Stack>

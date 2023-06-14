@@ -1,15 +1,12 @@
-import { MenuItem } from '@mui/material';
-import { TraineeFindAllResponseDto } from '@osk/shared';
 import { Formik, FormikHelpers } from 'formik';
 import { ReactNode } from 'react';
-import useSWR from 'swr';
-import { FSelect } from '../../../components/FSelect/FSelect';
 import {
   PaymentFormNewData,
   PaymentForNewInitialData,
   paymentFormNewSchema,
 } from './PaymentFormNew.schema';
 import { PaymentFormFields } from './PaymentFormFields';
+import { TraineesAutocomplete } from '../../../components/TraineesAutocomplete/TraineesAutocomplete';
 
 interface PaymentFormNewProps {
   initialValues?: PaymentForNewInitialData;
@@ -34,10 +31,6 @@ export const PaymentFormNew = ({
   onSubmit = () => undefined,
   children: actions,
 }: PaymentFormNewProps) => {
-  const { data: traineesData } = useSWR<TraineeFindAllResponseDto>(
-    () => '/api/trainees',
-  );
-
   return (
     <Formik<PaymentForNewInitialData>
       initialValues={initialValues ?? defaultValues}
@@ -46,19 +39,12 @@ export const PaymentFormNew = ({
       enableReinitialize
     >
       <PaymentFormFields actions={actions} disabled={disabled}>
-        <FSelect
+        <TraineesAutocomplete
+          label="Kursant"
           name="traineeId"
           id="traineeId"
-          fullWidth
-          label="Kursant"
           required
-        >
-          {traineesData?.trainees.map((trainee) => (
-            <MenuItem value={trainee.id} key={trainee.id}>
-              {trainee.user.firstName} {trainee.user.lastName}
-            </MenuItem>
-          ))}
-        </FSelect>
+        />
       </PaymentFormFields>
     </Formik>
   );

@@ -104,6 +104,11 @@ export class InstructorFindAllQueryDtoFilters {
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
+  searchedPhrase?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
   firstName?: string;
 
   @ApiProperty({ required: false })

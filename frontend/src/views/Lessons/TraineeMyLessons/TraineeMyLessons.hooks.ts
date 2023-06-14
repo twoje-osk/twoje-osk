@@ -7,6 +7,8 @@ import {
   UpdateLessonForInstructorRequestDTO,
   UpdateLessonForInstructorResponseDTO,
   CancelLessonForInstructorResponseDTO,
+  AnnouncementFindAllQueryDto,
+  InstructorFindAllQueryDto,
 } from '@osk/shared';
 import { formatISO, endOfWeek } from 'date-fns';
 import { FormikHelpers } from 'formik';
@@ -16,17 +18,22 @@ import { useCommonSnackbars } from '../../../hooks/useCommonSnackbars/useCommonS
 import { useMakeRequestWithAuth } from '../../../hooks/useMakeRequestWithAuth/useMakeRequestWithAuth';
 import { LessonFormData } from './EditLessonForm/EditLessonForm.schema';
 import { LessonEvent } from './LessonsCalendar/LessonsCalendar.types';
+import { addQueryParams } from '../../../utils/addQueryParams';
 
 interface UseFetchDataArguments {
   selectedDate: Date;
   selectedInstructorId: number | null;
+  selectedInstructorIdFilter: number | null;
   setSelectedInstructorId: (newSelectedInstructorId: number) => void;
+  searchedPhrase: string | null;
 }
 
 export const useFetchData = ({
   selectedDate,
   selectedInstructorId,
+  selectedInstructorIdFilter,
   setSelectedInstructorId,
+  searchedPhrase,
 }: UseFetchDataArguments) => {
   const currentlySelectedDateQueryParams = useMemo(() => {
     const params = new URLSearchParams();
@@ -37,11 +44,14 @@ export const useFetchData = ({
   }, [selectedDate]);
 
   const getInstructorEventsDataUrl = () => {
-    if (selectedInstructorId === null) {
+    if (selectedInstructorIdFilter === null) {
       return undefined;
     }
 
-    return `/api/availability/instructors/${selectedInstructorId}/public?${currentlySelectedDateQueryParams}`;
+    return addQueryParams<URLSearchParams>(
+      `/api/availability/instructors/${selectedInstructorIdFilter}/public`,
+      currentlySelectedDateQueryParams,
+    );
   };
 
   const {
@@ -58,14 +68,32 @@ export const useFetchData = ({
   } = useSWR<InstructorPublicAvailabilityResponseDTO>(
     getInstructorEventsDataUrl(),
   );
-  const { data: instructorsData, error: instructorsError } =
-    useSWR<InstructorFindAllResponseDto>('/api/instructors', {
+  const defaultInstructorUrl = addQueryParams<AnnouncementFindAllQueryDto>(
+    '/api/instructors',
+    {
+      page: 0,
+      pageSize: 1,
+    },
+  );
+  const { data: defaultInstructorData, error: defaultInstructorError } =
+    useSWR<InstructorFindAllResponseDto>(defaultInstructorUrl, {
       onSuccess: (data) => {
-        setSelectedInstructorId(data.instructors[0]?.id ?? -1);
+        if (
+          selectedInstructorId === null &&
+          (searchedPhrase === null || searchedPhrase === '')
+        ) {
+          setSelectedInstructorId(data.instructors[0]?.id ?? -1);
+        }
       },
       revalidateOnFocus: false,
     });
-
+  const instructorsUrl = searchedPhrase
+    ? addQueryParams<InstructorFindAllQueryDto>('/api/instructors', {
+        filters: { searchedPhrase },
+      })
+    : null;
+  const { data: instructorsData, error: instructorsError } =
+    useSWR<InstructorFindAllResponseDto>(instructorsUrl);
   const mutate = () =>
     Promise.all([lessonsMutate(), instructorsEventsMutate()]);
 
@@ -75,6 +103,8 @@ export const useFetchData = ({
     errorData,
     instructorEventsData,
     instructorsEventsError,
+    defaultInstructorData,
+    defaultInstructorError,
     instructorsData,
     instructorsError,
   };
