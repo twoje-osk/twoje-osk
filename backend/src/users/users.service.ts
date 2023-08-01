@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import * as bcrypt from 'bcrypt';
+import * as argon from 'argon2';
 import { Repository } from 'typeorm';
 import { OrganizationDomainService } from '../organization-domain/organization-domain.service';
 import { UserArguments } from '../types/UserArguments';
@@ -57,7 +57,7 @@ export class UsersService {
     phoneNumber: string,
     password?: string,
   ) {
-    const newUser = this.createUserWithoutSave({
+    const newUser = await this.createUserWithoutSave({
       email,
       firstName,
       isActive,
@@ -80,7 +80,7 @@ export class UsersService {
 
     const passwordUserProperties = password
       ? {
-          password: this.getHashedPassword(password),
+          password: await this.getHashedPassword(password),
         }
       : {};
     const userProperties = {
@@ -100,7 +100,7 @@ export class UsersService {
   }
 
   async changePassword(userId: number, password: string) {
-    const hashedPassword = this.getHashedPassword(password);
+    const hashedPassword = await this.getHashedPassword(password);
 
     const updatedUser = this.usersRepository.update(
       {
@@ -129,12 +129,12 @@ export class UsersService {
     return disabledUser;
   }
 
-  createUserWithoutSave(user: UserArguments) {
+  async createUserWithoutSave(user: UserArguments) {
     const { id: organizationId } =
       this.organizationDomainService.getRequestOrganization();
     const hashedPassword =
       user.password !== undefined
-        ? this.getHashedPassword(user.password)
+        ? await this.getHashedPassword(user.password)
         : undefined;
 
     const userToCreate = {
@@ -148,6 +148,6 @@ export class UsersService {
   }
 
   getHashedPassword(password: string) {
-    return bcrypt.hashSync(password, 10);
+    return argon.hash(password);
   }
 }

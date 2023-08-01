@@ -4,6 +4,21 @@ import { EntityManager, EntityTarget } from 'typeorm';
 const getSeedFromString = (text: string): number =>
   text.split('').reduce((sum, c) => sum + c.charCodeAt(0), 0);
 
+export const mergeEntity = <T>(entity: T, data: Partial<T>) => {
+  // eslint-disable-next-line no-restricted-syntax
+  for (const key in entity) {
+    if (
+      Object.prototype.hasOwnProperty.call(entity, key) &&
+      data[key] !== undefined
+    ) {
+      // eslint-disable-next-line no-param-reassign
+      entity[key] = data[key]!;
+    }
+  }
+
+  return entity;
+};
+
 export abstract class Factory<T> {
   protected entities: T[] = [];
 
@@ -27,18 +42,7 @@ export abstract class Factory<T> {
   abstract generate(): T;
   public generateFromData(data: Partial<T>): T {
     const entity = this.generate();
-
-    // eslint-disable-next-line no-restricted-syntax
-    for (const key in entity) {
-      if (
-        Object.prototype.hasOwnProperty.call(entity, key) &&
-        data[key] !== undefined
-      ) {
-        entity[key] = data[key]!;
-      }
-    }
-
-    return entity;
+    return mergeEntity(entity, data);
   }
 
   public remove(entityToRemove: T) {

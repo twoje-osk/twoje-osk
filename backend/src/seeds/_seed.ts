@@ -33,7 +33,7 @@ runSeeds(async () => {
   seedOrganizations();
   seedTrainees();
   seedInstructors();
-  seedUsers();
+  await seedUsers();
 
   seedCourseReports();
   seedReportEntryToCourseReport();

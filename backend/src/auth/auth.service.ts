@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JwtPayload } from '@osk/shared';
-import * as bcrypt from 'bcrypt';
+import * as argon from 'argon2';
 import { Repository } from 'typeorm';
 import { User } from '../users/entities/user.entity';
 import { RequestOrganization } from './auth.types';
@@ -40,7 +40,7 @@ export class AuthService {
       return null;
     }
 
-    const isPasswordCorrect = await bcrypt.compare(password, user.password);
+    const isPasswordCorrect = await argon.verify(user.password, password);
 
     if (!isPasswordCorrect) {
       return null;

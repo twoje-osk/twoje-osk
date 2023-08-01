@@ -1,5 +1,5 @@
 import passwordsFeature from '@adminjs/passwords';
-import * as bcrypt from 'bcrypt';
+import * as argon from 'argon2';
 // Adding `@ts-ignore` so that it doesn't throw an error when the admin entities aren't built
 // @ts-ignore
 import {
@@ -51,7 +51,7 @@ export const RESOURCE_OVERRIDES: SortedResourceWithOptions[] = [
         properties: {
           encryptedPassword: 'password',
         },
-        hash: (password) => bcrypt.hashSync(password, 10),
+        hash: (password) => argon.hash(password),
       }),
     ],
   },

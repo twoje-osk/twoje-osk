@@ -173,7 +173,7 @@ export class InstructorsService {
       return getFailure('EMAIL_ALREADY_TAKEN');
     }
 
-    const newUser = this.usersService.createUserWithoutSave({
+    const newUser = await this.usersService.createUserWithoutSave({
       ...instructor.user,
     });
 
