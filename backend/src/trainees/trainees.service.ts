@@ -214,7 +214,7 @@ export class TraineesService {
       return getFailure('TRAINEE_OR_USER_FOUND');
     }
 
-    const userToBeCreated = this.usersService.createUserWithoutSave(
+    const userToBeCreated = await this.usersService.createUserWithoutSave(
       trainee.user,
     );
 

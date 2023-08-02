@@ -46,7 +46,7 @@
     "@types/bcrypt": "^5.0.0",
     "@types/react-big-calendar": "^0.38.1",
     "adminjs": "^6.0.0",
-    "bcrypt": "^5.0.1",
+    "argon2": "^0.30.3",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.13.2",
     "csv-parse": "^5.3.2",

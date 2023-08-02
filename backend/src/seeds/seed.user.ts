@@ -1,9 +1,9 @@
-import * as bcrypt from 'bcrypt';
+import * as argon from 'argon2';
 import { User } from '../users/entities/user.entity';
 import { instructorsFactory } from './seed.instructors';
 import { organizationsFactory } from './seed.organization';
 import { traineesFactory } from './seed.trainees';
-import { Factory } from './seed.utils';
+import { Factory, mergeEntity } from './seed.utils';
 
 const getUserType = (n: number) => {
   if (n < 0.05) {
@@ -18,11 +18,24 @@ const getUserType = (n: number) => {
 };
 
 class UserFactory extends Factory<User> {
+  private static UserFactoryRawGenerateSymbol = Symbol.for(
+    'UserFactoryRawGenerateSymbol',
+  );
+
   constructor() {
     super(User);
   }
 
-  public generate() {
+  /**
+   * @deprecated use generateWithPassword() instead
+   */
+  public generate(symbol?: symbol) {
+    if (symbol !== UserFactory.UserFactoryRawGenerateSymbol) {
+      throw new Error(
+        'Cannot use UserFactory.generate(). Use UserFactory.generateWithPassword() instead',
+      );
+    }
+
     const user = new User();
     user.firstName = this.faker.name.firstName();
     user.lastName = this.faker.name.lastName();
@@ -30,7 +43,6 @@ class UserFactory extends Factory<User> {
     user.email = this.faker.internet
       .email(user.firstName, user.lastName)
       .toLowerCase();
-    user.password = bcrypt.hashSync('password', 10);
     user.organization = this.faker.helpers.arrayElement(
       organizationsFactory.getAll(),
     );
@@ -58,8 +70,18 @@ class UserFactory extends Factory<User> {
     return user;
   }
 
+  public async generateWithPassword() {
+    const user = this.generate(UserFactory.UserFactoryRawGenerateSymbol);
+    user.password = await argon.hash('password');
+
+    return user;
+  }
+
   public generateFromData({ trainee, instructor, ...data }: Partial<User>) {
-    const user = super.generateFromData(data);
+    const user = mergeEntity(
+      this.generate(UserFactory.UserFactoryRawGenerateSymbol),
+      data,
+    );
 
     if (user.trainee !== null) {
       traineesFactory.remove(user.trainee);
@@ -83,13 +105,13 @@ class UserFactory extends Factory<User> {
 
 export const usersFactory = new UserFactory();
 
-export const seedUsers = () => {
+export const seedUsers = async () => {
   usersFactory.generateFromData({
     firstName: 'Admin',
     lastName: 'Admin',
     isActive: true,
     email: 'admin@example.com',
-    password: bcrypt.hashSync('password', 10),
+    password: await argon.hash('password'),
     organization: organizationsFactory.getAll()[0],
   });
   usersFactory.generateFromData({
@@ -97,7 +119,7 @@ export const seedUsers = () => {
     lastName: 'Trainee',
     isActive: true,
     email: 'trainee@example.com',
-    password: bcrypt.hashSync('password', 10),
+    password: await argon.hash('password'),
     organization: organizationsFactory.getAll()[0],
     trainee: traineesFactory.generate(),
   });
@@ -106,10 +128,12 @@ export const seedUsers = () => {
     lastName: 'Instructor',
     isActive: true,
     email: 'instructor@example.com',
-    password: bcrypt.hashSync('password', 10),
+    password: await argon.hash('password'),
     organization: organizationsFactory.getAll()[0],
     instructor: instructorsFactory.generate(),
   });
 
-  Array.from({ length: 300 }).forEach(() => usersFactory.generate());
+  return Promise.all(
+    Array.from({ length: 300 }).map(() => usersFactory.generateWithPassword()),
+  );
 };
