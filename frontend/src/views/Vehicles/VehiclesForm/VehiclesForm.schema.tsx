@@ -18,7 +18,7 @@ export interface VehiclesSubmitData extends VehiclesFormData {
 setupYupLocale();
 export const vehicleFormSchema: Yup.SchemaOf<VehiclesSubmitData> =
   Yup.object().shape({
-    photo: Yup.string(),
+    photo: Yup.string().nullable(),
     name: Yup.string().required().max(64),
     licensePlate: Yup.string().required().max(7),
     vin: Yup.string().required().length(17),

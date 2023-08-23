@@ -1,6 +1,12 @@
 import styled from '@emotion/styled';
 import { Paper, Stack } from '@mui/material';
-import { Form, Formik, FormikHelpers, useField } from 'formik';
+import {
+  Form,
+  Formik,
+  FormikHelpers,
+  useField,
+  useFormikContext,
+} from 'formik';
 import { ReactNode } from 'react';
 import { Flex } from 'reflexbox';
 import { FTextField } from '../../../components/FTextField/FTextField';
@@ -47,6 +53,7 @@ export const VehiclesForm = ({
       <Form noValidate>
         <Flex style={{ gap: '32px' }} alignItems="flex-start">
           <Photo />
+          <Debug />
           <Stack spacing={2} style={{ flex: 1 }} justifyContent="flex-start">
             <FTextField
               required
@@ -99,6 +106,13 @@ export const VehiclesForm = ({
       </Form>
     </Formik>
   );
+};
+
+const Debug = () => {
+  const form = useFormikContext();
+  console.log(form);
+
+  return null;
 };
 
 const Photo = () => {
