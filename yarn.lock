@@ -3307,6 +3307,7 @@ __metadata:
     eslint-plugin-react: ^7.28.0
     eslint-plugin-react-hooks: ^4.3.0
     formik: ^2.2.9
+    material-icons: ^1.13.10
     material-ui-popup-state: ^5.0.8
     notistack: ^2.0.5
     prettier: 2.6.2
@@ -9333,6 +9334,13 @@ __metadata:
     socks-proxy-agent: ^6.1.1
     ssri: ^9.0.0
   checksum: 42825d119a7e4f5b1a8e7048a86d328cd36bb1ff875d155ce7079d9a0afdd310c198fb310096af358cfa9ecdf643cecf960380686792457dccb36e17efe89eb0
+  languageName: node
+  linkType: hard
+
+"material-icons@npm:^1.13.10":
+  version: 1.13.10
+  resolution: "material-icons@npm:1.13.10"
+  checksum: f2631bb0f15b4f7b086643f7897011a2abdd5b59ee639a29267bad4929d2a6fe62522ce412aa9174e3ace139be48ce35ef26a6485ec6561d9491a161d516a4b2
   languageName: node
   linkType: hard
 
