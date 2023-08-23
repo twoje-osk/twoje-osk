@@ -144,6 +144,15 @@ export class TraineesController {
       );
     }
 
+    if (
+      error === 'REPORT_ALREADY_CREATED_FOR_TRAINEE' ||
+      error === 'REPORT_NOT_FOUND_FOR_SPECIFIED_LICENSE_CATEGORY_ID'
+    ) {
+      throw new UnprocessableEntityException(
+        'Failed to create report for the trainee',
+      );
+    }
+
     return assertNever(error);
   }
 
@@ -171,6 +180,15 @@ export class TraineesController {
       if (error === 'DRIVER_LICENSE_CATEGORY_NOT_FOUND') {
         throw new UnprocessableEntityException(
           'Provided driver license category is not valid',
+        );
+      }
+
+      if (
+        error === 'REPORT_ALREADY_CREATED_FOR_TRAINEE' ||
+        error === 'REPORT_NOT_FOUND_FOR_SPECIFIED_LICENSE_CATEGORY_ID'
+      ) {
+        throw new UnprocessableEntityException(
+          'Failed to create report for the trainee',
         );
       }
 

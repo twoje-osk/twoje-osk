@@ -24,6 +24,7 @@ import {
   TraineePresentationSortArguments,
 } from './trainees.types';
 import { escapeForbiddenCharsFromFilter } from '../instructors/instructors.utils';
+import { CourseReportsService } from '../course-reports/course-reports.service';
 
 @Injectable()
 export class TraineesService {
@@ -35,6 +36,7 @@ export class TraineesService {
     private usersRepository: Repository<User>,
     private usersService: UsersService,
     private driversLicenseCategoriesService: DriversLicenseCategoriesService,
+    private courseReportsService: CourseReportsService,
   ) {}
 
   private buildOrderOption(
@@ -180,7 +182,13 @@ export class TraineesService {
   async create(
     trainee: TraineeArguments,
   ): Promise<
-    Try<Trainee, 'TRAINEE_OR_USER_FOUND' | 'DRIVER_LICENSE_CATEGORY_NOT_FOUND'>
+    Try<
+      Trainee,
+      | 'TRAINEE_OR_USER_FOUND'
+      | 'DRIVER_LICENSE_CATEGORY_NOT_FOUND'
+      | 'REPORT_NOT_FOUND_FOR_SPECIFIED_LICENSE_CATEGORY_ID'
+      | 'REPORT_ALREADY_CREATED_FOR_TRAINEE'
+    >
   > {
     const { id: organizationId } =
       this.organizationDomainService.getRequestOrganization();
@@ -193,7 +201,7 @@ export class TraineesService {
     };
 
     const findTraineeCondition: FindOptionsWhere<Trainee>[] =
-      trainee.pesel === null
+      trainee.pesel === null || trainee.pesel === undefined
         ? [emailCondition]
         : [
             emailCondition,
@@ -248,7 +256,20 @@ export class TraineesService {
       relations: { user: true },
     });
 
-    return getSuccess(createdTrainee!);
+    if (createdTrainee == null) {
+      throw new Error('Created trainee is null');
+    }
+
+    const courseReportResult = await this.courseReportsService.create(
+      createdTrainee.id,
+      createdTrainee.driversLicenseCategoryId,
+    );
+
+    if (!courseReportResult.ok) {
+      return getFailure(courseReportResult.error);
+    }
+
+    return getSuccess(createdTrainee);
   }
 
   @TransactionalWithTry()

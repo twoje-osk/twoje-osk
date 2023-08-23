@@ -7,7 +7,7 @@ import { TraineeSortField, TraineeUserSortField } from './trainee.utils';
 
 export interface TraineeArguments {
   user: UserArguments;
-  pesel: string | null;
+  pesel?: string | null | undefined;
   pkk: string;
   driversLicenseNumber: string | null;
   dateOfBirth: Date;

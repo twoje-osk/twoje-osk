@@ -18,6 +18,8 @@ export const TraineeReport = () => {
       traineeId ? `/api/trainees/${traineeId}` : null,
     );
 
+  console.log(traineeData);
+
   const courseReportData = useCourseReportData(
     traineeId ? Number.parseInt(traineeId, 10) : null,
   );

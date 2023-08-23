@@ -60,7 +60,7 @@ export class DtoCreateTrainee {
   @IsOptional()
   @IsNumberString({ no_symbols: true })
   @Length(11, 11)
-  pesel: string | null;
+  pesel?: string | null;
 
   @ApiProperty()
   @IsNotEmpty()

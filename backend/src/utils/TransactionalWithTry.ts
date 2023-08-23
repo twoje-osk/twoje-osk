@@ -27,11 +27,11 @@ function isTry<Data = any, ErrorData = any>(
     return false;
   }
 
-  if (hasOk === true) {
+  if (data.ok === true) {
     return hasProperty(data, 'data');
   }
 
-  if (hasOk === false) {
+  if (data.ok === false) {
     return hasProperty(data, 'error');
   }
 

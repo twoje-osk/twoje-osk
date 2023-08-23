@@ -4,7 +4,6 @@ import { CourseReportsService } from './course-reports.service';
 import { CourseReportsController } from './course-reports.controller';
 import { CourseReport } from './entities/course-report.entity';
 import { ReportEntriesModule } from '../report-entries/report-entries.module';
-import { TraineesModule } from '../trainees/trainees.module';
 import { ReportsModule } from '../reports/reports.module';
 
 @Module({
@@ -13,7 +12,6 @@ import { ReportsModule } from '../reports/reports.module';
   imports: [
     TypeOrmModule.forFeature([CourseReport]),
     ReportEntriesModule,
-    TraineesModule,
     ReportsModule,
   ],
   providers: [CourseReportsService],
