@@ -154,6 +154,7 @@ export const ResetPassword = () => {
               <Formik<ResetPasswordForm>
                 initialValues={{
                   password: '',
+                  confirmPassword: '',
                 }}
                 validationSchema={ResetPasswordFormSchema}
                 onSubmit={onSubmit}
@@ -168,6 +169,16 @@ export const ResetPassword = () => {
                         margin="normal"
                         required
                         disabled={isLoading}
+                        autoComplete="new-password"
+                      />
+                      <FTextField
+                        name="confirmPassword"
+                        label="Potwierdź hasło"
+                        type="password"
+                        margin="normal"
+                        required
+                        disabled={isLoading}
+                        autoComplete="new-password"
                       />
                       {formError && (
                         <Box my="0.5rem">

@@ -77,8 +77,8 @@ export const ForgotPassword = () => {
               {header}
               <Box marginY="1rem">
                 <Alert severity="success">
-                  Na przypisany do Twojego konta adres e-mail wysłaliśmy
-                  instrukcję dalszego postępowania.
+                  Na podany adres e-mail wysłaliśmy instrukcję dalszego
+                  postępowania, jeśli istnieje do niego przypisane konto.
                 </Alert>
               </Box>
               <Button variant="outlined" component={Link} to="/">
