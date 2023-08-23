@@ -87,7 +87,7 @@ export const VehicleEdit = () => {
     dateOfNextCheck: parseISO(vehicle.dateOfNextCheck),
     additionalDetails: vehicle.additionalDetails ?? undefined,
     notes: vehicle.notes ?? undefined,
-    photo: vehicle.photo,
+    photo: vehicle.photo ?? undefined,
   };
 
   return (

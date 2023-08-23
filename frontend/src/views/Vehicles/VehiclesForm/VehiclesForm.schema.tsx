@@ -8,7 +8,7 @@ export interface VehiclesFormData {
   dateOfNextCheck: Date | null;
   additionalDetails?: string;
   notes?: string;
-  photo?: string | null;
+  photo?: string;
 }
 
 export interface VehiclesSubmitData extends VehiclesFormData {
