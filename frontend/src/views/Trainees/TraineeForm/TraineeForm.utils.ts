@@ -2,7 +2,11 @@
 const PESEL_WEIGHTS = [1, 3, 7, 9, 1, 3, 7, 9, 1, 3];
 
 export function validatePesel(pesel: string | undefined) {
-  if (pesel === undefined || pesel.length !== PESEL_WEIGHTS.length + 1) {
+  if (pesel === undefined) {
+    return true;
+  }
+
+  if (pesel.length !== PESEL_WEIGHTS.length + 1) {
     return false;
   }
 

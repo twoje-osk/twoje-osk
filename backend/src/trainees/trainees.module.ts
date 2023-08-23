@@ -8,6 +8,7 @@ import { ResetPasswordModule } from '../reset-password/reset-password.module';
 import { UsersModule } from '../users/users.module';
 import { User } from '../users/entities/user.entity';
 import { DriversLicenseCategoriesModule } from '../drivers-license-category/drivers-license-category.module';
+import { CourseReportsModule } from '../course-reports/course-reports.module';
 
 @Module({
   controllers: [TraineesController],
@@ -17,6 +18,7 @@ import { DriversLicenseCategoriesModule } from '../drivers-license-category/driv
     ResetPasswordModule,
     CepikModule,
     DriversLicenseCategoriesModule,
+    CourseReportsModule,
   ],
   providers: [TraineesService],
   exports: [TraineesService],

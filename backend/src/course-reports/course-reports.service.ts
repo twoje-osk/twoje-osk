@@ -4,7 +4,6 @@ import { Repository } from 'typeorm';
 import { TransactionalWithTry } from '../utils/TransactionalWithTry';
 import { OrganizationDomainService } from '../organization-domain/organization-domain.service';
 import { ReportsService } from '../reports/reports.service';
-import { TraineesService } from '../trainees/trainees.service';
 import { getFailure, getSuccess, Try } from '../types/Try';
 import { CourseReport } from './entities/course-report.entity';
 
@@ -14,7 +13,6 @@ export class CourseReportsService {
     @InjectRepository(CourseReport)
     private courseReportsRepository: Repository<CourseReport>,
     private organizationDomainService: OrganizationDomainService,
-    private traineesService: TraineesService,
     private reportsService: ReportsService,
   ) {}
 
@@ -76,36 +74,31 @@ export class CourseReportsService {
   @TransactionalWithTry()
   async create(
     traineeId: number,
+    driversLicenseCategoryId: number,
   ): Promise<
     Try<
       number,
-      | 'TRAINEE_DOES_NOT_EXIST'
-      | 'REPORT_NOT_FOUND_FROM_TRAINEE'
+      | 'REPORT_NOT_FOUND_FOR_SPECIFIED_LICENSE_CATEGORY_ID'
       | 'REPORT_ALREADY_CREATED_FOR_TRAINEE'
     >
   > {
-    const trainee = await this.traineesService.findOneById(traineeId);
-
-    if (trainee === null) {
-      return getFailure('TRAINEE_DOES_NOT_EXIST');
-    }
-
     const report = await this.reportsService.findOneByDriversLicenseCategoryId(
-      trainee.driversLicenseCategoryId,
+      driversLicenseCategoryId,
     );
 
     if (report === null) {
-      return getFailure('REPORT_NOT_FOUND_FROM_TRAINEE');
+      return getFailure('REPORT_NOT_FOUND_FOR_SPECIFIED_LICENSE_CATEGORY_ID');
     }
 
-    const existAlready = await this.findOneByTraineeId(trainee.id);
-
-    if (existAlready !== null) {
+    const reportForCurrentUser = await this.findOneByTraineeId(traineeId);
+    if (reportForCurrentUser.ok) {
       return getFailure('REPORT_ALREADY_CREATED_FOR_TRAINEE');
     }
 
     const newTraineeReport = this.courseReportsRepository.create({
-      trainee,
+      trainee: {
+        id: traineeId,
+      },
       report,
       reportEntryToCourseReports: [],
     });
