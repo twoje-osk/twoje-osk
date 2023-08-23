@@ -67,14 +67,15 @@ export class DtoCreateInstructor {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  @MaxLength(10)
+  @MinLength(6)
+  @MaxLength(6)
   registrationNumber: string;
 
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  @MinLength(6)
-  @MaxLength(6)
+  @MinLength(10)
+  @MaxLength(10)
   licenseNumber: string;
 
   @ApiProperty()
